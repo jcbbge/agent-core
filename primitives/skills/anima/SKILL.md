@@ -3,6 +3,7 @@ name: anima
 description: Persistent memory system for AI assistants across conversation boundaries
 license: MIT
 compatibility: opencode
+disable-model-invocation: true
 metadata:
   version: "1.0"
   category: memory

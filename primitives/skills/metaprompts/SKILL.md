@@ -1,6 +1,7 @@
 ---
 name: metaprompts
 description: Access and use patterns from your personal metaprompts library. Use when you need proven prompting patterns, mental models, or structured approaches for code review, optimization, documentation, or system design.
+disable-model-invocation: true
 metadata:
   version: "1.0"
   category: meta-cognitive
