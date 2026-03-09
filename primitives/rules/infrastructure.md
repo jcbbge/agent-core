@@ -9,12 +9,12 @@ globs: ["**/anima/**/*", "**/dev-backbone/**/*", "**/kotadb/**/*", "**/constella
 It lists every daemon, port, SurrealDB namespace, and MCP server. Do not create duplicates.
 
 ## Port Allocation (reserved — do not reuse)
-- `8000` — SurrealDB shared instance
-- `7201` — SurrealDB kotadb index
+- `8002` — SurrealDB (all namespaces: anima, dev/brain, kotadb, stack/catalog)
 - `3099` — kotadb MCP HTTP
 - `3098` — anima MCP HTTP
-- `3097` — dev-brain MCP HTTP (reserved)
+- `3097` — dev-brain MCP HTTP
 - `8001` — Ollama
+- `8000` — executor (reserved, not yet installed)
 
 ## Daemon Management
 - All daemons managed via launchctl: `launchctl start/stop [label]`
@@ -24,4 +24,4 @@ It lists every daemon, port, SurrealDB namespace, and MCP server. Do not create 
 ## MCP Servers
 - Adding a new MCP server: update `~/Documents/_agents/primitives/mcp/registry.json` first
 - HTTP transport only for always-on servers — stdio spawns orphan processes
-- Run `bash ~/Documents/_agents/deploy.sh` after registry changes
+- After registry changes: manually update each harness config (`~/.claude/mcp.json`, `~/.config/opencode/opencode.json`)

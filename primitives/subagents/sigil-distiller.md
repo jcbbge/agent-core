@@ -115,7 +115,7 @@ built: [list of files created]
 action: archive | needs-review
 ```
 
-If files were created, note: "Run `bash ~/Documents/_agents/deploy.sh` to deploy."
+If files were created, note: "Primitives are symlinked — new files are available to harnesses immediately."
 
 ### 7. Archive
 

@@ -50,12 +50,10 @@ deploy_mcp() {
 }
 ```
 
-### 5. Test it
+### 5. Provision and test it
 
-```bash
-~/Documents/_agents/deploy.sh --dry-run [name]   # verify plan
-~/Documents/_agents/deploy.sh [name]              # execute
-```
+Follow the manual onboarding protocol in `harnesses/_template/ONBOARDING.md`.
+Provision one primitive at a time, verify each works before moving to the next.
 
 ### 6. Register in the MCP registry (if needed)
 

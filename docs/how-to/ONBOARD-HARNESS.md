@@ -296,18 +296,8 @@ deploy_subagents() {
 
 ### Step 3: Test the Adapter
 
-Run dry-run first:
-
-```bash
-cd ~/Documents/_agents
-bash deploy.sh your-harness-name --dry-run
-```
-
-Then deploy:
-
-```bash
-bash deploy.sh your-harness-name
-```
+Follow the manual onboarding protocol in `harnesses/_template/ONBOARDING.md`.
+Provision one primitive at a time. Verify the harness starts cleanly after each step.
 
 ---
 
@@ -327,11 +317,8 @@ Once your adapter is working, add your harness to existing MCP servers in `regis
 }
 ```
 
-Then deploy to all harnesses:
-
-```bash
-bash deploy.sh
-```
+Then manually update each harness config to include the new server.
+See `harnesses/[name]/` for each harness's MCP config location.
 
 ---
 

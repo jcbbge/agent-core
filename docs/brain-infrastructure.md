@@ -120,7 +120,7 @@ See `/Users/jcbbge/Documents/_agents/primitives/mcp/AGENT.md` for the complete g
 Key points:
 - Use HTTP transport only (not stdio)
 - Register in `/Users/jcbbge/Documents/_agents/primitives/mcp/registry.json`
-- Deploy with `bash /Users/jcbbge/Documents/_agents/deploy.sh`
+- After registry changes, manually update each harness config (`~/.claude/mcp.json`, `~/.config/opencode/opencode.json`)
 
 ---
 

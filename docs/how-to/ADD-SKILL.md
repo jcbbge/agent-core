@@ -32,7 +32,8 @@ metadata:
 EOF
 
 # 3. Deploy
-~/Documents/_agents/deploy.sh
+Skills are symlinked from primitives/ to each harness — no deploy step needed.
+Verify the symlink exists: `ls ~/.claude/skills/` and `ls ~/.config/opencode/skills/`
 ```
 
 ## Skill Categories

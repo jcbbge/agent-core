@@ -126,7 +126,7 @@ Propose the specific addition to AGENTS.md — minimal, high-signal only
 **Command:**
 Add to the appropriate commands config for the relevant harness(es)
 
-After building: run `bash ~/Documents/_agents/deploy.sh` to deploy to all harnesses.
+After building: primitives are symlinked — new files are immediately available to all harnesses.
 
 ## Interaction Model
 
@@ -144,4 +144,4 @@ Inbox: `~/Documents/metaprompts/_inbox/`
 After processing: move to `~/Documents/metaprompts/_inbox/archive/`
 _agents root: `~/Documents/_agents/`
 
-Always run `bash deploy.sh` (no args) after creating new primitives — deploys to all harnesses.
+New primitives are immediately available via symlinks — no deploy step needed.

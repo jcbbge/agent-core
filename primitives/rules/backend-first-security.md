@@ -5,9 +5,8 @@ Zero-trust architecture. Frontend is view layer only.
 ## Constraints
 
 - **NEVER** write business logic or data access in client components
-- **NEVER** use Supabase/DB client-side — Server Actions, API Routes, or Edge Functions only
-- **RLS MANDATORY** on every table, NO policies (acts as Deny All)
-- **SERVICE ROLE ONLY** for all data access
+- **NEVER** access the database from the client — all DB access via server-side handlers only
+- **NEVER** expose DB credentials or internal APIs to the frontend
 - **NO PUBLIC BUCKETS** — signed URLs, UUID filenames only
 - **VERIFY SIGNATURES** on all webhooks — return 400 if verification fails
 - **NEVER** hardcode secrets — validate env vars at build time (Zod)

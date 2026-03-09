@@ -294,16 +294,11 @@ Edit `/Users/jcbbge/Documents/_agents/primitives/mcp/registry.json`:
 }
 ```
 
-### Step 2: Deploy
+### Step 2: Update harness configs manually
 
-```bash
-cd ~/Documents/_agents
-bash deploy.sh
-```
-
-This updates:
+Add the new server to each harness config:
 - `~/.claude/mcp.json` (Claude Code)
-- `~/.config/opencode/opencode.json` (Opencode)
+- `~/.config/opencode/opencode.json` (OpenCode)
 - Any other configured harnesses
 
 ---
@@ -408,7 +403,7 @@ curl -X POST http://127.0.0.1:3097/ \
 3. **Update launchd plist** — no command change needed, just the server code
 4. **Update registry** — change `"transport": "stdio"` to `"transport": "http"`, add `"port": N`
 5. **Add to harnesses** — ensure `"harnesses"` array includes all target harnesses
-6. **Deploy** — run `bash deploy.sh`
+6. **Deploy** — manually update each harness config (see `harnesses/[name]/` for locations)
 7. **Clean up** — kill old stdio processes: `pkill -f "mcp-server/index.ts"`
 
 ---

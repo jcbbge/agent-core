@@ -32,15 +32,18 @@ Three questions, three places:
 ## Key commands
 
 ```bash
-# Deploy primitives to all configured harnesses
-bash ~/Documents/_agents/agent-core/deploy.sh claude-code
-
 # Sync stack.yaml to SurrealDB catalog
 bash ~/Documents/_agents/observe/sync-stack.sh
 
 # Check stack health
-bash ~/.claude/hooks/core-chain.sh
+core chain
 ```
+
+## Harness onboarding
+
+Primitives are deployed to harnesses **manually** per the protocol in `harnesses/_template/ONBOARDING.md`.
+Each harness has its own config format — symlinks, JSONC, AGENTS.md, plugins.
+See `harnesses/[name]/` for the deployed state of each harness.
 
 ## Decisions index
 
