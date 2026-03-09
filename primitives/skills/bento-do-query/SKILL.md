@@ -3,7 +3,6 @@ name: bento-do-query
 description: Direct queries to the Bento production PostgreSQL database on Digital Ocean. Use when querying app data, exporting CSVs, or exploring the schema.
 license: MIT
 compatibility: opencode
-disable-model-invocation: true
 metadata:
   version: "1.0"
   category: database
