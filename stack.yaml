@@ -1,0 +1,179 @@
+# stack.yaml — Declared intent for Josh's agent stack
+# This is what SHOULD exist. SurrealDB stack/catalog stores observed state.
+# Edit this file to add/remove stack components. Run `core deploy` to sync.
+# git diff stack.yaml = changelog
+
+meta:
+  owner: jcbbge
+  machine: macbook-m-series-8gb
+  last_updated: "2026-03-09"
+  surreal_version: "3.0.2"
+
+ports:
+  8000: "executor (reserved — not yet installed)"
+  8001: "ollama"
+  8002: "surrealdb"
+  3098: "anima-mcp"
+  3099: "kotadb-mcp"
+  3097: "dev-brain-mcp"
+
+platform:
+  - name: surrealdb
+    label: dev.brain.surreal
+    binary: ~/bin/surreal
+    port: 8002
+    namespaces:
+      - anima/memory
+      - dev/brain
+      - kotadb/index
+      - stack/catalog
+    notes: "Unified single-node instance. All services share one SurrealDB."
+
+  - name: ollama
+    label: dev.ollama
+    port: 8001
+    models:
+      - nomic-embed-text
+      - qwen2.5:0.5b
+    notes: "Homebrew install. nomic-embed-text for kotadb embeddings. qwen2.5:0.5b for synthesis worker."
+
+intelligence:
+  - name: anima
+    label: com.jcbbge.anima-mcp
+    port: 3098
+    transport: http
+    runtime: deno
+    path: ~/anima/
+    harnesses: [all]
+    tool_count: 7
+    always_on: true
+    notes: "Personal identity and memory layer. Singleton — never shared."
+
+  - name: kotadb
+    label: com.jcbbge.kotadb-app
+    port: 3099
+    transport: http
+    runtime: bun
+    path: ~/kotadb/
+    harnesses: [claude-code, opencode]
+    tool_count: 20
+    always_on: true
+    notes: "Code intelligence MCP. Forked to strip SQLite, uses SurrealDB. Schema initialized on startup."
+
+  - name: dev-brain
+    label: com.jcbbge.dev-brain-mcp
+    port: 3097
+    transport: http
+    runtime: bun
+    path: ~/dev-backbone/mcp-server/
+    harnesses: [claude-code, opencode]
+    tool_count: 18
+    always_on: true
+    notes: "Dev state, todos, thought stream, active threads. HTTP transport (converted from stdio)."
+
+workers:
+  - name: anima-synthesis
+    label: anima.synthesis
+    path: ~/anima/
+    runtime: deno
+    trigger: daemon
+    provider: ollama
+    model: qwen2.5:0.5b
+    notes: "Autonomous memory synthesis. Groq deprecated — local Ollama only."
+
+  - name: brain-ejection
+    label: dev.brain.ejection
+    notes: "Blueprints from expired thoughts."
+
+  - name: mem-monitor
+    label: com.jcbbge.mem_monitor
+    notes: "Memory monitor daemon."
+
+  - name: opencode-sync
+    label: com.jcbbge.opencode-sync
+    notes: "OpenCode sync daemon."
+
+integrations:
+  - name: rtk
+    type: hook
+    event: PreToolUse
+    harnesses: [claude-code]
+    hook_script: ~/.claude/hooks/rtk-wrapper.sh
+    install: "brew install rtk-ai/tap/rtk"
+    version: "0.27.2"
+    excludes: [curl, rg, grep, playwright]
+    telemetry: disabled
+    notes: "Wrapper pattern: rtk-wrapper.sh handles exclusions, calls unmodified rtk-rewrite.sh."
+
+  - name: colgrep
+    type: plugin
+    harnesses: [claude-code, opencode]
+    install: "colgrep --install-claude-code && colgrep --install-opencode"
+    notes: "PLAID/ColBERT semantic code search. Plugin for claude-code, AGENTS.md injection for opencode."
+
+scripts:
+  - name: rtk-wrapper
+    path: ~/.claude/hooks/rtk-wrapper.sh
+    purpose: "Exclusion layer before rtk-rewrite.sh. Owns exclusion logic so rtk-rewrite.sh stays unmodified."
+    owned_by: agent-core
+
+  - name: surreal-health
+    path: ~/.claude/hooks/surreal-health.sh
+    purpose: "SessionStart health check for SurrealDB."
+    owned_by: agent-core
+
+  - name: core-chain
+    path: ~/.claude/hooks/core-chain.sh
+    purpose: "SessionStart core infrastructure health check."
+    owned_by: agent-core
+
+  - name: capture-prompt
+    path: ~/.claude/hooks/capture-prompt.sh
+    purpose: "UserPromptSubmit — writes prompt to dev-brain."
+    owned_by: agent-core
+
+  - name: capture-interaction
+    path: ~/anima/hooks/capture-interaction.sh
+    purpose: "UserPromptSubmit — writes interaction to anima."
+    owned_by: anima
+
+harnesses:
+  - name: claude-code
+    status: active
+    config: ~/.claude/
+    primitives: [skills, commands, rules, hooks, mcp, plugins]
+
+  - name: opencode
+    status: active
+    config: ~/.config/opencode/
+    primitives: [skills, commands, mcp, agents-md]
+
+  - name: augment
+    status: installed
+    primitives: [skills]
+
+  - name: goose
+    status: installed
+    primitives: [skills]
+
+  - name: continue
+    status: installed
+    primitives: [skills]
+
+  - name: gemini-cli
+    status: installed
+    primitives: [skills]
+
+  - name: cagent
+    status: installed
+    primitives: [skills]
+
+  - name: droid-factory
+    status: installed
+    primitives: [skills]
+
+roadmap:
+  - executor: "Port 8000 reserved. TypeScript/Bun central control plane. Not yet installed."
+  - sem: "Entity-level semantic diff tool. To integrate as kotadb subprocess for diff MCP tool."
+  - team-anima: "Net-new tool for shared team memory. Different design from personal anima. Build when team grows."
+  - windows-support: "All hooks are macOS/launchd-specific. Deferred — requires ground-up hook rewrite."
