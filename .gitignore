@@ -4,4 +4,5 @@
 *.swo
 .env
 history.txt
-workspace/
+workspace/*.json
+workspace/scratch/
