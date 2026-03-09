@@ -27,7 +27,7 @@
     {
       "name": "kotadb",
       "description": "Code index — symbols, dependencies, AST, embeddings",
-      "tool_count": 11,
+      "tool_count": 12,
       "transport": "http",
       "port": 3099,
       "url": "http://localhost:3099/",
