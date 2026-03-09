@@ -3,3 +3,5 @@
 *.swp
 *.swo
 .env
+history.txt
+workspace/

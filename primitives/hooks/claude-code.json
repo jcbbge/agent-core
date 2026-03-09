@@ -1,0 +1,44 @@
+{
+  "PostToolUse": [
+    {
+      "matcher": "tool == \"Read\" && tool_input.file_path matches \"skills/.*/SKILL\\.md\"",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "bash ~/.claude/hooks/observe-skill.sh 2>/dev/null",
+          "timeout": 5000
+        }
+      ]
+    },
+    {
+      "matcher": "tool == \"Read\" && tool_input.file_path matches \"rules/.*\\.md\"",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "bash ~/.claude/hooks/observe-rule.sh 2>/dev/null",
+          "timeout": 5000
+        }
+      ]
+    },
+    {
+      "matcher": "tool == \"Read\" && tool_input.file_path matches \"agents/.*\\.md\"",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "bash ~/.claude/hooks/observe-subagent.sh 2>/dev/null",
+          "timeout": 5000
+        }
+      ]
+    },
+    {
+      "matcher": "tool matches \"mcp__.*\"",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "bash ~/.claude/hooks/observe-mcp.sh 2>/dev/null",
+          "timeout": 5000
+        }
+      ]
+    }
+  ]
+}
