@@ -6,7 +6,12 @@ globs: ["**/anima/**/*", "**/dev-backbone/**/*", "**/kotadb/**/*", "**/constella
 # Brain Infrastructure Rules
 
 **Before touching any of this:** read `~/Documents/_agents/brain-infrastructure.md`.
-It lists every daemon, port, SurrealDB namespace, and MCP server. Do not create duplicates.
+It lists every daemon, port, SurrealDB namespace, MCP server, log path, and source location. Do not create duplicates.
+
+## CRITICAL: Single SurrealDB Instance
+There is ONE SurrealDB process for the entire stack. It runs at `ws://127.0.0.1:8002/rpc`.
+Namespaces: `anima/memory`, `dev/brain`, `kotadb/index`.
+Port 7201 is DEAD — the separate kotadb SurrealDB was eliminated. Do not recreate it.
 
 ## Port Allocation (reserved — do not reuse)
 - `8002` — SurrealDB (all namespaces: anima, dev/brain, kotadb, stack/catalog)

@@ -1,11 +1,12 @@
-> **DEPRECATED** — This document is being replaced by the SurrealDB stack catalog (stack/catalog namespace).
-> See ADR-001. Keep for reference until the catalog is fully populated.
+> **DEPRECATED** — See `~/Documents/_agents/brain-infrastructure.md` for the current architecture.
+> This document is retained for historical reference only.
+> **Last fully updated:** 2026-03-09 (architecture migration day)
 
 # Brain Infrastructure
 
 Local AI dev tooling — MCP daemons, SurrealDB instances, and how to extend them.
 
-**Last updated:** 2026-03-07
+**Last updated:** 2026-03-09 (migration to single SurrealDB)
 
 ---
 
@@ -15,17 +16,20 @@ Local AI dev tooling — MCP daemons, SurrealDB instances, and how to extend the
 Claude Code / Auggie / OpenCode / OMP
         │
         ├── HTTP POST → localhost:3098  (Anima MCP)
-        │                   └── SurrealDB ws://127.0.0.1:8000
+        │                   └── SurrealDB ws://127.0.0.1:8002
         │                       NS: anima  DB: memory
         │
         ├── HTTP POST → localhost:3097  (Dev-Brain MCP)
-        │                   └── SurrealDB ws://127.0.0.1:8000
+        │                   └── SurrealDB ws://127.0.0.1:8002
         │                       NS: dev  DB: brain
         │
         └── HTTP POST → localhost:3099  (Kotadb MCP)
-                            └── SurrealDB ws://127.0.0.1:7201
+                            └── SurrealDB ws://127.0.0.1:8002
                                 NS: kotadb  DB: index
 ```
+
+**NOTE:** As of 2026-03-09, all three MCP servers share a single SurrealDB instance at port 8002.
+Port 7201 (the old kotadb-specific SurrealDB) has been decommissioned.
 
 ### Active Daemons
 
@@ -40,8 +44,11 @@ Claude Code / Auggie / OpenCode / OMP
 
 | Port | Namespace | Database | Purpose | Managed by |
 |------|-----------|----------|---------|------------|
-| 8000 | anima | memory | Personal dev memory — identity, sessions, catalysts | `dev.brain.surreal` (launchctl) |
-| 7201 | kotadb | index | Code index — symbols, dependencies, embeddings | `com.jcbbge.kotadb-surreal` (or manual start) |
+| 8002 | anima | memory | Personal dev memory — identity, sessions, catalysts | `dev.brain.surreal` (launchctl) |
+| 8002 | dev | brain | Dev-brain — todos, threads, workspace | `dev.brain.surreal` (launchctl) |
+| 8002 | kotadb | index | Code index — symbols, dependencies, embeddings | `dev.brain.surreal` (launchctl) |
+
+**Note:** All namespaces share a single SurrealDB process at port 8002. No separate instances.
 
 ### MCP Registration (`~/.claude/mcp.json`)
 
@@ -84,23 +91,23 @@ HTTP MCP is one persistent daemon. All clients share it. Zero orphan risk. Token
 
 If your new tool fits in an existing SurrealDB instance, add a namespace — no new process needed.
 
-**Add Constellation to the Anima instance (port 8000):**
+**Add a new namespace to the unified instance (port 8002):**
 
 ```bash
 surreal import \
   --endpoint http://127.0.0.1:8000 \
   --username root --password root \
-  --namespace constellation --database pheromones \
-  ~/constellation/schema/schema.surql
+  --namespace <new-namespace> --database <new-database> \
+  ~/path/to/schema.surql
 ```
 
 In your new tool's code:
 
 ```typescript
 // Point to the same instance, different namespace
-const SURREAL_URL = "ws://127.0.0.1:8000/rpc";
-const SURREAL_NS  = "constellation";
-const SURREAL_DB  = "pheromones";
+const SURREAL_URL = "ws://127.0.0.1:8002/rpc";
+const SURREAL_NS  = "<new-namespace>";
+const SURREAL_DB  = "<new-database>";
 ```
 
 **When to add a new SurrealDB instance instead:**
@@ -109,7 +116,7 @@ const SURREAL_DB  = "pheromones";
 - You need different auth or network binding
 - A crash in one genuinely shouldn't affect the other (e.g., memory vs indexing)
 
-For everything that is "brain data" — memories, decisions, patterns, session context, agent state — add a namespace to port 8000. That's what it's for.
+For everything that is "brain data" — memories, decisions, patterns, session context, agent state — add a namespace to port 8002. That's what it's for.
 
 ---
 
@@ -128,11 +135,13 @@ Key points:
 
 | Port | Assigned |
 |------|----------|
-| 8000 | SurrealDB — Anima/brain namespace |
-| 7201 | SurrealDB — Kotadb code index |
+| 8002 | SurrealDB — unified (anima, dev, kotadb namespaces) |
+| 7201 | ❌ DECOMMISSIONED — was kotadb, now nothing |
 | 3099 | Kotadb MCP HTTP |
 | 3098 | Anima MCP HTTP |
 | 3097 | Dev-Brain MCP HTTP |
+| 8001 | Ollama |
+| 8000 | executor (reserved, not installed) |
 | 3096 | **next available** |
 
 ---
@@ -163,39 +172,18 @@ pkill -f "mcp-server/index.ts" 2>/dev/null
 
 ## The Consolidation Question
 
-**Should you run one SurrealDB?**
+**As of 2026-03-09: This is already done.**
 
-Short answer: **keep the two you have, but don't add more.** Add namespaces to port 8000 for new brain tools.
+We now run a single SurrealDB instance at port 8002 with three namespaces:
 
-The resource cost of a second SurrealDB on an M-series Mac is ~50-80MB RAM at idle and negligible CPU. That's not the issue.
-
-The real question is data nature:
-
-| | Anima (port 8000) | Kotadb (port 7201) |
-|--|---|---|
-| Data | Identity, memories, catalysts, session insight | Symbol tables, AST data, dependency graphs |
-| Size | Small (~268 records) | Large (grows with codebase) |
-| Reproducibility | **Irreproducible** — loss is permanent | Fully rebuildable from source |
-| Backup strategy | Back up carefully, infrequently | Skip backup; reindex on demand |
-| I/O pattern | Low-volume, high-meaning | High-volume, mechanical |
-
-These have genuinely different durability requirements. Keeping them separate means you can back up Anima daily, wipe and rebuild Kotadb freely, without either affecting the other.
-
-**For everything else** — Constellation pheromones, future agents, session state, workflow tracking — those are "brain data" and belong on port 8000 as new namespaces. One line change in the tool's `.env` or plist EnvironmentVariables.
-
-**The single-brain model:**
 ```
-port 8000 (SurrealDB)
-  ├── NS: anima      DB: memory        → Anima MCP (3098)
-  ├── NS: constellation DB: pheromones → Constellation (future)
-  ├── NS: sigil      DB: workflows     → Sigil (future)
-  └── NS: agents     DB: state         → Generic agent state (future)
-
-port 7201 (SurrealDB) — code index only, rebuildable
-  └── NS: kotadb     DB: index         → Kotadb MCP (3099)
+port 8002 (SurrealDB — unified)
+  ├── ns: anima      db: memory        → Anima MCP (3098)
+  ├── ns: dev        db: brain         → Dev-Brain MCP (3097)
+  └── ns: kotadb    db: index         → Kotadb MCP (3099)
 ```
 
-This is the architecture to build toward. Two instances, not N.
+Port 7201 is dead and should not be used.
 
 ---
 
@@ -215,7 +203,7 @@ This is the architecture to build toward. Two instances, not N.
 ~/Library/LaunchAgents/
   com.jcbbge.anima-mcp.plist   — Anima MCP daemon
   com.jcbbge.kotadb-app.plist  — Kotadb daemon
-  dev.brain.surreal.plist      — SurrealDB port 8000 (Anima)
+  dev.brain.surreal.plist      — SurrealDB port 8002 (unified instance)
 
 ~/.claude/
   mcp.json                     — global MCP server registration
