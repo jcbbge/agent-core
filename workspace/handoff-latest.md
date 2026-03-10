@@ -2,37 +2,24 @@
 Date: 2026-03-10
 Mode: meta/systems
 
-## Completed
+Completed:
+- Created `~/AGENTS.md` and `~/CLAUDE.md` — Defined home directory as meta-workspace control plane, established conventions for cross-project work (ADR-006 context)
+- Created `~/Documents/_agents/NEXTSTEPS.md` — Captured cross-harness identity architecture challenge requiring harness-agnostic identity layer
+- Created `~/Documents/_agents/primitives/skills/dense-summarization/SKILL.md` — Dual-audience dense summarization skill (agent_summary vs human_summary)
+- Crystallized ADR-006 — Cross-harness identity architecture: identity must be a protocol, not a file, deployed to each harness in native format
 
-- **Kotadb auto-clone feature** — Built clone-store module for auto-cloning from GitHub, added `list_repositories` and `remove_repository` MCP tools, updated repo schema with `local_path`/`current_commit`/`ref` fields
-- **Documentation fixes** — Fixed outdated SurrealDB port references (7201→8002) across agent-core docs  
-- **core CLI fix** — Changed port 8000→8002 for SurrealDB health checks
+Decisions captured:
+- ADR-006: Cross-harness identity architecture required (Draft)
 
-## Decisions Captured
+agent-core state:
+- 39+ skills (added dense-summarization)
+- 6 ADRs (new: ADR-006)
+- Stack: SurrealDB (3097, 3098, 3099), colgrep, MCP infrastructure
 
-- Auto-clone uses fallback strategy: try specific ref first, fall back to default branch if that fails
-- Uses SurrealDB record ID format with ⟨...⟩ unicode brackets (required for queries)
+Open items:
+1. **Cross-harness identity implementation** — Design and deploy identity to omp, Claude Code, OpenCode formats
+2. **dense-summarization skill refinement** — Apply 10X critique: add temporal phases, verification stanzas, compression ratios
+3. **Home directory meta-cognitive workflows** — Document patterns for working across 150+ projects without full discovery
 
-## Kotadb Changes (uncommitted)
-
-- `app/src/indexer/clone-store.ts` (new)
-- `app/src/api/queries.ts` (modified)
-- `app/src/db/surreal/schema.surql` (modified)
-- `app/src/mcp/server.ts` (modified)
-- `app/src/mcp/tools.ts` (modified)
-
-## agent-core State
-
-- 30+ skills deployed
-- 4 rules deployed
-- kotadb MCP: 20 tools (added list_repositories + remove_repository)
-- SurrealDB: single instance at port 8002
-
-## Open Items
-
-1. Commit kotadb changes (auto-clone feature)
-2. Update kotadb operational docs with new tools
-
-## Next Session Focus
-
-Commit kotadb auto-clone feature and update `~/kotadb/docs/operations/repo-management.md` with new `list_repositories`/`remove_repository` tools.
+Next session focus:
+Implement cross-harness identity deployment: design identity-as-protocol format and create per-harness deployment configs in `harnesses/[name]/`

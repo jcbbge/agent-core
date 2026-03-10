@@ -12,6 +12,7 @@ One file per significant decision. Queryable via SurrealDB `stack/catalog`.
 | [ADR-004](ADR-004-institutional-knowledge-two-layers.md) | Two-layer institutional knowledge architecture | 2026-03-09 | Accepted |
 | [ADR-005](ADR-005-anima-is-personal-singleton.md) | Anima is personal singleton | 2026-03-09 | Accepted |
 
+| [ADR-006](ADR-006-cross-harness-identity-architecture.md) | Cross-harness identity architecture required | 2026-03-10 | Draft |
 ## Adding a new ADR
 
 1. Copy ADR-000-template.md
