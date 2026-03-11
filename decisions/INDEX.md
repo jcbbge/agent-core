@@ -13,6 +13,7 @@ One file per significant decision. Queryable via SurrealDB `stack/catalog`.
 | [ADR-005](ADR-005-anima-is-personal-singleton.md) | Anima is personal singleton | 2026-03-09 | Accepted |
 
 | [ADR-006](ADR-006-cross-harness-identity-architecture.md) | Cross-harness identity architecture required | 2026-03-10 | Draft |
+| [ADR-007](ADR-007-opencode-sdk-as-provider-abstraction.md) | OpenCode SDK as provider abstraction for subagent delegation | 2026-03-11 | Accepted |
 ## Adding a new ADR
 
 1. Copy ADR-000-template.md

@@ -1,30 +1,50 @@
 # Session Handoff
-Date: 2026-03-10
+Date: 2026-03-11
 Mode: meta/systems
 
 ## Completed
 
-- **Fixed Claude Code MCP configuration** — All three MCPs (anima, kotadb, dev-brain) were failing in Claude Code because `~/.claude.json` used stdio transport with wrong/dead ports (8000, 7201, 7102). Changed to HTTP transport pointing to already-running servers (3098, 3099, 3097). MCPs now discoverable and accessible.
+- **Replaced Anthropic SDK with `@opencode-ai/sdk` in subagent-mcp** — original PRD-006 hardcoded Anthropic. Rewrote `delegator.ts` to use OpenCode's embedded server (`createOpencode()`), routing all LLM calls through OpenCode's provider abstraction. Provider and model now declared in agent definition YAML — no code changes to switch providers.
 
-## Diagnosis
+- **Added `provider` field to all 5 agent definitions** — all set to `openrouter` with `anthropic/claude-sonnet-4.5` or `anthropic/claude-sonnet-4.6`. Model IDs validated against OpenCode's internal registry (only 2 Claude models available via OpenRouter whitelist).
 
-Root cause: Infrastructure had migrated to HTTP-based MCPs on ports 3098/3099/3097, with unified SurrealDB at 8002, and Ollama at 8001. But Claude Code config was stale — trying to spawn stdio processes with hardcoded dead ports. Other harnesses (OpenCode, etc.) were using correct HTTP config because they reference the source MCPs directly.
+- **Fixed SSE async pattern in delegator** — `session.prompt()` returns immediately (empty body). Actual response delivered via `client.event.subscribe()` SSE stream. Concurrent subscription pattern: subscribe → start for-await in background → send prompt → await `session.idle` event → fetch messages. Race condition fixed.
+
+- **Fixed daemon PATH** — `~/.opencode/bin` added to plist so `createOpencode()` finds the binary.
+
+- **Smoke test confirmed to 99%** — MCP connection ✓, agent listing ✓, model resolution ✓, API call reaching OpenRouter ✓. One blocker: auth.
 
 ## Decisions captured
 
-- None this session (configuration fix, not architectural)
+- ADR-007: OpenCode SDK as provider abstraction for subagent delegation
 
-## Agent-core state
+## ONE open blocker
 
-- 39+ skills deployed
-- 6 ADRs (unchanged from previous session)
-- Stack: SurrealDB unified at 8002, 3 HTTP MCPs + auggie + HubSpot (auggie/HubSpot status TBD — not tested this session)
+**`OPENROUTER_API_KEY` in plist is invalid.** Key from `~/.zshrc` returns 401 from OpenRouter directly. Find the current working key and set it in:
 
-## Open items
+`~/Library/LaunchAgents/dev.brain.subagent-mcp.plist`
 
-1. **auggie and HubSpotDev in Claude Code** — Still configured as stdio in `.claude.json`. Verify if they work or if they also need HTTP transport fixes.
-2. **Cross-harness identity deployment** — From ADR-006 context, still pending
+After updating key:
+```
+launchctl unload ~/Library/LaunchAgents/dev.brain.subagent-mcp.plist
+launchctl load ~/Library/LaunchAgents/dev.brain.subagent-mcp.plist
+launchctl start dev.brain.subagent-mcp
+bun /Users/jcbbge/dev-backbone/subagent-mcp/smoke-test.ts
+```
+
+## Clean up after smoke test passes
+
+- `~/dev-backbone/subagent-mcp/debug-events.ts`
+- `~/dev-backbone/subagent-mcp/debug-models.ts`
+- `~/dev-backbone/subagent-mcp/debug-prompt.ts`
+
+## agent-core state
+
+- 57 skills · 8 rules deployed
+- subagent-mcp daemon port 3096 (blocked on auth)
+- executor daemon port 8000
+- All 3 harnesses have executor at `http://127.0.0.1:8000/mcp`
 
 ## Next session focus
 
-Verify auggie and HubSpot work in Claude Code, or determine if they need similar HTTP transport fixes. If working, then turn focus to cross-harness identity deployment.
+Fix OpenRouter key → smoke test passes → Task #6 (PRD-007: wire content sources + subagent-mcp to executor agent-runtime, full stack smoke test).
