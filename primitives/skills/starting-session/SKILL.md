@@ -4,7 +4,7 @@ description: Context-aware session orientation. Detects root (meta/systems) vs p
 license: MIT
 metadata:
   author: jrg | claude
-  version: "4.0"
+  version: "5.0"
   tags: productivity, context, git, workspace, development
 ---
 
@@ -112,6 +112,49 @@ Last handoff:
 ─────────────────────────────────────────
 Focus: [top priority from handoff or NEXT_STEPS]
 ```
+
+---
+
+---
+
+## On-Demand Startup Health Checks
+
+Startup hooks have been removed from `SessionStart`. Health checks are now **on-demand tools** — fast, composable, callable any time.
+
+### Available tools
+
+| Command | Tool script | What it checks |
+|---------|-------------|----------------|
+| `/startup-check-surreal` | `~/.claude/tools/startup-checks/startup-check-surreal.sh` | SurrealDB reachable at port 8002 |
+| `/startup-check-anima` | `~/.claude/tools/startup-checks/startup-check-anima.sh` | `anima bootstrap` (5s hard timeout) |
+| `/startup-check-chain` | `~/.claude/tools/startup-checks/startup-check-chain.sh` | SurrealDB + all MCP servers + symlink sync |
+| `/startup-check-all` | all three in sequence | Full stack health summary |
+
+### How to invoke
+
+Each tool is a bash script returning structured JSON:
+```json
+{
+  "status": "ok" | "warning" | "error",
+  "component": "surreal" | "anima" | "core-chain",
+  "message": "...",
+  "details": { ... }
+}
+```
+
+To run all checks (invoke `/startup-check-all`):
+
+```bash
+bash ~/.claude/tools/startup-checks/startup-check-surreal.sh
+bash ~/.claude/tools/startup-checks/startup-check-anima.sh
+bash ~/.claude/tools/startup-checks/startup-check-chain.sh
+```
+
+When the user invokes `/startup-check-all` (or asks for a full health check), run all three scripts in a single Bash call and surface the results. If any status is `"error"` or `"warning"`, display the fix command from `details.fix` or `details.problems`.
+
+### Why this changed
+
+`anima bootstrap` was hanging for 63s on `SessionStart`, blocking all startup. Total startup blocking was ~71.5s. Removing the hooks drops session startup to <1s. Run checks on-demand instead.
 
 ---
 
