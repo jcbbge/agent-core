@@ -2,24 +2,29 @@
 Date: 2026-03-10
 Mode: meta/systems
 
-Completed:
-- Created `~/AGENTS.md` and `~/CLAUDE.md` — Defined home directory as meta-workspace control plane, established conventions for cross-project work (ADR-006 context)
-- Created `~/Documents/_agents/NEXTSTEPS.md` — Captured cross-harness identity architecture challenge requiring harness-agnostic identity layer
-- Created `~/Documents/_agents/primitives/skills/dense-summarization/SKILL.md` — Dual-audience dense summarization skill (agent_summary vs human_summary)
-- Crystallized ADR-006 — Cross-harness identity architecture: identity must be a protocol, not a file, deployed to each harness in native format
+## Completed
 
-Decisions captured:
-- ADR-006: Cross-harness identity architecture required (Draft)
+- **Fixed Claude Code MCP configuration** — All three MCPs (anima, kotadb, dev-brain) were failing in Claude Code because `~/.claude.json` used stdio transport with wrong/dead ports (8000, 7201, 7102). Changed to HTTP transport pointing to already-running servers (3098, 3099, 3097). MCPs now discoverable and accessible.
 
-agent-core state:
-- 39+ skills (added dense-summarization)
-- 6 ADRs (new: ADR-006)
-- Stack: SurrealDB (3097, 3098, 3099), colgrep, MCP infrastructure
+## Diagnosis
 
-Open items:
-1. **Cross-harness identity implementation** — Design and deploy identity to omp, Claude Code, OpenCode formats
-2. **dense-summarization skill refinement** — Apply 10X critique: add temporal phases, verification stanzas, compression ratios
-3. **Home directory meta-cognitive workflows** — Document patterns for working across 150+ projects without full discovery
+Root cause: Infrastructure had migrated to HTTP-based MCPs on ports 3098/3099/3097, with unified SurrealDB at 8002, and Ollama at 8001. But Claude Code config was stale — trying to spawn stdio processes with hardcoded dead ports. Other harnesses (OpenCode, etc.) were using correct HTTP config because they reference the source MCPs directly.
 
-Next session focus:
-Implement cross-harness identity deployment: design identity-as-protocol format and create per-harness deployment configs in `harnesses/[name]/`
+## Decisions captured
+
+- None this session (configuration fix, not architectural)
+
+## Agent-core state
+
+- 39+ skills deployed
+- 6 ADRs (unchanged from previous session)
+- Stack: SurrealDB unified at 8002, 3 HTTP MCPs + auggie + HubSpot (auggie/HubSpot status TBD — not tested this session)
+
+## Open items
+
+1. **auggie and HubSpotDev in Claude Code** — Still configured as stdio in `.claude.json`. Verify if they work or if they also need HTTP transport fixes.
+2. **Cross-harness identity deployment** — From ADR-006 context, still pending
+
+## Next session focus
+
+Verify auggie and HubSpot work in Claude Code, or determine if they need similar HTTP transport fixes. If working, then turn focus to cross-harness identity deployment.
