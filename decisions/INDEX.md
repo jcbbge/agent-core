@@ -14,6 +14,9 @@ One file per significant decision. Queryable via SurrealDB `stack/catalog`.
 
 | [ADR-006](ADR-006-cross-harness-identity-architecture.md) | Cross-harness identity architecture required | 2026-03-10 | Draft |
 | [ADR-007](ADR-007-opencode-sdk-as-provider-abstraction.md) | OpenCode SDK as provider abstraction for subagent delegation | 2026-03-11 | Accepted |
+| [ADR-008](ADR-008-constellation-ts-gl-dual-implementation.md) | Constellation TS/GL dual-implementation strategy | 2026-03-11 | Accepted |
+| [ADR-009](ADR-009-surrealdb-as-constellation-nebula.md) | SurrealDB as Constellation Nebula (persistent pheromone store) | 2026-03-11 | Accepted |
+
 ## Adding a new ADR
 
 1. Copy ADR-000-template.md
