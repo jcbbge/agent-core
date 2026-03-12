@@ -1,55 +1,50 @@
 # Session Handoff
 Date: 2026-03-11
-Mode: meta/systems + project init
+Mode: meta/systems
 
 ## Completed
 
-- **subagent-mcp smoke test PASSING** — bidirectional delegation confirmed. MCP connection ✓, 5 agents loaded ✓, reviewer delegated and returned real review output ✓. *(previous sub-session)*
+- **Primitives surfacing diagnosis** — identified root cause: scratchpad plugin lived only in `primitives/plugins/` with no auto-loaded rules file, so agents never knew it existed. Fixed by adding `~/.claude/rules/scratchpad.md`.
 
-- **Provider: opencode/minimax-m2.5-free** — no API keys required. All 5 agent definitions updated. *(previous sub-session)*
+- **Primitives audit system** — built `~/Documents/_agents/tools/primitives-audit.sh` (profile-driven, reads harness JSON profiles, runs 9 verify checks per harness, outputs green/yellow/red per cell). Run anytime: `bash ~/Documents/_agents/tools/primitives-audit.sh`. Also available as `/primitives-audit` slash command.
 
-- **Diagnosed multi-agent cold-start problem** — analyzed last 3 OpenCode sessions. Root cause: no read path for handoffs, subagent-mcp injects zero context into delegated agents, PRD system is passive. Full synthesis stored in dev-brain thought stream.
+- **Harness profiles — research-verified** — three harness profiles written from official docs (no guessing):
+  - `harnesses/claude-code.json` — verified against Anthropic docs
+  - `harnesses/opencode.json` — verified against `github.com/anomalyco/opencode` source + docs
+  - `harnesses/omp.json` — verified against `github.com/can1357/oh-my-pi` source + DeepWiki
+  - Key finding: OMP supports all 9 primitives natively (rules, skills, commands, agents all have dedicated dirs). OpenCode reads `~/.claude/skills/` natively as a fallback.
 
-- **Designed game state / Nebula architecture** — SurrealDB as single authoritative pheromone store, Player vs NPC agent type distinction, four Houses as open-world phases (descriptive not enforced), astronomical naming (Constellation/Star/Orbit/Landing). Realized Constellation IS this design.
+- **Harness onboarding SOP** — `harnesses/ONBOARDING-SOP.md`. Every harness profile requires `source_doc` citations. Unverified profiles are excluded from audit. Process: research → profile → bridge → verify → mark verified.
 
-- **Renamed `~/constellation` → `~/constellation-gl`** — clean Gleam/TS separation.
+- **Symlinks deprecated (ADR-010)** — removed all symlinks. All primitives now deployed via `sync-primitives.py` (copy for same-format, transform for different-format, merge-json for config entries).
 
-- **Scaffolded `~/constellation-ts`** — TypeScript/Bun daily driver. First commit: core types, Nebula (SurrealDB `constellation/nebula`), Stellar Cycle, Vega (Dawn), runner, CLI. All 6 agent definitions ported from v.01.
+- **sync-primitives.py** — `~/Documents/_agents/tools/sync-primitives.py`. Deploys all 9 primitives to all 3 harnesses. Idempotent. Run after any source change.
 
-- **ADR-008** — Constellation TS/GL dual-implementation strategy
-- **ADR-009** — SurrealDB as Constellation Nebula (`constellation/nebula` namespace)
+- **Bridge adapter for subagents** — `~/Documents/_agents/tools/bridge-subagents.py`. Transforms canonical subagent format → OpenCode (`mode: subagent` frontmatter) and OMP (`name/tools/spawns` frontmatter). Runs as part of sync.
 
-## The Key Insight (Catalyst)
+- **subagent-mcp registered** — added to all three harness MCP configs (was missing everywhere).
 
-The multi-agent cold-start problem and Constellation are the same system built from two directions. The Nebula IS the game state. The Stellar Cycle (Accrete→Ignite→Supernova) IS what starting-session/ending-session should become. SurrealDB 3.0 ships every primitive needed for this (LIVE SELECT DIFF, DEFINE EVENT ASYNC, RELATE, DEFINE API, SurrealMCP). The architecture already existed — it needed recognition and connection.
+- **Canonical agent-file** — broken symlink `~/.claude/CLAUDE.md → claude:agent md/AGENTS.md` (path didn't exist). Canonical source moved to `primitives/agent-file/AGENTS.md`. Now copied to all three harnesses.
 
 ## Decisions Captured
 
-- ADR-007: OpenCode SDK as provider abstraction *(previous sub-session)*
-- ADR-008: Constellation TS/GL dual-implementation
-- ADR-009: SurrealDB as Constellation Nebula
+- ADR-010: Primitive deployment uses copy-and-transform, not symlinks
+- ADR-011: Harness onboarding requires research-first documentation before deployment
 
 ## agent-core state
 
-- 57 skills · 8 rules deployed
-- subagent-mcp: port 3096, opencode/minimax-m2.5-free, no keys needed
-- executor: port 8000, all 3 harnesses registered
-- constellation-ts: ~/constellation-ts, first commit, Vega ✅
-- constellation-gl: ~/constellation-gl, Gleam Phase 1, Vega ✅
-
-## Clean up (carry forward)
-
-- ~/dev-backbone/subagent-mcp/debug-events.ts
-- ~/dev-backbone/subagent-mcp/debug-models.ts
-- ~/dev-backbone/subagent-mcp/debug-prompt.ts
+- 37 skills · 8 rules deployed
+- Audit: 0 gaps across claude-code, opencode, omp (all 9 primitives verified)
+- sync-primitives.py: covers primitives 1,2,3,4,7,8 (hooks/plugins/custom-tools are harness-specific, not portable)
+- subagent-mcp: port 3096, now registered in all 3 harnesses
 
 ## Open Items
 
-1. **Smoke test Vega** — `cd ~/constellation-ts && cp .env.example .env && bun src/cli.ts run "build a task management API"`
-2. **Build Polaris** — arbiter star, `orbit_question` resolution. Critical path: without Polaris, nQ=0 loop is broken.
-3. **Game state schema** — `game/state` namespace in SurrealDB for the broader multi-agent coordination layer (separate from constellation/nebula). Designed this session, not yet built.
-4. **Task #6 (PRD-007)** — wire content sources and subagent-mcp to executor agent-runtime layer.
+1. **Subagent count discrepancy (5/7)** — source has 7 files, bridge skips README.md and broken AGENTS.md symlink. Audit shows ⚠ but no real gap. Could clean up source dir to remove the broken symlink.
+2. **OpenCode rules count (0/8)** — rules inject via `instructions` glob in opencode.json, not a directory. Audit verify logic doesn't handle this case cleanly. Display-only issue.
+3. **Auto-sync hook** — no hook fires when primitives source changes. Currently manual: edit source → run sync → run audit. A PostToolUse hook on writes to `primitives/` would help.
+4. **Constellation: build Polaris** — still the primary project work. `~/constellation-ts/src/stars/polaris.ts` — arbiter star, resolves orbit_question pheromones, completes Dawn nQ=0 loop.
 
 ## Next Session Focus
 
-Start Polaris (`~/constellation-ts/src/stars/polaris.ts`) — the arbiter. Reads `orbit_question` pheromones, resolves or surfaces to human. Completes the Dawn house nQ=0 loop and makes Vega fully functional end-to-end.
+Run `/primitives-audit` to confirm state, then resume constellation-ts — build Polaris (`~/constellation-ts/src/stars/polaris.ts`). The primitives infrastructure is now solid and should not need revisiting unless adding a new harness.

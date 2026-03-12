@@ -16,6 +16,8 @@ One file per significant decision. Queryable via SurrealDB `stack/catalog`.
 | [ADR-007](ADR-007-opencode-sdk-as-provider-abstraction.md) | OpenCode SDK as provider abstraction for subagent delegation | 2026-03-11 | Accepted |
 | [ADR-008](ADR-008-constellation-ts-gl-dual-implementation.md) | Constellation TS/GL dual-implementation strategy | 2026-03-11 | Accepted |
 | [ADR-009](ADR-009-surrealdb-as-constellation-nebula.md) | SurrealDB as Constellation Nebula (persistent pheromone store) | 2026-03-11 | Accepted |
+| [ADR-010](ADR-010-no-symlinks-copy-and-transform.md) | Primitive deployment uses copy-and-transform, not symlinks | 2026-03-11 | Accepted |
+| [ADR-011](ADR-011-research-first-harness-onboarding.md) | Harness onboarding requires research-first documentation before deployment | 2026-03-11 | Accepted |
 
 ## Adding a new ADR
 
