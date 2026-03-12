@@ -18,6 +18,8 @@ One file per significant decision. Queryable via SurrealDB `stack/catalog`.
 | [ADR-009](ADR-009-surrealdb-as-constellation-nebula.md) | SurrealDB as Constellation Nebula (persistent pheromone store) | 2026-03-11 | Accepted |
 | [ADR-010](ADR-010-no-symlinks-copy-and-transform.md) | Primitive deployment uses copy-and-transform, not symlinks | 2026-03-11 | Accepted |
 | [ADR-011](ADR-011-research-first-harness-onboarding.md) | Harness onboarding requires research-first documentation before deployment | 2026-03-11 | Accepted |
+| [ADR-012](ADR-012-session-workflow-surrealdb.md) | Session workflow uses SurrealDB for cross-project context | 2026-03-12 | Accepted |
+| [ADR-013](ADR-013-executor-mcp-gateway.md) | Executor as MCP gateway | 2026-03-12 | Accepted |
 
 ## Adding a new ADR
 
