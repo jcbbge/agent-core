@@ -1,41 +1,39 @@
 # Session Handoff
-Date: 2026-03-12
-Mode: meta/systems + constellation-ts project work
+Date: 2026-03-16
+Mode: meta/systems
 
 ## Completed
 
-- **constellation-ts schema migrated to cs_ prefix** — 7 tables defined in `constellation/nebula` SurrealDB: `cs_trajectory`, `cs_pheromone` (unified event log), `cs_consumption`, `cs_session`, `cs_star`, `cs_telemetry`, `cs_project`. Clean slate, no migration needed.
+- **OpenRouter API key exposure remediated** — Key was hardcoded in `~/anima/synthesis-worker/anima.synthesis.plist` and committed to GitHub. Removed from plist entirely (worker loads from `.env` at runtime). `.gitignore` updated with `*.plist / !*.plist.template`. Template committed with placeholder. Service tested and confirmed operational.
 
-- **Pheromone = Event unification (ADR-014)** — One table. `cs_pheromone` carries `session_id`, `harness_id`, `project_id`. System scents `session_start`/`session_end`/`session_heartbeat` added. The handoff file is replaced by the pheromone trail.
+- **Four new/updated rules deployed** — `secrets.md` (new), `infrastructure.md` (plist hygiene section), `backend-first-security.md` (hardcoded secrets in any file type), `git.md` (scan config files before staging). All deployed to `~/.claude/rules/` and committed to schema.
 
-- **constellation-ts end-to-end working** — Vega fires, calls LLM via direct Anthropic fetch (removed Vercel AI SDK dependency), emits `orbit_question`, trajectory enters `awaiting_orbit`. nQ=0 protocol live and confirmed.
+- **Slate harness onboarded** — Fetched official docs, discovered actual config at `~/.config/slate/`. Key quirks: MCP type is `"remote"` (not `"http"`), no rules directory (all rules in AGENTS.md), no skills auto-load. `harnesses/slate/HARNESS.md` written.
 
-- **SurrealDB v3 patterns locked in** — `type::record('table', $id)` for lookups; `CREATE CONTENT $data` respects `id` field; `WHERE id = $string_param` does NOT work (RecordId vs string); `DEFINE ... OVERWRITE` for idempotent schema; `TYPE object FLEXIBLE` for arbitrary payloads.
+- **All four harness HARNESS.md files rewritten** — claude-code, opencode, omp, slate. Now serve as precise manual update guides with exact file paths, exact formats, and step-by-step procedures per primitive.
 
-- **ARCH.md written at ~/ARCH.md** — Full ecosystem architecture with 10 prioritized improvement opportunities.
+- **All sync scripts deleted** — `sync.sh`, `harnesses/*/sync.py`. Manual process replaces scripted deployment (ADR-015).
+
+- **`_sop.md` rewritten** — Removed all adapter.sh / sync script references. Now documents manual, profile-driven update process.
+
+- **Slate added to MCP registry** — `schema/mcp/registry.json` updated with `"slate"` in harnesses arrays for all 5 servers.
 
 ## Decisions Captured
 
-- ADR-014: Pheromone IS Event — unified table (accepted)
+- ADR-015: Manual-only primitive deployment — scripts eliminated (supersedes ADR-010, ADR-011)
 
-## Current State
+## agent-core state
 
-constellation-ts is live. Trajectory `01KKHR9P6WP1AJSQXZ9PHFT9T9` in `awaiting_orbit` — Vega asked about dark mode persistence strategy. Debug trajectory debris in `constellation/nebula` needs cleanup.
+- 4 harnesses documented: claude-code, opencode, omp, slate
+- 5 MCP servers in registry: anima, kotadb, dev-brain, executor, subagent-mcp
+- Rules deployed: secrets, infrastructure, backend-first-security, git (updated)
 
-agent-core state:
-- 37 skills · 8 rules deployed
-- MCP: executor routes to anima, dev-brain, kotadb, subagent
+## Open Items
 
-## Open Items (priority order)
-
-1. **`constellation answer <id> "<text>"` command** — Vega is blocked, can't complete a trajectory without it
-2. **Seed `cs_star` registry on startup** — `ensureSchema` should upsert all 6 star configs
-3. **Wire `ending-session` / `starting-session` to `cs_session`** — functions exist, skills still write markdown
-4. **Telemetry writes in `runStellarCycle`** — `cs_telemetry` is a ghost table; nothing writes to it
-5. **Fix `upsertStar` logic bug** — UPDATE before existence check is backwards
-6. **Delete stale PostgreSQL docs** in `constellation-ts/docs/architecture.md`
-7. **kotadb indexing** — separate agent working on this; check status
+1. **Large unstaged changeset needs commit** — The `primitives/` → `schema/` restructure plus all HARNESS.md rewrites, sync script deletions, and new harness directories are all uncommitted. Stage and commit explicitly (check git status carefully — many deletions in `primitives/`, new files in `schema/` and `harnesses/`).
+2. **Harness drift detection** — No automated way to check if all four harnesses are in sync with schema. Manual verification only for now (ADR-015 consequence).
+3. **ADR-006 still Draft** — Cross-harness identity architecture. Was never moved to Accepted or closed.
 
 ## Next Session Focus
 
-Implement `constellation answer` command + seed `cs_star` registry — unblocks full pipeline from `orbit_question` through `gate_open` to house advancement. First complete Dawn→Night run proves the system.
+Stage and commit the full harness + schema restructure — the `primitives/` → `schema/` rename and all the HARNESS.md rewrites need a clean commit so the repo reflects the current state. Then do a manual pass verifying each harness config actually matches its HARNESS.md.

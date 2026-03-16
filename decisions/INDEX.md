@@ -21,6 +21,7 @@ One file per significant decision. Queryable via SurrealDB `stack/catalog`.
 | [ADR-012](ADR-012-session-workflow-surrealdb.md) | Session workflow uses SurrealDB for cross-project context | 2026-03-12 | Accepted |
 | [ADR-013](ADR-013-executor-mcp-gateway.md) | Executor as MCP gateway | 2026-03-12 | Accepted |
 | [ADR-014](ADR-014-pheromone-is-event-unified-table.md) | Pheromone IS event — one unified cs_pheromone table | 2026-03-12 | Accepted |
+| [ADR-015](ADR-015-manual-only-primitive-deployment.md) | Manual-only primitive deployment — scripts eliminated | 2026-03-16 | Accepted |
 
 ## Adding a new ADR
 
