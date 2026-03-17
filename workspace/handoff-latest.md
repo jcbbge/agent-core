@@ -1,38 +1,30 @@
 # Session Handoff
-
-Date: 2026-03-16  
-Mode: meta/systems
+Date: 2026-03-17
+Mode: meta/systems — dev-brain MCP infrastructure
 
 ## Completed
 
-- **Shell configuration simplification** — Removed 42 lines of wrapper complexity (omp(), auggie(), hs(), _mcp_nuke, claude alias, aider functions) that were causing command interception and unintended MCP killing. Shell now executes commands directly without interference. (ADR-018)
+- **Fixed dev-brain MCP auth drop on SurrealDB reconnect (for real this time)** — Previous fix (same day, earlier session) only called `resetDb()` after returning the error — wrong order. Root cause: surrealdb v2.0.0-beta.1 auto-reconnects the WebSocket without re-authenticating (JWT expires after 1hr, no credential re-signin path on reconnect). Fix: (1) disabled auto-reconnect via `reconnect: { enabled: false }` on `client.connect()`, (2) added retry-once after `resetDb()` in both HTTP and stdio handlers so the caller never sees the error, (3) changed pattern `"connection"` → `"connect"` to also catch `"connected"` substring. Proven in log. See ADR-018.
 
-- **Generated PROGRAM.md for core script** — Created agent operating contract at `~/bin/PROGRAM.md` documenting the 7-service brain infrastructure, mutable/frozen surface, footguns, and command surface.
+- **Fixed `create_todo` schema rejection** — `task` table is SCHEMAFULL, had no `feature` field. Agents passing `feature` to `create_todo` got schema rejection errors. Added `DEFINE FIELD feature ON task TYPE none | string` to SurrealDB dev/brain + added `feature` to the `CREATE task SET ...` query in `handleCreateTodo`.
 
-- **8GB M1 memory optimization** — Implemented layered governors: Node/Bun heap limits (2.56GB/2.5GB), Vite workers (2), Ollama constraints (2 models resident, 1 parallel, 5min keepalive), KotaDB instances (4). Critical fix: changed OLLAMA_MAX_LOADED_MODELS from 1 to 2 to support simultaneous embedding + LLM usage. Added `core nt` telemetry governor. (ADR-019)
+- **Fixed `ghost_handshake` ORDER BY parse error** — SurrealDB 3.0 requires ORDER BY fields to appear in SELECT. The anchor embedding query did `SELECT embedding ... ORDER BY created_at DESC` — `created_at` was not selected. Changed to `SELECT embedding, created_at ...`. Had been silently failing on every `ghost_handshake` call.
 
-- **Removed invalid SurrealDB flag** — `--memory-limit` doesn't exist in SurrealDB 3.0.0; removed from plist to prevent startup failure. SurrealDB running healthy at ~164MB without explicit caps.
+## Decisions Captured
 
-- **Validated all 7 services** — Restarted and verified: SurrealDB, KotaDB, Anima, Executor, Dev-Brain MCP, Subagent MCP, Ollama. All responding on ports 8002, 3099, 8001.
+- ADR-018: Disable surrealdb client auto-reconnect in dev-brain MCP
 
-## Decisions captured
+## agent-core state
 
-- ADR-018: Shell configuration simplification — no wrappers, no interference
-- ADR-019: 8GB M1 memory optimization — constraint the Big Wolves
+- All three fixes live in `~/dev-backbone/mcp-server/index.js`
+- Schema change applied directly to SurrealDB (dev/brain, task table)
+- dev-brain MCP daemon: `com.jcbbge.dev-brain-mcp` running, exit 0
 
-## Agent-core state
+## Open Items
 
-- N skills: 30+ in registry  
-- N rules: 8 deployed  
-- 7 brain services running with memory governors  
-- Ollama: 2 models resident (nomic-embed-text + qwen2.5:0.5b)  
+1. `~/dev-backbone` has no git repo — `index.js` changes are unversioned. Consider `git init` to prevent fixes being lost.
+2. MCP log has 600+ process restart entries — investigate whether parallel Claude instances are thrashing the daemon via concurrent launchctl restarts. May need restart-rate guard in plist or a coordinator.
 
-## Open items
+## Next Session Focus
 
-1. SurrealDB memory capping — if it grows beyond 164MB baseline, investigate launchctl SoftResourceLimits
-2. Core script enhancements — potential `core doctor` diagnostic mode, process lineage tracking
-3. Anima daily report v3.0 design — from data dump to world-class diagnostic (referenced in earlier thoughts)
-
-## Next session focus
-
-Continue refining the agent-core infrastructure: either enhance the `core` CLI with deeper diagnostics, or pick up the Anima daily report redesign if that becomes priority.
+Investigate the 600+ restart pattern in `~/.dev-brain/mcp.log` — diagnose whether parallel agent sessions are thrashing the daemon and add protection if so.

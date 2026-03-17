@@ -24,6 +24,7 @@ One file per significant decision. Queryable via SurrealDB `stack/catalog`.
 | [ADR-015](ADR-015-manual-only-primitive-deployment.md) | Manual-only primitive deployment — scripts eliminated | 2026-03-16 | Accepted |
 | [ADR-016](ADR-016-service-tier-classification.md) | Service tier classification (T1/T2/T3) for on-demand lifecycle | 2026-03-16 | Accepted |
 | [ADR-017](ADR-017-program-md-jit-operating-contract.md) | PROGRAM.md is JIT-compiled from executables, not documentation | 2026-03-16 | Accepted |
+| [ADR-018](ADR-018-surrealdb-client-reconnect-disabled.md) | Disable surrealdb client auto-reconnect in dev-brain MCP | 2026-03-17 | Accepted |
 
 ## Adding a new ADR
 
