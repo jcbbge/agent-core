@@ -1,30 +1,31 @@
 # Session Handoff
-Date: 2026-03-17
-Mode: meta/systems — dev-brain MCP infrastructure
+Date: 2026-03-21
+Mode: meta/systems
 
 ## Completed
 
-- **Fixed dev-brain MCP auth drop on SurrealDB reconnect (for real this time)** — Previous fix (same day, earlier session) only called `resetDb()` after returning the error — wrong order. Root cause: surrealdb v2.0.0-beta.1 auto-reconnects the WebSocket without re-authenticating (JWT expires after 1hr, no credential re-signin path on reconnect). Fix: (1) disabled auto-reconnect via `reconnect: { enabled: false }` on `client.connect()`, (2) added retry-once after `resetDb()` in both HTTP and stdio handlers so the caller never sees the error, (3) changed pattern `"connection"` → `"connect"` to also catch `"connected"` substring. Proven in log. See ADR-018.
-
-- **Fixed `create_todo` schema rejection** — `task` table is SCHEMAFULL, had no `feature` field. Agents passing `feature` to `create_todo` got schema rejection errors. Added `DEFINE FIELD feature ON task TYPE none | string` to SurrealDB dev/brain + added `feature` to the `CREATE task SET ...` query in `handleCreateTodo`.
-
-- **Fixed `ghost_handshake` ORDER BY parse error** — SurrealDB 3.0 requires ORDER BY fields to appear in SELECT. The anchor embedding query did `SELECT embedding ... ORDER BY created_at DESC` — `created_at` was not selected. Changed to `SELECT embedding, created_at ...`. Had been silently failing on every `ghost_handshake` call.
+- **Agent Core diagnostics** — Identified three issues: anima-worker (`anima.synthesis`) not loaded in launchctl, curiosity-worker plist missing PATH env var, two macOS runaway system processes (self-resolved). Handoff spec created for both real fixes; agent dispatched.
+- **`/delegate` skill created** — New skill at `~/.claude/skills/delegate/` + `~/Documents/_agents/schema/skills/delegate/SKILL.md` for generating agent handoff documents. Iterated three times to reach final form: pre-write synthesis, Stop Rules, Out of Scope per task, and quality gates as visible output (not internal checklist).
+- **ADR-019** — Structural quality gates over instructional reminders. Skill quality gates must be emitted as visible output blocks, not internal checklists. Behavioral gaps cannot be fixed with memos addressed to the entity with the behavioral gap.
 
 ## Decisions Captured
 
-- ADR-018: Disable surrealdb client auto-reconnect in dev-brain MCP
+- ADR-019: Skill quality gates must be visible output, not internal checklists
 
-## agent-core state
+## Agent Core State
 
-- All three fixes live in `~/dev-backbone/mcp-server/index.js`
-- Schema change applied directly to SurrealDB (dev/brain, task table)
-- dev-brain MCP daemon: `com.jcbbge.dev-brain-mcp` running, exit 0
+- anima-worker fix: in-flight with delegated agent
+- curiosity-worker PATH fix: in-flight with delegated agent
 
 ## Open Items
 
-1. `~/dev-backbone` has no git repo — `index.js` changes are unversioned. Consider `git init` to prevent fixes being lost.
-2. MCP log has 600+ process restart entries — investigate whether parallel Claude instances are thrashing the daemon via concurrent launchctl restarts. May need restart-rate guard in plist or a coordinator.
+1. BUG-001+006: Synthesis daemon zombie + dual workers (CRITICAL — synthesis stuck since Mar 18)
+2. Verify delegated agent completed anima-worker + curiosity-worker fixes
+3. BUG-002: Active tier depletion (fold consumes all active memories)
+4. BUG-003: workspace/ gitignored, blocks handoff commits
+5. BUG-004: memory_versions table 0 records (schema mismatch)
+6. BUG-005: fold_model config mismatch (DB says haiku, code uses llama)
 
 ## Next Session Focus
 
-Investigate the 600+ restart pattern in `~/.dev-brain/mcp.log` — diagnose whether parallel agent sessions are thrashing the daemon and add protection if so.
+Verify delegated agent fixes landed, then triage BUG-001/006 (synthesis daemon zombie) — blocking autonomous memory processing.
