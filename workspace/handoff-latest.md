@@ -1,31 +1,19 @@
 # Session Handoff
-Date: 2026-03-21
+Date: 2026-03-24
 Mode: meta/systems
 
 ## Completed
 
-- **Agent Core diagnostics** — Identified three issues: anima-worker (`anima.synthesis`) not loaded in launchctl, curiosity-worker plist missing PATH env var, two macOS runaway system processes (self-resolved). Handoff spec created for both real fixes; agent dispatched.
-- **`/delegate` skill created** — New skill at `~/.claude/skills/delegate/` + `~/Documents/_agents/schema/skills/delegate/SKILL.md` for generating agent handoff documents. Iterated three times to reach final form: pre-write synthesis, Stop Rules, Out of Scope per task, and quality gates as visible output (not internal checklist).
-- **ADR-019** — Structural quality gates over instructional reminders. Skill quality gates must be emitted as visible output blocks, not internal checklists. Behavioral gaps cannot be fixed with memos addressed to the entity with the behavioral gap.
+- **Diagnosed and resolved system overheating** — Two `bun test` processes (PIDs 55665, 54937) had been pinned at ~100% CPU for 4+ hours each. Killed them. Also killed idle Vite dev server on :5173 (user no longer needed it). User closed Chrome, Safari, and Notes. System cooled, fan slowed.
 
-## Decisions Captured
+## Decisions captured
+- None this session (ops/diagnostic work)
 
-- ADR-019: Skill quality gates must be visible output, not internal checklists
+## agent-core state
+- No agent-core files changed this session.
 
-## Agent Core State
+## Open items
+1. **Consider a periodic process health check** — Runaway processes aren't visible until thermal symptoms appear. A lightweight cron or watchdog that flags high-CPU processes running >30min could catch this earlier.
 
-- anima-worker fix: in-flight with delegated agent
-- curiosity-worker PATH fix: in-flight with delegated agent
-
-## Open Items
-
-1. BUG-001+006: Synthesis daemon zombie + dual workers (CRITICAL — synthesis stuck since Mar 18)
-2. Verify delegated agent completed anima-worker + curiosity-worker fixes
-3. BUG-002: Active tier depletion (fold consumes all active memories)
-4. BUG-003: workspace/ gitignored, blocks handoff commits
-5. BUG-004: memory_versions table 0 records (schema mismatch)
-6. BUG-005: fold_model config mismatch (DB says haiku, code uses llama)
-
-## Next Session Focus
-
-Verify delegated agent fixes landed, then triage BUG-001/006 (synthesis daemon zombie) — blocking autonomous memory processing.
+## Next session focus
+No active development carried over — system is healthy. Pick up whatever the active work thread is.
