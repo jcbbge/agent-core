@@ -33,3 +33,4 @@ One file per significant decision. Queryable via SurrealDB `stack/catalog`.
 3. Add entry to this index
 4. Commit with message: `decisions: ADR-XXX [title]`
 | [ADR-019](ADR-019-structural-quality-gates.md) | Skill quality gates must be visible output, not internal checklists | 2026-03-21 | Accepted |
+| [ADR-020](ADR-020-executor-universal-primitive-gateway.md) | Executor is the sole primitive gateway; agents have ambient awareness of all 9 types | 2026-03-24 | Accepted |
