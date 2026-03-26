@@ -1,30 +1,32 @@
 # Session Handoff
-Date: 2026-03-25
+Date: 2026-03-26
 Mode: meta/systems
 
 ## Completed
 
-- **Brain-layer MCPs wired through executor permanently** — anima (3098), dev-brain (3097), kotadb (3099), subagent-mcp (3096) now auto-register on every executor boot via `executor-start.sh` + `seed-brain-layers` CLI command. `tools.anima.*`, `tools.devbrain.*`, `tools.kotadb.*`, `tools.subagent.*` all work inside executor.execute() context.
-
-- **Primitives service fixed** — `packages/executor-mcp/src/primitives.ts` now uses filesystem discovery from `~/Documents/_agents/schema/` instead of querying dev-brain SurrealDB. primitives/list returns 40+ primitives with zero infrastructure dependencies.
-
-- **executor-start.sh** — startup wrapper at `~/bin/executor-start.sh`. Starts bun executor, waits for reachability, seeds sources. launchd plist updated.
-
-- **SurrealDB persistence fixed** — switched back to `surrealkv:///Users/jcbbge/dev-backbone/db` (persistent). Was in memory mode, causing state loss on every restart.
-
-- **Deep architecture analysis** — ran 4 parallel subagents (fresh-eyes, big-brain-optimizer, challenging-assumptions, reframing) against the Tool Shed PRD. Key finding: gateway direction is right; SurrealDB + embeddings is premature at current scale; session lifecycle was always 40 lines from fixed.
+- **OpenCode is now the sole harness** — OMP and Claude Code dropped. All config in ~/.config/opencode/. (ADR-27)
+- **All schema primitives wired to OpenCode** — 43 skills symlinked to ~/.config/opencode/skills/. Missing commands (kota, subagent) added to ~/.config/opencode/commands/. opencode.json instructions point to schema/rules/*.md. 5 subagents verified in sync. (ADR-28)
+- **OpenCode plugin system is the canonical hook mechanism** — 200 plugin ideas catalogued across all 20 event types in ~/Documents/_agents/docs/prd-opencode-plugin-system.md. (ADR-29)
+- **AGENTS.md rewritten** — ~/.config/opencode/AGENTS.md updated with full primitive awareness, executor gateway pattern, session start/end rituals, all 43 skills, 23 commands, 5 subagents, 9 rules.
+- **executor docs written** — prd-primitive-gateway.md and prd-opencode-harness-cleanup.md written to ~/executor/docs/.
+- **4-agent parallel analysis completed** — fresh-eyes, big-brain-optimizer, challenging-assumptions, reframing-problems all applied to the Tool Shed PRD and OpenCode plugin brainstorm.
+- **Brain layers permanently wired** (carried forward from previous session) — anima, dev-brain, kotadb, subagent-mcp auto-register on executor boot via executor-start.sh.
 
 ## Decisions captured
-- ADR: Brain-layer MCPs auto-registered with executor on boot
-- ADR: Primitives service uses filesystem discovery, not SurrealDB
+- ADR-27: OpenCode is the sole harness
+- ADR-28: Schema primitives symlinked into OpenCode config
+- ADR-29: OpenCode plugin system is the canonical hook mechanism
 
 ## agent-core state
-- 43 skills · 15 rules · executor sources: anima, dev-brain, kotadb, subagent-mcp (all persistent)
+- 43 skills · 9 rules deployed · 23 commands · 5 subagents
+- Executor gateway: anima, dev-brain, kotadb, subagent-mcp (all persistent on boot)
+- OpenCode: executor-only MCP, 60s timeout, schema rules loaded
 
 ## Open items
-1. anima bootstrap `fold_config` table missing — anima internal issue, needs investigation
-2. Build static capability `manifest.json` from schema dir — next primitive discovery step
-3. Verify Claude Code + OpenCode harness configs are executor-only
+1. Fix anima bootstrap — `fold_config` table missing in SurrealDB (anima internal issue)
+2. Implement Tier 1 plugins from prd-opencode-plugin-system.md (Bootstrap Orchestrator, Active Context Injector, Cascade Pre-classifier, Session Close Orchestrator)
+3. Build static manifest.json for zero-latency primitive awareness at bootstrap
+4. Verify and update Claude Code harness config if still in use anywhere
 
 ## Next session focus
-The executor gateway works. Next: build static `manifest.json` (generated from schema dir) so agents get full primitive awareness at bootstrap with zero query latency — no SurrealDB needed at current scale.
+Implement Tier 1 OpenCode plugins: Bootstrap Orchestrator (session.created) and Session Close Orchestrator (session.idle) — these two alone eliminate the cold-start and leaking-session problems that have caused the most friction.
