@@ -1,29 +1,32 @@
 # Session Handoff
-Date: 2026-03-27
+Date: 2026-03-28
 Mode: meta/systems
 
 ## Completed
 
-- **Fixed anima bootstrap philosophical dump** — added `--quiet` flag to CLI that returns JSON without 2000+ lines of text
-- **Updated startup-check-anima.sh** — now uses `anima bootstrap --quiet`, returns compact JSON with memory counts
-- **Updated session-bootstrap.ts plugin** — calls bootstrap silently, injects memory counts into session context
-- **Updated documentation** — AGENTS.md, anima skill, starting-session skill all explain what memory counts mean (253n/10s/5c = network/stable/catalysts)
+- **Fixed anima bootstrap** — added `--quiet` flag, returns JSON instead of 2000-line dump
+- **Updated session-bootstrap plugin** — now calls `anima bootstrap --quiet` silently, injects memory counts into session context
+- **Verified fix works** — new session shows `Anima: 255n / 10s / 5c` in context
+- **Schema as source of truth** — removed duplicate primitives from OpenCode, rebuilt with symlinks to schema/
+- **Cleaned agent-core repo** — committed all changes, schema/ is canonical, primitives/ deleted and committed
+- **Repo is clean** — all legitimate files committed, only empty backup/ remains
 
 ## Decisions captured
 
 - ADR: anima bootstrap --quiet flag for compact output
+- ADR: Schema as canonical source of truth, OpenCode rebuilt
 
 ## agent-core state
 
-- OpenCode: session lifecycle plugins working
-- Anima: 253n / 10s / 5c (network / stable / catalysts)
-- Session context now surfaces: `Anima: 253n / 10s / 5c (network / stable / catalysts)`
+- Schema: 44 skills · 23 commands · 9 rules · 7 subagents (canonical)
+- OpenCode: symlinked to schema/
+- OpenCode plugins: session-bootstrap, session-close, ending-session, starting-session
+- Anima: 255n / 10s / 5c (session context working)
 
 ## Open items
 
-1. Test fresh OpenCode session to verify plugin surfaces `<session-context>` correctly
-2. Fold triggered during this session — phi threshold reached (582.4), synthesis stored
+(None — session context verified, schema clean)
 
 ## Next session focus
 
-Verify session-bootstrap plugin auto-fires on new OpenCode session and shows Anima memory counts in the injected `<session-context>` block.
+System is clean and operational. Resume normal work.
