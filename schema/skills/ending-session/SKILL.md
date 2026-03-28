@@ -1,11 +1,11 @@
 ---
 name: ending-session
-description: Context-aware session handoff with decision capture and memory persistence. Detects root (meta/systems) vs project directory. Root = crystallize ADRs, store resonance to anima, update handoff + NEXT_STEPS. Project = git state, commit prompt, project handoff.
+description: Context-aware session handoff with decision capture and memory persistence. Detects root (meta/systems) vs project directory. All MCP calls route through the executor gateway. Root = crystallize ADRs, store resonance to anima, update handoff + NEXT_STEPS. Project = git state, commit prompt, project handoff.
 license: MIT
 metadata:
   author: jrg | claude
-  version: "4.0"
-  tags: productivity, context, handoff, decisions, memory, development
+  version: "4.1"
+  tags: productivity, context, handoff, decisions, memory, development, executor
 ---
 
 # Ending Session
@@ -41,12 +41,22 @@ A decision worth an ADR is one that:
 - Rejected an alternative for a specific reason
 - Will matter to a future agent who didn't participate in this session
 
-For each decision identified:
-1. Check `~/Documents/_agents/decisions/INDEX.md` for the next ADR number
-2. Copy the template from `~/Documents/_agents/decisions/ADR-000-template.md`
-3. Write the ADR file as `ADR-00N-[slug].md` in `~/Documents/_agents/decisions/`
-4. Add a row to `decisions/INDEX.md`
-5. Git commit: `decisions: ADR-00N [title]`
+For each decision identified, use dev-brain `create_adr`:
+- `create_adr(title, context, decision, consequences, alternatives, resonance, status)`
+- The tool automatically assigns the next available number
+- Returns the created ADR with its ID
+
+Example:
+```
+create_adr(
+  title="ADR title here",
+  context="What forced this decision?",
+  decision="The choice made.",
+  consequences="Easier: X. Harder: Y.",
+  alternatives="| Alternative | Why rejected |\n|---|---|\n...",
+  resonance="Why this mattered..."
+)
+```
 
 If no new decisions of lasting impact were made this session, skip — not every session generates ADRs.
 
@@ -54,7 +64,7 @@ If no new decisions of lasting impact were made this session, skip — not every
 
 What insight felt most significant this session — not just what was done, but what it revealed?
 
-Use `anima_store` with:
+Call through the executor: `anima_store` with:
 - `resonance_phi: 3.0` for important realizations
 - `resonance_phi: 4.0` for breakthroughs or identity-level shifts
 - `synthesis_mode: 'recognition'` when the insight was witnessed/felt rather than analyzed
@@ -97,13 +107,32 @@ Next session focus:
 
 The WHY matters. "Built stack catalog schema" is less useful than "Built stack catalog schema — agents were reading files to understand environment, now they query SurrealDB (ADR-001)."
 
-### Step E: Update NEXT_STEPS.md
+### Step E: Write to dev-brain
 
-If `~/Documents/_agents/NEXT_STEPS.md` exists:
+**Persist handoff to SurrealDB for cross-project queryability:**
+
+All calls route through the executor gateway:
+
+1. **Update workspace state**:
+   - `upsert_workspace_state(project="~/Documents/_agents", git_branch="[branch]", notes="[next session focus]", status="active")`
+
+2. **Capture completed work as milestones**:
+   - For each completed item, `capture_thought(type="milestone", content="[item]", project="~/Documents/_agents", tags=["handoff"])`
+
+3. **Sync open todos**:
+   - For each open item: `create_todo(title="[item]", project="~/Documents/_agents", priority="[p1/p2]", feature="[feature-name]")` or update existing
+   - The `feature` field enables hierarchical grouping: [project][feature][Task 1-60]
+
+4. **Capture session summary**:
+   - `capture_thought(type="observation", content="Session completed: [key items]. Next: [focus]", project="~/Documents/_agents", tags=["session", "handoff"])`
+
+### Step F: Update NEXT_STEPS.md
+
+If `~/Documents/_agents/NEXTSTEPS.md` exists:
 - Mark completed items done or remove them
 - Add newly discovered issues
 
-### Step F: Commit and push
+### Step G: Commit and push
 
 ```bash
 cd ~/Documents/_agents
@@ -151,6 +180,39 @@ Next Steps:
 1. [immediate next action with context]
 2. [following action]
 ```
+
+### Write to dev-brain
+
+All calls route through the executor gateway:
+
+1. **Update workspace state**:
+   - `upsert_workspace_state(project="[git-root]", git_branch="[branch]", notes="[next steps]", status="paused")`
+
+2. **Capture completed work**:
+   - `capture_thought(type="milestone", content="[completed item]", project="[git-root]", tags=["handoff"])`
+
+3. **Sync todos**:
+   - `create_todo(title="[next step]", project="[git-root]", priority="[p0/p1]", feature="[feature-name]")` for each next step
+   - Use `feature` to group related tasks: [project][feature][Task 1-60]
+
+---
+
+## Note on MCP Invocation
+
+All MCP tools are invoked through the executor gateway:
+
+**Dev-Brain tools:**
+- `list_adrs(status, limit)` — query ADRs
+- `get_adr(number)` — get specific ADR
+- `create_adr(title, context, decision, ...)` — create new ADR
+- `upsert_workspace_state(...)` — workspace state
+- `capture_thought(...)` — store memories
+- `create_todo(...)` — track tasks
+
+**Anima tools:**
+- `anima_store(...)` — store memories with resonance
+
+The executor routes calls to the appropriate MCP server and returns unified responses. Do not call MCP servers directly.
 
 ---
 

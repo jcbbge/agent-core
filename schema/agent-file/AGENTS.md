@@ -47,6 +47,58 @@ Check health with: `curl http://localhost:PORT/health`
 
 If SurrealDB is down: `launchctl start dev.brain.surreal`
 
+## Executor Primitives (NEW)
+
+All agentic primitives are now loaded dynamically via the **Executor** MCP server from `~/Documents/_agents/schema/`.
+
+### Available Primitives
+
+```typescript
+// Skills - Reusable knowledge packs
+const skill = await tools.executor.skill.load({ name: "starting-session" });
+const skills = await tools.executor.skill.list();
+
+// Rules - Domain-specific guidelines
+const rule = await tools.executor.rule.load({ name: "solidjs" });
+const rules = await tools.executor.rule.list();
+
+// Subagents - Delegate to specialized agents
+const subagent = await tools.executor.subagent.load({ name: "architect" });
+const result = await tools.executor.subagent.delegate({ name: "architect", input: "Design API" });
+
+// Commands - Slash command definitions
+const command = await tools.executor.command.load({ name: "kota" });
+const commands = await tools.executor.command.list();
+
+// Hooks - Lifecycle shell scripts
+const hook = await tools.executor.hook.load({ name: "chain" });
+const hooks = await tools.executor.hook.list();
+
+// Integrations - External service configs
+const integration = await tools.executor.integration.load({ name: "rtk" });
+const integrations = await tools.executor.integration.list();
+
+// Plugins - Extension modules
+const plugin = await tools.executor.plugin.load({ name: "scratchpad" });
+const plugins = await tools.executor.plugin.list();
+
+// Agent File - Core identity document
+const agentFile = await tools.executor.agentFile.load();
+// Returns: { name: "AGENTS", content: "...", path: "..." }
+```
+
+### Path Configuration
+
+Primitives are loaded from `AGENTS_SCHEMA_PATH/` (defaults to `~/Documents/_agents/schema/`).
+Override via environment: `AGENTS_SCHEMA_PATH=/custom/path`
+
+### Migration Note
+
+Global directories (`~/.claude/skills/`, `~/.config/opencode/skills/`, `~/.omp/agent/skills/`, etc.) are deprecated.
+Store all primitives in the centralized schema location for unified executor access.
+
+
+
 ## Code Style
 
 - **JavaScript**: Functional paradigms only. No classes. Pure functions, composition, immutable data.

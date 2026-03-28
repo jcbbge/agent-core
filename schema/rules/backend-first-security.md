@@ -9,7 +9,7 @@ Zero-trust architecture. Frontend is view layer only.
 - **NEVER** expose DB credentials or internal APIs to the frontend
 - **NO PUBLIC BUCKETS** — signed URLs, UUID filenames only
 - **VERIFY SIGNATURES** on all webhooks — return 400 if verification fails
-- **NEVER** hardcode secrets — validate env vars at build time (Zod)
+- **NEVER** hardcode secrets in ANY file type — source code, plist `EnvironmentVariables`, docker-compose `environment:`, CI yml, Makefile, JSON config. Validate at load time (Zod for web apps; runtime `.env` load for daemons). There is no "it's just config" exception.
 - **VALIDATE ALL INPUTS** with Zod — trust nothing from outside
 - **RATE LIMITS** on all mutation endpoints
 
