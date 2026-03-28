@@ -1,19 +1,19 @@
-# agent-core
+# AgentCore Schema
 
-The canonical source of truth for Josh's AI agent stack.
+The canonical source of truth for Josh's AI agent stack — the **AgentCore Schema** repository.
 
 ## What this repo is
 
-- **Primitives** — everything agents know how to do (skills, rules, hooks, commands, MCP configs, subagents)
+- **Schema** — the nine AgentCore Schema primitives: skills, rules, hooks, commands, MCP configs, subagents, custom tools, plugins, integrations (`schema/`)
+- **Harness sync** — per-harness deployment scripts that copy+transform primitives to each AI harness (`harnesses/`)
 - **Stack declaration** — what's installed, where, why (`stack.yaml`)
 - **Institutional knowledge** — architectural decisions that shaped the system (`decisions/`)
-- **Harness configs** — how primitives deploy to each AI harness (`harnesses/`)
 - **Observability** — hooks and scripts that emit stack events (`observe/`)
 
 ## Mental model
 
 Three questions, three places:
-1. "What can agents do?" → `primitives/`
+1. "What can agents do?" → `schema/`
 2. "What's installed on the machine?" → `stack.yaml` (declared) / SurrealDB `stack/catalog` (observed)
 3. "Why was this built this way?" → `decisions/`
 
@@ -21,10 +21,10 @@ Three questions, three places:
 
 | Directory | Purpose |
 |---|---|
-| `primitives/` | Skills, rules, hooks, commands, MCP, subagents, plugins |
+| `schema/` | The nine AgentCore Schema primitives (skills, rules, hooks, commands, MCP, subagents, plugins, integrations, agent-file) |
+| `harnesses/` | Per-harness deployment: profile.json + HARNESS.md + sync.py |
 | `stack.yaml` | Full stack declaration — daemons, ports, tools, integrations |
 | `decisions/` | Architecture Decision Records (ADRs) |
-| `harnesses/` | Per-harness deployment profiles |
 | `observe/` | Observability hooks and SurrealDB sync scripts |
 | `workspace/` | Current session context and handoffs |
 | `docs/` | Reference documentation |
@@ -32,18 +32,27 @@ Three questions, three places:
 ## Key commands
 
 ```bash
+# Sync all primitives to all harnesses
+bash ~/Documents/_agents/sync.sh
+
+# Sync one harness only
+python3 ~/Documents/_agents/harnesses/claude-code/sync.py
+
+# Dry run (preview changes without writing)
+bash ~/Documents/_agents/sync.sh --dry-run
+
+# Audit primitive deployment across harnesses
+bash ~/Documents/_agents/audit.sh
+
 # Sync stack.yaml to SurrealDB catalog
 bash ~/Documents/_agents/observe/sync-stack.sh
-
-# Check stack health
-core chain
 ```
 
 ## Harness onboarding
 
-Primitives are deployed to harnesses **manually** per the protocol in `harnesses/_template/ONBOARDING.md`.
-Each harness has its own config format — symlinks, JSONC, AGENTS.md, plugins.
-See `harnesses/[name]/` for the deployed state of each harness.
+Primitives are deployed to harnesses via per-harness `sync.py` scripts (copy+transform, no symlinks).
+See `harnesses/_sop.md` for the research-first onboarding protocol.
+Each harness directory has: `profile.json` (primitive mapping), `HARNESS.md` (docs), `sync.py` (deployer).
 
 ## Decisions index
 
@@ -53,6 +62,7 @@ See `decisions/` for Architecture Decision Records. Key decisions:
 - ADR-003: MCP servers always local
 - ADR-004: Two-layer institutional knowledge (anima resonance + decisions/ ADRs)
 - ADR-005: Anima is personal singleton; team-anima is net-new
+- ADR-010: No symlinks — copy and transform
 
 ## Adding to the stack
 

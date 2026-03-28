@@ -1,4 +1,4 @@
-# Agentic Primitives — Research Reference
+# AgentCore Schema — Primitives Reference
 *Synthesized from parallel research agents — 2026-03-07*
 *Provider/model/harness agnostic. Applies to Claude Code, OpenCode, Augment, Droid, Goose, Gemini CLI, and any future harness.*
 
@@ -99,7 +99,7 @@ Rules load silently based on file context — the model doesn't need to know the
 
 ### Target structure
 ```
-primitives/rules/
+schema/rules/
 ├── bento.md          # globs: Infinity/bento/**/*
 ├── solidjs.md        # globs: **/*.jsx, **/*.tsx
 ├── infrastructure.md # globs: **/mcp*/**, **/.plist
@@ -544,7 +544,7 @@ None of the primitives emit telemetry by default. There's no built-in answer to:
 The model discovers skills by reading their descriptions. The model discovers tools by reading their schemas. If the description is bad, the primitive is invisible. Treat every description as an interface contract — it determines whether the primitive gets used.
 
 ### Harness-agnostic primitive mapping
-Not every harness implements every primitive. The canonical source of truth (`agent-core`) defines all primitives. Each harness adapter deploys what it supports:
+Not every harness implements every primitive. The canonical source of truth (the AgentCore Schema at `~/Documents/_agents/schema/`) defines all primitives. Each harness's `sync.py` deploys what it supports:
 
 | Primitive | Broad support | Notes |
 |-----------|--------------|-------|
@@ -560,29 +560,29 @@ Not every harness implements every primitive. The canonical source of truth (`ag
 
 ---
 
-## Current State vs Target (agent-core audit)
+## Current State vs Target (AgentCore Schema audit)
 
 ### Deployed (post 2026-03-07)
-- 57 skills in `primitives/skills/` — deployed to all harnesses
-- 20 commands in `primitives/commands/` — deployed
+- 57 skills in `schema/skills/` — deployed to all harnesses
+- 20 commands in `schema/commands/` — deployed
 - 2 MCP servers in registry (anima, kotadb) — deployed to Claude Code harness
 - dev-brain in registry as stdio — deployed to OpenCode only
 
 ### Missing / broken
-- `primitives/rules/` — empty (no path-scoped rules deployed anywhere)
-- `primitives/subagents/` — empty (no subagent definitions)
-- `primitives/hooks/` — empty (existing hooks live in `~/.claude/settings.json` directly, not managed by agent-core)
-- `primitives/plugins/` — empty (no plugins built)
+- `schema/rules/` — empty (no path-scoped rules deployed anywhere)
+- `schema/subagents/` — empty (no subagent definitions)
+- `schema/hooks/` — empty (existing hooks live in `~/.claude/settings.json` directly, not managed by agent-core)
+- `schema/plugins/` — empty (no plugins built)
 - 12 skills have "See command definition below" as description — invisible to model auto-invocation
 - 4+ duplicate skills (persistence, debug-logs variants, solidjs variants) — consolidation needed
 - AGENTS.md (~237 lines) includes Scratchpad API reference and Bento context — should move to skills/rules
 
 ### Priority order
-1. Populate `primitives/rules/` with path-scoped rules (Bento, SolidJS, infrastructure)
+1. Populate `schema/rules/` with path-scoped rules (Bento, SolidJS, infrastructure)
 2. Fix 12 broken skill descriptions
 3. Trim AGENTS.md: move Scratchpad API ref to a skill, move Bento context to a rule
 4. Add `disable-model-invocation: true` to: `bento-do-query`, `session-start`, `session-end`, `prd`
 5. Consolidate duplicate skills → target 20–25
-6. Populate `primitives/subagents/` with reviewer, test-writer, architect, debugger
-7. Build `primitives/hooks/` manifest (wrap existing hooks + add observability)
+6. Populate `schema/subagents/` with reviewer, test-writer, architect, debugger
+7. Build `schema/hooks/` manifest (wrap existing hooks + add observability)
 8. Build observability hook pipeline → SurrealDB

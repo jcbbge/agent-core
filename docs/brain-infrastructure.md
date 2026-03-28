@@ -13,7 +13,11 @@ Local AI dev tooling — MCP daemons, SurrealDB instances, and how to extend the
 ## Current Architecture
 
 ```
-Claude Code / Auggie / OpenCode / OMP
+Claude Code / OpenCode / OMP
+        │
+        ├── HTTP POST → localhost:8000/mcp  (Executor — universal runtime)
+        │                   ├── sources: dev-brain, anima, kotadb, rules, skills, commands
+        │                   └── tools: execute, resume
         │
         ├── HTTP POST → localhost:3098  (Anima MCP)
         │                   └── SurrealDB ws://127.0.0.1:8002
@@ -35,10 +39,14 @@ Port 7201 (the old kotadb-specific SurrealDB) has been decommissioned.
 
 | Label | Port | Binary | Source |
 |-------|------|--------|--------|
+| `dev.brain.executor` | 8000 | node (npm) | `~/executor/` — `/opt/homebrew/bin/executor` |
+| `dev.brain.subagent-mcp` | 3096 | bun | `~/dev-backbone/subagent-mcp/src/index.ts` |
 | `com.jcbbge.anima-mcp` | 3098 | deno | `~/anima/mcp-server/index.ts` |
 | `com.jcbbge.dev-brain-mcp` | 3097 | bun | `~/dev-backbone/mcp-server/index.js` |
 | `com.jcbbge.kotadb-app` | 3099 | bun | `~/kotadb/app/src/index.ts` |
 | `anima.synthesis` | — | deno | `~/anima/synthesis-worker/index.ts` |
+| `dev.anima.synthesis-daemon` | — | deno | `~/anima/scripts/synthesis-daemon.ts` |
+| `dev.anima.curiosity-worker` | — | deno | `~/anima/scripts/curiosity-worker.ts` |
 
 ### SurrealDB Instances
 
@@ -141,7 +149,7 @@ Key points:
 | 3098 | Anima MCP HTTP |
 | 3097 | Dev-Brain MCP HTTP |
 | 8001 | Ollama |
-| 8000 | executor (reserved, not installed) |
+| 8000 | executor daemon (active) — http://127.0.0.1:8000 — label: dev.brain.executor |
 | 3096 | **next available** |
 
 ---
