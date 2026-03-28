@@ -6,16 +6,61 @@
 meta:
   owner: jcbbge
   machine: macbook-m-series-8gb
-  last_updated: "2026-03-09"
+  last_updated: "2026-03-11"
   surreal_version: "3.0.2"
 
 ports:
-  8000: "executor (reserved — not yet installed)"
+  8000: "executor daemon (active) — label: dev.brain.executor"
   8001: "ollama"
   8002: "surrealdb"
-  3098: "anima-mcp"
   3099: "kotadb-mcp"
+  3098: "anima-mcp"
   3097: "dev-brain-mcp"
+  3096: "subagent-mcp (active) — label: dev.brain.subagent-mcp"
+
+orchestrator:
+  name: executor
+  label: dev.brain.executor
+  port: 8000
+  role: universal primitive orchestrator
+  lifecycle_manager:
+    enabled: true
+    on_demand_tiers:
+      - T2
+    auto_trigger:
+      enabled: true
+      strategy: keyword_fast_path
+  intent_classifier:
+    enabled: true
+    fast_path:
+      - pattern: "search|symbol|semantic|dependency|ast|code intelligence"
+        target: kotadb
+      - pattern: "delegate|review|test|architect|debug"
+        target: subagent-mcp
+    llm_fallback: true
+  tiers:
+    T1:
+      description: "Always-on core infrastructure"
+      services:
+        - anima
+        - dev-brain
+        - executor
+        - surreal
+        - ollama
+      policy: never_stop
+    T2:
+      description: "On-demand intelligence services"
+      services:
+        - kotadb
+        - subagent-mcp
+      triggers: keyword_intent
+      startup_delay_ms: 500
+      idle_shutdown_minutes: 30
+    T3:
+      description: "Project-scoped ephemeral services"
+      services:
+        - HubSpotDev
+      lifecycle: project_bound
 
 platform:
   - name: surrealdb
@@ -36,6 +81,24 @@ platform:
       - nomic-embed-text
       - qwen2.5:0.5b
     notes: "Homebrew install. nomic-embed-text for kotadb embeddings. qwen2.5:0.5b for synthesis worker."
+
+runtime:
+  - name: executor
+    label: dev.brain.executor
+    port: 8000
+    transport: http
+    runtime: node (npm global)
+    path: ~/executor/
+    binary: /opt/homebrew/bin/executor
+    mcp_endpoint: http://127.0.0.1:8000/mcp
+    harnesses: [claude-code, opencode, omp]
+    tool_count: 2
+    always_on: true
+    sources:
+      - dev-brain (3097)
+      - anima (3098)
+      - kotadb (3099)
+    notes: "Universal primitive runtime. TypeScript execution sandbox + unified MCP tool catalog. Fork at ~/executor."
 
 intelligence:
   - name: anima
@@ -71,15 +134,44 @@ intelligence:
     always_on: true
     notes: "Dev state, todos, thought stream, active threads. HTTP transport (converted from stdio)."
 
+  - name: subagent-mcp
+    label: dev.brain.subagent-mcp
+    port: 3096
+    transport: http
+    runtime: bun
+    path: ~/dev-backbone/subagent-mcp/
+    harnesses: [executor]
+    tool_count: 2
+    always_on: true
+    agents: [reviewer, test-writer, architect, debugger, sigil-distiller]
+    notes: "Delegates to subagents via Anthropic API. Definitions at primitives/subagents/. Requires ANTHROPIC_API_KEY in plist."
+
 workers:
   - name: anima-synthesis
     label: anima.synthesis
-    path: ~/anima/
+    path: ~/anima/synthesis-worker/index.ts
     runtime: deno
     trigger: daemon
     provider: ollama
     model: qwen2.5:0.5b
-    notes: "Autonomous memory synthesis. Groq deprecated — local Ollama only."
+    notes: "LIVE query on memories table. Synthesis triggers on CREATE. Groq deprecated — local Ollama only."
+
+  - name: anima-synthesis-daemon
+    label: dev.anima.synthesis-daemon
+    path: ~/anima/scripts/synthesis-daemon.ts
+    runtime: deno
+    trigger: daemon
+    provider: openrouter
+    notes: "LIVE query on fold_config. Fires when phi_watermark event sets pending_synthesis. Key loaded from .env."
+
+  - name: anima-curiosity-worker
+    label: dev.anima.curiosity-worker
+    path: ~/anima/scripts/curiosity-worker.ts
+    runtime: deno
+    trigger: daemon
+    interval: 30min
+    provider: openrouter
+    notes: "Autonomous thought generation. Queries hungry curiosity_threads every 30min. Generates LLM insights into active tier."
 
   - name: brain-ejection
     label: dev.brain.ejection
@@ -173,7 +265,6 @@ harnesses:
     primitives: [skills]
 
 roadmap:
-  - executor: "Port 8000 reserved. TypeScript/Bun central control plane. Not yet installed."
   - sem: "Entity-level semantic diff tool. To integrate as kotadb subprocess for diff MCP tool."
   - team-anima: "Net-new tool for shared team memory. Different design from personal anima. Build when team grows."
   - windows-support: "All hooks are macOS/launchd-specific. Deferred — requires ground-up hook rewrite."

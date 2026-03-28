@@ -1,0 +1,86 @@
+{
+  "harness": "slate",
+  "description": "Slate — Random Labs orchestration AI. Five primitives: read, write, grep, terminal, websearch. All agentcore access via terminal (curl, colgrep, cat).",
+  "status": "verified",
+  "verified_date": "2026-03-12",
+  "source_repo": "https://randomlabs.ai",
+  "notes": "Slate has no config dir, no file-deploy mechanism. Bridge is a rules file auto-loaded into context. All toolshed access is terminal-mediated. sync.py not applicable.",
+  "primitives": {
+    "agent_file": {
+      "supported": "partial",
+      "native_name": "System prompt (injected at instantiation, not a file Slate reads)",
+      "search_paths": [],
+      "note": "AGENTS.md content is surfaced via ~/.claude/rules/ auto-load. Slate cannot directly read its own system prompt file, but rules files serve the same purpose.",
+      "source_doc": "~/.claude/rules/agentcore-slate.md",
+      "verify": "test -f ~/.claude/rules/agentcore-slate.md"
+    },
+    "rules": {
+      "supported": true,
+      "native_name": "Rules files auto-loaded from ~/.claude/rules/*.md at session start",
+      "search_paths": ["~/.claude/rules/*.md"],
+      "deploy_path": "~/.claude/rules/",
+      "note": "Slate's rules are auto-loaded by the Claude Code harness layer. agentcore-slate.md is the bridge rule.",
+      "source_doc": "~/.claude/rules/agentcore-slate.md",
+      "verify": "test -f ~/.claude/rules/agentcore-slate.md"
+    },
+    "skills": {
+      "supported": "partial",
+      "native_name": "On-demand skill injection via terminal (cat SKILL.md into thread prompt)",
+      "search_paths": ["~/Documents/_agents/schema/skills/<name>/SKILL.md"],
+      "note": "Slate reads skill files via terminal and injects content into worker thread prompts. No auto-load — Slate must explicitly read and include skill content.",
+      "source_doc": "~/Documents/_agents/schema/skills/",
+      "verify": "ls ~/Documents/_agents/schema/skills/ | wc -l | grep -v '^0$'"
+    },
+    "commands": {
+      "supported": "partial",
+      "native_name": "Command markdown files read on-demand via terminal",
+      "search_paths": ["~/Documents/_agents/schema/commands/*.md"],
+      "note": "No slash command system. Slate reads command .md files and executes the procedures manually. Functionally equivalent but not automatic.",
+      "source_doc": "~/Documents/_agents/schema/commands/",
+      "verify": "ls ~/Documents/_agents/schema/commands/ | wc -l | grep -v '^0$'"
+    },
+    "custom_tools": {
+      "supported": true,
+      "native_name": "terminal primitive — curl, colgrep, bun, git, bash scripts",
+      "search_paths": ["~/bin/*.py", "~/.claude/tools/startup-checks/*.sh"],
+      "note": "Anything on PATH or invocable via shell is available. Executor at port 8000 provides TypeScript runtime. Full CLI access.",
+      "source_doc": "~/Documents/_agents/schema/mcp/registry.json",
+      "verify": "curl -sf http://127.0.0.1:8000/mcp -X POST -H 'Content-Type: application/json' -d '{"method":"tools/list"}' | grep -q 'tools'"
+    },
+    "hooks": {
+      "supported": false,
+      "native_name": "N/A — no lifecycle event system",
+      "search_paths": [],
+      "note": "Slate has no event hooks. Session start/end orientation is handled via /starting-session skill executed manually.",
+      "source_doc": null,
+      "verify": "false"
+    },
+    "mcp_servers": {
+      "supported": "partial",
+      "native_name": "HTTP MCP via curl through terminal primitive",
+      "search_paths": ["http://localhost:3096/", "http://localhost:3097/", "http://localhost:3098/", "http://localhost:3099/", "http://127.0.0.1:8000/mcp"],
+      "note": "No native MCP client. Slate calls MCP endpoints via curl in terminal. Stateless per call — no session persistence. executor (8000) and subagent-mcp (3096) are highest-value targets.",
+      "source_doc": "~/Documents/_agents/schema/mcp/registry.json",
+      "verify": "curl -sf http://localhost:3098/health"
+    },
+    "subagents": {
+      "supported": true,
+      "native_name": "Worker threads (Slate's native parallelism model) + subagent-mcp delegation",
+      "search_paths": [
+        "~/Documents/_agents/schema/subagents/*.md",
+        "http://localhost:3096/"
+      ],
+      "note": "Slate spawns isolated worker threads natively. For your defined subagents (reviewer, test-writer, architect, debugger, sigil-distiller), Slate delegates via subagent-mcp HTTP. Worker threads can also curl subagent-mcp directly.",
+      "source_doc": "~/Documents/_agents/schema/subagents/",
+      "verify": "curl -sf http://localhost:3096/health"
+    },
+    "plugins": {
+      "supported": false,
+      "native_name": "N/A — no plugin system",
+      "search_paths": [],
+      "note": "No plugin architecture. Extended capability comes via executor (port 8000) TS runtime.",
+      "source_doc": null,
+      "verify": "false"
+    }
+  }
+}

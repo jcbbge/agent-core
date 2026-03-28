@@ -1,0 +1,141 @@
+{
+  "harness": "opencode",
+  "description": "OpenCode CLI (multi-provider)",
+  "status": "verified",
+  "verified_date": "2026-03-11",
+  "source_repo": "https://github.com/anomalyco/opencode",
+  "source_files": [
+    "packages/opencode/src/session/instruction.ts",
+    "packages/opencode/src/skill/skill.ts",
+    "packages/opencode/src/config/config.ts",
+    "packages/plugin/src/index.ts"
+  ],
+  "primitives": {
+    "agent_file": {
+      "supported": true,
+      "native_name": "AGENTS.md",
+      "search_paths": [
+        "~/.config/opencode/AGENTS.md",
+        "~/.claude/CLAUDE.md"
+      ],
+      "note": "OpenCode walks up from CWD looking for AGENTS.md or CLAUDE.md. Global fallbacks in this order. Also supports additional files via opencode.json `instructions` array.",
+      "source_doc": "packages/opencode/src/session/instruction.ts \u2014 systemPaths()",
+      "verify": "test -f ~/.config/opencode/AGENTS.md || test -f ~/.claude/CLAUDE.md"
+    },
+    "rules": {
+      "supported": "partial",
+      "deploy_path": null,
+      "native_name": "No dedicated rules directory \u2014 injected via instructions array or AGENTS.md",
+      "search_paths": [
+        "opencode.json `instructions` array (glob patterns supported)",
+        "AGENTS.md / CLAUDE.md discovery (walks up directory tree)"
+      ],
+      "note": "OpenCode has no ~/.config/opencode/rules/ equivalent. Rules content must live in AGENTS.md or be listed in opencode.json `instructions` array with glob patterns like `.cursor/rules/*.md`.",
+      "source_doc": "packages/opencode/src/session/instruction.ts",
+      "verify": "test -f ~/.config/opencode/AGENTS.md || test -f ~/.claude/CLAUDE.md"
+    },
+    "skills": {
+      "supported": true,
+      "deploy_path": "~/.claude/skills/",
+      "native_name": "skills/ directory (SKILL.md files with frontmatter)",
+      "search_paths": [
+        "~/.config/opencode/skills/<name>/SKILL.md",
+        "~/.config/opencode/skill/<name>/SKILL.md",
+        "~/.claude/skills/<name>/SKILL.md",
+        "~/.agents/skills/<name>/SKILL.md"
+      ],
+      "note": "OpenCode natively reads ~/.claude/skills/ as a fallback. The existing Claude Code symlink at ~/.claude/skills/ -> schema/skills/ is ALREADY sufficient. No separate opencode skills dir needed.",
+      "source_doc": "packages/opencode/src/skill/skill.ts",
+      "verify": "test $(ls ~/.claude/skills/ 2>/dev/null | wc -l) -gt 0"
+    },
+    "commands": {
+      "supported": true,
+      "deploy_path": "~/.config/opencode/commands/",
+      "native_name": "commands/ directory (.md files)",
+      "search_paths": [
+        "~/.config/opencode/commands/<name>.md",
+        ".opencode/commands/<name>.md"
+      ],
+      "note": "Frontmatter supports: description, agent, model, subtask. Template vars: $ARGUMENTS, $1/$2, !`shell`. Filename becomes slash command name.",
+      "source_doc": "packages/opencode/src/config/config.ts \u2014 loadCommand()",
+      "verify": "test $(ls ~/.config/opencode/commands/ 2>/dev/null | wc -l) -gt 0"
+    },
+    "custom_tools": {
+      "supported": true,
+      "native_name": "TypeScript/JS files in tools/ or via plugin system",
+      "search_paths": [
+        "~/.config/opencode/tools/*.{ts,js}",
+        ".opencode/tools/*.{ts,js}"
+      ],
+      "note": "Uses tool() helper from @opencode-ai/plugin. Filename becomes tool name. Can also be registered inside a plugin module.",
+      "source_doc": "packages/opencode/src/plugin/index.ts",
+      "verify": "test -d ~/.config/opencode/tools || true"
+    },
+    "hooks": {
+      "supported": true,
+      "native_name": "Hook events inside TypeScript plugins",
+      "search_paths": [
+        "~/.config/opencode/plugins/*.{ts,js}",
+        ".opencode/plugins/*.{ts,js}"
+      ],
+      "events": [
+        "tool.execute.before",
+        "tool.execute.after",
+        "tool.definition",
+        "permission.ask",
+        "command.execute.before",
+        "chat.message",
+        "chat.params",
+        "chat.headers",
+        "shell.env",
+        "config",
+        "event",
+        "experimental.chat.messages.transform",
+        "experimental.chat.system.transform",
+        "experimental.session.compacting",
+        "experimental.text.complete",
+        "auth"
+      ],
+      "note": "Hooks are TypeScript functions inside plugin modules, not shell scripts. No standalone hooks config file.",
+      "source_doc": "packages/plugin/src/index.ts \u2014 Hooks interface",
+      "verify": "test $(ls ~/.config/opencode/plugins/ 2>/dev/null | wc -l) -gt 0 || true"
+    },
+    "mcp_servers": {
+      "supported": true,
+      "native_name": "mcp section in opencode.json",
+      "search_paths": [
+        "~/.config/opencode/opencode.json key: mcp"
+      ],
+      "format": "{ \"mcp\": { \"server-name\": { \"type\": \"local|remote\", \"command\": [...] } } }",
+      "note": "type: local (stdio) or remote (HTTP/SSE). Supports OAuth for remote servers. CLI: opencode mcp auth <server-name>",
+      "source_doc": "https://opencode.ai/docs/mcp-servers",
+      "verify": "python3 -c \"import json,os; d=json.load(open(os.path.expanduser('~/.config/opencode/opencode.json'))); exit(0 if d.get('mcp') else 1)\""
+    },
+    "subagents": {
+      "supported": true,
+      "deploy_path": "~/.config/opencode/agents/",
+      "native_name": "agents/ directory (.md files) or opencode.json `agent` key",
+      "search_paths": [
+        "~/.config/opencode/agents/<name>.md",
+        "~/.config/opencode/agent/<name>.md",
+        ".opencode/agents/<name>.md",
+        "opencode.json key: agent"
+      ],
+      "note": "Frontmatter fields: mode (primary/subagent/all), model, description, steps, permission. Body is system prompt. Invoked via @agent-name syntax.",
+      "source_doc": "packages/opencode/src/config/config.ts \u2014 loadAgent(). Docs: https://opencode.ai/docs/agents",
+      "verify": "test $(ls ~/.config/opencode/agents/ 2>/dev/null | wc -l) -gt 0 || test $(ls ~/.config/opencode/agent/ 2>/dev/null | wc -l) -gt 0"
+    },
+    "plugins": {
+      "supported": true,
+      "native_name": "TypeScript/JS plugins in plugins/ directory or npm packages",
+      "search_paths": [
+        "~/.config/opencode/plugins/*.{ts,js}",
+        ".opencode/plugins/*.{ts,js}",
+        "opencode.json key: plugin (npm package names)"
+      ],
+      "note": "Plugins are async functions receiving {project, client, $, directory, worktree}. Can export hooks + tools. Bun auto-installs npm plugin deps at startup.",
+      "source_doc": "packages/opencode/src/plugin/index.ts. Docs: https://opencode.ai/docs/plugins",
+      "verify": "test -d ~/.config/opencode/plugins"
+    }
+  }
+}
