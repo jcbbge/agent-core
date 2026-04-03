@@ -1,0 +1,153 @@
+{
+  "harness": "pi",
+  "description": "Pi coding agent (pi.dev) - minimal terminal harness with TypeScript extensibility",
+  "status": "verified",
+  "verified_date": "2026-04-02",
+  "version": "0.64.0",
+  "source_repo": "https://github.com/badlogic/pi-mono",
+  "package_name": "@mariozechner/pi-coding-agent",
+  "source_files": [
+    "README.md",
+    "docs/extensions.md",
+    "docs/skills.md",
+    "docs/prompt-templates.md",
+    "docs/sdk.md",
+    "docs/packages.md"
+  ],
+  "primitives": {
+    "agent_file": {
+      "supported": true,
+      "native_name": "AGENTS.md (or CLAUDE.md)",
+      "search_paths": [
+        "~/.pi/agent/AGENTS.md",
+        "parent directories (walks up from cwd)",
+        "./AGENTS.md",
+        "./.pi/AGENTS.md"
+      ],
+      "note": "All matching files are concatenated at startup. Walks up directory tree from cwd. Also accepts CLAUDE.md as alternative filename.",
+      "source_doc": "README.md - Context Files section",
+      "verify": "test -f ~/.pi/agent/AGENTS.md"
+    },
+    "rules": {
+      "supported": "partial",
+      "deploy_path": null,
+      "native_name": "No dedicated rules directory — embedded in AGENTS.md",
+      "search_paths": [
+        "~/.pi/agent/AGENTS.md",
+        "parent directories (walks up from cwd)",
+        "./AGENTS.md"
+      ],
+      "note": "Pi has no separate rules directory. All rules content must live in AGENTS.md files.",
+      "source_doc": "README.md - Context Files section",
+      "verify": "test -f ~/.pi/agent/AGENTS.md"
+    },
+    "skills": {
+      "supported": true,
+      "deploy_path": "~/.pi/agent/skills/",
+      "native_name": "skills/ directory (Agent Skills standard - agentskills.io)",
+      "search_paths": [
+        "~/.pi/agent/skills/<name>/SKILL.md",
+        ".pi/skills/<name>/SKILL.md",
+        "pi packages"
+      ],
+      "note": "Follows agentskills.io standard. Invoke via /skill:name or agent auto-loads. Can be loaded from pi packages.",
+      "source_doc": "README.md - Skills section, docs/skills.md",
+      "verify": "test -d ~/.pi/agent/skills"
+    },
+    "commands": {
+      "supported": "partial",
+      "deploy_path": null,
+      "native_name": "Slash commands via TypeScript extensions only",
+      "search_paths": [
+        "~/.pi/agent/extensions/<name>/",
+        ".pi/extensions/<name>/"
+      ],
+      "note": "Commands are NOT a separate file primitive. Custom commands must be registered in TypeScript extensions. Built-in commands (/model, /reload, etc.) are part of pi core.",
+      "source_doc": "docs/extensions.md - Commands section",
+      "verify": "test -d ~/.pi/agent/extensions"
+    },
+    "custom_tools": {
+      "supported": true,
+      "native_name": "Tools via TypeScript extensions only",
+      "search_paths": [
+        "~/.pi/agent/extensions/<name>/",
+        ".pi/extensions/<name>/"
+      ],
+      "note": "Tools defined in extensions via SDK. Built-in tools: read, write, edit, bash, grep, find, ls. No separate tools directory.",
+      "source_doc": "docs/extensions.md, docs/sdk.md",
+      "verify": "test -d ~/.pi/agent/extensions"
+    },
+    "hooks": {
+      "supported": true,
+      "native_name": "Event hooks via TypeScript extensions only",
+      "search_paths": [
+        "~/.pi/agent/extensions/<name>/",
+        ".pi/extensions/<name>/"
+      ],
+      "events": [
+        "tool.execute.before",
+        "tool.execute.after",
+        "tool.definition",
+        "permission.ask",
+        "command.execute.before",
+        "chat.message",
+        "chat.params",
+        "chat.headers",
+        "shell.env",
+        "config",
+        "event",
+        "experimental.chat.messages.transform",
+        "experimental.chat.system.transform",
+        "experimental.session.compacting",
+        "experimental.text.complete",
+        "auth"
+      ],
+      "note": "Hooks are event listeners in TypeScript extensions, not shell scripts. No standalone hooks config.",
+      "source_doc": "docs/extensions.md - Hooks section",
+      "verify": "test -d ~/.pi/agent/extensions"
+    },
+    "mcp_servers": {
+      "supported": false,
+      "native_name": "N/A - no native MCP support",
+      "search_paths": [],
+      "format": null,
+      "note": "Pi does not have built-in MCP server support. MCP integration requires building a TypeScript extension that implements MCP client protocol. Workaround: use executor gateway pattern if MCP tools are needed.",
+      "source_doc": "README.md, docs/extensions.md, docs/custom-provider.md",
+      "verify": "false"
+    },
+    "subagents": {
+      "supported": false,
+      "deploy_path": null,
+      "native_name": "N/A - deliberately omitted",
+      "search_paths": [],
+      "note": "Pi philosophy: 'Ask pi to build what you want' or use third-party pi packages. Sub-agent delegation is not a built-in feature. Workaround: build via extensions or use prompt templates/skills.",
+      "source_doc": "README.md - Philosophy section",
+      "verify": "false"
+    },
+    "plugins": {
+      "supported": true,
+      "native_name": "Extensions (TypeScript/JavaScript)",
+      "search_paths": [
+        "~/.pi/agent/extensions/<name>/",
+        ".pi/extensions/<name>/",
+        "pi packages (via pi install)"
+      ],
+      "note": "Pi calls them 'extensions' not plugins. TypeScript/JS modules loaded at startup. Can define tools, commands, hooks, UI widgets, custom providers. Managed via 'pi install/remove/update' CLI.",
+      "source_doc": "docs/extensions.md, docs/packages.md",
+      "verify": "test -d ~/.pi/agent/extensions"
+    },
+    "prompt_templates": {
+      "supported": true,
+      "deploy_path": "~/.pi/agent/prompts/",
+      "native_name": "prompts/ directory (Markdown files with optional Mustache variables)",
+      "search_paths": [
+        "~/.pi/agent/prompts/<name>.md",
+        ".pi/prompts/<name>.md",
+        "pi packages"
+      ],
+      "note": "Markdown files with optional {{var}} syntax. Invoke via /name in editor to expand inline. Can be packaged and distributed via pi packages.",
+      "source_doc": "README.md - Prompt Templates section, docs/prompt-templates.md",
+      "verify": "test -d ~/.pi/agent/prompts"
+    }
+  }
+}

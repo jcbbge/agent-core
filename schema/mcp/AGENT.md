@@ -170,12 +170,13 @@ Deno.serve({ port: PORT, hostname: "127.0.0.1" }, async (req) => {
 
 ### Port Allocation (from registry.json)
 
-| Port | Assigned |
-|------|----------|
-| 3099 | kotadb MCP |
-| 3098 | anima MCP |
-| 3097 | **Next available** |
-| 3096 | Reserved |
+| Port | Assigned | Harness-Registered? |
+|------|----------|--------------------|
+| 8000 | executor gateway | **YES** — sole harness MCP |
+| 3099 | kotadb MCP (internal) | NO — via executor |
+| 3098 | anima MCP (internal) | NO — via executor |
+| 3097 | dev-brain MCP (internal) | NO — via executor |
+| 3096 | subagent-mcp (internal) | NO — via executor |
 
 ---
 

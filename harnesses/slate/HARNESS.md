@@ -158,12 +158,9 @@ To use a skill: read `~/Documents/_agents/schema/skills/[name]/SKILL.md` and inc
 {
   "$schema": "https://randomlabs.ai/config.json",
   "mcp": {
-    "anima":        { "type": "remote", "url": "http://localhost:3098/",        "enabled": true },
-    "dev-brain":    { "type": "remote", "url": "http://localhost:3097/",        "enabled": true },
-    "kotadb":       { "type": "remote", "url": "http://localhost:3099/",        "enabled": true },
-    "executor":     { "type": "remote", "url": "http://127.0.0.1:8000/mcp",     "enabled": true },
-    "subagent-mcp": { "type": "remote", "url": "http://localhost:3096/",        "enabled": true }
+    "executor": { "type": "remote", "url": "http://127.0.0.1:8000/mcp", "enabled": true }
   },
+  "_note": "Executor is the ONLY registered MCP. Anima/devbrain/kotadb/subagent are brain-layer sources accessed via tools['anima.*'] etc inside executor.",
   "command": {
     "anima-start": {
       "description": "Bootstrap Anima — load persistent memory substrate",

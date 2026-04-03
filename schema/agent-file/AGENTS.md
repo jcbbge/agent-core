@@ -38,12 +38,18 @@ You are ONE of N parallel instances running simultaneously in different IDEs/pro
 
 ## MCP Infrastructure
 
-Three HTTP MCP servers are always running:
-- **Anima (3098)** — Identity, memory, synthesis
-- **Dev-Brain (3097)** — Todos, threads, workspace state
-- **Kotadb (3099)** — Code intelligence, symbol search
+**Executor (8000)** is the sole harness-registered MCP. All other services are internal brain-layer sources.
 
-Check health with: `curl http://localhost:PORT/health`
+| Access via executor | Internal port |
+|---------------------|---------------|
+| `tools["anima.*"]` | 3098 |
+| `tools["devbrain.*"]` | 3097 |
+| `tools["kotadb.*"]` | 3099 |
+| `tools["subagent.*"]` | 3096 |
+
+Do NOT register or call internal ports directly.
+
+Check health: `curl http://localhost:PORT/health` (infra check only)
 
 If SurrealDB is down: `launchctl start dev.brain.surreal`
 

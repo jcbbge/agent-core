@@ -16,11 +16,11 @@ Port 7201 is DEAD — the separate kotadb SurrealDB was eliminated. Do not recre
 ## Port Allocation (reserved — do not reuse)
 - `8002` — SurrealDB (all namespaces: anima, dev/brain, kotadb, stack/catalog)
 - `8001` — Ollama
-- `8000` — executor daemon (active) — label: dev.brain.executor — http://127.0.0.1:8000
-- `3099` — kotadb MCP HTTP
-- `3098` — anima MCP HTTP
-- `3097` — dev-brain MCP HTTP
-- `3096` — subagent-mcp (active) — label: dev.brain.subagent-mcp — http://127.0.0.1:3096
+- `8000` — **executor gateway** (ONLY harness-registered MCP) — label: dev.brain.executor
+- `3099` — kotadb MCP (internal brain-layer only — access via executor `tools["kotadb.*"]`)
+- `3098` — anima MCP (internal brain-layer only — access via executor `tools["anima.*"]`)
+- `3097` — dev-brain MCP (internal brain-layer only — access via executor `tools["devbrain.*"]`)
+- `3096` — subagent-mcp (internal brain-layer only — access via executor `tools["subagent.*"]`)
 
 ## Daemon Management
 - All daemons managed via launchctl: `launchctl start/stop [label]`

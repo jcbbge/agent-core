@@ -1,0 +1,13 @@
+{
+  "project_name": "Harnesses OS",
+  "version": "1.0",
+  "description": "Universal Harness Protocol for agent-driven deterministic portability.",
+  "invariants": [
+    "Work is an Artifact, Not a Task",
+    "Stigmergy over Hierarchy"
+  ],
+  "mesh": {
+    "blackboard": "ledger.json",
+    "supported_phases": ["IDEATE", "PLAN", "IMPLEMENT", "TEST"]
+  }
+}
