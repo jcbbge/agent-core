@@ -1,32 +1,26 @@
 # Session Handoff
-Date: 2026-03-28
+Date: 2026-04-02
 Mode: meta/systems
 
-## Completed
+Completed:
+- Built Manifold UHP Mesh-OS end to end across 5 silos (State Engine, Contract Factory, AIP, Lifecycle, Observer), including mesh CLI at `~/.local/bin/mesh` and `mesh init` drop-in harness flow — established reusable multi-agent coordination substrate.
+- Implemented namespace isolation per project via `dna.json` ancestry walk and standardized SurrealDB configuration (`port 8002`, `MESH_SURREAL_URL`) — prevented cross-project artifact collisions and env-var conflicts with anima.
+- Propagated AGENTS.md updates into pi and opencode harnesses — aligned harness behavior around UHP/AIP operation.
 
-- **Fixed anima bootstrap** — added `--quiet` flag, returns JSON instead of 2000-line dump
-- **Updated session-bootstrap plugin** — now calls `anima bootstrap --quiet` silently, injects memory counts into session context
-- **Verified fix works** — new session shows `Anima: 255n / 10s / 5c` in context
-- **Schema as source of truth** — removed duplicate primitives from OpenCode, rebuilt with symlinks to schema/
-- **Cleaned agent-core repo** — committed all changes, schema/ is canonical, primitives/ deleted and committed
-- **Repo is clean** — all legitimate files committed, only empty backup/ remains
+Decisions captured:
+- none this session
 
-## Decisions captured
+Session metrics:
+- conversation_id: none — not bootstrapped
+- reflection recorded: yes
+- phi accumulated: 4.0
 
-- ADR: anima bootstrap --quiet flag for compact output
-- ADR: Schema as canonical source of truth, OpenCode rebuilt
+agent-core state:
+- Manifold coordination layer operational end-to-end; 5 silo artifacts currently in IMPLEMENT
 
-## agent-core state
+Open items:
+1. Advance all 5 Manifold silo artifacts from IMPLEMENT to TEST phase.
+2. Emit AC-VAL contracts and validation scores for each silo artifact.
 
-- Schema: 44 skills · 23 commands · 9 rules · 7 subagents (canonical)
-- OpenCode: symlinked to schema/
-- OpenCode plugins: session-bootstrap, session-close, ending-session, starting-session
-- Anima: 255n / 10s / 5c (session context working)
-
-## Open items
-
-(None — session context verified, schema clean)
-
-## Next session focus
-
-System is clean and operational. Resume normal work.
+Next session focus:
+Run TEST phase execution and close the artifact lifecycle loop by producing AC-VAL outputs and advancing artifact state accordingly.

@@ -24,6 +24,7 @@ Building the session workflow and MCP infrastructure layers.
 - [x] PRDs written: prd-primitive-gateway.md, prd-opencode-harness-cleanup.md, prd-opencode-plugin-system.md
 
 ## Backlog
+- [ ] Manifold follow-up: advance 5 silo artifacts from IMPLEMENT to TEST and emit AC-VAL contracts
 - [ ] Fix feature field MCP write (SurrealDB client quirk)
 - [ ] Build harness research template
 - [ ] Document harness profiles (claude-code, opencode, omp)
@@ -53,5 +54,5 @@ Building the session workflow and MCP infrastructure layers.
 
 ---
 
-**Updated**: 2026-03-26
+**Updated**: 2026-04-02
 **Context**: OpenCode fully configured — primitives wired, harness consolidated, 200 plugin ideas catalogued. Priority: Tier 1 plugins (Bootstrap Orchestrator + Session Close Orchestrator) + anima fold_config bug (BUG-005/related).
