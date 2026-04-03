@@ -2,35 +2,43 @@
 Date: 2026-04-03
 Mode: meta/systems
 
-## What Happened This Session
+## Completed This Session
 
-1. **Diagnosed executor persistence failure** — `rows.executions.insert` error was caused by a stale manually-started executor process holding port 8000. The launchd-managed version was in a crash loop. Fixed `~/bin/executor-start.sh` to kill stale port occupants before starting. Reloaded launchd. Executor now clean and managed.
+**Executor reliability:**
+- Diagnosed `rows.executions.insert` failure — stale bun process held port 8000, launchd in crash loop
+- Fixed `~/bin/executor-start.sh`: kills stale port occupants before starting, force-reconnects brain-layer sources after boot, polls SurrealDB HTTP API until tool_artifacts indexed (was using CLI heredoc which breaks in launchd shell)
 
-2. **Confirmed pi extension already routes through executor** — The open trail item "complete executor brain-layer MCP registration, then switch extension to route through executor gateway" was already done. The code was correct; the memory was stale. Extension at `~/.pi/agent/extensions/anima-mcp/index.ts` uses `EXECUTOR_MCP_URL = http://127.0.0.1:8000/mcp`.
+**Gateway enforcement (ADR-022):**
+- Removed all direct MCP registrations for anima/devbrain/kotadb/subagent from every harness config
+- `slate.json`, `opencode/plugins/session-lifecycle.ts`, all `AGENTS.md` files, `registry.json`, skill files, harness docs — executor only
+- `gateway_policy` field added to registry.json as machine-readable enforcement record
 
-3. **Root cause identified: implementation outran memory** — When work completes, the memory substrate was not updated to say DONE. Trail carried stale open tasks as current. Going forward: store a COMPLETION memory explicitly superseding any in-progress state.
+**Bootstrap capability surface (ADR-023):**
+- `executor.primitives.bootstrap` now returns live `capabilities.mcp` — 41 MCP tools grouped by intent (SESSION/MEMORY/WORK/CONTEXT/MULTI_AGENT) from SurrealDB `tool_artifacts`
+- `capabilities.primitives` — 91 filesystem primitives with byType breakdown
+- Four parallel async fetches — all degrade gracefully independently
+- Dynamic — reflects live tool catalog, no manual sync ever needed
 
-4. **Consistency audit + fixes applied**:
-   - `anima/SKILL.md` → updated port 3098 reference to note executor gateway
-   - `PI_ANIMA_INTEGRATION.md` → rewritten to reflect current architecture
-   - `NEXTSTEPS.md` → current state with accurate completed/open/infra tables
-   - Stale memory superseded with completion record in Anima
+**Continuity discipline:**
+- Identified root failure: implementation outpaced memory — executor gateway routing was done but trail said open, next instance re-opened closed work
+- Discipline: implementation complete → store completion memory in same breath
+- Stored as catalyst (φ5)
 
-## Current Infrastructure State
+## Open
 
-| Component | Status |
-|-----------|--------|
-| Executor daemon | ✅ launchd-managed, port 8000 |
-| Anima MCP | ✅ port 3098, via executor gateway only |
-| Pi extension | ✅ executor-routed, 5 tools registered |
-| Manifold | ✅ built, 5 silos in IMPLEMENT awaiting TEST |
+1. Subagent-mcp: OpenRouter refs in tool descriptions — todo logged, p1
+2. 5 Manifold silo artifacts sitting in IMPLEMENT → need TEST + AC-VAL
+3. Anima bugs BUG-001 through BUG-005 unresolved
 
-## Open Items
+## Next Session Focus
 
-1. Advance 5 Manifold silo artifacts → TEST, emit AC-VAL contracts
-2. Enforce completion-memory discipline going forward
-3. Consider: schema propagation system so docs can't drift from code
+Subagent-mcp migration (Perplexity) + Manifold TEST phase.
 
-## Failure Pattern to Remember
+## Infrastructure
 
-> When implementation completes a task that was stored as in-progress, explicitly store a COMPLETION memory referencing and superseding the previous state. Never let code and memory diverge.
+```
+executor: launchd-managed, port 8000, source reconnect + artifact poll on boot
+bootstrap: live capability surface from SurrealDB + filesystem
+tool_artifacts: 41 indexed (anima×9, devbrain×25, subagent×7)
+primitives: 91 (skill×44, command×23, rule×8, hook×7, subagent×5...)
+```
