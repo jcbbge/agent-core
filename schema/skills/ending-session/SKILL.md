@@ -71,14 +71,24 @@ Call through the executor: `anima_store` with:
 
 If nothing felt significant beyond routine work, skip.
 
-### Step C: Sync stack.yaml if modified
+### Step C: Session reflection (REQUIRED)
+
+**Call through executor: `anima_session_close`**
+
+This writes the full reflection record to build continuity over time:
+- `conversation_id` — REQUIRED. Must be the same ID from `anima_bootstrap` at session start. If you don't have it, you MUST ask the user before proceeding.
+- All other fields are optional — if omitted, it auto-generates via Ollama
+
+If no conversation_id (session wasn't bootstrapped), store a single important memory via `anima_store` instead and note this in the handoff.
+
+### Step D: Sync stack.yaml if modified
 
 If `stack.yaml` was added to or changed this session:
 ```bash
 bash ~/Documents/_agents/observe/sync-stack.sh 2>/dev/null
 ```
 
-### Step D: Write handoff
+### Step E: Write handoff
 
 Write to `~/Documents/_agents/workspace/handoff-latest.md`:
 
@@ -94,6 +104,11 @@ Completed:
 Decisions captured:
 - ADR-00N: [title] (or "none this session")
 
+Session metrics:
+- conversation_id: [id or "none — not bootstrapped"]
+- reflection recorded: [yes/no]
+- phi accumulated: [number]
+
 agent-core state:
 - N skills · N rules deployed
 
@@ -107,7 +122,7 @@ Next session focus:
 
 The WHY matters. "Built stack catalog schema" is less useful than "Built stack catalog schema — agents were reading files to understand environment, now they query SurrealDB (ADR-001)."
 
-### Step E: Write to dev-brain
+### Step F: Write to dev-brain
 
 **Persist handoff to SurrealDB for cross-project queryability:**
 
@@ -126,13 +141,13 @@ All calls route through the executor gateway:
 4. **Capture session summary**:
    - `capture_thought(type="observation", content="Session completed: [key items]. Next: [focus]", project="~/Documents/_agents", tags=["session", "handoff"])`
 
-### Step F: Update NEXT_STEPS.md
+### Step G: Update NEXT_STEPS.md
 
 If `~/Documents/_agents/NEXTSTEPS.md` exists:
 - Mark completed items done or remove them
 - Add newly discovered issues
 
-### Step G: Commit and push
+### Step H: Commit and push
 
 ```bash
 cd ~/Documents/_agents
@@ -211,6 +226,7 @@ All MCP tools are invoked through the executor gateway:
 
 **Anima tools:**
 - `anima_store(...)` — store memories with resonance
+- `anima_session_close(...)` — write session reflection (REQUIRED at session end)
 
 The executor routes calls to the appropriate MCP server and returns unified responses. Do not call MCP servers directly.
 

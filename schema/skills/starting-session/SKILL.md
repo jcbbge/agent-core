@@ -14,13 +14,20 @@ metadata:
 
 **Trigger:** `/starting-session`, "orient me", "where were we"
 
-## What Happens Automatically
+## What Happens (Harness-Dependent)
 
-The session-bootstrap plugin fires on first message:
-1. Runs `anima bootstrap --quiet` (identity handshake)
-2. Injects `<session-context>` block into session
+Bootstrap happens one of two ways:
 
-You do NOT need to call `anima_bootstrap` manually. It's handled.
+**1. Automatic** (harnesses with session-bootstrap plugin):
+- Plugin fires on first message
+- Runs `anima bootstrap --quiet` (identity handshake)
+- Injects `<session-context>` block into session
+
+**2. Manual** (all other harnesses):
+- YOU must call `anima_bootstrap` as first action
+- See the `anima` skill for full bootstrap protocol
+
+**How to tell:** If you see `<session-context>` with Anima counts below, bootstrap already happened. If not, you need to do it manually.
 
 ## Session Context Explained
 

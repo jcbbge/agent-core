@@ -4,11 +4,11 @@ description: Writes tests for completed implementations. Reads implementation, i
 provider: opencode
 model: minimax-m2.5-free
 tools:
-  - read
-  - write
-  - grep
-  - glob
-  - bash
+  read: true
+  write: true
+  grep: true
+  glob: true
+  bash: true
 temperature: 0
 ---
 

@@ -1,44 +1,46 @@
 # NEXTSTEPS — AgentCore Infrastructure
 
-## Current Focus
-Building the session workflow and MCP infrastructure layers.
+**Updated**: 2026-04-03
+**Context**: Manifold built. Pi + executor integration working. Continuity failure pattern identified and documented.
 
-- [x] Session ↔ Dev-Brain bridge (ADR-012)
-- [x] Feature field in task table
-- [x] get_todo_overview cross-project query
-- [x] Executor as MCP gateway (ADR-013)
-- [x] Updated starting-session for context-aware views
-- [x] Service tier classification (T1/T2/T3) for lifecycle management (ADR-016)
-- [x] Executor orchestrator tools (start/stop/status for T2 services)
-- [x] Field Theory process leak investigation (590MB, 26 processes documented)
-- [x] BUG-007: Curiosity worker threshold (>= instead of >, lowered to 3.5)
+---
+
+## Current Focus
+
+Closing the Manifold artifact lifecycle loop + executor/anima consistency.
+
+## Immediate (Next Session)
+
+- [ ] Advance all 5 Manifold silo artifacts from IMPLEMENT → TEST, emit AC-VAL contracts
+- [ ] Pi harness: add `anima_catalysts`, `anima_reflect`, `anima_stats`, `anima_associate` tools to extension (currently only 5 of 9 original tools are registered — verify which are needed vs deprecated)
+- [ ] Enforce completion-memory discipline: when a task closes, store a DONE memory superseding the in-progress one
 
 ## In Progress
+
 - [ ] Implement Tier 1 OpenCode plugins (Bootstrap Orchestrator + Session Close Orchestrator)
 
-## Completed This Session (2026-03-26)
-- [x] OpenCode is sole harness — OMP and Claude Code dropped (ADR-27)
-- [x] 43 skills + 23 commands + 5 subagents + 9 rules wired to OpenCode natively (ADR-28)
-- [x] 200 OpenCode plugin ideas catalogued in docs/prd-opencode-plugin-system.md (ADR-29)
-- [x] AGENTS.md rewritten with full primitive awareness and executor gateway pattern
-- [x] PRDs written: prd-primitive-gateway.md, prd-opencode-harness-cleanup.md, prd-opencode-plugin-system.md
+## Infrastructure State (as of 2026-04-03)
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Executor daemon | ✅ running | launchd-managed, port 8000, fixed stale-process bug |
+| Anima MCP | ✅ running | port 3098, accessed via executor gateway only |
+| Pi extension | ✅ routing through executor | `~/.pi/agent/extensions/anima-mcp/index.ts` |
+| Manifold mesh CLI | ✅ built | `~/.local/bin/mesh`, 5 silos in IMPLEMENT |
+| KotaDB | ⚠️ semantic search broken | "no MATCHES clause" error |
 
 ## Backlog
-- [ ] Manifold follow-up: advance 5 silo artifacts from IMPLEMENT to TEST and emit AC-VAL contracts
+
 - [ ] Fix feature field MCP write (SurrealDB client quirk)
 - [ ] Build harness research template
-- [ ] Document harness profiles (claude-code, opencode, omp)
-- [ ] Design schema propagation system
-- [ ] Design harness update adaptation
-- [x] Service tier classification (T1/T2/T3) for lifecycle management (ADR-016)
-- [x] Executor orchestrator tools (start/stop/status for T2 services)
-- [x] Field Theory process leak investigation (590MB, 26 processes documented)
+- [ ] Design schema propagation system — one source of truth, everything references it
 - [ ] Submit Field Theory bug report to developer
 - [ ] Fix KotaDB semantic search index ("no MATCHES clause" error)
 - [ ] Implement idle auto-shutdown for T2 services (30min timeout)
-- [ ] Design cross-project work primitive (unified tracking across repos)
+- [ ] Design cross-project work primitive
 
 ## Anima Bugs (in workspace/specs/)
+
 - [ ] BUG-001+006: Synthesis daemon zombie + dual workers (CRITICAL — synthesis stuck)
 - [ ] BUG-002: Active tier depletion (fold consumes all active memories)
 - [ ] BUG-003: workspace/ gitignored, blocks handoff commits
@@ -46,13 +48,16 @@ Building the session workflow and MCP infrastructure layers.
 - [ ] BUG-005: fold_model config mismatch (DB says haiku, code uses llama)
 - [x] BUG-007: Curiosity worker threshold (fixed)
 
-## Related
-- roux: Classification/routing framework
-- cortex: Analysis/design workspace
-- sigil: Capture layer
-- stack.yaml: MCP servers, daemons, ports
+## Completed (Archived)
 
----
-
-**Updated**: 2026-04-02
-**Context**: OpenCode fully configured — primitives wired, harness consolidated, 200 plugin ideas catalogued. Priority: Tier 1 plugins (Bootstrap Orchestrator + Session Close Orchestrator) + anima fold_config bug (BUG-005/related).
+- [x] Session ↔ Dev-Brain bridge (ADR-012)
+- [x] Executor as MCP gateway (ADR-013)
+- [x] Service tier classification T1/T2/T3 (ADR-016)
+- [x] Executor orchestrator tools (start/stop/status for T2 services)
+- [x] OpenCode is sole harness — OMP and Claude Code dropped (ADR-27)
+- [x] 43 skills + 23 commands + 5 subagents + 9 rules wired to OpenCode (ADR-28)
+- [x] AGENTS.md rewritten with full primitive awareness and executor gateway pattern
+- [x] Manifold UHP Mesh-OS built end to end (5 silos, mesh CLI, dna.json, AGENTS.md propagated)
+- [x] Pi extension routes through executor gateway (not direct to port 3098)
+- [x] executor-start.sh fixed: kills stale port-8000 processes before starting
+- [x] BUG-007: Curiosity worker threshold fixed

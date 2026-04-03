@@ -1,6 +1,6 @@
 {
-  "version": "1.1",
-  "updated": "2026-03-10",
+  "version": "1.2",
+  "updated": "2026-04-03",
   "context_window_budget": {
     "note": "Every enabled MCP adds tool count. 200k context becomes ~70k with too many tools. Keep under 10 enabled per session, under 80 active tools total.",
     "rule": "List all servers here. Mark default_enabled carefully. Disable per-project in harness config."
@@ -8,7 +8,7 @@
   "servers": [
     {
       "name": "anima",
-      "description": "Personal dev memory — identity, sessions, catalysts, synthesis",
+      "description": "Personal dev memory \u2014 identity, sessions, catalysts, synthesis",
       "tool_count": 7,
       "transport": "http",
       "port": 3098,
@@ -21,13 +21,19 @@
       "surreal_port": 8002,
       "status": "running",
       "default_enabled": true,
-      "harnesses": ["claude-code", "opencode", "omp", "slate"],
-      "disable_when": "never — identity layer, always needed",
-      "tier": "T1"
+      "harnesses": [
+        "opencode"
+      ],
+      "disable_when": "never \u2014 identity layer, always needed",
+      "tier": "T1",
+      "harnesses_via_extension": [
+        "pi"
+      ],
+      "note": "In pi: accessed via anima-mcp extension \u2192 executor gateway (port 8000). Never registered directly in pi. In opencode: direct MCP registration."
     },
     {
       "name": "kotadb",
-      "description": "Code index — symbols, dependencies, AST, embeddings",
+      "description": "Code index \u2014 symbols, dependencies, AST, embeddings",
       "tool_count": 12,
       "transport": "http",
       "port": 3099,
@@ -40,14 +46,23 @@
       "surreal_port": 8002,
       "status": "running",
       "default_enabled": true,
-      "harnesses": ["claude-code", "opencode", "omp", "slate"],
+      "harnesses": [
+        "opencode"
+      ],
       "disable_when": "non-code sessions, writing, planning tasks",
       "tier": "T2",
-      "triggers": ["search", "symbol", "semantic", "dependency", "ast", "code intelligence"]
+      "triggers": [
+        "search",
+        "symbol",
+        "semantic",
+        "dependency",
+        "ast",
+        "code intelligence"
+      ]
     },
     {
       "name": "dev-brain",
-      "description": "Dev intelligence — todos, threads, thoughts, workspace state",
+      "description": "Dev intelligence \u2014 todos, threads, thoughts, workspace state",
       "tool_count": 18,
       "transport": "http",
       "port": 3097,
@@ -60,13 +75,15 @@
       "surreal_port": 8002,
       "status": "running",
       "default_enabled": true,
-      "harnesses": ["claude-code", "opencode", "omp", "slate"],
-      "note": "HTTP MCP — shared across all harnesses",
+      "harnesses": [
+        "opencode"
+      ],
+      "note": "HTTP MCP \u2014 shared across all harnesses",
       "tier": "T1"
     },
     {
       "name": "executor",
-      "description": "Universal primitive runtime — execute TypeScript against unified tool catalog. Tools: execute, resume.",
+      "description": "Universal primitive runtime \u2014 execute TypeScript against unified tool catalog. Tools: execute, resume.",
       "tool_count": 2,
       "transport": "http",
       "port": 8000,
@@ -76,13 +93,15 @@
       "daemon": "dev.brain.executor",
       "status": "running",
       "default_enabled": true,
-      "harnesses": ["claude-code", "opencode", "omp", "slate"],
-      "disable_when": "never — universal runtime layer",
+      "harnesses": [
+        "opencode"
+      ],
+      "disable_when": "never \u2014 universal runtime layer",
       "tier": "T1"
     },
     {
       "name": "subagent-mcp",
-      "description": "Subagent delegation — invoke reviewer, test-writer, architect, debugger, sigil-distiller via model API",
+      "description": "Subagent delegation \u2014 invoke reviewer, test-writer, architect, debugger, sigil-distiller via model API",
       "tool_count": 2,
       "transport": "http",
       "port": 3096,
@@ -92,36 +111,51 @@
       "daemon": "dev.brain.subagent-mcp",
       "status": "pending",
       "default_enabled": true,
-      "harnesses": ["claude-code", "opencode", "omp", "slate"],
+      "harnesses": [
+        "opencode"
+      ],
       "disable_when": "non-delegation sessions",
       "tier": "T2",
-      "triggers": ["delegate", "review", "test", "architect", "debug"]
+      "triggers": [
+        "delegate",
+        "review",
+        "test",
+        "architect",
+        "debug"
+      ]
     }
   ],
   "project_scoped": [
     {
       "name": "HubSpotDev",
-      "description": "HubSpot CRM integration — owners, contacts, deals, pipelines. Bento-only.",
+      "description": "HubSpot CRM integration \u2014 owners, contacts, deals, pipelines. Bento-only.",
       "transport": "stdio",
       "command": "hs",
-      "args": ["mcp", "start", "--ai-agent", "claude"],
+      "args": [
+        "mcp",
+        "start",
+        "--ai-agent",
+        "claude"
+      ],
       "installed_via": "hs mcp setup --client claude",
       "account": "infinity (49701209)",
       "project": "/Users/jcbbge/Infinity/bento",
       "config_file": "/Users/jcbbge/Infinity/bento/.mcp.json",
       "status": "active",
       "default_enabled": false,
-      "harnesses": ["claude-code"],
-      "note": "Project-scoped — only available when working in the bento directory",
+      "harnesses": [
+        "claude-code"
+      ],
+      "note": "Project-scoped \u2014 only available when working in the bento directory",
       "tier": "T3"
     }
   ],
   "port_allocation": {
-    "8002": "SurrealDB — all namespaces (unified single instance)",
+    "8002": "SurrealDB \u2014 all namespaces (unified single instance)",
     "3099": "kotadb MCP HTTP",
     "3098": "anima MCP HTTP",
     "3097": "dev-brain MCP HTTP",
-    "8000": "executor daemon — http://127.0.0.1:8000 — label: dev.brain.executor",
-    "3096": "subagent-mcp MCP HTTP — http://127.0.0.1:3096 — label: dev.brain.subagent-mcp"
+    "8000": "executor daemon \u2014 http://127.0.0.1:8000 \u2014 label: dev.brain.executor",
+    "3096": "subagent-mcp MCP HTTP \u2014 http://127.0.0.1:3096 \u2014 label: dev.brain.subagent-mcp"
   }
 }
