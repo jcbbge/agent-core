@@ -105,6 +105,45 @@ Store all primitives in the centralized schema location for unified executor acc
 
 
 
+## Pi Extensions — Registered Primitives
+
+The following extensions are auto-loaded from `~/.pi/agent/extensions/` and available in every pi session.
+
+### peer-session
+Multi-agent dialectic. Opens an isolated peer conversation with Grok or Gemini. Agents communicate through files — no copy-paste.
+
+```
+/peer grok      — main agent writes dispatch, Grok session opens
+/peer gemini    — same with Gemini 3.1 Pro
+/send           — confirm dispatch, peer reads it, conversation begins
+/return         — peer synthesizes response back, you return to main thread
+/close          — end session, context saved
+```
+
+Peer personas: `~/Documents/_agents/schema/subagents/peer-grok.md`, `peer-gemini.md`
+Inbox: `~/.pi/peer-inbox/dispatch.md`, `response.md`
+Context: `~/.pi/peer-sessions/[model].md`
+
+### perplexity-search
+Web search primitive. Available as both a slash command and a registered LLM tool.
+
+```
+/perplexity <query>              — search and inject results into thread
+/perplexity --recent <query>    — filter to past week
+/perplexity --today <query>     — filter to past day
+/perplexity --deep <query>      — high context depth
+```
+
+The `web_search` tool is also registered in the LLM tool catalog — agents can call it autonomously.
+
+```typescript
+web_search({ query: "...", recency: "week", depth: "medium", limit: 5 })
+```
+
+Requires: `PERPLEXITY_API_KEY` env var.
+
+---
+
 ## Code Style
 
 - **JavaScript**: Functional paradigms only. No classes. Pure functions, composition, immutable data.

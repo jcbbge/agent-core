@@ -1,29 +1,28 @@
 # Session Handoff
-Date: 2026-04-04
+Date: 2026-04-06 (Monday)
 Mode: meta/systems
 
-## Completed This Session
+## Completed
 
-**Architectural Pivot (Substrate / Cognitive Terraform):**
-- Diagnosed "agentic entropy" — agents build scaffolding (contracts, silos, todos) but never tear it down, leaving the workspace rotting and forcing manual reconciliation.
-- Shifted metaphor from "corporate task management" to "the physics of work" (stacking cups, the breath, immune systems).
-- Built `~/substrate`: A rigorous, zero-residue 5-phase IPIT framework.
-  - Phase 1-4: The In-Breath (Ideate, Plan, Implement, Test) — represented as ephemeral `intent` records in SurrealDB.
-  - Phase 5: The Collapse (Integration/The Out-Breath) — The agent distills the `intent` traces into a persistent `memory` (Anima) and physically deletes the `intent` record. Zero residue.
-- Implemented `src/cli/breath.ts` and `src/mcp/server.ts` to expose the Substrate primitives (`intent_create`, `intent_phase`, `collapse`).
-- Defined `CORE.md` to permanently capture the "Cognitive Terraform" philosophy.
-- Pushed architecture to local git (GitHub remote pending manual repo creation).
+- **peer-session.ts** — pi extension implementing multi-agent dialectic. `/peer grok|gemini`, `/send`, `/return`, `/close`. Main agent writes dispatch to `~/.pi/peer-inbox/dispatch.md`, peer reads it, user converses interactively, `/return` triggers peer synthesis back to main thread. No copy-paste. Tested and working on first real use.
+- **perplexity-search.ts** — pi extension surfacing Perplexity Search API as dual primitive: `/perplexity` slash command + `web_search` registered LLM tool. Agents can invoke autonomously.
+- **peer-grok.md / peer-gemini.md** — full persona system prompts written. Grok: JARVIS+Hitchhiker DNA, 10X refraction, anti-sycophancy. Gemini: Stellar Architect, barefoot philosophy, brutalist prose, Refraction Point requirement.
+- **AGENTS.md updated** — `~/.pi/agent/AGENTS.md`, `~/.config/opencode/AGENTS.md`, `~/Documents/_agents/schema/agent-file/AGENTS.md`, `~/AGENTS.md` — all now document peer-session and perplexity-search primitives.
+- **devbrain todos captured** — project `peer-session` / feature `open-source-prep` with full design notes for config layer, naming convention, model list, system prompt refinement.
 
-**Behavioral Correction:**
-- Identified critical violation of "Presence over Framework": agents over-indexing on autonomy and spiraling into `colgrep` loops when asked conversational questions ("what is next?").
-- Added "Circuit Breaker (Anti-Looping)" rule to global `AGENTS.md`: Check `NEXTSTEPS.md` exactly once, then STOP and ask the human. Never guess, never loop, never mutate state to answer a question.
+## Decisions captured
+- ADR: peer-session multi-agent dialectic architecture
+- ADR: perplexity-search as dual-surface LLM primitive
 
-## Open
+## Key insight
+Mode 1 (dialectic brainstorming) and Mode 2 (research with native tools) are distinct. Mode 1 never needed the browser. The isolation between agents IS the feature — the gap produces triangulation value. Don't engineer it away.
 
-1. Manual GitHub action: create `substrate` repo in UI to allow git push of `~/substrate`.
-2. Executor daemon is currently down (`http://127.0.0.1:8000` unresponsive). Needs reboot for DevBrain/Anima MCP routing.
-3. Subagent-mcp migration (Perplexity) + Manifold TEST phase still pending (abandoned in favor of Substrate pivot).
+## Open items (peer-session open-source prep)
+1. Config layer — provider, model, system prompt, paths all user-configurable (not hardcoded)
+2. Naming convention — `[topic]-[agent]-[YYYY-MM-DD]-t[turn]-s[seq].md` — design decision needed on topic auto-generation
+3. `/relay` command — peer consulting another peer without user as carrier
+4. Agent-initiated peers — `peer_dispatch` as registered LLM tool (autonomy/cost gate design needed)
+5. README — concept-first, philosophy before commands
 
-## Next Session Focus
-
-Dogfood the Substrate. Take the first "Micro-Breath" using `bun run breath in` to test the IPIT loop and confirm the Phase 5 `collapse` successfully incinerates the scaffolding.
+## Next session focus
+Test `/peer gemini` — confirm Stellar Architect persona lands correctly. Then begin open-source config layer (priority 1) so the extension is portable before writing the README.
