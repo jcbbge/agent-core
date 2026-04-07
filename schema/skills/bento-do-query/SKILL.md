@@ -13,7 +13,10 @@ metadata:
 ## Connection
 
 ```bash
-DB_URI="postgresql://doadmin:REDACTED@db-bento-prod-postgresql-nyc1-40467-do-user-4130303-0.d.db.ondigitalocean.com:25060/bento?sslmode=require"
+# Requires BENTO_DB_PASSWORD in your environment.
+# Get the current password from: DigitalOcean → Databases → db-bento-prod-postgresql → Users → doadmin
+# Add to your shell profile: export BENTO_DB_PASSWORD="<password from DO>"
+DB_URI="postgresql://doadmin:${BENTO_DB_PASSWORD}@db-bento-prod-postgresql-nyc1-40467-do-user-4130303-0.d.db.ondigitalocean.com:25060/bento?sslmode=require"
 ```
 
 - **Cluster ID:** `64bd7be7-90f3-43e4-86ca-32617e0274d7`
