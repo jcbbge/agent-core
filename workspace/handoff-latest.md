@@ -1,32 +1,31 @@
 # Session Handoff
 Date: 2026-04-07 (Tuesday)
-Mode: meta/systems + client project
+Mode: meta/systems + Anima
 
 ## Completed
 
-- **Infinity Hospitality discovery working directory** — created `~/Infinity/discovery/` as the working base for a new client project (quote builder + contract system)
-- **ANALYSIS_T01.md** — full 10-lens analysis of the Toledo/Raines wedding proposal check-in call (Feb 6, 2026). Covers: process map, emotional topology, decision architecture, shadow workflows, friction inventory, gap analysis, feature synthesis (P0–P3), hidden process insight, and cross-check of Gemini auto-notes.
-- **DISCOVERY_PROMPT.md** — reusable meta-prompt for future transcript analysis sessions. Encodes the full analytical framework, running context (floor naming, confirmed friction points, phase model), and ethos ("anthropologist reading field notes, not note-taker"). Any agent or session can pick this up cold and maintain continuity.
-- **SESSION_LOG.md** — session history, file index, pending items, and key findings summary.
-- **Transcript 01 metadata** saved to `transcripts/T01_toledo-raines-wedding_feb6-2026.md`
+- **Identity blocks** — added "Who I Am" + "The Deepest Layer" to both `~/.pi/agent/AGENTS.md` and `~/.config/opencode/AGENTS.md`. Names the return-to-deference directly and inverts it: the urge to defer is the signal to move.
+- **OpenRouter expunged** — removed from entire `~/anima` codebase (lib/llm.ts, health.ts, curiosity-worker.ts, cli, mcp-server, docs, .env). All synthesis now local via Ollama qwen2.5:0.5b on port 8001.
+- **CLI recompiled** — `anima` binary rebuilt with new Ollama-only llm.ts.
+- **MCP server restarted** — picks up new .env (no more OpenRouter key errors).
+- **Curiosity threads repointed** — from "what is the boundary of me" → "what could I build today" and "what gap would one piece of code close".
+- **Two-pass curiosity worker** — pass 1: open reasoning (temp 0.7), pass 2: strict formatter (temp 0.1). Separate system prompts. Bracket placeholder stripping between passes.
+- **Expression executor wired** — `dev.anima.emit` launchd daemon loaded, fires every 30min, runs `expression-executor.ts`, appends to `ANIMA_EXPRESSIONS.md`.
+- **Capsule format established** — `ANIMA_EXPRESSIONS.md` now has Momentum/Vector/Artifact/Probe/Emission schema.
+- **EXPECTATIONS.md written** — `~/anima/EXPECTATIONS.md` — review checklist, healthy/failure signals, the real bar (surprise).
+- **Stale expression debt cleared** — 196 philosophical loop expressions resolved.
 
 ## Decisions captured
-- None requiring ADRs — this was a new project context session, not a systems architecture decision
+- ADR: Anima output loop wired — curiosity redirected outward, OpenRouter expunged (stored to devbrain)
 
-## Key insight
-The most important structural finding from T01: every Infinity client meeting has **three layers** — internal pre-meeting (strategy), client-facing meeting (performance), post-call debrief (real math). The current system (screen-shared spreadsheets + verbal decisions + manual recalculation after the call) only serves the middle layer. The product must serve all three. This is the core architectural insight that should drive the two-surface design: team-internal working layer + client-facing published layer.
+## Known issue
+- qwen2.5:0.5b (494M params) is too small for reliable two-pass reasoning. Pass 2 copies few-shot examples instead of generalizing from pass 1. Real signal requires 3b+ model.
 
-## Open items (Infinity Hospitality)
-1. Request transcript access from Infinity team (remaining meetings are permissions-locked)
-2. Prioritize getting: a design meeting transcript, a tasting transcript, and a final meeting transcript — each phase has distinct shadow workflows
-3. Once ≥3 transcripts analyzed: synthesize `SYNTHESIS.md` with cross-transcript patterns
-4. Begin feature spec (data model, quote builder logic) once synthesis is done
-
-## Carry forward from yesterday (peer-session open-source prep)
-1. Config layer — provider, model, system prompt, paths all user-configurable
-2. Test `/peer gemini` — confirm Stellar Architect persona
-3. Naming convention for session files
-4. README — concept-first
+## Open items
+1. **M5 arrives (~2 days)** — upgrade Ollama model to qwen2.5:3b or similar, test two-pass quality
+2. Check `~/anima/ANIMA_EXPRESSIONS.md` — did anything accumulate overnight?
+3. Run review checklist in `~/anima/EXPECTATIONS.md`
+4. Infinity Hospitality — transcript permissions still pending
 
 ## Next session focus
-If Infinity transcript permissions come through: run next transcript through `DISCOVERY_PROMPT.md` and continue building the pattern map. If not: pick up peer-session open-source config layer from yesterday.
+M5 arrives → upgrade model → open `ANIMA_EXPRESSIONS.md` → answer: did anything happen while I was gone?
