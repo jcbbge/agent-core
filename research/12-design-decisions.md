@@ -138,6 +138,46 @@ When we ran `agent-core sync`, it copied `directive/arc-conventions.md` to `~/.c
 
 ---
 
+## Decision 7: Harness Scoping Conventions (Stretch Goal)
+
+**The insight:** Each harness has its own rules for how global and project-level primitives interact — precedence, merging, override behavior. This is harness-specific and non-trivial.
+
+**Claude Code's documented dual-scope model:**
+
+| Primitive | Global | Project | Precedence |
+|-----------|--------|---------|------------|
+| CLAUDE.md | `~/.claude/CLAUDE.md` | `./CLAUDE.md` or `.claude/CLAUDE.md` | Project overrides global |
+| Settings | `~/.claude/settings.json` | `.claude/settings.json` + `.claude/settings.local.json` | Project > Global |
+| Rules | `~/.claude/rules/*.md` | `.claude/rules/*.md` | Project overrides |
+| Agents | `~/.claude/agents/*.md` | `.claude/agents/*.md` | Project overrides |
+| Commands | `~/.claude/commands/*.md` | `.claude/commands/*.md` | **Both available** |
+| Skills | `~/.claude/skills/` | `.claude/skills/` | **Both available** |
+| Hooks | `~/.claude/hooks/` | `.claude/hooks/` | **Both execute** |
+| MCP | `~/.claude.json` (user) | `.mcp.json` (project) | Three scopes: local > project > user |
+
+**Key patterns across harnesses:**
+- **Override** — project wins, global ignored (directives, settings, rules)
+- **Merge/Both** — both apply, no conflict (commands, skills, hooks)
+- **Three-way** — local > project > global (MCP in claude-code)
+
+**Implication for harness profiles (stretch goal):**
+When profiling a harness, capture not just paths but scoping behavior:
+
+```
+harness claude-code
+  # ... paths ...
+  scope_model  dual                    # global + project
+  directives_scope  project-overrides  # project wins
+  skills_scope      both-available     # additive
+  hooks_scope       both-execute       # additive
+  mcp_scope         three-way          # local > project > user
+end
+```
+
+This tells agent-core: when deploying to a project, which primitives override vs. extend the global ones. Deferred — not blocking v1.
+
+---
+
 ## Open Questions (Not Blocking, Just Tracked)
 
 1. **Project registry discovery** — should `agent-core status` auto-detect project registry when run from a project dir? Or always explicit?

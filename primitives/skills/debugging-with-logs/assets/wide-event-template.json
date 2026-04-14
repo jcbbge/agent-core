@@ -1,0 +1,95 @@
+{
+  "_comment": "Wide Event Template - Copy and customize for your application",
+  "_instructions": "Remove fields not relevant to your use case. Add business-specific fields as needed.",
+  
+  "timestamp": "2024-12-20T10:23:45.612Z",
+  "request_id": "req_abc123def456",
+  "trace_id": "trace_xyz789",
+  
+  "service": "your-service-name",
+  "version": "1.0.0",
+  "deployment_id": "deploy_abc123",
+  "region": "us-east-1",
+  "environment": "production",
+  
+  "method": "POST",
+  "path": "/api/your-endpoint",
+  "status_code": 200,
+  "duration_ms": 245,
+  "outcome": "success",
+  
+  "user": {
+    "id": "user_123",
+    "email": "user@example.com",
+    "subscription": "premium",
+    "account_age_days": 365,
+    "lifetime_value_cents": 50000
+  },
+  
+  "session_id": "sess_xyz789",
+  "ip_address": "192.168.1.100",
+  "user_agent": "Mozilla/5.0...",
+  
+  "_comment_business_context": "Add business-specific fields here. Examples below:",
+  
+  "cart": {
+    "id": "cart_abc",
+    "item_count": 3,
+    "total_cents": 15999,
+    "coupon_code": "SAVE20"
+  },
+  
+  "payment": {
+    "method": "card",
+    "provider": "stripe",
+    "amount_cents": 15999,
+    "latency_ms": 245,
+    "attempt": 1
+  },
+  
+  "order": {
+    "id": "order_xyz",
+    "status": "confirmed"
+  },
+  
+  "_comment_performance": "Performance tracking fields",
+  
+  "db": {
+    "query_count": 3,
+    "total_duration_ms": 45,
+    "slowest_query_ms": 20
+  },
+  
+  "cache": {
+    "hit_count": 2,
+    "miss_count": 1,
+    "latency_ms": 2
+  },
+  
+  "external_api": {
+    "call_count": 1,
+    "total_duration_ms": 245
+  },
+  
+  "_comment_feature_flags": "Feature flags and experiments",
+  
+  "feature_flags": {
+    "new_checkout_flow": true,
+    "express_payment": false
+  },
+  
+  "experiments": {
+    "checkout_button_color": "blue",
+    "pricing_layout": "variant_a"
+  },
+  
+  "_comment_error": "Include only when errors occur",
+  
+  "error": {
+    "type": "PaymentError",
+    "code": "card_declined",
+    "message": "Card declined by issuer",
+    "retriable": false,
+    "provider_code": "insufficient_funds"
+  }
+}
