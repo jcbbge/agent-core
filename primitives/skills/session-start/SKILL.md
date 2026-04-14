@@ -1,23 +1,25 @@
 ---
 name: session-start
-description: Orient at the start of any session. Surfaces where work is across all
-  three tiers — project, active scope, implementation. Reads git state + WORK.md.
-  No services required. Works anywhere with git. Use at the start of every session
-  before touching any code or files.
-argument-hint: <optional — project name or focus area>
+description: Orient at the start of any session. Call this before touching anything.
+  Reads WORK.md + git state. Surfaces project phase, what's active, what's blocked,
+  and what was left unfinished last session. Works with git + filesystem only —
+  no services required.
+argument-hint: <optional — project name or context>
 allowed-tools: Bash Read
 metadata:
   author: jrg
-  version: "1.0"
-  tags: session, orientation, git, workflow
-  constellation-upgrade: "When Constellation ships: read from Nebula STATUS file
-    and trajectory pheromones instead of WORK.md + git log. Same output shape."
+  version: "2.0"
+  tags: session, orientation, git, workflow, four-phases
+  lineage: substrate-breath-model, manifold-ipit, constellation-four-houses
+  constellation-upgrade: "Step 2 reads Nebula STATUS + pheromone files instead of
+    git log. Step 3 reads trajectory artifacts instead of WORK.md. Output shape
+    is identical. WORK.md retires when the Nebula exists."
 ---
 
 # Session Start
 
-Orient before acting. This skill reads three sources and surfaces one view.
-Do not open files, write code, or make tool calls until this completes.
+**Call this before touching any file, writing any code, or making any tool call.**
+This is not optional. This is how you orient. Do the steps in order.
 
 ---
 
@@ -26,131 +28,127 @@ Do not open files, write code, or make tool calls until this completes.
 ```bash
 git rev-parse --show-toplevel 2>/dev/null && echo "PROJECT" || echo "META"
 git branch --show-current 2>/dev/null
+pwd
 ```
 
-**If META** (not in a git repo) → skip to Meta Mode below.
-**If PROJECT** → continue.
+- Result is `PROJECT` → continue to Step 2
+- Result is `META` (not in a git repo) → skip to **Meta Mode** at the bottom
 
 ---
 
-## Step 2 — Read the last commit handoff
+## Step 2 — Read the handoff from last session
 
 ```bash
-git log --format="%H %s%n%b" -1
+git log --format="%s%n%b" -3
 ```
 
-Find the `TODO:` line. That is what was left unfinished last session.
-Find the `PHASE:` line. That is where the work was in the four-phase cycle.
-Find the `DONE:` line. That is what was completed.
+Scan the last 3 commits. Find the most recent one with a `TODO:` line.
+That is what was left unfinished. Extract:
+- `PHASE:` — where the work was in the cycle (Ideate / Plan / Implement / Verify)
+- `DONE:` — what was completed last session
+- `TODO:` — what was explicitly left open
 
-If the last commit has no TODO line → check the one before it:
+If none of the last 3 commits have a `TODO:` line, run:
 ```bash
-git log --oneline -5
+git log --oneline -10
 ```
+and infer from commit messages what was last touched.
 
 ---
 
-## Step 3 — Read the three-tier dashboard
+## Step 3 — Read WORK.md
 
 ```bash
-cat WORK.md 2>/dev/null || echo "No WORK.md found — run: cp ~/agent-core/templates/WORK.md ."
+cat WORK.md 2>/dev/null || echo "NO WORK.md — create one: cp ~/agent-core/templates/WORK.md . && edit it"
 ```
 
-Read all three tiers:
-- **PROJECT** section → what phase is the overall project in
-- **ACTIVE** section → what tasks have a defined path right now
-- **BLOCKED** section → what cannot proceed and why
-- **BACKLOG** section → what is captured but not yet active
+Read carefully:
+- `Phase:` header — current phase of the whole project
+- `PROJECT` section — milestone, overall status
+- `ACTIVE` — tasks with a defined path right now (these are tasks, not todos)
+- `BLOCKED` — what cannot move and why
+- `BACKLOG` — captured items not yet scheduled (todos)
+
+The distinction matters: **ACTIVE = do it now, path exists. BACKLOG = captured, no path yet.**
 
 ---
 
-## Step 4 — Risk map (first session in codebase, or if >7 days since last session)
+## Step 4 — Risk map
 
-Only run this block if it's your first time in this codebase OR the last commit
-was more than a week ago. Otherwise skip — it's noise.
+**Only run if:** first session in this codebase, OR last commit was >7 days ago.
+Otherwise skip entirely.
 
 ```bash
-# Churn hotspots — files changed most often
+# Files changed most — churn hotspots
 git log --format=format: --name-only --since="1 year ago" | sort | uniq -c | sort -nr | head -10
 
-# Bug clusters — files that keep breaking
-git log -i -E --grep="fix|bug|broken|revert" --name-only --format='' \
-  | sort | uniq -c | sort -nr | head -10
+# Files that keep breaking — bug clusters
+git log -i -E --grep="fix|bug|broken|revert" --name-only --format='' | sort | uniq -c | sort -nr | head -10
 
-# Velocity — is this project healthy
+# Commit velocity — project health shape
 git log --format='%ad' --date=format:'%Y-%m' | sort | uniq -c | tail -6
 ```
 
-Cross-reference churn list and bug list. Files on both = risk zones.
-Name them explicitly in the output.
+Cross-reference the two lists. Files appearing in both = **risk zones**.
+Name them explicitly. These are where you are most likely to break something.
 
 ---
 
-## Output Format
+## Output
 
-Produce exactly this view. No prose. No explanation. Just the dashboard.
+Produce this exact format. No prose. No preamble. No explanation.
 
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-<repo-name> / <branch>  ·  <date>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-PROJECT   <project phase and milestone from WORK.md>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<repo-name> / <branch>  ·  2026-04-14
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PHASE     <Ideate | Plan | Implement | Verify>
 
-ACTIVE    <task 1 [scope]>
-          <task 2 [scope]>
-          (or: nothing active — check BACKLOG)
+PROJECT   <one-line status from WORK.md>
+          Next: <next milestone>
 
-BLOCKED   <task — why>
-          (or: nothing blocked)
+ACTIVE    · <task [scope]>
+          · <task [scope]>
 
-HANDOFF   Last session completed: <DONE from last commit>
-          Left open: <TODO from last commit>
-          Phase was: <PHASE from last commit>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RISK ZONES  <files on both churn + bug list, if step 4 ran>
-            (omit this line if step 4 was skipped)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BLOCKED   · <task — why blocked>
+          (none if empty)
+
+HANDOFF   Completed: <DONE: from last commit>
+          Open:      <TODO: from last commit>
+          Was in:    <PHASE: from last commit>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RISK ZONES  · <file> (<N> churn hits, bug cluster)
+            (omit section entirely if step 4 was skipped)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 What are we expanding into?
 ```
 
-The last line is the prompt. It is not rhetorical. Wait for an answer before proceeding.
+**The last line is a real question. Wait for the answer before doing anything.**
+
+You are not catching up. You are declaring what you are expanding into next.
+Name it. One sentence. Then begin.
 
 ---
 
 ## Meta Mode (not in a git repo)
 
-Run when cwd is not a git repository — agent-core work, research, global config.
+Used for agent-core work, global config, research — anything not inside a project.
 
 ```bash
-cat ~/agent-core/WORK.md 2>/dev/null || echo "No global WORK.md"
+cat ~/agent-core/WORK.md 2>/dev/null || echo "No global WORK.md found"
 cd ~/agent-core && git log --oneline -5 2>/dev/null
 ```
 
 Output:
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-GLOBAL / META  ·  <date>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-ACTIVE    <from ~/agent-core/WORK.md>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+META / GLOBAL  ·  2026-04-14
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ACTIVE    · <from ~/agent-core/WORK.md ACTIVE section>
 
-RECENT    <last 5 agent-core commits>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RECENT    · <last 5 agent-core commits>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 What are we expanding into?
 ```
-
----
-
-## Constellation Upgrade Path
-
-When Constellation ships, this skill upgrades in place:
-
-- Step 2 → read `~/.constellation/nebula/{trajectory_id}/STATUS`
-- Step 3 → read trajectory pheromone files (01_starchart, 03_spec_sheet, etc.)
-- Step 4 → read spine telemetry for risk signals instead of git log
-- Output format → same shape, different data sources
-
-The four-phase vocabulary (Ideate / Plan / Implement / Verify) maps directly
-to Constellation's Four Houses (Dawn / Meridian / Descent / Night).
-WORK.md is the pre-Constellation Nebula. Same contract, different substrate.

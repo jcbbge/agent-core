@@ -1,21 +1,23 @@
 ---
 name: session-end
 description: Close a session cleanly. Update WORK.md, commit with the standard
-  handoff format, leave the next session with a clear entry point. Three steps.
-  No services required. Use at the end of every session before closing.
+  handoff format. Three steps. No services required. Call this at the end of every
+  session before closing — even short ones.
 argument-hint: <optional — summary of what was done>
 allowed-tools: Bash Read Write Edit
 metadata:
   author: jrg
-  version: "1.0"
-  tags: session, handoff, git, workflow
-  constellation-upgrade: "When Constellation ships: collapse completed trajectories
-    to the Nebula, update pheromone files, emit session telemetry to spine."
+  version: "2.0"
+  tags: session, handoff, git, workflow, four-phases
+  lineage: substrate-collapse, manifold-ipit, constellation-re-entry
+  constellation-upgrade: "Collapse completed trajectories to the Nebula. Update
+    pheromone STATUS file. Emit session telemetry to spine. WORK.md retires
+    when the Nebula exists. Commit format and NEXT output are identical."
 ---
 
 # Session End
 
-Three steps. In order. Do not skip steps.
+Three steps. In order. Do not skip any of them.
 
 ---
 
@@ -26,106 +28,121 @@ git status --short
 git diff --stat HEAD 2>/dev/null | tail -5
 ```
 
-If there are uncommitted changes, ask:
-> "There are uncommitted changes in: [list files]. Should I include these in the session commit?"
+If there are uncommitted changes, list them and ask:
+> "These files have uncommitted changes: [list]. Include them in the session commit?"
 
-Do not silently skip uncommitted work. Surface it. Let the human decide.
+**Do not silently skip uncommitted work.** Surface it. One decision, then continue.
 
 ---
 
 ## Step 2 — Update WORK.md
 
-Make these changes using Edit (surgical — do not rewrite the file):
+Use `Edit` — make surgical changes only. Do not rewrite the file.
 
-1. **Move completed tasks** from ACTIVE to DONE with today's date
-2. **Add new items** discovered this session to BACKLOG (not ACTIVE)
-3. **Update BLOCKED** — remove anything that got unblocked, add new blockers
-4. **Update the Phase header** if the project phase shifted this session
+**What to do:**
+1. Move completed items from `ACTIVE` → `DONE` with today's date: `- [x] <task> — 2026-04-14`
+2. Add newly discovered work to `BACKLOG` (not ACTIVE — it has no path yet)
+3. Update `BLOCKED` — remove anything that got unblocked, add new blockers with reason
+4. Update the `Phase:` header if the project phase shifted this session
+5. Update `PROJECT` status line if a milestone was reached
 
-The DONE entry format:
-```
-- [x] <what was done> — <date>
-```
-
-Do not add prose or summaries. Just move items.
+**What not to do:**
+- Do not move things from BACKLOG to ACTIVE unless you are actually doing them now
+- Do not add prose or summaries — just move items and update dates
 
 ---
 
 ## Step 3 — Commit
 
-Generate a commit message using the standard convention:
+Generate a commit message in this exact format:
 
 ```
 <type>(<scope>): <one-line summary>
 
 PHASE: <Ideate | Plan | Implement | Verify>
-DONE: <completed items, comma-separated — be specific>
-TODO: <remaining active items, comma-separated — this is the handoff>
-BLOCKED: <what is blocked, or omit>
+DONE: <what was completed — be specific, comma-separated>
+TODO: <what remains active — this is the handoff, comma-separated>
+BLOCKED: <what is blocked, or omit this line>
 
-Co-Authored-By: <Model> <noreply@provider.com>
+Co-Authored-By: <Model Name> <noreply@anthropic.com>
 ```
 
-Then commit:
+Then stage and commit:
 ```bash
-git add WORK.md <any other modified files — explicit, never -A>
+git add WORK.md <other modified files — explicit, never git add -A>
 git commit -m "<generated message>"
-```
-
-After committing:
-```bash
 git log --oneline -1
 ```
 
-Confirm the commit landed.
+Confirm the commit hash is there before finishing.
 
 ---
 
-## Output Format
+## Output
 
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SESSION CLOSED  ·  <date>  ·  <repo>/<branch>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-COMMITTED   <hash> — <summary>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SESSION CLOSED  ·  2026-04-14  ·  <repo>/<branch>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COMMITTED  <hash> — <summary>
 
-DONE        <what moved to DONE in WORK.md>
-ACTIVE      <what remains — N tasks>
-BLOCKED     <anything blocked>
+COLLAPSED  <what moved to DONE>
+ACTIVE     <what remains — N tasks>
+BLOCKED    <anything blocked, or: none>
 
-NEXT        <the single most important TODO — the entry point for next session>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NEXT       <single concrete sentence — the exact entry point for next session>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-The NEXT line is the most important output. It should be a single, concrete,
-actionable sentence. Not "continue the feature" — "wire the price lock snapshot
-to the quote finalize endpoint, then run the integration test."
+**NEXT is the most important line.** It should be specific enough that a cold session
+can pick it up without context. Not "continue the feature" — write the exact first
+action: "Wire the Galley GraphQL client to the sync job, then run the integration test."
 
 ---
 
-## Dispatch (Optional — For Sessions With Generative Content)
+## The Four Phases — What Phase Are You In?
 
-After the commit, if this session had real creative or architectural insight,
-capture it as a dispatch:
+When writing the `PHASE:` line, choose honestly:
 
-> "Should I write a session dispatch?"
+| Phase | What it means |
+|-------|--------------|
+| **Ideate** | Still figuring out what to build and why. No code yet. |
+| **Plan** | Know what to build. Designing architecture, decomposing tasks. |
+| **Implement** | Building it. Writing code, making changes. |
+| **Verify** | Built it. Testing, reviewing, validating it holds. |
 
-If yes, create `journal/<date>-<slug>.md` with both voices — what was discovered,
-what surprised, what emerged from the exchange. Verbatim. Unedited.
-
-This is the journal/ protocol from Constellation. Same ritual.
-The roughness is the fidelity.
+A session can move through multiple phases. Use the phase you were in for most of the session,
+or the phase the next session will begin in if you're at a transition point.
 
 ---
 
-## Constellation Upgrade Path
+## Dispatch (Optional)
 
-When Constellation ships:
+If this session had genuine creative or architectural insight — something that emerged
+from the exchange that wouldn't have arrived alone — write a dispatch:
 
-- Step 2 → write to Nebula pheromone files instead of WORK.md
-- Step 3 → emit session telemetry to spine + generate verified commit
-- NEXT line → becomes the trajectory's STATUS file entry
-- Dispatch → first-class artifact in the Nebula, autobiographer-indexed
+Create `journal/2026-04-14-<slug>.md` with:
+- Both voices if it was a conversation
+- Verbatim, unedited
+- A single hook line at the top naming what emerged
+- Dated
 
-The four-phase vocabulary carries forward unchanged.
-WORK.md is the pre-Constellation Nebula. When the Nebula exists, WORK.md retires.
+The roughness is the fidelity. Don't polish it.
+
+---
+
+## The Commit Convention (Reference)
+
+```
+feat(arc/quotes): implement price lock snapshot
+
+PHASE: Implement
+DONE: schema migration, Drizzle model, snapshot on quote-add, unit tests
+TODO: integration test, API endpoint handler
+BLOCKED: —
+
+Co-Authored-By: Claude Opus 4 <noreply@anthropic.com>
+```
+
+Types: `feat` `fix` `refactor` `docs` `test` `chore` `session`
+Scope: the area — `arc/quotes`, `arc/auth`, `agent-core`, `infra`
