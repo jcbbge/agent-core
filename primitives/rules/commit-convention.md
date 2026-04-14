@@ -61,3 +61,4 @@ Co-Authored-By: Claude Opus 4 <noreply@anthropic.com>
 - `git add -A` — stage files explicitly
 - Vague summaries — "fix stuff", "updates", "wip"
 - Missing TODO line — even if everything is done, write `TODO: —`
+
