@@ -1,5 +1,5 @@
 # WORK — agent-core
-Updated: 2026-04-14
+Updated: 2026-04-17
 Phase: Implement
 
 ---
@@ -13,7 +13,7 @@ Next milestone: v0.2 — primitive coverage complete, test suite passing, contra
 ## ACTIVE
 
 - [ ] contractor bootstrap kit for Arc — collection + setup.sh [arc/onboarding]
-- [ ] finalize session-start and session-end skills — ship for immediate use [agent-core/session]
+
 - [ ] Run /tab-digest to process 341 iCloud tabs into atomic primitives [agent-core/tabs]
 
 ---
@@ -56,3 +56,4 @@ Next milestone: v0.2 — primitive coverage complete, test suite passing, contra
 - [x] Atomic storage — insights/, nuggets/, references/, tools/, ideas/ primitives dirs — 2026-04-17
 - [x] 4 tab commands wired — /tab-inbox, /tab-count, /tab-domains, /tab-report — 2026-04-17
 - [x] 341 tabs exported to ~/icloud-tabs-inbox/pending/ with INDEX.md — 2026-04-17
+- [x] criticality skill — created, registered, synced to all 3 harnesses — 2026-04-17
