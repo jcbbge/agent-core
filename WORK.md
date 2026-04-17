@@ -14,6 +14,7 @@ Next milestone: v0.2 — primitive coverage complete, test suite passing, contra
 
 - [ ] contractor bootstrap kit for Arc — collection + setup.sh [arc/onboarding]
 - [ ] finalize session-start and session-end skills — ship for immediate use [agent-core/session]
+- [ ] Run /tab-digest to process 341 iCloud tabs into atomic primitives [agent-core/tabs]
 
 ---
 
@@ -47,3 +48,11 @@ Next milestone: v0.2 — primitive coverage complete, test suite passing, contra
 - [x] SolidJS skills (building-with-solidjs, building-with-solidstart, solidjs-2.0) globally deployed — 2026-04-14
 - [x] Research docs — 9 primitives + emerging primitives + harness engineering (11 docs) — 2026-04-14
 - [x] M1 audit — deprecated refs catalogued, salvage list documented — 2026-04-14
+- [x] iCloud tabs access — CloudTabs.db parsed via Swift CLI, 341 tabs accessible — 2026-04-17
+- [x] tablist CLI — ~/bin/tablist with --json, --inbox, --domain, --count, --urls — 2026-04-17
+- [x] ~/icloud-tabs-inbox/ — pending/processed/archive structure created — 2026-04-17
+- [x] icloud-tabs-distiller skill — categorize, insights, close-suggestions workflows — 2026-04-17
+- [x] tab-digest subagent — metacognitive pipeline for tab → atomic primitives — 2026-04-17
+- [x] Atomic storage — insights/, nuggets/, references/, tools/, ideas/ primitives dirs — 2026-04-17
+- [x] 4 tab commands wired — /tab-inbox, /tab-count, /tab-domains, /tab-report — 2026-04-17
+- [x] 341 tabs exported to ~/icloud-tabs-inbox/pending/ with INDEX.md — 2026-04-17
