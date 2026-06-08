@@ -1,5 +1,5 @@
 # WORK — agent-core
-Updated: 2026-04-17
+Updated: 2026-06-08
 Phase: Implement
 
 ---
@@ -39,6 +39,7 @@ Next milestone: v0.2 — primitive coverage complete, test suite passing, contra
 
 ## DONE
 
+- [x] Unified atelier v2.0 skill — merged tufte-deck-setup + editorial-magazine + frontend-slides — 2026-06-08
 - [x] Zig 0.15.2 CLI scaffold — agent-core status + sync commands — 2026-04-14
 - [x] Harness profiles — pi, opencode, claude-code with verified real paths — 2026-04-14
 - [x] inline_agents strategy — rules deploy to AGENTS.md via delimited sections — 2026-04-14
