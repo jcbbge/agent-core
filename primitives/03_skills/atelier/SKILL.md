@@ -39,10 +39,26 @@ The result: editorial minimalism on a rock-solid stage. Beauty from restraint an
 |---|---|---|
 | **Mode** | `horizontal` (magazine swipe), `vertical` (scroll/fade) | `horizontal` |
 | **Density** | `speaker-led` (big ideas, few words), `reading-first` (self-contained detail) | ask user |
-| **Font pairing** | See support/FONT_PAIRINGS.md, or `random` | `random` |
-| **Palette** | See support/PALETTES.md, or `random` | `random` |
+| **Font pairing** | See support/FONT_PAIRINGS.md, or `random`, or a specific ID | `derive` |
+| **Palette** | See support/PALETTES.md, or `random`, or a specific ID | `derive` |
 | **Tone** | `clinical`, `provocative`, `witty-dry`, `visionary`, `insider` | `insider` |
 | **Topic** | The subject — codebase, concept, pitch, research, anything | (user-supplied) |
+
+### Font & Palette Selection
+
+Fonts and palettes are **derived from the topic and context**, not hardcoded defaults.
+The selection protocol in `support/FONT_PAIRINGS.md` and `support/PALETTES.md` maps input signals
+(topic domain, audience, mood, purpose) to appropriate tiers, then picks randomly within the tier.
+
+- **User specifies an ID** → use it exactly.
+- **User says `random`** → roll from the full library with equal probability.
+- **User says nothing** (default: `derive`) → read the selection protocol tables, match signals
+  from the topic/purpose/audience, pick randomly within the matching tier.
+- **Diversity rule**: never use the same pairing or palette twice in the same session.
+  If the protocol points to the same choice as last time, re-roll within the tier.
+
+The Google Fonts `<link>` URL is constructed from the pairing table's link column.
+The palette's CSS custom properties block is copied into `:root` verbatim.
 
 ---
 
