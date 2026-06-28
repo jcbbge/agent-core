@@ -1,5 +1,5 @@
 # WORK — agent-core
-Updated: 2026-06-08
+Updated: 2026-06-28
 Phase: Implement
 
 ---
@@ -13,8 +13,8 @@ Next milestone: v0.2 — primitive coverage complete, test suite passing, contra
 ## ACTIVE
 
 - [ ] contractor bootstrap kit for Arc — collection + setup.sh [arc/onboarding]
-
-- [ ] Run /tab-digest to process 341 iCloud tabs into atomic primitives [agent-core/tabs]
+- [ ] Run /tabs to process 341 iCloud tabs into atomic primitives [agent-core/tabs]
+- [ ] create GitHub repo for agent-core [agent-core/infra]
 
 ---
 
@@ -26,13 +26,9 @@ Next milestone: v0.2 — primitive coverage complete, test suite passing, contra
 
 ## BACKLOG
 
-- [ ] audit full primitive store — go through all 9 primitive types, not just skills [agent-core/primitives]
 - [ ] register ported M1 skills in registry — 35 in store, only handful registered [agent-core/registry]
 - [ ] agent-core add command — scaffolding so adding primitives doesn't require hand-editing registry [agent-core/cli]
 - [ ] test suite — map every CLI touchpoint, build full test coverage [agent-core/cli]
-- [ ] review M1 subagents for deprecated MCP refs before porting [agent-core/primitives]
-- [ ] salvage starting-session/ending-session from M1 — strip deprecated refs, port good patterns [agent-core/primitives]
-- [ ] create GitHub repo for agent-core [agent-core/infra]
 - [ ] harness scoping conventions — add scope_model field to profiles (stretch goal) [agent-core/registry]
 
 ---
@@ -58,3 +54,4 @@ Next milestone: v0.2 — primitive coverage complete, test suite passing, contra
 - [x] 4 tab commands wired — /tab-inbox, /tab-count, /tab-domains, /tab-report — 2026-04-17
 - [x] 341 tabs exported to ~/icloud-tabs-inbox/pending/ with INDEX.md — 2026-04-17
 - [x] criticality skill — created, registered, synced to all 3 harnesses — 2026-04-17
+- [x] Full primitive audit — 149→108 primitives, moved Arc/Bento-specific to projects, consolidated tabs/SolidJS, removed deprecated — 2026-06-28
