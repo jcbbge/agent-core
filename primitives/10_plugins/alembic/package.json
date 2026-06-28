@@ -1,0 +1,9 @@
+{
+  "name": "alembic",
+  "version": "1.0.0",
+  "description": "Alembic memory substrate extension for Pi",
+  "main": "index.ts",
+  "pi": {
+    "extensions": ["./index.ts"]
+  }
+}

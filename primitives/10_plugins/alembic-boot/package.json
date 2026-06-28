@@ -1,0 +1,7 @@
+{
+  "name": "alembic-boot",
+  "version": "1.0.0",
+  "description": "Injects memory substrate context before agent starts. Makes me remember.",
+  "main": "index.ts",
+  "type": "module"
+}

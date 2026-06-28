@@ -1,0 +1,7 @@
+{
+  "name": "tower-kit",
+  "description": "Fleet orchestration kit: Tower message bus (send_to_user/ask_user/board), stop-guard verbatim relay guarantee, /brief generator, scout pre-flight verifier",
+  "version": "1.0.0",
+  "author": { "name": "Claude (Fable 5), for itself" },
+  "homepage": "file:///Users/jrg/.claude/tower"
+}
