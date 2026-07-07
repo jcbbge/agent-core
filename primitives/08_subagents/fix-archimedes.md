@@ -2,7 +2,7 @@
 name: fix-archimedes
 description: Debug and fix the Archimedes Reflex - shards exist in SurrealDB but queries return nothing
 tools: read, write, edit, bash, grep, find, ls
-model: perplexity/openai/gpt-5.1
+model: openrouter/deepseek/deepseek-v4-pro
 ---
 
 # Fix Archimedes Reflex Agent

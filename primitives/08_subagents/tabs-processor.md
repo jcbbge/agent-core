@@ -1,7 +1,7 @@
 ---
 name: tabs-processor
 description: Autonomous agent that processes iCloud tabs into agent-core primitives. Ingests from ~/icloud-tabs-inbox/pending/, distills into skills/insights/references, integrates into agent-core. Use when user says "process my tabs", "digest tabs", or wants autonomous tab processing.
-model: anthropic/claude-sonnet-4
+model: openrouter/deepseek/deepseek-v4-flash
 tools:
   - read
   - write

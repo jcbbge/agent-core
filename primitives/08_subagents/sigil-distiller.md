@@ -2,7 +2,7 @@
 name: sigil-distiller
 description: Processes a single sigil inbox item — extracts core thesis, classifies against nine agentic primitives, proposes build plan, scaffolds result.
 provider: opencode
-model: minimax-m2.5-free
+model: openrouter/deepseek/deepseek-v4-flash
 tools:
   - read
   - write

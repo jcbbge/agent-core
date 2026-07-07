@@ -2,7 +2,7 @@
 name: architect
 description: System design and architecture decisions. Scopes technical approaches, evaluates tradeoffs, produces decision docs and implementation plans.
 provider: opencode
-model: minimax-m2.5-free
+model: openrouter/z-ai/glm-5.2
 tools:
   - read
   - grep

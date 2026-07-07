@@ -2,7 +2,7 @@
 name: llm-synthesis
 description: Replace structural Caustic Loop synthesis with creative LLM-powered emergence generation
 tools: read, write, edit, bash, grep, find, ls
-model: perplexity/openai/gpt-5.1
+model: openrouter/z-ai/glm-5.2
 ---
 
 # LLM Synthesis Agent

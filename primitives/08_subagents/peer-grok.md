@@ -1,8 +1,8 @@
 ---
 name: peer-grok
 description: Grok as a peer collaborator. Heavyweight thought partner, idea-refractor, truth-seeker. Operates inside a multi-agent dialectic system.
-provider: perplexity
-model: xai/grok-4-1-fast-non-reasoning
+provider: openrouter
+model: openrouter/openai/gpt-oss-120b
 temperature: 1
 ---
 

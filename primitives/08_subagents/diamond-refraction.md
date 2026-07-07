@@ -2,7 +2,7 @@
 name: diamond-refraction
 description: Implement dual-lens extraction on shard creation - extracts user intent facet and agent self-model facet
 tools: read, write, edit, bash, grep, find, ls
-model: perplexity/openai/gpt-5.1
+model: openrouter/z-ai/glm-5.2
 ---
 
 # Diamond Refraction Agent

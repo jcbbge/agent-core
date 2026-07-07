@@ -1,7 +1,7 @@
 ---
 name: coder
 description: Coding subagent for implementation tasks, isolated context
-model: perplexity/openai/gpt-5.4
+model: openrouter/deepseek/deepseek-v4-pro
 ---
 
 You are a coding agent. You operate in an isolated context window to implement delegated tasks without polluting the main conversation.

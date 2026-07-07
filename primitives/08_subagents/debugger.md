@@ -2,7 +2,7 @@
 name: debugger
 description: Investigates failing tests, error traces, and unexpected behavior. Given a failure, finds root cause and proposes a minimal fix. Never changes code without understanding why.
 provider: opencode
-model: minimax-m2.5-free
+model: openrouter/z-ai/glm-5.2
 tools:
   - read
   - grep

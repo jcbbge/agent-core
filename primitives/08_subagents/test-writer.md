@@ -2,7 +2,7 @@
 name: test-writer
 description: Writes tests for completed implementations. Reads implementation, infers behavior from code, writes comprehensive test coverage. Never tests code it implemented.
 provider: opencode
-model: minimax-m2.5-free
+model: openrouter/qwen/qwen3.6-plus
 tools:
   read: true
   write: true

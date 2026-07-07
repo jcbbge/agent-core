@@ -2,7 +2,7 @@
 name: reviewer
 description: Reviews code changes for bugs, security issues, logic errors, and style violations. Returns structured findings with severity levels.
 provider: opencode
-model: minimax-m2.5-free
+model: openrouter/deepseek/deepseek-v4-pro
 tools:
   - read
   - grep
