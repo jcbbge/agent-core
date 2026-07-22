@@ -1,15 +1,21 @@
 /**
  * Propose Extension — Autophagic Tool Builder
  *
- * Lets the LLM agent propose new Pi extensions, but requires explicit human
+ * Lets the LLM agent propose new capabilities, but requires explicit human
  * approval via TUI before installing them. Consensual autonomy: the agent
  * writes tools, the human decides whether to install them.
+ *
+ * Strudel is the base: everything runs through strudel. Approved proposals are
+ * written into strudel's pantry as a plugin primitive
+ * (~/agent-core/primitives/plugins/<name>/index.ts) — NOT into pi's extension
+ * dir. Pi stays vanilla and loads only strudel; strudel's pantry indexes and
+ * surfaces the new capability on the next reload.
  */
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { getMarkdownTheme } from "@earendil-works/pi-coding-agent";
 import { Key, Markdown, matchesKey, Text, wrapTextWithAnsi } from "@earendil-works/pi-tui";
-import { access, unlink, writeFile } from "node:fs/promises";
+import { access, mkdir, unlink, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { Type } from "typebox";
@@ -30,18 +36,18 @@ export default function (pi: ExtensionAPI) {
 		name: "propose_extension",
 		label: "Propose Extension",
 		description:
-			"Propose a new Pi extension for user review and approval. Writes the extension code to a temp file, shows a TUI confirmation dialog, and installs only if the user explicitly approves.",
+			"Propose a new capability (a strudel pantry plugin) for user review and approval. Writes the code to a temp file, shows a TUI confirmation dialog, and installs it into ~/agent-core/primitives/plugins/<name>/index.ts (strudel's pantry) only if the user explicitly approves. Pi stays vanilla — strudel surfaces the new capability.",
 		promptSnippet:
-			"Propose a new Pi extension for user review and approval. The agent writes the code; the user decides whether to install it.",
+			"Propose a new capability as a strudel pantry plugin for user review and approval. The agent writes the code; the user decides whether to install it. Everything runs through strudel.",
 		promptGuidelines: [
 			"Use propose_extension when you identify a repeating friction point, capability gap, or workflow that would benefit from a persistent tool — not for one-off tasks.",
-			"propose_extension code must be a complete, self-contained Pi extension: default export function receiving ExtensionAPI, with all imports, tool registrations, and event handlers included.",
+			"propose_extension code must be a complete, self-contained pi extension module: default export function receiving ExtensionAPI, with all imports, tool registrations, and event handlers included. It is installed as a plugin primitive in strudel's pantry (~/agent-core/primitives/plugins/<name>/index.ts), which strudel indexes and surfaces — it is NOT written to pi's extension dir.",
 			"propose_extension requires the user's explicit approval before any code is installed — never assume acceptance.",
-			"If propose_extension returns a file collision error, choose a different name or ask the user if they want to replace the existing extension.",
+			"If propose_extension returns a collision error, choose a different name or ask the user if they want to replace the existing plugin.",
 		],
 		parameters: Type.Object({
 			name: Type.String({
-				description: "Filename without .ts extension (e.g. db-inspector). Must match /^[a-z0-9-]+$/.",
+				description: "Plugin name without extension (e.g. db-inspector). Becomes plugins/<name>/index.ts in the strudel pantry. Must match /^[a-z0-9-]+$/.",
 			}),
 			description: Type.String({
 				description: "What the extension does and why it was proposed.",
@@ -80,24 +86,24 @@ export default function (pi: ExtensionAPI) {
 				};
 			}
 
-			// 3. Check for file collision
-			const extensionsDir = join(homedir(), ".pi", "agent", "extensions");
-			const targetPath = join(extensionsDir, `${name}.ts`);
+			// 3. Check for collision in strudel's pantry (plugins/ kind dir)
+			const pluginsDir = join(homedir(), "agent-core", "primitives", "plugins", name);
+			const targetPath = join(pluginsDir, "index.ts");
 
 			try {
 				await access(targetPath);
-				// File exists
+				// Plugin already exists
 				return {
 					content: [
 						{
 							type: "text",
-							text: `File collision: ~/.pi/agent/extensions/${name}.ts already exists. Choose a different name or ask the user about replacing it.`,
+							text: `Collision: ~/agent-core/primitives/plugins/${name}/index.ts already exists in the strudel pantry. Choose a different name or ask the user about replacing it.`,
 						},
 					],
 					details: { error: true, reason: "collision", path: targetPath },
 				};
 			} catch {
-				// File does not exist — proceed
+				// Does not exist — proceed
 			}
 
 			// 4. Write to temp file for inspection
@@ -149,7 +155,7 @@ export default function (pi: ExtensionAPI) {
 						lines.push("");
 
 						// Hint: escape hatch
-						const hint2 = `Escape hatch: rm ~/.pi/agent/extensions/${name}.ts && /reload`;
+						const hint2 = `Escape hatch: rm -rf ~/agent-core/primitives/plugins/${name} && /reload`;
 						for (const line of wrapTextWithAnsi(theme.fg("dim", hint2), Math.max(1, w - 2))) {
 							lines.push(" " + line);
 						}
@@ -211,7 +217,8 @@ export default function (pi: ExtensionAPI) {
 				};
 			}
 
-			// 7. Handle approval — write to extensions dir
+			// 7. Handle approval — write into strudel's pantry as a plugin primitive
+			await mkdir(pluginsDir, { recursive: true });
 			await writeFile(targetPath, code, "utf8");
 
 			try {
@@ -220,14 +227,14 @@ export default function (pi: ExtensionAPI) {
 				// best-effort
 			}
 
-			// Queue reload
+			// Queue reload — strudel re-indexes the pantry and surfaces the new plugin
 			pi.sendUserMessage("/reload-runtime", { deliverAs: "followUp" });
 
 			return {
 				content: [
 					{
 						type: "text",
-						text: `User approved. Extension '${name}' written to ~/.pi/agent/extensions/${name}.ts and reload queued.`,
+						text: `User approved. Plugin '${name}' written to ~/agent-core/primitives/plugins/${name}/index.ts (strudel pantry) and reload queued.`,
 					},
 				],
 				details: { approved: true, name, path: targetPath },
