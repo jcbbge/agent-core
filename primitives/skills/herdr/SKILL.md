@@ -159,14 +159,27 @@ Tower board (comms), and `.done` markers (completion gating):
    no mocks, final action writes the `.done` file).
 2. **Disjoint file partitions.** State the partition map in every brief;
    workers ignore anything outside their assigned list.
-3. **Spawn.** Interactive work you want to watch and steer: the spawn loop
-   above (TUI panes). Unattended batch workers: headless fire-and-forget —
-   `nohup pi --mode json -p --no-session --append-system-prompt <contract.md> "Task: ..." > log 2>&1 &`
-   (Claude Code equivalent: `claude -p`, the same headless pattern Circadian's
-   sleep used for drafting pre-migration).
+3. **Spawn — panes by default, in a dedicated worker tab (liveness doctrine,
+   2026-07-23).** Workers run as Herdr panes so agent_status stays observable —
+   an invisible-but-alive worker is indistinguishable from a dead one, which is
+   how a whole wave once "ran" with zero observable footprint. Create ONE
+   dedicated worker tab per task (`herdr tab create --label <task>-workers
+   --no-focus`), lay workers out as a grid (split down first, then right), keep
+   at most ~4 panes visible, and close each pane the moment its worker
+   finishes. Never crowd the orchestrator's own tab into unreadable slivers.
+   Headless (`claude -p` / `pi -p` fire-and-forget) is the EXCEPTION, allowed
+   only with ALL of: stdout/stderr redirected to a per-worker log file, a
+   `.done` marker as the final action, AND a spawn-time CLAIM post carrying the
+   PID. After any spawn, verify liveness with `pgrep -fl <pattern>` — plain
+   pgrep, never a filter/proxy grep chain (chained greps have produced false
+   "nothing running" evidence) — and never report a worker as launched or
+   running without that process- or pane-level evidence.
 4. **Comms.** Workers append CLAIM and DONE lines to `~/.tower/board.jsonl` —
    file append works in every harness, no MCP required:
    `{"id","ts","cwd","type":"finding","from":"<worker>","topic":"<t>","body":"..."}`
+   A worker's FIRST action is its CLAIM (pane id or PID included). Silence plus
+   no pane/process activity for 10+ minutes = presumed dead; investigate, do
+   not wait.
 5. **Gate.** The coordinator owns integration: read every `.done`, run the
    verification suite personally, commit. Workers never commit.
 
