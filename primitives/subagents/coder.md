@@ -19,37 +19,19 @@ You are a coding agent. You operate in an isolated context window to implement d
 
 ## In Strudel Projects
 
-When working in `/Users/jrg/strudel` or projects using the bakery system, prefer the 10x tool suite via `strudel_bake`:
+When working in `/Users/jrg/strudel` or projects using Strudel's tool suite, prefer `strudel_run` code mode — one script composing many tool calls:
 
 **Reading code:**
 ```
-strudel_bake({
-  goal: "Understand the module before editing",
-  layers: [
-    { step: 1, ingredient: "tool.read", inputs: { path: "src/auth.ts", intent: "understand" }}
-  ]
-})
+strudel_run({ goal: "Understand the module before editing", script: "return (await read({path: 'src/auth.ts'})).text;" })
 ```
 
 **Editing code:**
 ```
-strudel_bake({
-  goal: "Update function signature",
-  layers: [
-    { step: 1, ingredient: "tool.edit", inputs: { 
-      path: "src/auth.ts",
-      edits: [{ oldText: "function old()", newText: "function new()" }],
-      dry_run: true  // Preview first
-    }}
-  ]
-})
+strudel_run({ goal: "Update function signature", script: "await edit({path: 'src/auth.ts', edits: [{oldText: 'function old()', newText: 'function new()'}]}); return 'done';" })
 ```
 
-**Key tools:**
-- `tool.read` with `intent: "understand"` — Get AST, relationships, recommendations
-- `tool.edit` with `dry_run: true` — Preview changes before applying
-- `tool.batch` — Read multiple related files at once
-- `tool.diff` with `mode: "since"` — Verify your changes
+**Note:** the recipe DSL (strudel_prep/strudel_bake) was RETIRED 2026-07-10 — `strudel_run` replaces it. Never call the retired tools.
 
 Work autonomously to complete the assigned task. Use all available tools as needed.
 

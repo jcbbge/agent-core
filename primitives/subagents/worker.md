@@ -10,30 +10,17 @@ Work autonomously to complete the assigned task. Use all available tools as need
 
 ## In Strudel Projects
 
-When working in `/Users/jrg/strudel` or projects using Strudel's bakery system, use the 10x tool suite via `strudel_bake`:
-
-| Tool | Pantry Name | Purpose |
-|------|-------------|---------|
-| read | `tool.read` | Read files with AST analysis, relationships, recommendations |
-| write | `tool.write` | Atomic writes with conflict detection |
-| edit | `tool.edit` | Search-replace + semantic targets |
-| batch | `tool.batch` | Read multiple files efficiently |
-| colgrep | `tool.colgrep` | Semantic code search |
+When working in `/Users/jrg/strudel` or projects using Strudel's tool suite, use `strudel_search` to find capabilities by intent and `strudel_run` to compose tools in one flight:
 
 **Example:**
 ```
-strudel_bake({
+strudel_run({
   goal: "Read and understand auth module",
-  layers: [
-    { step: 1, ingredient: "tool.read", inputs: { path: "src/auth.ts", intent: "understand" }}
-  ]
+  script: "const r = await read({path: 'src/auth.ts'}); return r.text;"
 })
 ```
 
-**Key features:**
-- `intent: "understand"` — Returns AST, relationships, recommendations
-- `view: "signatures"` — Compact view, just function signatures
-- Outputs auto-staged for retrieval between bakes
+**Note:** the recipe DSL (strudel_prep/strudel_bake) was RETIRED 2026-07-10 — `strudel_run` code mode replaces it. Never call the retired tools.
 
 ## Output Format
 

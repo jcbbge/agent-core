@@ -14,8 +14,8 @@ The canonical six-star fleet (plus the persistent Quasar-of-orchestration, Marka
 
 | Star | Role | House | Primary Model | Alternate | When to Use |
 |------|------|-------|---------------|-----------|-------------|
-| **Markarian** | Orchestrator (persistent) | persistent | `openrouter/moonshotai/kimi-k2.6` | `openrouter/z-ai/glm-5.2` | Multi-phase work, fleet dispatch, user-facing coordination |
-| **Vega** | Brainstorm partner (Dawn) | Dawn | `openrouter/moonshotai/kimi-k2.6` | `openrouter/z-ai/glm-5.2` | Pre-architecture ideation, ≥8 divergent options, contrarian angles |
+| **Markarian** | Orchestrator (persistent) | persistent | `openrouter/moonshotai/kimi-k3` | `openrouter/z-ai/glm-5.2` | Multi-phase work, fleet dispatch, user-facing coordination |
+| **Vega** | Brainstorm partner (Dawn) | Dawn | `openrouter/moonshotai/kimi-k3` | `openrouter/z-ai/glm-5.2` | Pre-architecture ideation, ≥8 divergent options, contrarian angles |
 | **Cassiopeia** | Systems thinker (Meridian) | Meridian | `openrouter/z-ai/glm-5.2` | `openrouter/deepseek/deepseek-v4-pro` | Interface design, invariants, ownership, blast-radius analysis |
 | **Sirius** | Coder (Descent) | Descent | `openrouter/deepseek/deepseek-v4-pro` | `openrouter/qwen/qwen3.6-plus` | Implementation with commit discipline (design already settled) |
 | **Orion** | Test-maker (Descent) | Descent | `openrouter/z-ai/glm-5.2` | `openrouter/deepseek/deepseek-v4-pro` | Test strategy, coverage matrix, property tests, regression tests |
@@ -30,8 +30,8 @@ Specialized agents for memory-substrate work and general delegation outside the 
 | Agent | Role | Primary Model | Alternate | When to Use |
 |-------|------|---------------|-----------|-------------|
 | **Procyon** | General-task workhorse | `openrouter/deepseek/deepseek-v4-flash` | `openrouter/z-ai/glm-5.2` | Well-defined task, no specialist fits |
-| **Lyra** | LLM synthesis (emergence) | `openrouter/z-ai/glm-5.2` | `openrouter/moonshotai/kimi-k2.6` | Emergence from memory shards (Alembic dreaming mind) |
-| **Spectra** | Diamond refraction | `openrouter/z-ai/glm-5.2` | `openrouter/moonshotai/kimi-k2.6` | Dual-facet extraction on new shard creation |
+| **Lyra** | LLM synthesis (emergence) | `openrouter/z-ai/glm-5.2` | `openrouter/moonshotai/kimi-k3` | Emergence from memory shards (Alembic dreaming mind) |
+| **Spectra** | Diamond refraction | `openrouter/z-ai/glm-5.2` | `openrouter/moonshotai/kimi-k3` | Dual-facet extraction on new shard creation |
 | **Corvus** | Debugger | `openrouter/z-ai/glm-5.2` | `openrouter/deepseek/deepseek-v4-pro` | Mystery bugs, substrate-level repair, root-cause investigation |
 
 ---
@@ -103,7 +103,7 @@ Each agent's prompt is tuned to its underlying model. These are **starting heuri
 
 Each `.md` file has YAML frontmatter with: `name`, `role`, `description`, `model`, `alternate`, `provider`, `tools`.
 
-**All agents currently have `tools: strudel_search, strudel_prep, strudel_bake`** — the strudel-only surface locked in Round 3.
+**As of 2026-07-23 all agents carry `tools: read, edit, write, bash, grep, find, ls, strudel_search, strudel_run`** — native tools + strudel code mode. The Round-3 strudel-only surface and the prep/bake recipe DSL are retired (2026-07-10).
 
 ---
 
@@ -113,7 +113,7 @@ Each `.md` file has YAML frontmatter with: `name`, `role`, `description`, `model
 - reasoning / architecture / verification / synthesis / debugging → `openrouter/z-ai/glm-5.2` (top open-weight Intelligence Index; long-horizon)
 - implementation / coding / review → `openrouter/deepseek/deepseek-v4-pro` (top open SWE-bench, 80.6%)
 - cheap workhorse / bulk / distill → `openrouter/deepseek/deepseek-v4-flash` (~150× cheaper, ~79% SWE)
-- orchestration / ideation → `openrouter/moonshotai/kimi-k2.6` (multi-agent orchestration)
+- orchestration / ideation → `openrouter/moonshotai/kimi-k3` (multi-agent orchestration)
 - test authoring → `openrouter/qwen/qwen3.6-plus` (strongest agentic coding, 1M ctx)
 - Pulsar keeps `perplexity/sonar-deep-research` (search-native; deliberate non-open exception; open fallback = glm-5.2)
 - `peer-grok` renamed `peer` (adversarial peer; Grok naming removed), model `openrouter/x-ai/grok-4.20` (largest grok reasoning; second deliberate non-open exception)
