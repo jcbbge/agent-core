@@ -40,6 +40,29 @@ script-workspace script-status recipe api imports readme`.
 4. **Hierarchy & rhythm:** ~300×200 standard shape, ~200 gap. Align to a grid.
    Title in serif, quiet grey subtitle. One idea per row/column.
 
+## Semantic layout discipline
+
+For directional, nested diagrams (flows, pipelines, hierarchies, railroad-style
+explainers), adapt Chiplunkar & Pit-Claudel, *Automatic layout of railroad
+diagrams* ([arXiv:2509.15834](https://arxiv.org/abs/2509.15834)). The paper is
+specific to railroad diagrams; transfer these layout principles, not its notation:
+
+1. **Model meaning before coordinates.** First define components, connections,
+   order, branches, and groups. Then choose positions and sizes; style last. A
+   reflow must preserve the same nodes, connectivity, direction, and nesting.
+2. **Choose one semantic axis.** Commit to left→right or top→bottom reading order.
+   Keep branches subordinate to it; do not overlap unrelated group bounds, and
+   avoid crossing connectors.
+3. **Lay out in this order: align → wrap → justify.** Align connection points or
+   baselines—not merely box centers. Wrap at semantic boundaries to fit a target
+   viewport. Only then distribute remaining space with a consistent minimum gap.
+4. **Prefer the least disruptive wrap.** Among layouts that fit and mean the same
+   thing, prefer fewer and shallower wraps, good use of available width, balanced
+   rows, then lower total height. Penalize wraps inside deeply nested groups.
+5. **Treat consistency as correctness.** Render repeated conceptual structures
+   with the same alignment, spacing, and style. After reflow, trace every path and
+   compare repeated patterns; reject disconnected, reversed, or one-off variants.
+
 ## Gotchas
 
 **Multi-page builds — the page-switch race (correction 2026-07-21).** Inside one
