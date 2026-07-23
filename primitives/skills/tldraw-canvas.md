@@ -3,7 +3,7 @@ name: tldraw-canvas
 description: Master-level operation of the tldraw offline desktop app as a live, interactive whiteboard. Read/edit shapes, compose reference-quality diagrams, and install durable document scripts (clickable UI, animation loops) for interactive explainers. Use when the user wants to visualize, diagram, explain, or present something on the canvas, or references tldraw / a .tldraw file / "the whiteboard". Two modes: private explain-to-me, and live-stream field-a-question.
 metadata:
   author: jrg
-  version: "1.0"
+  version: "1.1"
   tags: tldraw, canvas, diagram, visualize, whiteboard, animation, interactive, presentation
 ---
 
@@ -33,12 +33,37 @@ script-workspace script-status recipe api imports readme`.
 1. **Lint before "done":** `str_tldraw({op:'exec', code:'return helpers.getLints()'})`
    must return `{lints:[]}`. Every meaningful arrow uses
    `helpers.createArrowBetweenShapes(a,b)` — real bindings, never raw arrows.
-2. **See your own work:** always screenshot + read it before reporting. Never
-   claim a composition is good without looking.
+2. **See your own work:** always screenshot + read it before reporting. Run the
+   cold-read critique below; never claim a composition is good without looking.
 3. **Restraint:** default to basic geo shapes, default styles. Reach for color
    only to encode meaning (state, category, emphasis). No decoration without purpose.
 4. **Hierarchy & rhythm:** ~300×200 standard shape, ~200 gap. Align to a grid.
    Title in serif, quiet grey subtitle. One idea per row/column.
+
+## Art direction — Atelier translated to canvas
+
+Transfer Atelier's method, not its HTML/slide machinery:
+**purpose → kernel → visual thesis → semantic layout → render → critique**.
+
+1. **Set the delivery contract.** Guided/live explanation is speaker-led: sparse,
+   large, progressive. A saved artifact is reading-first: self-contained labels
+   and context. Infer from the request; ask only when the distinction changes the work.
+2. **Name the kernel.** Write one sentence the viewer must understand. If the
+   diagram cannot make that sentence visible, do not start placing shapes.
+3. **Commit to a visual thesis.** Derive form, hierarchy, and intensity from the
+   topic, purpose, audience, and mood. Choose the idea's native shape—flow,
+   hierarchy, comparison, timeline, system map—not a familiar default template.
+4. **Direct attention.** Give each viewport/page one focal idea, one supporting
+   layer, and quiet context. Label relationships at the point of use; prefer direct
+   labels over legends. Every shape, arrow, word, and color must earn its place.
+5. **Give multi-page explainers an arc.** Use only the beats the subject needs:
+   problem → reframe → kernel → model → payoff. Cut rather than pad.
+
+When direction is consequential and genuinely ambiguous, **show, don't tell**:
+build three small real-content studies on a temporary page—restrained, expressive,
+and a topic-specific wildcard—then screenshot and ask which direction. Skip this
+in live mode or when the user already supplied a clear direction; remove rejected
+studies.
 
 ## Semantic layout discipline
 
@@ -62,6 +87,21 @@ specific to railroad diagrams; transfer these layout principles, not its notatio
 5. **Treat consistency as correctness.** Render repeated conceptual structures
    with the same alignment, spacing, and style. After reflow, trace every path and
    compare repeated patterns; reject disconnected, reversed, or one-off variants.
+
+## Screenshot critique loop
+
+After the first render, judge the screenshot as a stranger would:
+
+- **Squint:** does the intended focal point win immediately?
+- **Trace:** is the reading path and every connector unambiguous?
+- **Teach-back:** could a smart stranger state the kernel without narration?
+- **Data-ink:** can any shape, arrow, label, color, or flourish be removed?
+- **Consistency:** do repeated meanings look repeated, without accidental variants?
+- **Distance:** is it legible at the actual stream/presentation scale?
+- **Specificity:** does the composition feel native to this idea rather than templated?
+
+Fix the largest failure, re-screenshot, and repeat until no material issue remains.
+Do not polish past clarity: one committed direction beats accumulated flourishes.
 
 ## Gotchas
 
