@@ -50,6 +50,9 @@ claiming files (mcp__tower__board_read).">
 - Progress with specific numbers at meaningful checkpoints: kind=progress.
 - A decision only the user can make: mcp__tower__ask_user, then poll
   mcp__tower__check_inbox while continuing other work.
+- Harnesses without the tower MCP (e.g. pi): append one JSON line to
+  ~/.tower/board.jsonl — {"id","ts","cwd","type":"finding|alert","from","topic","body"}.
+  File append works everywhere; no MCP required. (Verified in pi 2026-07-23.)
 
 ## Tasks
 1. <precise action> — done when: <exact, testable condition>
@@ -91,6 +94,11 @@ If this brief is one of several running in parallel: verify the file
 partitions are disjoint; tasks sharing a file share an agent. Tasks under ~10
 lines of verified change: do inline, don't spawn. State the same partition map
 in every brief.
+
+Spawn substrate: **Herdr is the control plane on this machine** — interactive
+workers spawn as TUI panes, unattended batch workers headless. Follow the
+"Coordinated fan-out contract" in the `herdr` skill (brief on disk, disjoint
+partitions, CLAIM/DONE on the board, .done marker, coordinator gates).
 
 ## Step 6 — Codified lessons (hard requirements, learned the expensive way)
 
