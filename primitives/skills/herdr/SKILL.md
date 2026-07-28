@@ -136,6 +136,24 @@ Launch the agent by its plain executable (`pi`, `claude`, `codex`, `opencode`,
 not add non-interactive flags unless explicitly asked. `pane run` sends text +
 Enter together — use it for the first prompt and every follow-up.
 
+**DELIVERY IS NOT DELIVERY UNTIL VERIFIED (hard rule, 2026-07-27).** A prompt sent
+with `pane run` can sit in the agent's input box as `[Pasted text #N]`, typed but
+never submitted — observed on an IDLE pane, not just busy ones (a coordinator's
+gate ruling sat unsent while the fleet looked stalled). After EVERY `pane run`
+that carries a prompt to an agent pane, run the verify-submit step before
+reporting delivery or moving on:
+
+```bash
+sleep 2 && herdr pane get <id>        # agent_status must flip to working
+# still idle/blocked? check for a buffered paste and force the submit:
+herdr pane read <id> --source visible --lines 6 | grep -q "Pasted text" \
+  && herdr pane send-keys <id> Enter && sleep 2 && herdr pane get <id>
+```
+
+Never report a prompt as delivered, an agent as tasked, or a fleet as launched on
+the strength of `pane run` alone — status-flip (or an explicit forced Enter plus
+status-flip) is the only evidence of submission.
+
 For background work, wait for the terminal state before reading the transcript:
 
 ```bash
@@ -237,11 +255,13 @@ blocked` straight into Tower, so the two planes fuse.
 their eyes: `herdr notification show "orch blocked" --body "needs a decision"
 --sound request`.
 
-**Sending a prompt to a BUSY pane can silently fail to submit.** `herdr pane run
-<id> "<text>"` types text + Enter, but if the target is mid-work the text may sit
-buffered as `[Pasted text #N]`, unsent. After sending to a working pane, verify
-its status flips to `working`, or send an explicit `herdr pane send-keys <id>
-Enter` — never assume delivery.
+**Sending a prompt to ANY pane can silently fail to submit — idle panes
+included (observed 2026-07-27).** `herdr pane run <id> "<text>"` types text +
+Enter, but the text may sit buffered as `[Pasted text #N]`, unsent, regardless
+of the target's state. The verify-submit step in "Start an agent in a pane" is
+mandatory after every prompt-carrying `pane run`: status must flip to `working`,
+else check the visible buffer for `Pasted text` and force `herdr pane send-keys
+<id> Enter`. Never assume delivery.
 
 **Ground the substrate before you drive it.** When a task involves an unfamiliar
 tool or harness, FIRST read its installed skill and run `which <tool>` — do not
