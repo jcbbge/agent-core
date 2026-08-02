@@ -151,8 +151,7 @@ geometry, split without stealing focus, read the returned ID, label it, launch:
 herdr pane layout --pane "$HERDR_PANE_ID"
 herdr pane split --current --direction right --no-focus   # or: down
 herdr pane rename <returned-pane-id> "orch-catalog"
-herdr pane run <returned-pane-id> "pi"                     # normal executable; interactive TUI
-herdr agent wait <returned-pane-id> --until idle --timeout 30000
+herdr agent start pi --kind pi --pane <returned-pane-id>   # native: starts + waits for readiness
 herdr agent prompt <returned-pane-id> "Review the current diff; report only actionable findings." --wait --until working --timeout 30000
 ```
 
@@ -161,11 +160,13 @@ Launch the agent by its plain executable (`pi`, `claude`, `codex`, `opencode`,
 not add non-interactive flags unless explicitly asked. For prompts, prefer
 `herdr agent prompt <id> "<text>" --wait --until working --timeout 30000` — it
 submits and confirms the state flip in one call (verified 0.7.5), so the call
-itself is the delivery evidence. `herdr agent start` is a native agent
-launcher; discover its invocation with `herdr agent start --help`
-(help-verified only, not yet run-verified here). `pane run` (text + Enter
-together) remains the fallback path — and it carries the verification duty
-below.
+itself is the delivery evidence. `herdr agent start <name> --kind pi --pane <id>`
+is the native launcher — it starts the agent AND waits for interactive
+readiness (run-verified 2026-08-02: pi detected, `interactive_ready: true`).
+Precondition: the pane must already sit at an interactive shell prompt — a
+freshly seeded pane can reject the call within the first second or two of its
+life; retry after a beat. `pane run` (text + Enter together) remains the
+fallback path — and it carries the verification duty below.
 
 **DELIVERY IS NOT DELIVERY UNTIL VERIFIED (hard rule, 2026-07-27; updated
 2026-07-30).** A prompt sent with `pane run` can sit in the agent's input box
