@@ -55,3 +55,4 @@ Next milestone: v0.2 — primitive coverage complete, test suite passing, contra
 - [x] 341 tabs exported to ~/icloud-tabs-inbox/pending/ with INDEX.md — 2026-04-17
 - [x] criticality skill — created, registered, synced to all 3 harnesses — 2026-04-17
 - [x] Full primitive audit — 149→108 primitives, moved Arc/Bento-specific to projects, consolidated tabs/SolidJS, removed deprecated — 2026-06-28
+- [x] herdr skill refresh — 0.7.5 primitives (agent start/prompt/wait) + Firstmate-adapter doctrine (10 items); spine-lab guarded lab helper in herdr-spine; .pi skill copy converted to symlink — 2026-08-02
