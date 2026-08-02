@@ -77,12 +77,31 @@ herdr pane            # workspace | tab | worktree | wait | agent | api ...
 Most control commands print JSON. Read identifiers and state from those
 responses; never construct an ID from a display number.
 
+## Session targeting (verified 2026-07-30, herdr 0.7.5)
+
+Every CLI call must reach the intended server through ONE of:
+
+- `herdr --session <name> <cmd>` — explicit; correct.
+- `HERDR_SOCKET_PATH=<session-socket>` — honored by the CLI and unambiguous
+  per server; the authoritative route inside plugin context, where herdr
+  injects it (this is how herdr-spine's handlers target their session).
+
+`HERDR_SESSION=<name>` is NOT routing authority: at 0.7.5 it is silently
+ignored and the call reaches the DEFAULT server (reproduced live:
+`HERDR_SESSION=spine-lab-probe herdr workspace list` returned the default
+session's workspaces). Never target by session-name env, and never assume an
+ambient environment variable pointed a call at the right server.
+
 ## IDs and current context
 
 Public IDs are short, stable, opaque handles: workspace `w1`, tab `w1:t1`, pane
 `w1:p1`, terminal `term_...`. The suffix can grow beyond one character. Closed
 IDs are not reused; a pane moved to another workspace gets a new ID. Re-read
 create/split/move/list responses after mutations.
+
+Pane IDs contain colons (`w1:t1:p1`), so any `<session>:<pane>`-style joined
+encoding must split on the FIRST colon only when parsing back. Prefer
+separate fields over joined strings wherever possible.
 
 Herdr injects the caller's context into every managed pane:
 
@@ -115,6 +134,13 @@ Focusing a pane, switching to its tab, or regaining outer-terminal focus marks i
 seen, so `done` becomes `idle`. The sidebar is an attention queue, not a status
 board.
 
+Corroborate non-busy readings before acting on them: `agent_status` can read
+`idle` while the harness is still running a long foreground tool, because the
+detector keys on the agent loop, not the tool. Before concluding a pane is
+not working, check the rendered screen for a busy banner/spinner. The reverse
+does not apply to input waits — a permission dialog shows no busy banner yet
+correctly surfaces as `blocked`.
+
 ## Start an agent in a pane (the spawn loop)
 
 Default to a sibling pane in the current tab and cwd. Do not create a workspace,
@@ -126,22 +152,39 @@ herdr pane layout --pane "$HERDR_PANE_ID"
 herdr pane split --current --direction right --no-focus   # or: down
 herdr pane rename <returned-pane-id> "orch-catalog"
 herdr pane run <returned-pane-id> "pi"                     # normal executable; interactive TUI
-herdr pane get <returned-pane-id>
-herdr wait agent-status <returned-pane-id> --status idle --timeout 30000
-herdr pane run <returned-pane-id> "Review the current diff; report only actionable findings."
+herdr agent wait <returned-pane-id> --until idle --timeout 30000
+herdr agent prompt <returned-pane-id> "Review the current diff; report only actionable findings." --wait --until working --timeout 30000
 ```
 
 Launch the agent by its plain executable (`pi`, `claude`, `codex`, `opencode`,
 `omp`) so its interactive TUI opens. Do not pass the task as an argv prompt and do
-not add non-interactive flags unless explicitly asked. `pane run` sends text +
-Enter together — use it for the first prompt and every follow-up.
+not add non-interactive flags unless explicitly asked. For prompts, prefer
+`herdr agent prompt <id> "<text>" --wait --until working --timeout 30000` — it
+submits and confirms the state flip in one call (verified 0.7.5), so the call
+itself is the delivery evidence. `herdr agent start` is a native agent
+launcher; discover its invocation with `herdr agent start --help`
+(help-verified only, not yet run-verified here). `pane run` (text + Enter
+together) remains the fallback path — and it carries the verification duty
+below.
 
-**DELIVERY IS NOT DELIVERY UNTIL VERIFIED (hard rule, 2026-07-27).** A prompt sent
-with `pane run` can sit in the agent's input box as `[Pasted text #N]`, typed but
-never submitted — observed on an IDLE pane, not just busy ones (a coordinator's
-gate ruling sat unsent while the fleet looked stalled). After EVERY `pane run`
-that carries a prompt to an agent pane, run the verify-submit step before
-reporting delivery or moving on:
+**DELIVERY IS NOT DELIVERY UNTIL VERIFIED (hard rule, 2026-07-27; updated
+2026-07-30).** A prompt sent with `pane run` can sit in the agent's input box
+as `[Pasted text #N]`, typed but never submitted — observed on an IDLE pane,
+not just busy ones (a coordinator's gate ruling sat unsent while the fleet
+looked stalled). The `agent prompt --wait` primary path above makes the flip
+observation atomic; two nuances of it were verified live at 0.7.5:
+
+- An `agent_prompt_stalled` error ("no observed state change … status is
+  idle") is NOT proof of non-delivery: client-side inputs such as `/reload`
+  execute without any state flip. Check the transcript before retrying — the
+  command may already have run.
+- Slash- and dollar-prefixed input executes natively through `agent prompt`
+  (no completion-popup interference observed at 0.7.5). When driving a
+  composer manually via `pane run` / `pane send-text` instead, settle briefly
+  after the text before sending Enter so a popup cannot consume it.
+
+After EVERY `pane run` that carries a prompt to an agent pane, run the
+verify-submit step before reporting delivery or moving on:
 
 ```bash
 sleep 2 && herdr pane get <id>        # agent_status must flip to working
@@ -157,13 +200,25 @@ status-flip) is the only evidence of submission.
 For background work, wait for the terminal state before reading the transcript:
 
 ```bash
-herdr wait agent-status <id> --status working --timeout 30000
-herdr wait agent-status <id> --status done --timeout 120000   # or idle if the user is watching that tab
+herdr agent wait <id> --until working --timeout 30000
+herdr agent wait <id> --until done --timeout 120000   # or idle if the user is watching that tab
 herdr pane read <id> --source recent-unwrapped --lines 120
 ```
 
 If a wait times out, inspect `herdr pane get <id>` and `pane read` before acting.
 `blocked` needs input; `unknown` has no detected/integrated agent yet.
+
+## Restart and liveness (husks)
+
+Stopping and restarting a herdr server preserves workspace, tab, and pane IDs
+and their labels — but NOT the processes or agent registrations inside them.
+After a restart, a restored pane showing its old label with no registered
+agent is a HUSK. Classify before acting: structurally gone pane = `missing`;
+restored pane with a shell but no registered agent = `dead`; registered agent
+= `alive`; unexpected read = `unreadable`. Replace a husk only when
+confidently dead: create and verify the replacement BEFORE closing the old
+pane (never close a workspace's last tab first), and refuse to touch live or
+unreadable panes. A label is never evidence of liveness.
 
 ## Coordinated fan-out contract (verified 2026-07-23)
 
@@ -210,13 +265,19 @@ headless pi workers were metabolized by the memory substrate the same day).
 ```bash
 herdr pane split --current --direction right --no-focus
 herdr pane run <id> "just test"
-herdr wait output <id> --match "test result" --timeout 120000
+herdr pane wait-output <id> --match "test result" --timeout 120000
 herdr pane read <id> --source recent-unwrapped --lines 120
 ```
 
 Read sources: `visible` (viewport), `recent` (scrollback as rendered),
 `recent-unwrapped` (soft-wraps joined — prefer for logs/transcripts), `detection`
 (agent-detection snapshot). Use `--format ansi` only when color is evidence.
+If a `pane read` returns empty unexpectedly, retry with a much larger
+`--lines` (e.g. 200) and trim locally before concluding the pane is blank —
+an upstream adapter documented small-N reads returning empty below the
+viewport height; NOT reproduced on 0.7.5 in shell or live-TUI contexts
+(verified 2026-07-30), but the retry is cheap insurance against a
+geometry-dependent regression.
 
 ## Fleet operating notes (composition, monitoring, gotchas)
 
@@ -236,8 +297,13 @@ socket API streams state changes; subscribe instead of polling with repeated
 
 The connection acks, then pushes an event whenever a matching pane changes. Watch
 `blocked` (an agent needs a decision) and `done` (work finished, unseen) across
-the fleet and act on the push. For one-shot waits, `herdr wait agent-status <id>
---status blocked|done|idle --timeout MS` is the bounded primitive. Reserve
+the fleet and act on the push. Ordering discipline for any consumer that needs
+both current state AND the stream: SUBSCRIBE FIRST, then reconcile from a
+snapshot, buffering events that arrive during reconciliation — subscribing
+after the snapshot leaves a gap where a transition is lost between the two
+reads. For one-shot waits, `herdr agent wait <id> --until blocked --until done
+--timeout MS` is the bounded primitive (0.7.5 syntax; `herdr wait agent-status`
+is gone). Reserve
 `pane read` for reading CONTENT once an event says a pane needs you — never as a
 discovery loop. Polling panes on a timer is the expensive anti-pattern: it burns
 tokens and lags behind reality.
@@ -285,9 +351,21 @@ for every ambiguity in one batch, answer them all, then let it run to done.
 - Parse IDs from JSON responses, never from sidebar order or examples.
 - Inspect existing output before waiting for future output/state.
 - Do not close workspaces/tabs/panes/sessions you did not create unless asked.
+- Mutation authority comes from create responses, not labels. Only an ID
+  returned by YOUR OWN create/split call may be pruned, closed, or rebound; an
+  object matched by label is adopted and read-only (herdr does not enforce
+  label uniqueness — two `herdr-spine` workspaces coexisted in the default
+  session on 2026-07-30).
+- Close panes focus-safely: record the exact active tab/pane first, never
+  close the focused pane, restore the exact prior focus afterward; on any
+  ambiguity, warn and preserve instead of closing.
+- Isolated experiments go through `~/herdr-spine/bin/spine-lab` — named
+  spine-lab-* sessions only, guarded stop/delete that re-queries the exact
+  session row before acting, and a default-session topology tripwire. Never
+  improvise lifecycle commands against ad-hoc session names.
 - Never run `herdr server stop` from an active session unless the user intends to
   stop the server and all its pane processes. Never kill the main Herdr process;
-  use a named test session for isolated experiments.
+  use spine-lab for isolated experiments.
 
 ## References
 
