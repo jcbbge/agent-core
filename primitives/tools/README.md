@@ -1,39 +1,22 @@
 # Tools
 
-Dev tools, SaaS products, services worth considering. Not installed yet — just noted.
+Tool **implementations** living in the canonical pantry.
 
-## Format
+## What is here
 
-```markdown
-# [Tool Name]
+- `bigfile/` — the Bigfile MCP server implementation (tree-sitter huge-file
+  navigation). Registered in Claude Code as `mcp__bigfile__*`
+  (`~/.claude.json` → `src/server.ts`); in pi reachable via super-search's
+  bigfile layer.
+- `_deprecated/` — extension-variant duplicates (kotadb / colgrep / bigfile /
+  composto / tldraw as pi `registerTool` extensions) that were never
+  installed, plus orphaned experiments (openrouter-research, install).
+  The live pi surface for those tools is super-search + CLIs; the live CC
+  surface is MCP. Kept for git history only — do not resurrect without
+  deleting one of the two packagings first.
 
-**URL:** [link]
-**Category:** [cli|saas|local|api|service]
-**Status:** [researching|trying|adopted|rejected]
-**Date:** YYYY-MM-DD
+## What is NOT here
 
-## What It Does
-[2 sentences max]
-
-## Why Interesting
-[why this could replace/improve something in your stack]
-
-## Use Case
-[when you would reach for this]
-
-## Competitors
-- [alternative 1]
-- [alternative 2]
-
-## Notes
-[observations, gotchas, pricing if relevant]
-```
-
-## Naming
-
-`[tool-name].md`
-
-Examples:
-- `airplane.md`
-- `warp-terminal.md`
-- `supabase.md`
+- pi utensils (`batch`, `diff`, `tree`, `undo`, `workspace`, …) — canonical
+  home is `~/.strudel/utensils/`.
+- The search router — canonical home is `~/.claude/skills/super-search/`.
