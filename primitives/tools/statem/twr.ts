@@ -62,7 +62,7 @@ function render(rows: any[]) {
   section('TRANSITIONS', rows.filter(bySt).slice(-LIM.transitions),
     (r) => `${hhmm(r.ts)}  ${oneline(r.body)}`)
   section('FINDINGS', rows.filter((r) => !bySt(r)).slice(-LIM.findings),
-    (r) => `${hhmm(r.ts)}  ${r.from ?? '?'} · ${oneline(r.body)}`)
+    (r) => `${hhmm(r.ts)}  ${r.from ?? '?'} · ${r.topic ?? '?'} · ${oneline(r.body)}`)
   section('OPEN QUESTIONS', openQuestions(rows).slice(-LIM.questions),
     (r) => `${hhmm(r.ts)}  ${r.from ?? '?'} · ${oneline(r.body)}`)
   process.stdout.write('\x1b[2J\x1b[H' + lines.join('\n') + '\n')
