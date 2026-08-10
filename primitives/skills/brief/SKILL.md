@@ -41,7 +41,8 @@ the brief.
 <who else is in flight, which files they own, "ignore uncommitted changes to
 X/Y/Z — do not investigate, revert, or fix them. Concern yourself only with
 your task."> <If fleet coordination matters: "post claims/findings to the
-Tower board (mcp__tower__board_post, topic '<topic>'); read it before
+Tower board (mcp__tower__board_post, topic '<project-slug>/<topic>' —
+project isolation, COMMS-ARCH.md §Project isolation); read it before
 claiming files (mcp__tower__board_read).">
 
 ## Tower (mid-run communication)
@@ -52,7 +53,9 @@ claiming files (mcp__tower__board_read).">
   mcp__tower__check_inbox while continuing other work.
 - Harnesses without the tower MCP (e.g. pi): append one JSON line to
   ~/.tower/board.jsonl — {"id","ts","cwd","type":"finding|alert","from","topic","body"}.
-  File append works everywhere; no MCP required. (Verified in pi 2026-07-23.)
+  `cwd` must be the agent's real repo cwd, never a scratch dir; `topic` must
+  be namespaced `<project-slug>/<topic>`. File append works everywhere; no
+  MCP required. (Verified in pi 2026-07-23.)
 
 ## Tasks
 1. <precise action> — done when: <exact, testable condition>
