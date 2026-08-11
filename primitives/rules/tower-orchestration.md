@@ -12,14 +12,38 @@ and every subagent/workflow/background task. Server: `~/.tower/server.mjs`
 (MCP, tools under `mcp__tower__*`). State: append-only JSONL in `~/.tower/`.
 Control panel: `/tower`. Brief generator: `/brief`. Pre-flight verifier: `scout` agent.
 
+Comms law (the four planes, addressing, no-fabrication/no-truncation
+invariants, notification pacing, project isolation) is owned by
+`~/.tower/COMMS-ARCH.md` — this file states only the operator-facing
+mechanics of driving Tower as an orchestrator/subagent; where the two would
+otherwise disagree, COMMS-ARCH.md wins (it is dated later and is the
+design of record).
+
 ## The verbatim guarantee (how send_to_user works here)
 
-Fleet messages of kind `deliverable` or `alert` BLOCK the orchestrator's
-turn-end (Stop hook, exit 2) until relayed to the user **verbatim** and
-acknowledged via `mcp__tower__mark_relayed`. Relay format: full content,
-attributed — "from <agent> (<time>): ..." — never summarized, never elided.
-Deliverables are also written to `~/.claude/tower/deliverables/` as files;
-mention the path when relaying.
+Fleet messages of kind `deliverable` or `alert` are meant to BLOCK the
+orchestrator's turn-end (Stop hook, exit 2) until relayed to the user
+**verbatim** and acknowledged via `mcp__tower__mark_relayed`. Addressing and
+the four-plane model (STATUS/FLEET MAIL/OPERATOR MAIL/OPERATOR DIRECTIVES)
+are governed by `~/.tower/COMMS-ARCH.md` — read it for the `to:"operator"`
+rule this guarantee now depends on.
+
+**Currently broken for `deliverable` (verified 2026-08-10, tracked at
+COMMS-ARCH.md migration item 4):** the Stop-hook guard (`stop-guard.mjs`)
+and `check_inbox` both read `inboxState()` (`lib.mjs`), which only treats a
+`deliverable` as unrelayed when its row carries `to:"operator"` explicitly.
+`send_to_user` (`server.mjs`) never sets `to` on any row it writes — so
+every deliverable sent through the documented tool currently has `to`
+undefined and can NEVER trigger the guard. `alert` still works as
+documented (its row qualifies when `to` is undefined OR `"operator"`). Until
+`send_to_user` mints `to:"operator"` on deliverables, do not rely on the
+Stop hook to catch an unrelayed deliverable — relay it the moment it's
+sent, same as before this guarantee existed.
+
+Relay format: full content, attributed — "from <agent> (<time>): ..." —
+never summarized, never elided. Deliverables are also written to
+`~/.tower/deliverables/` (= `~/.claude/tower/deliverables/`, a symlink) as
+files; mention the path when relaying.
 
 `progress` messages are ambient: they appear in `/tower` and in prompt-time
 context injections, never block, and need no ack.
