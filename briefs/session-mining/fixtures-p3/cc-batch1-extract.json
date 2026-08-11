@@ -1,0 +1,12 @@
+{
+  "batch": 1,
+  "commands": 188,
+  "harness": "cc",
+  "sessions": {
+    "01bffc6b-48ae-4662-bdb1-5928fa6baaba": 43,
+    "0a34b40a-c79b-43f2-a247-264e4c00a2d9": 34,
+    "198bba2b-d472-4b26-b754-4a7e8d90b83a": 43,
+    "97502dbf-00c7-46e2-977a-2c0cf1955ca5": 46,
+    "e842b684-8e27-48ac-aaf2-eb5778c52265": 22
+  }
+}

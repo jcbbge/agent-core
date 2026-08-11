@@ -1,0 +1,206 @@
+{
+  "batch": 1,
+  "eligible_filter_potential": [
+    {
+      "calls": 2,
+      "cap200_bytes": 7019,
+      "cap200_savings_pct": 0.0,
+      "command": "sed",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 7019,
+      "raw_bytes": 7019
+    },
+    {
+      "calls": 1,
+      "cap200_bytes": 3171,
+      "cap200_savings_pct": 0.0,
+      "command": "herdr 2>&1",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 3171,
+      "raw_bytes": 3171
+    },
+    {
+      "calls": 5,
+      "cap200_bytes": 2017,
+      "cap200_savings_pct": 0.0,
+      "command": "herdr pane",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 2017,
+      "raw_bytes": 2017
+    },
+    {
+      "calls": 5,
+      "cap200_bytes": 740,
+      "cap200_savings_pct": 0.0,
+      "command": "grep",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 740,
+      "raw_bytes": 740
+    },
+    {
+      "calls": 1,
+      "cap200_bytes": 633,
+      "cap200_savings_pct": 0.0,
+      "command": "head",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 633,
+      "raw_bytes": 633
+    },
+    {
+      "calls": 2,
+      "cap200_bytes": 467,
+      "cap200_savings_pct": 0.0,
+      "command": "herdr agent",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 467,
+      "raw_bytes": 467
+    },
+    {
+      "calls": 7,
+      "cap200_bytes": 386,
+      "cap200_savings_pct": 0.0,
+      "command": "wc",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 386,
+      "raw_bytes": 386
+    },
+    {
+      "calls": 1,
+      "cap200_bytes": 320,
+      "cap200_savings_pct": 0.0,
+      "command": "herdr notification",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 320,
+      "raw_bytes": 320
+    },
+    {
+      "calls": 2,
+      "cap200_bytes": 88,
+      "cap200_savings_pct": 0.0,
+      "command": "ls",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 88,
+      "raw_bytes": 88
+    }
+  ],
+  "failure_categories": [
+    {
+      "category": "generic-error",
+      "errors": 9,
+      "sessions": 5,
+      "top_verbs": [
+        [
+          "herdr agent",
+          2
+        ],
+        [
+          "sleep",
+          1
+        ],
+        [
+          "ls",
+          1
+        ],
+        [
+          "grep",
+          1
+        ],
+        [
+          "printf",
+          1
+        ],
+        [
+          "cat",
+          1
+        ],
+        [
+          "echo",
+          1
+        ],
+        [
+          "curl",
+          1
+        ]
+      ]
+    },
+    {
+      "category": "no-such-file",
+      "errors": 6,
+      "sessions": 3,
+      "top_verbs": [
+        [
+          "herdr pane",
+          4
+        ],
+        [
+          "echo",
+          1
+        ],
+        [
+          "cd",
+          1
+        ]
+      ]
+    },
+    {
+      "category": "syntax-error",
+      "errors": 3,
+      "sessions": 2,
+      "top_verbs": [
+        [
+          "export",
+          2
+        ],
+        [
+          "cd",
+          1
+        ]
+      ]
+    }
+  ],
+  "hook_commands_cc": [
+    {
+      "calls": 8,
+      "command": "afplay",
+      "duration_ms": 16667,
+      "slow_over_1s": 8
+    },
+    {
+      "calls": 7,
+      "command": "Tower:",
+      "duration_ms": 1216,
+      "slow_over_1s": 0
+    },
+    {
+      "calls": 8,
+      "command": "stop-verdict.mjs",
+      "duration_ms": 365,
+      "slow_over_1s": 0
+    },
+    {
+      "calls": 8,
+      "command": "ask-bridge.mjs",
+      "duration_ms": 332,
+      "slow_over_1s": 0
+    },
+    {
+      "calls": 8,
+      "command": "sh",
+      "duration_ms": 309,
+      "slow_over_1s": 0
+    },
+    {
+      "calls": 8,
+      "command": "[",
+      "duration_ms": 188,
+      "slow_over_1s": 0
+    }
+  ],
+  "hook_metrics_cc": {
+    "duration_ms": 19077,
+    "error_items": 1,
+    "events": 48,
+    "prevented": 0,
+    "slow_over_1s": 8
+  }
+}
