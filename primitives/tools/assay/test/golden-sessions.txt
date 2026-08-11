@@ -1,0 +1,5 @@
+/Users/jrg/.pi/agent/sessions/--Users-jrg-circadian--/2026-07-24T21-02-44-774Z_019f95f0-0c26-73b8-bac9-469feb577089.jsonl
+/Users/jrg/.pi/agent/sessions/--Users-jrg-circadian--/2026-08-09T15-23-57-548Z_019fe71f-a0ec-7007-96cd-29a1cc824c1c.jsonl
+/Users/jrg/.pi/agent/sessions/--Users-jrg--/2026-08-09T16-12-44-208Z_019fe74c-4930-7f72-8dc6-277289f452dc.jsonl
+/Users/jrg/.pi/agent/sessions/--Users-jrg-infinity-arc--/2026-08-11T18-28-42-519Z_019ff215-7d97-7057-8aaa-a239f4beed84.jsonl
+/Users/jrg/.pi/agent/sessions/--Users-jrg-agent-core--/2026-08-11T18-32-09-386Z_019ff218-a5aa-7e53-af73-2fd5d91f14fc.jsonl
