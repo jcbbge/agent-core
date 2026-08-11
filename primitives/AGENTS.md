@@ -54,8 +54,7 @@ is the bus (how their output reaches the user).
 ## bb — agentic IDE (WWWWW+H)
 
 - **What:** multi-provider agentic IDE (desktop/web/CLI/HTTP API) that runs
-  coding-agent providers (Claude Code, pi, and others — Cursor/opencode
-  provider entries are dead on this machine as of 2026-08-11) as
+  coding-agent providers (Claude Code and pi on this machine) as
   watchable, redirectable **threads**, plus a Node SDK (`BBSdk`) for
   programmatic thread control.
 - **Why:** fills the gap between the terminal substrate (owns panes, not
@@ -188,9 +187,8 @@ never `git add -A`.
 
 ## Retired — never reference
 
-cursor CLI + desktop (2026-08-11; `cursor-agent`, `~/bin/cursor-agent`,
-`~/bin/agent`, `~/.cursor/cli-config.json` all uninstalled — the cursor
-model GATEWAY stays, via pi; see Harness deltas) · opencode harness
+cursor CLI/desktop + every `--kind cursor` spawn path (2026-08-11; only the
+inference gateway remains, via pi — see Harness deltas) · opencode harness
 (2026-08-11; dropped from agent-core registry, `~/.config/opencode/`
 targets dead) ·
 SurrealDB `:6000` + `com.surrealdb.*` (2026-08-02; data archived `~/surreal/`,
@@ -212,17 +210,14 @@ Manifold / UHP / Mesh-OS.
 - **prime:** pi-based RLM runtime; harness-specific doc at
   `~/.prime/agent/AGENTS.md` (which defers to this file for machine-wide
   context)
-- **cursor gateway (models only — the cursor CLI/desktop are RETIRED,
-  2026-08-11):** the Cursor subscription is a model gateway reached from
-  INSIDE pi (`pi-cursor-sdk`; provider `cursor` in `~/.pi/agent/auth.json`).
+- **cursor = the inference gateway, configured through pi. That's all it
+  is.** Provider `cursor` in `~/.pi/agent/auth.json` (`pi-cursor-sdk`).
   Model IDs: `cursor/<id>[@ctx][:thinking|:fast]` (e.g.
   `cursor/grok-4.5:high`); thinking and `:fast` do NOT stack — pass
   `--thinking` separately (spine-spawn supports it). Daily entry =
   `herdr` then `herdr pi [profile[:option]]` (`hc` = shorthand). Fleet =
   `spine-spawn … --kind pi --profile <name>[:option]` (profiles:
-  `~/agent-core/primitives/profiles/` + `profile-model`, values are
-  pi-grammar IDs). `--kind cursor`, `herdr cursor`, and `cursor-agent`
-  fail loud by design — never resurrect them without reinstalling the CLI.
+  `~/agent-core/primitives/profiles/` + `profile-model`).
 
 ## Fleet spawn + comms (law, 2026-08-11)
 

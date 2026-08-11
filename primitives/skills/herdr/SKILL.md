@@ -153,10 +153,10 @@ herdr agent start agnt-wire-oauth --kind claude --pane <id>   # NAME lowercase-k
 herdr agent prompt <id> "Review the current diff; report only actionable findings." --wait --until working --timeout 30000
 ```
 
-**pi kind — the blessed fleet path (2026-08-11; cursor CLI retired).**
-Cursor-gateway models are reached from inside pi; pass pi-grammar IDs
-(`cursor/<id>[@ctx][:thinking|:fast]`) via `--model`, thinking level via
-`--thinking` (they do not stack in one ID):
+**pi kind — the blessed fleet path.** Gateway models are addressed as
+`cursor/<id>[@ctx][:thinking|:fast]` via `--model` (the `cursor` provider
+is pi config, nothing more), thinking level via `--thinking` (they do not
+stack in one ID):
 
 ```bash
 herdr pi                                  # daily entry (~/bin/herdr wrapper; hc = shorthand)
@@ -164,9 +164,6 @@ herdr pi coder                            # profile / profile:option via profile
 spine-spawn worker --kind pi --profile coder …    # fleet path
 herdr agent start <name> --kind pi --pane <id> -- --model 'cursor/grok-4.5:high'
 ```
-
-`--kind cursor`, `herdr cursor`, and bare `cursor-agent` fail loud by
-design — the CLI was uninstalled 2026-08-11; do not resurrect them.
 
 `agent start` waits for interactive readiness; launch by plain executable
 kind (`pi`, `claude`, `codex`, …) so its TUI opens. The pane must
