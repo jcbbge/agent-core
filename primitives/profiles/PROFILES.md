@@ -2,10 +2,10 @@
 
 Five profiles map to [control-flow.md](../rules/control-flow.md). Each has
 **exactly three** model options resolved through **pi's `cursor` provider**
-(the Cursor gateway, reached via the `pi-cursor-sdk` extension — pi 0.84.1,
-`@cursor/sdk`). The Cursor CLI/desktop is retired; the gateway stays and pi is
-the only launcher. Prompts are model-agnostic; swap models via
-`selection.json` / `profile-model set` / `--profile name:option`.
+(the inference gateway, reached via the `pi-cursor-sdk` extension — pi
+0.84.1, `@cursor/sdk`). pi is the only launcher. Prompts are model-agnostic;
+swap models via `selection.json` / `profile-model set` / `--profile
+name:option`.
 
 Authority files in this directory:
 
@@ -29,7 +29,7 @@ Authority files in this directory:
 - `:suffix` — **one** suffix slot, either a pi thinking level
   (`off|minimal|low|medium|high|xhigh|max`, valid only where the catalog's
   `thinking` column is `yes`) **or** a speed alias (`:fast` / `:slow`, valid
-  only where the model exposes Cursor's `fast` param).
+  only where the model exposes a `fast` param in the gateway catalog).
 
 ## Table (verified 2026-08-11)
 

@@ -159,7 +159,7 @@ is pi config, nothing more), thinking level via `--thinking` (they do not
 stack in one ID):
 
 ```bash
-herdr pi                                  # daily entry (~/bin/herdr wrapper; hc = shorthand)
+herdr pi                                  # daily entry (~/bin/herdr wrapper)
 herdr pi coder                            # profile / profile:option via profile-model
 spine-spawn worker --kind pi --profile coder …    # fleet path
 herdr agent start <name> --kind pi --pane <id> -- --model 'cursor/grok-4.5:high'

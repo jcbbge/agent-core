@@ -24,7 +24,6 @@ here contaminates control arms.
 | Composto | active | CLI `composto` — IR compression; TS/JS/Python/Go/Rust, NOT Swift/Zig |
 | rtk | active (allowlisted 2026-08-11) | CLI token-saver proxy (`~/.local/bin/rtk`) — rewrites restricted to measured-safe verbs (ls/ps/wc/df/git status/git log); everything else runs raw. CC: PreToolUse `rtk-guard.sh` · pi: `rtk-rewrite` extension (same guard). NEVER edit `~/.claude/hooks/rtk-rewrite.sh` — rtk integrity-pins its hash; the guard wraps it from outside. Do not trust rtk-proxied diff/find/grep output as evidence — use full binary paths |
 | Bigfile | active | pi: via super-search `--file` · CC: `mcp__bigfile__*` |
-| bb | active (manual) | CLI `bb` / `bb-app` (global install, no npx); web UI `:38886`; doc `~/agent-core/primitives/skills/bb/program.md` — see below |
 
 ## Tower — the message bus (orchestration convention)
 
@@ -50,33 +49,6 @@ is the bus (how their output reaches the user).
   in the same breath. A prompt to a pane isn't delivered until its
   `agent_status` flips to `working`.
 - Full protocol: `~/agent-core/primitives/rules/tower-orchestration.md`.
-
-## bb — agentic IDE (WWWWW+H)
-
-- **What:** multi-provider agentic IDE (desktop/web/CLI/HTTP API) that runs
-  coding-agent providers (Claude Code and pi on this machine) as
-  watchable, redirectable **threads**, plus a Node SDK (`BBSdk`) for
-  programmatic thread control.
-- **Why:** fills the gap between the terminal substrate (owns panes, not
-  thread-level agent control) and Tower (relays messages, doesn't drive a
-  provider): a surface
-  where an agent can start/inspect/redirect a thread on itself or a sibling
-  provider via SDK/CLI, with the user able to watch the same thread in the
-  UI.
-- **When:** delegating a subtask to a different provider than the one
-  currently driving; needing programmatic thread control rather than pane
-  control or message relay. Not a substrate or Tower replacement — composes
-  with both.
-- **Where:** manual per-session (not launchd, not system-tier as of
-  2026-08-05). Normal path: open `/Applications/bb.app` (Spotlight/Dock,
-  no terminal). Headless path: `bb-app` (installed globally, no npx) —
-  don't run both at once. `bb <cmd>` talks to whichever is up. Web UI
-  `:38886`, host daemon `:38887`, data `~/.bb/`.
-- **Who:** this agent is operator + toolsmith (starts/stops it, drives it,
-  extends it); the user holds the UI seat.
-- **How:** `bb <status|provider|thread|skill|guide>` (global install, no
-  npx). Full doc, gotchas, and provider list:
-  `~/agent-core/primitives/skills/bb/program.md`.
 
 ## Search — one canonical router
 
@@ -187,10 +159,9 @@ never `git add -A`.
 
 ## Retired — never reference
 
-cursor CLI/desktop + every `--kind cursor` spawn path (2026-08-11; only the
-inference gateway remains, via pi — see Harness deltas) · opencode harness
-(2026-08-11; dropped from agent-core registry, `~/.config/opencode/`
-targets dead) ·
+opencode harness (2026-08-11; dropped from agent-core registry,
+`~/.config/opencode/` targets dead) · bb agentic IDE (2026-08-11;
+uninstalled — app, CLIs, `~/.bb` data all removed) ·
 SurrealDB `:6000` + `com.surrealdb.*` (2026-08-02; data archived `~/surreal/`,
 plists `~/dotfiles/launchagents/deprecated/`) · alembic MCP + dream-daemon +
 corvus/lyra/spectra agents (`_deprecated-alembic/`) · KotaDB `:7001` +
@@ -206,18 +177,16 @@ Manifold / UHP / Mesh-OS.
 
 - **Claude Code:** `TodoWrite` for 3+ step tasks · MCP names
   `mcp__<server>__<tool>`
-- **pi:** `/reload` hot-reload · skills under `~/.pi/agent/skills/`
+- **pi:** `/reload` hot-reload · skills under `~/.pi/agent/skills/` ·
+  gateway model IDs `cursor/<id>[@ctx][:thinking|:fast]` (inference-gateway
+  provider config in `~/.pi/agent/auth.json`; thinking and `:fast` do NOT
+  stack — pass `--thinking` separately, spine-spawn supports it) ·
+  daily entry = `herdr` then `herdr pi [profile[:option]]` · fleet =
+  `spine-spawn … --kind pi --profile <name>[:option]` (profiles:
+  `~/agent-core/primitives/profiles/` + `profile-model`)
 - **prime:** pi-based RLM runtime; harness-specific doc at
   `~/.prime/agent/AGENTS.md` (which defers to this file for machine-wide
   context)
-- **cursor = the inference gateway, configured through pi. That's all it
-  is.** Provider `cursor` in `~/.pi/agent/auth.json` (`pi-cursor-sdk`).
-  Model IDs: `cursor/<id>[@ctx][:thinking|:fast]` (e.g.
-  `cursor/grok-4.5:high`); thinking and `:fast` do NOT stack — pass
-  `--thinking` separately (spine-spawn supports it). Daily entry =
-  `herdr` then `herdr pi [profile[:option]]` (`hc` = shorthand). Fleet =
-  `spine-spawn … --kind pi --profile <name>[:option]` (profiles:
-  `~/agent-core/primitives/profiles/` + `profile-model`).
 
 ## Fleet spawn + comms (law, 2026-08-11)
 
