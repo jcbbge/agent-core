@@ -1,302 +1,300 @@
 ---
 name: herdr
 description: >
-  Control Herdr, this machine's control plane for coding agents: a terminal
-  multiplexer/runtime that owns terminals server-side (panes survive crashes,
-  detach, SSH drop), detects agent identity and status per pane, and exposes a
-  CLI + socket API. Herdr is the canonical spawn substrate on this machine —
-  use it proactively when orchestrating multiple parallel agents (a raw
-  headless spawn recipe exists below as fallback only). Also use when the user
-  mentions Herdr or asks to inspect/control panes, tabs, workspaces, or
-  terminals. Pane-local control commands require HERDR_ENV=1; fleet observation
-  and spawning work from any shell via the global server socket.
+  Operate Herdr, the terminal multiplexer/runtime substrate for this
+  machine's agent fleet: a background server owns real terminal processes
+  (panes survive crashes, detach, SSH drop), detects agent identity and
+  status per pane, and exposes a CLI + socket API. control-flow.md
+  (operator law, 2026-08-10) names herdr THE substrate — use, leverage,
+  optimize, and extend it in every way possible. Invoke when the user
+  mentions Herdr, or asks to inspect/control panes, tabs, workspaces, or
+  terminals; invoke ambiently whenever you are about to spawn, name, or
+  observe an agent. Pane-local control requires HERDR_ENV=1; fleet
+  observation and spawning work from any shell via the global server socket.
 metadata:
   author: jrg
-  version: "1.0"
-  tags: herdr, multiplexer, orchestration, panes, ground-and-tower, coordinator
-  upstream: https://raw.githubusercontent.com/ogulcancelik/herdr/master/SKILL.md
+  version: "1.2"
+  tags: herdr, multiplexer, panes, terminals, substrate, control-flow, comms-arch, tower
+  upstream: UNKNOWN — https://raw.githubusercontent.com/ogulcancelik/herdr/master/SKILL.md returns HTTP 404 (verified live this session, 2026-08-10); no working upstream source confirmed
   gateway: strudel pantry (roots ~/.pi/agent + ~/agent-core/primitives)
 ---
 
 # Herdr
 
 Herdr is a terminal multiplexer and runtime for coding agents. A background
-server owns real terminal processes; clients attach to render them. Panes keep
-running after detach, terminal close, or SSH drop. Herdr detects agents inside
+server owns real terminal processes; clients attach to render them. Panes
+survive detach, terminal close, or SSH drop. Herdr detects agents inside
 panes and reports each one's state, so a whole fleet is visible at once.
-
-Before any control command, confirm you are inside a Herdr-managed pane:
+Verified live this session: `herdr --version` → `0.8.0`; every version stamp
+below is 0.8.0 unless marked otherwise.
 
 ```bash
-test "${HERDR_ENV:-}" = 1
+test "${HERDR_ENV:-}" = 1   # confirm you're in a Herdr pane before any control command; stop if it fails
 ```
 
-If the check fails, say you are not running inside Herdr and stop.
+**Sandbox policy (2026-08-06).** Harness exec sandboxes can block the control
+socket (`PermissionDenied`/`fetch failed` on `~/.config/herdr/herdr.sock`).
+Verify once per session with `herdr api snapshot`; if it fails, rerun herdr
+commands with the sandbox disabled for those calls. Do not relocate to an
+unsandboxed pane and do not fall back to polling files.
 
-**Sandbox policy (standardized 2026-08-06).** Harness exec sandboxes can block
-the control socket (`PermissionDenied`/`fetch failed` on
-`~/.config/herdr/herdr.sock` — observed 2026-08-05 from a sandboxed
-coordinator; other sessions' sandboxes allow it). Verify once per session with
-`herdr api snapshot`; if it fails, rerun herdr control commands with the
-sandbox disabled for those calls. That is the standard remedy — do not
-relocate the coordinator to an unsandboxed pane and do not fall back to
-polling files.
+## Canonical docs — read these, don't re-derive them
 
-## Your topology: Coordinator > Orchestrator > Agents
+This file is a working manual, not the authority; when it disagrees with a
+doc below, the doc wins.
 
-Herdr has **four nouns and no hierarchy**: session, workspace, tab, pane, plus a
-control socket. It knows nothing of coordinators, orchestrators, or agents — that
-trinity is a discipline imposed by *who spawns whom*. Because every node is a real
-terminal, every node is observable from every other node. The mapping for this
-machine (root `~/`, every project a dir within it):
+| Doc | Owns |
+|---|---|
+| `~/agent-core/primitives/rules/control-flow.md` | Hierarchy (OPERATOR>CONCIERGE>CORD>ORCH>AGNT/SAGT), naming prefixes, Made Well mapping, §Reaping, §Observability, §Two-plane CTRL |
+| `~/.tower/COMMS-ARCH.md` | Comms law: four planes, one message/one audience/once/in full, notification rubric, project isolation |
+| `~/herdr-spine/docs/spawn.md` | spine-spawn modes, the stamping mandate, the four name carriers, `$task`/`$role`, the spine-spawn naming gap |
+| `~/herdr-spine/docs/ctl-fleet.md` | The CTRL fleet pane (two-plane machine/project view), row format |
+| `~/agent-core/primitives/tools/statem/README.md` | statem (Made Well state tracker) + twr (Tower board viewer) |
+| `~/source/herdr-RETROFIT-MAP.md` | Codebase map for the installed herdr 0.8.0 |
 
-| Your concept | Herdr object | Rule |
+## Hierarchy and naming (control-flow.md — MANDATORY)
+
+```
+OPERATOR → CONCIERGE → CORD (1/project) → ORCH (1/unit of work) → AGNT (focused work)
+                                                                 → SAGT (deferred/async)
+```
+Plus two infra prefixes: `CTRL` (fleet control pane) and `TOWR` (one Tower
+viewer per project workspace) — display panes, not agents.
+
+| Prefix | Role | Registration name |
 |---|---|---|
-| the machine / all work | session (default) | One background server; rarely name a second. |
-| a project (`~/strudel`, `~/infinity/arc`) | workspace | `cd <project> && herdr`. Sidebar rolls agent state up per workspace. |
-| the coordinator | tab 1, labelled `tower` | The persistent pane you talk to on entry. Not a Herdr primitive — just the first desk. |
-| a task ("email-feature") | a tab | One per task. Orchestrator in the big pane; close the tab when shipped. |
-| an orchestrator | the large pane in a task tab | Spawned by the coordinator. |
-| agents / subagents | splits beside the orchestrator | Spawned by the orchestrator, in its own tab. |
+| `CORD [project]` | Coordinator | `cord-<project>` |
+| `ORCH [feature/bug/chore]` | Orchestrator | `orch-<slug>` |
+| `AGNT [Task]` | Agent | `agnt-<slug>` |
+| `SAGT [TODO]` | Subagent | `sagt-<slug>` |
 
-Discipline that keeps the tree legible:
-- The coordinator only creates task **tabs** and their orchestrator pane.
-- An orchestrator only splits **its own tab** for agents.
-- Rename every pane to its role — the name shows in the sidebar and on the split border.
-- When two tasks touch the same code, back a task tab with a git worktree
-  (`herdr worktree create`) so parallel agents do not collide.
+Rename every spawned pane to its prefixed role **before** its agent starts.
+`herdr agent start <NAME>` rejects spaces/uppercase (`invalid_agent_name`,
+verified via `--help` this session) — registration names are always
+lowercase-kebab (`orch-herdr-qol`); prefixed display case (`AGNT ...`) lives
+in the pane label / `--display-agent`, never the registration name.
 
-**Composition with Tower:** Herdr is the *physical substrate* (where agents live,
-how you see them). Tower (`tower-orchestration.md`) is the *message bus* (how
-deliverables and questions reach the user verbatim). They stack: an agent in a
-Herdr pane uses Tower to surface a blocking question; Herdr shows you which pane
-is `blocked`; you click it.
+## The stamping mandate (spawn.md)
 
-## Learn the current CLI
+CTRL's fleet row shows a human work name next to the role prefix and refuses
+a raw item id. Stamp the item's **title** (plain words, never `c004-i005`)
+via all four carriers at birth:
 
-The installed binary is the authority. Discover syntax with the command group
-(never bare `herdr`, which launches the TUI; never probe a mutating nested
-command by omitting args — some, like `workspace create`, run with defaults):
+1. `herdr agent start <name>` — the only carrier surviving a server restart.
+2. `herdr pane report-metadata <id> --source <src> --display-agent "AGNT wire OAuth callback"`
+3. `herdr pane rename <id> "AGNT wire OAuth callback"` — feeds `panes[].label`.
+4. `--token name="<title>"` — highest-priority override CTRL checks first.
 
-```bash
-herdr --help
-herdr pane            # workspace | tab | worktree | wait | agent | api ...
-```
+Also stamp `--token task="<title>"` (80-char cap, the activity line) and
+`--token role=3-AGNT` (`1-CORD|2-ORCH|3-AGNT|4-SAGT`, drives panel sort).
+**The trap:** tokens do NOT survive a restart; `agent start` registrations
+do — after a restart, tokens are blank until re-stamped.
 
-Most control commands print JSON. Read identifiers and state from those
-responses; never construct an ID from a display number.
+## Reaping (control-flow.md §Reaping)
 
-## Session targeting (verified 2026-07-30, herdr 0.7.5)
+Done = gone. A truly-done agent (report delivered, done-conditions verified
+by its spawner) is spawned down: pane closed, process ended, empty tab
+closed. No trophy panes. The spawner reaps its own agents; the coordinator
+reaps orchestrators after their final report. Exceptions: infra panes meant
+to run forever (`CTRL`, `TOWR`, statem) and the operator's focused pane.
+Durable state lives on disk and the Tower board, never a dead pane's
+scrollback.
 
-Every CLI call must reach the intended server through ONE of:
+## Learn the CLI, session targeting, IDs
 
-- `herdr --session <name> <cmd>` — explicit; correct.
-- `HERDR_SOCKET_PATH=<session-socket>` — honored by the CLI and unambiguous
-  per server; the authoritative route inside plugin context, where herdr
-  injects it (this is how herdr-spine's handlers target their session).
+The installed binary is the authority — discover syntax with the command
+group (never bare `herdr`, which launches the TUI; never probe a mutating
+nested command by omitting args). Most commands print JSON; read IDs and
+state from responses, never a display number.
 
-`HERDR_SESSION=<name>` is NOT routing authority: at 0.7.5 it is silently
-ignored and the call reaches the DEFAULT server (reproduced live:
-`HERDR_SESSION=spine-lab-probe herdr workspace list` returned the default
-session's workspaces). Never target by session-name env, and never assume an
-ambient environment variable pointed a call at the right server.
+Reach the intended server through ONE of: `herdr --session <name> <cmd>`, or
+`HERDR_SOCKET_PATH=<socket>` (honored by the CLI, the authoritative route
+inside plugin context — confirmed in `spine-wormhole`/`spine-watch`/
+`spine-greeting`). `HERDR_SESSION=<name>` is NOT routing authority —
+re-verified live this session (`HERDR_SESSION=nonexistent-probe-session
+herdr workspace list` still returned the default session). Never target by
+session-name env.
 
-## IDs and current context
-
-Public IDs are short, stable, opaque handles: workspace `w1`, tab `w1:t1`, pane
-`w1:p1`, terminal `term_...`. The suffix can grow beyond one character. Closed
-IDs are not reused; a pane moved to another workspace gets a new ID. Re-read
-create/split/move/list responses after mutations.
-
-Pane IDs contain colons (`w1:t1:p1`), so any `<session>:<pane>`-style joined
-encoding must split on the FIRST colon only when parsing back. Prefer
-separate fields over joined strings wherever possible.
-
-Herdr injects the caller's context into every managed pane:
-
-```bash
-printf '%s\n' "$HERDR_WORKSPACE_ID" "$HERDR_TAB_ID" "$HERDR_PANE_ID"
-```
-
-Prefer `--current` when a command targets the calling pane. Omitting a target may
-hit the UI-focused pane, which can belong to the user or another client.
-
-Discover live state:
-
-```bash
-herdr workspace list
-herdr tab list --workspace "$HERDR_WORKSPACE_ID"
-herdr pane list --workspace "$HERDR_WORKSPACE_ID"
-herdr api snapshot          # the entire tree — agents, states, geometry — as JSON
-```
+IDs are short, opaque, colon-joined, two segments (workspace-prefixed local
+id, e.g. `w1A:p12` a pane, `w1A:tJ` a tab — split on the FIRST colon only
+when parsing). Closed IDs are never reused, a moved pane gets a new one
+(live-verified this session: split a pane → `w1A:p13`, closed it, split
+again → `w1A:p14`, never `p13` again). Herdr injects `$HERDR_WORKSPACE_ID`/`$HERDR_TAB_ID`/`$HERDR_PANE_ID`
+into every managed pane; prefer `--current` over omitting a target (which
+can hit another client's focused pane). Herdr exposes NO pane-birth
+timestamp anywhere (verified against `session.snapshot`) — a duration comes
+from a transcript's first timestamped record or a board CLAIM, never
+guessed. Discover live state with `herdr workspace list`, `tab list
+--workspace <id>`, `pane list --workspace <id>`, `api snapshot` (full tree).
 
 ## Agent status
 
-Pane records expose `agent`, `agent_status`, and session metadata. States:
-`idle`, `working`, `blocked`, `done`, `unknown`.
+States: `idle`, `working`, `blocked`, `done`, `unknown`. `idle`/`done` are
+the same state with different attention — `done` means unseen (background
+tab); focusing the pane/tab marks it seen and flips it to `idle`. The
+sidebar is an attention queue, not a status board.
 
-`idle` and `done` are the same underlying state with different attention:
-- `idle`: waiting, and its result is considered seen.
-- `done`: finished, and its result has **not** been seen (background tab/workspace).
-
-Focusing a pane, switching to its tab, or regaining outer-terminal focus marks it
-seen, so `done` becomes `idle`. The sidebar is an attention queue, not a status
-board.
-
-Corroborate non-busy readings before acting on them: `agent_status` can read
-`idle` while the harness is still running a long foreground tool, because the
-detector keys on the agent loop, not the tool. Before concluding a pane is
-not working, check the rendered screen for a busy banner/spinner. The reverse
-does not apply to input waits — a permission dialog shows no busy banner yet
-correctly surfaces as `blocked`.
+Corroborate non-busy readings: `agent_status` can read `idle` while the
+harness runs a long foreground tool (the detector keys on the agent loop,
+not the tool) — check the rendered screen for a busy banner before
+concluding a pane is free. This does not apply to input waits: a permission
+dialog shows no busy banner yet correctly surfaces as `blocked`.
 
 ## Start an agent in a pane (the spawn loop)
 
-Default to a sibling pane in the current tab and cwd. Do not create a workspace,
-tab, worktree, or different cwd unless the user asked for that topology. Inspect
-geometry, split without stealing focus, read the returned ID, label it, launch:
+Default to a sibling pane in the current tab/cwd unless the user asked for
+different topology. Split without stealing focus, read the returned ID,
+stamp its role, launch:
 
 ```bash
-herdr pane layout --pane "$HERDR_PANE_ID"
 herdr pane split --current --direction right --no-focus   # or: down
-herdr pane rename <returned-pane-id> "orch-catalog"
-herdr agent start pi --kind pi --pane <returned-pane-id>   # native: starts + waits for readiness
-herdr agent prompt <returned-pane-id> "Review the current diff; report only actionable findings." --wait --until working --timeout 30000
+herdr pane rename <id> "AGNT wire OAuth callback"
+herdr agent start agnt-wire-oauth --kind claude --pane <id>   # NAME lowercase-kebab; [-- <AGENT_ARG>...] passes through, e.g. -- --model sonnet
+herdr agent prompt <id> "Review the current diff; report only actionable findings." --wait --until working --timeout 30000
 ```
 
-Launch the agent by its plain executable (`pi`, `claude`, `codex`, `opencode`,
-`omp`) so its interactive TUI opens. Do not pass the task as an argv prompt and do
-not add non-interactive flags unless explicitly asked. For prompts, prefer
-`herdr agent prompt <id> "<text>" --wait --until working --timeout 30000` — it
-submits and confirms the state flip in one call (verified 0.7.5), so the call
-itself is the delivery evidence. `herdr agent start <name> --kind pi --pane <id>`
-is the native launcher — it starts the agent AND waits for interactive
-readiness (run-verified 2026-08-02: pi detected, `interactive_ready: true`).
-Precondition: the pane must already sit at an interactive shell prompt — a
-freshly seeded pane can reject the call within the first second or two of its
-life; retry after a beat. `pane run` (text + Enter together) remains the
-fallback path — and it carries the verification duty below.
+`agent start` waits for interactive readiness; launch by plain executable
+kind (`pi`, `claude`, `codex`, `opencode`, …) so its TUI opens. The pane must
+already sit at an interactive shell prompt (`agent_pane_busy` — retry
+briefly), and NAME must be session-unique (`agent_name_taken`). A
+freshly-split pane whose shell hasn't finished sourcing its profile yet can
+instead surface as a `timeout` error with `command not found: <agent>` in
+the pane, NOT `agent_pane_busy` — retrying after a beat succeeds either way
+(reported verified by ORCH this session; not independently re-triggered by
+this audit).
 
-**DELIVERY IS NOT DELIVERY UNTIL VERIFIED (hard rule, 2026-07-27; updated
-2026-07-30).** A prompt sent with `pane run` can sit in the agent's input box
-as `[Pasted text #N]`, typed but never submitted — observed on an IDLE pane,
-not just busy ones (a coordinator's gate ruling sat unsent while the fleet
-looked stalled). The `agent prompt --wait` primary path above makes the flip
-observation atomic; two nuances of it were verified live at 0.7.5:
-
-- An `agent_prompt_stalled` error ("no observed state change … status is
-  idle") is NOT proof of non-delivery: client-side inputs such as `/reload`
-  execute without any state flip. Check the transcript before retrying — the
-  command may already have run.
-- Slash- and dollar-prefixed input executes natively through `agent prompt`
-  (no completion-popup interference observed at 0.7.5). When driving a
-  composer manually via `pane run` / `pane send-text` instead, settle briefly
-  after the text before sending Enter so a popup cannot consume it.
-
-After EVERY `pane run` that carries a prompt to an agent pane, run the
-verify-submit step before reporting delivery or moving on:
+**DELIVERY IS NOT DELIVERY UNTIL VERIFIED (hard rule, 2026-07-27).** `agent
+prompt --wait` submits and confirms the flip atomically — prefer it always.
+`pane run` (fallback) can leave text buffered as `[Pasted text #N]`,
+unsubmitted, even on an idle pane; `agent_prompt_stalled` is not proof of
+non-delivery (`/reload`-style inputs never flip state — check the
+transcript first). After every prompt-carrying `pane run`, verify the flip
+or force it — status-flip is the only evidence of submission, never `pane
+run` alone:
 
 ```bash
 sleep 2 && herdr pane get <id>        # agent_status must flip to working
-# still idle/blocked? check for a buffered paste and force the submit:
 herdr pane read <id> --source visible --lines 6 | grep -q "Pasted text" \
   && herdr pane send-keys <id> Enter && sleep 2 && herdr pane get <id>
 ```
 
-Never report a prompt as delivered, an agent as tasked, or a fleet as launched on
-the strength of `pane run` alone — status-flip (or an explicit forced Enter plus
-status-flip) is the only evidence of submission.
-
-Two `agent start` behaviors verified live (2026-08-06): NAME must be
-session-unique (`agent_name_taken` otherwise — use the role label as the
-name), and a just-created pane's shell needs a moment to reach its prompt
-(`agent_pane_busy` — retry briefly on exactly that code). One-command wrapper
-with the whole loop baked in — topology, rename, readiness, verified submit
-with the Pasted-text fallback, liveness evidence in the result JSON:
-`~/herdr-spine/bin/spine-spawn <orch|worker|fanout|prompt>` (doc:
-`~/herdr-spine/docs/spawn.md`, lab-verified 2026-08-06). Prefer it over
-hand-running the loop.
-
-For background work, wait for the terminal state before reading the transcript:
+**Prefer the wrapper:** `~/herdr-spine/bin/spine-spawn <orch|worker|fanout|prompt>`
+bakes in topology, rename, readiness, verified submit (doc: spawn.md).
+Modes: `orch` (task tab + orchestrator), `worker` (sibling pane), `fanout`
+(dedicated `<task>-workers` tab, gridded, **hard-capped at 4 briefs/call**),
+`prompt` (verified follow-up); `-- --model sonnet` passthrough works here
+too. **The gap:** `spine-spawn` passes one role string to both `pane rename`
+and `agent start`, and `fanout` derives roles as `<task>-wN` — no prefix, no
+display-agent, so it does NOT satisfy the stamping mandate alone. Follow
+every `fanout`/`worker` call with, per worker:
 
 ```bash
-herdr agent wait <id> --until working --timeout 30000
-herdr agent wait <id> --until done --timeout 120000   # or idle if the user is watching that tab
-herdr pane read <id> --source recent-unwrapped --lines 120
+herdr pane rename <id> "AGNT <headline>" && herdr pane report-metadata <id> \
+  --source spine --display-agent "AGNT <headline>" --token role=3-AGNT \
+  --token task="<headline>" --token name="<headline>"
 ```
 
-If a wait times out, inspect `herdr pane get <id>` and `pane read` before acting.
-`blocked` needs input; `unknown` has no detected/integrated agent yet.
+For background work, wait for state before reading: `herdr agent wait <id>
+--until working --timeout 30000`, then `--until done --timeout 120000` (or
+`idle`), then `pane read <id> --source recent-unwrapped --lines 120`.
+`blocked` needs input; `unknown` has no detected agent.
 
 ## Restart and liveness (husks)
 
-Stopping and restarting a herdr server preserves workspace, tab, and pane IDs
-and their labels — but NOT the processes or agent registrations inside them.
-After a restart, a restored pane showing its old label with no registered
-agent is a HUSK. Classify before acting: structurally gone pane = `missing`;
-restored pane with a shell but no registered agent = `dead`; registered agent
-= `alive`; unexpected read = `unreadable`. Replace a husk only when
-confidently dead: create and verify the replacement BEFORE closing the old
-pane (never close a workspace's last tab first), and refuse to touch live or
-unreadable panes. A label is never evidence of liveness.
+A restart preserves workspace/tab/pane IDs and labels but NOT processes or
+agent registrations. A restored pane with its old label and no registered
+agent is a HUSK: `missing` (structurally gone), `dead` (shell, no agent),
+`alive` (registered agent), `unreadable` (unexpected read) — a label is
+never evidence of liveness. Replace a husk only when confidently dead:
+verify the replacement before closing the old pane, never close a
+workspace's last tab first.
 
-Persistence specifics (verified live 2026-08-06, lab session at 0.7.5):
-terminal ids are re-minted across a restart, `pane read` fails until terminals
-re-materialize, and a restored pane's `agent_status` is retained metadata, not
-detection — while agent-session ids (e.g. a claude session id) ARE retained,
-which is what makes manual resume possible. Recovery is rebuild, not resume,
-and it is never automatic: nothing may auto-respawn the server or re-launch
-agents. A server restart is an explicit operator action; the coordinator then
-re-spawns whatever the durable planes say was unfinished — Tower
-board/ledger/deliverables, briefs on disk, `.done` markers, git, herdr config
-+ plugin registration. TTL tokens (`$task`/`$q`/`$claim` pheromones) evaporate
-by design; the plugin agent view is reapplied by spine-startup on server start
-(0.7.5+).
+Terminal ids are re-minted, `pane read` fails until they re-materialize, and
+`agent_status` is retained metadata not detection — while agent-session ids
+(e.g. a claude session id) ARE retained, enabling manual resume. Recovery is
+rebuild, never automatic: an explicit operator action, then the coordinator
+re-spawns from durable planes (Tower board/ledger, briefs on disk, `.done`
+markers, git). `--token` pheromones evaporate on restart. The plugin-owned
+agent view does NOT currently survive via `[[startup]]` — `herdr-plugin.toml`
+carries no `[[startup]]` stanza (removed 2026-08-09) and live evidence from
+that date shows the view was never reapplied. Correction to a claim inside
+`~/herdr-spine/bin/spine-startup`'s own docstring (and `herdr-plugin.toml`'s
+comments): both assert `RawPluginManifest` "declares no `startup` field" —
+FALSE, verified this session by reading
+`~/source/herdr/src/app/api/plugins/manifest.rs` directly: line 25 declares
+`startup: Vec<RawPluginManifestStartup>` with `#[serde(default)]`, and
+`PluginManifestStartup` is imported at line 3. The schema supports it; the
+stanza is simply absent from the deployed toml, a config choice, not a
+parser limitation — so re-adding `[[startup]]` may work at 0.8.0 (untested).
+The live replacement in the meantime,
+`~/herdr-spine/bin/handlers/15-restore-view`, reapplies the view via
+`agent.view.set` on every `pane.agent_status_changed` event, so the
+first event after a restart restores it.
 
 ## Coordinated fan-out contract (verified 2026-07-23)
 
-The pattern that ran a 3-worker parallel fan-out on this machine with zero
-collisions (Circadian bulletproofing). Composes the `brief` skill (spec), the
-Tower board (comms), and `.done` markers (completion gating):
+Composes the `brief` skill (spec), the Tower board (comms), `.done` markers
+(gating):
 
-1. **Brief on disk.** One markdown brief per worker — mission, pre-verified
-   facts, file partition, done-when conditions, report contract — plus one
-   shared worker contract (hard rules: touch only assigned files, never commit,
-   no mocks, final action writes the `.done` file).
-2. **Disjoint file partitions.** State the partition map in every brief;
-   workers ignore anything outside their assigned list.
-3. **Spawn — panes by default, in a dedicated worker tab (liveness doctrine,
-   2026-07-23; ONE TRUTH PLANE, 2026-07-24).** If work is not visible in Herdr,
-   it is not happening: BUILD workers are never harness-internal subagents
-   (Agent tool), no matter how convenient the worktree isolation — run the pane
-   with its cwd inside a worktree to get both visibility and isolation.
-   Harness-internal subagents are for single-turn read-only work only
-   (research, scout, verify). Workers run as Herdr panes so agent_status stays observable —
-   an invisible-but-alive worker is indistinguishable from a dead one, which is
-   how a whole wave once "ran" with zero observable footprint. Create ONE
-   dedicated worker tab per task (`herdr tab create --label <task>-workers
-   --no-focus`), lay workers out as a grid (split down first, then right), keep
-   at most ~4 panes visible, and close each pane the moment its worker
-   finishes. Never crowd the orchestrator's own tab into unreadable slivers.
-   Headless (`claude -p` / `pi -p` fire-and-forget) is the EXCEPTION, allowed
-   only with ALL of: stdout/stderr redirected to a per-worker log file, a
-   `.done` marker as the final action, AND a spawn-time CLAIM post carrying the
-   PID. After any spawn, verify liveness with `pgrep -fl <pattern>` — plain
-   pgrep, never a filter/proxy grep chain (chained greps have produced false
-   "nothing running" evidence) — and never report a worker as launched or
-   running without that process- or pane-level evidence.
-4. **Comms.** Workers append CLAIM and DONE lines to `~/.tower/board.jsonl` —
-   file append works in every harness, no MCP required:
-   `{"id","ts","cwd","type":"finding","from":"<worker>","topic":"<t>","body":"..."}`
-   A worker's FIRST action is its CLAIM (pane id or PID included). Silence plus
-   no pane/process activity for 10+ minutes = presumed dead; investigate, do
-   not wait.
-5. **Gate.** The coordinator owns integration: read every `.done`, run the
-   verification suite personally, commit. Workers never commit.
+1. **Brief on disk** per worker — mission, pre-verified facts, file
+   partition, done-when, report contract — plus a shared contract (touch
+   only assigned files, never commit, no mocks, final action writes `.done`).
+2. **Disjoint file partitions**, stated in every brief.
+3. **Spawn as panes**, in a dedicated worker tab — invisible in Herdr means
+   not happening. BUILD workers are never harness-internal subagents, however
+   convenient worktree isolation is — run the pane's cwd inside the worktree
+   for both; harness-internal subagents are for single-turn read-only work
+   only (research, scout, verify). One tab per task (`herdr tab create
+   --label <task>-workers --no-focus`), gridded (down then right), ~4 panes
+   max, close each on finish. Headless (`claude -p`/`pi -p`) is the
+   exception, only with output redirected to a log file, a `.done` marker,
+   and a spawn-time CLAIM carrying the PID. Verify liveness with plain
+   `pgrep -fl <pattern>` — never report a worker running without evidence.
+4. **Comms** — see below; COMMS-ARCH.md is the law.
+5. **Gate** — the spawner owns integration: read every `.done`, verify, commit. Workers never commit.
 
-Circadian composition is free: harness sessions spawned in panes load their own
-config, so wake/graze/sleep fire per pane automatically (verified: three
-headless pi workers were metabolized by the memory substrate the same day).
+## Observability infra — where it lives, what it shows
+
+- **`CTRL` fleet/project pane** — `bun ~/herdr-spine/bin/ctl-fleet` (machine
+  plane: every agent-bearing pane by project + a WORK section from each
+  project's `.madewell/`) or `--project <root>` (that project only). Spawn
+  with `bun ~/herdr-spine/bin/ctl-fleet --spawn [workspace_id] [--project
+  <root>]` — the only sanctioned placement: splits the `CORD` host pane in
+  tab 1 at 0.62, `--no-focus`, renamed `CTRL fleet`/`CTRL <project>`. Always
+  a SPLIT of tab 1, never an isolated tab. Display only.
+- **`TOWR [project]` pane** — one per project workspace, read-only tail of
+  that project's Tower board: `bun
+  ~/agent-core/primitives/tools/statem/twr.ts <project-root>`. Renders
+  TRANSITIONS/FINDINGS/OPEN QUESTIONS; writes nothing.
+- **statem** — per-project Made Well tracker: `bun
+  ~/agent-core/primitives/tools/statem/statem.ts <project-root>`. Derives
+  outer stage/inner phase from `.madewell/`, appends one `finding` row per
+  transition (topic `statem`), rewrites glyph-only tab titles via `herdr tab
+  rename` — no phase/agent/task words (mapping
+  `~/.tower/statem-tabs.json`). Full spawn recipe: statem README.
+
+## Comms rules that bind every agent (COMMS-ARCH.md is the law)
+
+One rule: every message has exactly one audience, reaches it exactly once,
+in full. Four planes — STATUS (pane states + board `finding` lines,
+pull-based, never mail), FLEET MAIL (agent→agent: briefs, CLAIMs, DONE
+reports, addressed hierarchically up the CORD/ORCH/AGNT chain), OPERATOR
+MAIL (only `to:"operator"` rows reach the operator — external credentials,
+destructive-action approval), OPERATOR DIRECTIVES (through the coordinator
+or directly into a pane, recorded on the board either way).
+
+Status is not mail, status is not a toast. Notify only for task completion,
+a genuine operator summons, or an alert — never AGNT/SAGT activity. Content
+is contextual (role + human work name + outcome), never raw ids;
+coalesce/drop anything within 60s of the prior notification from the same
+source.
+
+Board topics are project-namespaced (`<project-slug>/<topic>`, e.g.
+`future/c004`); bare topics (`statem`, `comms`, `fleet`) are machine-plane
+infra only. Post from your real repo cwd — `board_post` refuses
+scratch/temp. File-append fallback when no MCP is present:
+`{"id","ts","cwd","type":"finding","from":"<you>","topic":"<t>","body":"..."}`
+into `~/.tower/board.jsonl`.
 
 ## Run an ordinary command in another pane
 
@@ -304,110 +302,66 @@ headless pi workers were metabolized by the memory substrate the same day).
 herdr pane split --current --direction right --no-focus
 herdr pane run <id> "just test"
 herdr pane wait-output <id> --match "test result" --timeout 120000
-herdr pane read <id> --source recent-unwrapped --lines 120
+herdr pane read <id> --source recent-unwrapped --lines 120   # or: visible | recent | detection
 ```
 
-Read sources: `visible` (viewport), `recent` (scrollback as rendered),
-`recent-unwrapped` (soft-wraps joined — prefer for logs/transcripts), `detection`
-(agent-detection snapshot). Use `--format ansi` only when color is evidence.
-If a `pane read` returns empty unexpectedly, retry with a much larger
-`--lines` (e.g. 200) and trim locally before concluding the pane is blank —
-an upstream adapter documented small-N reads returning empty below the
-viewport height; NOT reproduced on 0.7.5 in shell or live-TUI contexts
-(verified 2026-07-30), but the retry is cheap insurance against a
-geometry-dependent regression.
+Empty read unexpectedly? Retry with a much larger `--lines` before
+concluding the pane is blank.
 
-## Fleet operating notes (composition, monitoring, gotchas)
+## Fleet operating notes
 
-Hard-won lessons for running a multi-agent fleet through Herdr as the coordinator.
-They compose with the Tower message bus (see the `tower-orchestration` rule).
+**Signal over polling.** Subscribe to `events.subscribe` over the raw
+socket instead of polling `pane read`/`wait` on a loop — watch for
+`pane.agent_status_changed` with `blocked` (needs a decision) or `done`
+(unseen), and act on the push. If you need both current state and the
+stream: subscribe FIRST, then reconcile from a snapshot, buffering events
+that arrive mid-reconciliation. For one-shot waits, `herdr agent wait <id>
+--until blocked --until done --timeout MS` is the bounded primitive. Reserve
+`pane read` for content once an event flags a pane — never as discovery.
 
-**Signal over polling — subscribe to events, do not read panes on a loop.** The
-socket API streams state changes; subscribe instead of polling with repeated
-`pane read`/`wait`. Over the raw socket:
+**Compose Herdr with Tower.** Herdr says WHICH pane changed; Tower carries
+WHAT the agent needs, verbatim (COMMS-ARCH.md, not `tower-orchestration.md`,
+is the comms law now). Brief every spawned agent to post to the board and
+route questions up the hierarchy, not to the operator — a `blocked` pane
+with no Tower message stalled silently, go read it. The bridge:
+`~/herdr-spine` maps `pane.agent_status_changed` into board lines
+(`10-notify`) and ledger questions (`40-tower-bridge`), fusing both planes
+without polling. Surface to the human with `herdr notification show "orch
+blocked" --body "needs a decision" --sound request` for genuine eyes-needed
+moments; sending a prompt to ANY pane, idle included, can silently fail to
+submit — the verify-submit step above is mandatory after every
+prompt-carrying `pane run`.
 
-```json
-{"id":"sub1","method":"events.subscribe","params":{"subscriptions":[
-  {"type":"pane.agent_status_changed","agent_status":"blocked"},
-  {"type":"pane.agent_status_changed","agent_status":"done"}
-]}}
-```
-
-The connection acks, then pushes an event whenever a matching pane changes. Watch
-`blocked` (an agent needs a decision) and `done` (work finished, unseen) across
-the fleet and act on the push. Ordering discipline for any consumer that needs
-both current state AND the stream: SUBSCRIBE FIRST, then reconcile from a
-snapshot, buffering events that arrive during reconciliation — subscribing
-after the snapshot leaves a gap where a transition is lost between the two
-reads. For one-shot waits, `herdr agent wait <id> --until blocked --until done
---timeout MS` is the bounded primitive (0.7.5 syntax; `herdr wait agent-status`
-is gone). Reserve
-`pane read` for reading CONTENT once an event says a pane needs you — never as a
-discovery loop. Polling panes on a timer is the expensive anti-pattern: it burns
-tokens and lags behind reality.
-
-**Compose with Tower (lean into both).** Herdr tells you WHICH pane changed;
-Tower carries WHAT the agent needs, verbatim, to the user. Brief every spawned
-agent to post `progress`/`blocked`/`deliverable` to the Tower board and to route
-questions to the coordinator, not the user. Then watch the board and the Herdr
-event stream together. A `blocked` pane with no Tower message = an agent that
-stalled without saying why; go read it. This bridge exists: the herdr-spine
-plugin (`~/herdr-spine`) maps `pane.agent_status_changed` into Tower — board
-lines + notifications (10-notify) and ledger questions/deliverables
-(40-tower-bridge) — so the two planes fuse without any polling.
-
-**Surface to the human with `notification.show`** when something genuinely needs
-their eyes: `herdr notification show "orch blocked" --body "needs a decision"
---sound request`.
-
-**Sending a prompt to ANY pane can silently fail to submit — idle panes
-included (observed 2026-07-27).** `herdr pane run <id> "<text>"` types text +
-Enter, but the text may sit buffered as `[Pasted text #N]`, unsent, regardless
-of the target's state. The verify-submit step in "Start an agent in a pane" is
-mandatory after every prompt-carrying `pane run`: status must flip to `working`,
-else check the visible buffer for `Pasted text` and force `herdr pane send-keys
-<id> Enter`. Never assume delivery.
-
-**Ground the substrate before you drive it.** When a task involves an unfamiliar
-tool or harness, FIRST read its installed skill and run `which <tool>` — do not
-reverse-engineer from `--help` when the authoritative skill already exists (skills
-live in `~/agent-core/primitives/skills/`). Confirm `HERDR_ENV=1` before any
-control command. "Acquire before assert" applies to the environment, not just to
-code.
-
-**The coordinator resolves fleet questions.** A decision an agent raises is the
-coordinator's to answer, not the user's — reserve the user for genuinely external
-prerequisites (credentials, third-party access). Resolve against three tests:
-does it lead to a 10x developer experience, a memorable and lovable user
-experience, and an efficient, optimized agent experience? If yes, act; do not
-escalate. Front-load questions: when you spawn an orchestrator, ask it up front
-for every ambiguity in one batch, answer them all, then let it run to done.
+**Ground the substrate before driving it.** Read the installed skill and run
+`which <tool>` first — don't reverse-engineer from `--help` when a skill
+exists (skills live in `~/agent-core/primitives/skills/`, confirmed on disk
+this session). Confirm `HERDR_ENV=1` before any control command. A blocked
+agent's decision belongs to its spawner, up the chain — reserve the
+operator for genuinely external prerequisites; batch every ambiguity to a
+spawned orchestrator up front, then let it run.
 
 ## Safety and coordination rules
 
-- Use `--no-focus` for background work unless the user asked to switch context.
-- Use `--current` or an explicit ID; never rely on another client's focused pane.
-- Parse IDs from JSON responses, never from sidebar order or examples.
+- Use `--no-focus` for background work unless switching context was asked for.
+- Use `--current` or an explicit ID; never rely on another client's focus.
+- Parse IDs from JSON responses, never sidebar order or examples.
 - Inspect existing output before waiting for future output/state.
-- Do not close workspaces/tabs/panes/sessions you did not create unless asked.
-- Mutation authority comes from create responses, not labels. Only an ID
-  returned by YOUR OWN create/split call may be pruned, closed, or rebound; an
-  object matched by label is adopted and read-only (herdr does not enforce
-  label uniqueness — two `herdr-spine` workspaces coexisted in the default
-  session on 2026-07-30).
-- Close panes focus-safely: record the exact active tab/pane first, never
-  close the focused pane, restore the exact prior focus afterward; on any
-  ambiguity, warn and preserve instead of closing.
-- Isolated experiments go through `~/herdr-spine/bin/spine-lab` — named
-  spine-lab-* sessions only, guarded stop/delete that re-queries the exact
-  session row before acting, and a default-session topology tripwire. Never
-  improvise lifecycle commands against ad-hoc session names.
-- Never run `herdr server stop` from an active session unless the user intends to
-  stop the server and all its pane processes. Never kill the main Herdr process;
-  use spine-lab for isolated experiments.
+- Don't close workspaces/tabs/panes/sessions you didn't create unless asked.
+- Mutation authority comes from create responses, not labels — only an ID
+  YOUR OWN create/split call returned may be pruned/closed/rebound; a
+  label-matched object is adopted and read-only (herdr doesn't enforce
+  label uniqueness).
+- Close panes focus-safely: record the active tab/pane first, never close
+  the focused pane, restore prior focus after; on ambiguity, preserve.
+- Isolated experiments go through `~/herdr-spine/bin/spine-lab` (named
+  spine-lab-* sessions, guarded stop/delete, default-session tripwire) —
+  never improvise lifecycle commands against ad-hoc session names.
+- Never `herdr server stop` from an active session unless intending to stop
+  it and all pane processes; never kill the main process — use spine-lab.
 
 ## References
 
 - Human-facing guide: https://herdr.dev/agent-guide.md
 - CLI reference: https://herdr.dev/docs/cli-reference/ · Socket API: https://herdr.dev/docs/socket-api/
 - Upstream skill (authority for new commands): see `metadata.upstream` above.
+- Codebase map for this install: `~/source/herdr-RETROFIT-MAP.md`.
