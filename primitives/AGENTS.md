@@ -1,13 +1,13 @@
 # Global Agent Context
-**Updated:** 2026-08-10
+**Updated:** 2026-08-11
 
-Loaded by every harness — claude, pi, prime, cursor. CANONICAL FILE:
+Loaded by every harness — claude, pi, prime. CANONICAL FILE:
 `~/agent-core/primitives/AGENTS.md` (git-tracked). Wiring per harness:
-`~/.pi/agent/AGENTS.md` and `~/.claude/CLAUDE.md` are symlinks to it;
-prime's own global (`~/.prime/agent/AGENTS.md`) opens by directing every
-session to read this file; cursor-agent reads `AGENTS.md`/`CLAUDE.md` from
-the working directory (verified in its bundle), so project AGENTS.md files
-point here. Edit the canonical only. PROVIDER/MODEL-AGNOSTIC by contract:
+`~/.pi/agent/AGENTS.md`, `~/.claude/CLAUDE.md`, and
+`~/AGENTS.md` are symlinks to it; prime's own global
+(`~/.prime/agent/AGENTS.md`) opens by directing every session to read this
+file.
+Edit the canonical only. PROVIDER/MODEL-AGNOSTIC by contract:
 no provider names outside the Harness deltas section; capabilities are
 described by path and CLI, never by model. FACTUAL reference (what exists, how to
 reach it). Tool-preference doctrine lives in skills and agent definitions —
@@ -22,7 +22,7 @@ here contaminates control arms.
 | Tower | active | MCP `mcp__tower__*` (CC) · `~/.tower/cli.mjs` + `board.jsonl` (everywhere) — see below |
 | Coraline | active | CLI `coraline` (33 languages) — no MCP registration |
 | Composto | active | CLI `composto` — IR compression; TS/JS/Python/Go/Rust, NOT Swift/Zig |
-| rtk | active | CLI token-saver proxy (`~/.local/bin/rtk`) — CC: PreToolUse hook rewrites Bash commands · pi: `rtk-rewrite` extension (same rewrite on `tool_call`) |
+| rtk | active (allowlisted 2026-08-11) | CLI token-saver proxy (`~/.local/bin/rtk`) — rewrites restricted to measured-safe verbs (ls/ps/wc/df/git status/git log); everything else runs raw. CC: PreToolUse `rtk-guard.sh` · pi: `rtk-rewrite` extension (same guard). NEVER edit `~/.claude/hooks/rtk-rewrite.sh` — rtk integrity-pins its hash; the guard wraps it from outside. Do not trust rtk-proxied diff/find/grep output as evidence — use full binary paths |
 | Bigfile | active | pi: via super-search `--file` · CC: `mcp__bigfile__*` |
 | bb | active (manual) | CLI `bb` / `bb-app` (global install, no npx); web UI `:38886`; doc `~/agent-core/primitives/skills/bb/program.md` — see below |
 
@@ -54,7 +54,8 @@ is the bus (how their output reaches the user).
 ## bb — agentic IDE (WWWWW+H)
 
 - **What:** multi-provider agentic IDE (desktop/web/CLI/HTTP API) that runs
-  coding-agent providers (Claude Code, Codex, pi, Cursor, opencode, omp) as
+  coding-agent providers (Claude Code, pi, and others — Cursor/opencode
+  provider entries are dead on this machine as of 2026-08-11) as
   watchable, redirectable **threads**, plus a Node SDK (`BBSdk`) for
   programmatic thread control.
 - **Why:** fills the gap between the terminal substrate (owns panes, not
@@ -107,7 +108,7 @@ lines, grep caps 200 hits; no verb returns the file body. Symbol refs accept
 
 | Need | Endpoint | Reference |
 |---|---|---|
-| Local LLM (embeddings, chat, light reasoning) | `http://127.0.0.1:10240/v1` (OpenAI-compatible; Qwen3-4B / Qwen3-30B-A3B / Qwen3-Embedding-4B) | `~/dotfiles/launchagents/LOCALLLM.md` |
+| Local LLM (embeddings, chat, light reasoning) | `http://127.0.0.1:10240/v1` (OpenAI-compatible) | `~/dotfiles/launchagents/com.localllm.server.plist` |
 
 Index `~/dotfiles/UTILITIES.md` · ports `~/dotfiles/PORTS.md`.
 Project-specific services are NOT cross-project.
@@ -187,6 +188,11 @@ never `git add -A`.
 
 ## Retired — never reference
 
+cursor CLI + desktop (2026-08-11; `cursor-agent`, `~/bin/cursor-agent`,
+`~/bin/agent`, `~/.cursor/cli-config.json` all uninstalled — the cursor
+model GATEWAY stays, via pi; see Harness deltas) · opencode harness
+(2026-08-11; dropped from agent-core registry, `~/.config/opencode/`
+targets dead) ·
 SurrealDB `:6000` + `com.surrealdb.*` (2026-08-02; data archived `~/surreal/`,
 plists `~/dotfiles/launchagents/deprecated/`) · alembic MCP + dream-daemon +
 corvus/lyra/spectra agents (`_deprecated-alembic/`) · KotaDB `:7001` +
@@ -206,5 +212,29 @@ Manifold / UHP / Mesh-OS.
 - **prime:** pi-based RLM runtime; harness-specific doc at
   `~/.prime/agent/AGENTS.md` (which defers to this file for machine-wide
   context)
-- **cursor:** cursor-agent; reads working-directory `AGENTS.md`/`CLAUDE.md`
-  only — no verified global path; skills under `~/.cursor/skills/`
+- **cursor gateway (models only — the cursor CLI/desktop are RETIRED,
+  2026-08-11):** the Cursor subscription is a model gateway reached from
+  INSIDE pi (`pi-cursor-sdk`; provider `cursor` in `~/.pi/agent/auth.json`).
+  Model IDs: `cursor/<id>[@ctx][:thinking|:fast]` (e.g.
+  `cursor/grok-4.5:high`); thinking and `:fast` do NOT stack — pass
+  `--thinking` separately (spine-spawn supports it). Daily entry =
+  `herdr` then `herdr pi [profile[:option]]` (`hc` = shorthand). Fleet =
+  `spine-spawn … --kind pi --profile <name>[:option]` (profiles:
+  `~/agent-core/primitives/profiles/` + `profile-model`, values are
+  pi-grammar IDs). `--kind cursor`, `herdr cursor`, and `cursor-agent`
+  fail loud by design — never resurrect them without reinstalling the CLI.
+
+## Fleet spawn + comms (law, 2026-08-11)
+
+- **Spawn:** `~/bin/spine-spawn` only (= `python3 ~/herdr-spine/bin/spine-spawn`).
+  **Never** `bun …/spine-spawn` (bun parses the Python file as JS and dies).
+- **Hierarchy:** CORD → ORCH → AGNT/SAGT via `spine-spawn orch|worker|fanout`.
+  Briefs on disk; CLAIM-first / board findings / `.done`-last.
+- **Comms:** `~/.tower/COMMS-ARCH.md`. Status (idle/done) is NOT mail and is
+  NOT a summons. Fleet mail = Tower board (`<project>/<topic>`). Operator
+  mail only when `to:"operator"`. Collect via board + `.done` + CTRL/TOWR —
+  **never** re-prompt idle panes for status.
+- **Wake:** Circadian still injects memory for fleet panes, but
+  greeting-instruction is omitted when `role` is `1-CORD|2-ORCH|3-AGNT|4-SAGT`
+  (or `CIRCADIAN_SKIP_GREETING=1`). Brief overrides greeting.
+- **Contrived smoke briefs:** `~/agent-core/briefs/fleet-smoke/`

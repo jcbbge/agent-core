@@ -12,6 +12,18 @@ import { spawnSync } from "child_process";
 
 const RTK_BIN = `${process.env.HOME}/.local/bin/rtk`;
 
+// ── Allowlist guard (2026-08-11, audit P0-1) ────────────────────────────────
+// rtk 0.34.3 corrupts several rewrite shapes (multi-file cat→read, diff false
+// "identical", find silent 0-results, grep -c, head -N short reads; upstream
+// #3469/#1849/#2861/#2487 still open at v0.45.0). Only verbs measured
+// lossless/acceptable pass through; everything else runs raw. Keep in lockstep
+// with the guard in rtk-rewrite.sh.
+const ALLOWED_REWRITE = /^rtk (ls|ps|wc|df|git (status|log))\b/;
+const BLOCKED_ORIGINAL = /[|;&`]|\$\(|--porcelain|--format|--pretty/;
+function allowlisted(orig: string, rew: string): boolean {
+  return ALLOWED_REWRITE.test(rew) && !BLOCKED_ORIGINAL.test(orig);
+}
+
 function rtkAvailable(): boolean {
   const result = spawnSync(RTK_BIN, ["--version"], { stdio: "ignore" });
   return result.status === 0;
@@ -41,7 +53,7 @@ export default function (pi: ExtensionAPI) {
     if (!original) return undefined;
 
     const rewritten = rewrite(original);
-    if (rewritten !== original) {
+    if (rewritten !== original && allowlisted(original, rewritten)) {
       event.input.command = rewritten;
     }
 
