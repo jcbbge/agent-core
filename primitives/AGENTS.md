@@ -1,10 +1,15 @@
 # Global Agent Context
 **Updated:** 2026-08-10
 
-Loaded by every harness. CANONICAL FILE: `~/agent-core/primitives/AGENTS.md`
-(git-tracked); `~/.pi/agent/AGENTS.md` and `~/.claude/CLAUDE.md` are symlinks
-to it (unified 2026-08-10 — the two-real-files discipline had drifted and is
-retired). Edit the canonical only; every harness sees the change at once. FACTUAL reference (what exists, how to
+Loaded by every harness — claude, pi, prime, cursor. CANONICAL FILE:
+`~/agent-core/primitives/AGENTS.md` (git-tracked). Wiring per harness:
+`~/.pi/agent/AGENTS.md` and `~/.claude/CLAUDE.md` are symlinks to it;
+prime's own global (`~/.prime/agent/AGENTS.md`) opens by directing every
+session to read this file; cursor-agent reads `AGENTS.md`/`CLAUDE.md` from
+the working directory (verified in its bundle), so project AGENTS.md files
+point here. Edit the canonical only. PROVIDER/MODEL-AGNOSTIC by contract:
+no provider names outside the Harness deltas section; capabilities are
+described by path and CLI, never by model. FACTUAL reference (what exists, how to
 reach it). Tool-preference doctrine lives in skills and agent definitions —
 this file is also injected into eval-harness arms, and preference language
 here contaminates control arms.
@@ -75,7 +80,7 @@ is the bus (how their output reaches the user).
 
 ## Search — one canonical router
 
-Both harnesses: `bun ~/.claude/skills/super-search/search.ts "<query>"
+Every harness: `bun ~/.claude/skills/super-search/search.ts "<query>"
 [--pattern] [--repo] [--file] [--scope] [--limit]` (CC: also the
 `super-search` skill wrapper).
 Layers: colgrep (project) · coraline (`~/source`) · pickbrain (memory) ·
@@ -198,3 +203,8 @@ Manifold / UHP / Mesh-OS.
 - **Claude Code:** `TodoWrite` for 3+ step tasks · MCP names
   `mcp__<server>__<tool>`
 - **pi:** `/reload` hot-reload · skills under `~/.pi/agent/skills/`
+- **prime:** pi-based RLM runtime; harness-specific doc at
+  `~/.prime/agent/AGENTS.md` (which defers to this file for machine-wide
+  context)
+- **cursor:** cursor-agent; reads working-directory `AGENTS.md`/`CLAUDE.md`
+  only — no verified global path; skills under `~/.cursor/skills/`
