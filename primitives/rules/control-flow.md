@@ -12,6 +12,22 @@ OPERATOR (Josh)
                     └── SUBAGENT(S)   — async items: deferred or not immediately needed
 ```
 
+## Tier duties + one-off assists (operator refinement, 2026-08-11)
+
+The purpose of the whole hierarchy is CONTEXT WINDOW MANAGEMENT: every
+agent focused and head-down on the specific task at hand, nothing else.
+
+- CONCIERGE facilitates and ROUTES work to workspace coordinators — it does
+  not manage projects. One herdr WORKSPACE per project, its CORD in tab 1.
+- Any tier may spawn one-off assist subagents at any time (research, a
+  verification pass, a measurement) instead of bloating its own context —
+  the assist is briefed, does its unit, reports, and is reaped.
+- Cache geometry (proem doctrine, 2026-08-11): a prompt is a cache key with
+  a shape. Briefs and spawn prompts carry a byte-identical shared prefix
+  across siblings; per-agent specifics (names, ids, paths) go at the TAIL.
+  One brief file per fanout when workers share a mission; volatility never
+  goes in the prefix.
+
 ## Naming convention (herdr pane names — MANDATORY)
 
 | Prefix | Role | Scope |
