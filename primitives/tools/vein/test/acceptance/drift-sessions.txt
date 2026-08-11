@@ -1,0 +1,1 @@
+/Users/jrg/agent-core/primitives/tools/vein/test/fixtures/schema-drift.jsonl

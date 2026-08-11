@@ -1,0 +1,37 @@
+agnt-latch-proto DONE
+
+Files created:
+- ~/agent-core/primitives/tools/latch/build.zig
+- ~/agent-core/primitives/tools/latch/README.md
+- ~/agent-core/primitives/tools/latch/src/lib.zig
+- ~/agent-core/primitives/tools/latch/src/main.zig
+- ~/agent-core/primitives/tools/latch/src/duration.zig
+- ~/agent-core/primitives/tools/latch/src/wait.zig
+- ~/agent-core/primitives/tools/latch/test/root.zig
+
+Build/test:
+- zig build: exit 0
+- zig build test: exit 0 (9 tests)
+
+CLI grammar:
+- latch wait --pane <pane-id> [--until <status>] [--timeout <dur>]
+- latch --help
+
+Exit codes: 0 matched · 2 usage/socket · 3 timeout · 4 vanished
+
+Smoke:
+- ./zig-out/bin/latch wait --pane w1Q:p1 --timeout 5s
+  stdout: latch: pane w1Q:p1 -> idle (0ms)
+  exit: 0
+- ./zig-out/bin/latch wait --pane w1N:p2 --timeout 5s
+  stdout: latch: pane w1N:p2 -> idle (0ms)
+  exit: 0
+- ./zig-out/bin/latch wait --pane definitely-not-a-pane
+  stdout: latch: pane definitely-not-a-pane vanished
+  exit: 4
+
+Deviation:
+- Added pane.get pre-check before events.subscribe wait loop. Live herdr only
+  emits immediate agent_status on subscribe when agent_status filter matches;
+  without filter, already-idle/done panes never receive an initial event and
+  would false-timeout. Pre-check preserves GATE ZERO happy path in <5s.

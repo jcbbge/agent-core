@@ -1,0 +1,55 @@
+# DONE ORCH — orch-latch (latch tool)
+
+Date: 2026-08-11
+Workspace: w1Q · pane w1Q:p2
+
+## Done-when checklist
+
+1. GATE ZERO verdict — GREEN
+   - Evidence: briefs/fringe/latch-vein/gate-zero-evidence.md
+   - latch wait --pane w1Q:p9 → done (588377ms); wall 593s; harness interruption: none
+   - Board: GATE ZERO GREEN findings from agnt-latch-block + orch-latch
+
+2. zig build + zig build test — exit 0
+   - Path: ~/agent-core/primitives/tools/latch/
+   - Layout: build.zig, src/, test/, README.md, zig-out/ (slim precedent)
+
+3. Exit-code matrix (live)
+   - 0 event: file/board/pane/hold (acceptance-evidence.md + orch smokes)
+   - 3 timeout: file + hold (orch corroborated)
+   - 4 vanished: pre-closed pane + close-during-wait (orch corroborated exit 4 on w1Q:pV after vanish-fix)
+   - 2 usage: `latch wait` with no target
+
+4. Differential — PASS
+   - latch wait --pane vs herdr agent wait both exit 0 on sequential flips (acceptance-evidence.md)
+   - Wakeup <1s: file touch 207ms
+
+5. latch hold — PASS (gate-zero-demo stamped, exit 0)
+
+6. No commits by orch or AGNTs
+
+## Workers (reaped)
+
+| Agent | Pane | Role |
+|---|---|---|
+| agnt-latch-proto | w1Q:p4 | GATE ZERO prototype |
+| agnt-latch-sleeper | w1Q:p9 | 600s sacrificial |
+| agnt-latch-block | w1Q:pA | GATE ZERO blocker |
+| agnt-latch-impl | w1Q:pC | full verbs |
+| agnt-latch-verify | w1Q:pD | acceptance matrix |
+| agnt-latch-vanish-fix | w1Q:pS | pane_closed underscore matcher |
+
+## Notable fix
+
+Live herdr emits `"event":"pane_closed"` (underscore). Prototype matched
+`pane.closed` → close-during-wait falsely timed out (3). Fixed; orch proved
+exit 4.
+
+## Artifacts
+
+- Source: primitives/tools/latch/
+- GATE ZERO: briefs/fringe/latch-vein/gate-zero-evidence.md
+- Acceptance: briefs/fringe/latch-vein/acceptance-evidence.md
+- Board topic: agent-core/latch-vein
+
+Install to ~/.local/bin is CORD/operator scope — not done here.

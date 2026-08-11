@@ -1,0 +1,6 @@
+agnt-latch-vanish-fix complete 2026-08-11
+
+Fix: isPaneClosed recognizes live herdr "event":"pane_closed" (legacy pane.closed kept).
+Tests: live-format + dotted-format unit tests in test/root.zig.
+Live proof: split w1Q:pT → latch wait --until working --timeout 8s → herdr pane close w1Q:pT → exit 4, "latch: pane w1Q:pT vanished".
+Build: zig build exit 0, zig build test exit 0.
