@@ -1,0 +1,8 @@
+DONE CORD: cord-flywheel — PHASE 1 re-measurement complete 2026-08-11.
+Verdict: remaining hook cost immaterial per brief thresholds (Stop 290ms <
+500ms; per-Bash ~46ms plain / ~69ms in-herdr vs 50ms — borderline).
+Recommendation: DO NOT BUILD the daemon; residue is the tower-ledger
+full-file re-parse, fixable standalone. PHASE 2 not triggered.
+Evidence: briefs/fringe/done/cord-flywheel.evidence.md
+Board: agent-core/flywheel (claim + finding posted).
+No settings.json or live-hook edits. Nothing spawned; nothing to reap.
