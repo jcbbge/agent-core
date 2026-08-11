@@ -5,39 +5,51 @@
  * Agents communicate through files. You direct, they think.
  *
  * Commands:
- *   /peer [model]  — main agent writes dispatch, peer session opens
+ *   /peer [model]  — main agent writes dispatch, peer session opens (default: kimi)
  *   /send          — confirm dispatch and enter peer conversation
- *   /return        — peer writes response, you land back in main thread
+ *   /rejoin        — re-enter a paused peer conversation
+ *   /return        — peer writes response back, you land in main thread
  *   /close         — end peer session, save context
  *
  * Files:
- *   ~/.pi/peer-inbox/dispatch.md     — main → peer
- *   ~/.pi/peer-inbox/response.md     — peer → main
- *   ~/.pi/peer-sessions/[model].md   — peer's accumulated context
+ *   ~/.pi/peer-inbox/<session>/dispatch.md   — main → peer
+ *   ~/.pi/peer-inbox/<session>/response.md — peer → main
+ *   ~/.pi/peer-sessions/[model].md         — peer's accumulated context
  */
 
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { AgentMessage } from "@earendil-works/pi-agent-core";
+import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import * as fs from "node:fs";
-import * as path from "node:path";
 import * as os from "node:os";
+import * as path from "node:path";
 
 // ─── paths ───────────────────────────────────────────────────────────────────
 
 const INBOX_DIR = path.join(os.homedir(), ".pi", "peer-inbox");
 const SESSIONS_DIR = path.join(os.homedir(), ".pi", "peer-sessions");
-const SUBAGENT_MCP_URL = "http://127.0.0.1:3096/";
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const PERPLEXITY_API_URL = "https://api.perplexity.ai/v1/responses";
+const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
 const AUTH_FILE = path.join(os.homedir(), ".pi", "agent", "auth.json");
+
+const DEBUG = process.env.PEER_DEBUG === "1";
+const TRACE_FILE = path.join(os.homedir(), ".pi", "peer-session-trace.log");
 
 // ─── model registry ──────────────────────────────────────────────────────────
 
-type Provider = "anthropic" | "perplexity";
+type Provider = "anthropic" | "perplexity" | "openrouter";
 
+// Provider aliases for explicit routing. Model IDs below are canonical (the
+// value sent to the chosen provider). The provider is selected at invocation
+// time using:
+//   1. explicit `--via <provider>` flag on /peer
+//   2. the model's native provider
+// The resolved route is announced at /peer start so routing is never silent.
 const PEER_MODELS: Record<string, { provider: Provider; model: string; label: string }> = {
-  // Anthropic Messages API (default) — routed through the key in pi's auth.json
+  // OpenRouter Chat Completions API (default) — key in pi's auth.json (openrouter.key)
+  kimi: { provider: "openrouter", model: "moonshotai/kimi-k3", label: "Kimi K3" },
+  // Anthropic Messages API — routed through the key in pi's auth.json (anthropic.key)
   opus: { provider: "anthropic", model: "claude-opus-4-8", label: "Claude Opus 4.8" },
-  // alias so existing /peer claude invocations and peer-sessions/claude.md keep working
   claude: { provider: "anthropic", model: "claude-opus-4-8", label: "Claude Opus 4.8" },
   sonnet: { provider: "anthropic", model: "claude-sonnet-4-6", label: "Claude Sonnet 4.6" },
   // Perplexity Responses API — needs PERPLEXITY_API_KEY (credits expired as of 2026-06-29)
@@ -54,26 +66,98 @@ interface PeerState {
   modelId: string;
   modelLabel: string;
   sessionName: string;
-  piSessionId: string; // pi session that owns this peer (isolates concurrent harness instances)
-  // Local conversation history for true threading
+  piSessionId: string;
   history: Array<{ role: "user" | "assistant"; content: string }>;
-  pendingDispatch: string | null; // dispatch written but not yet sent
+  pendingDispatch: string | null;
 }
 
-let peer: PeerState | null = null;
+// Per-session peer state. Keyed by pi session id so concurrent sessions never
+// clobber each other and reloads can restore the right state.
+const peers = new Map<string, PeerState>();
+
+// Most recent ctx per session, used for status line updates.
+const lastCtxBySession = new Map<string, ExtensionContext>();
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
-// Anything carrying a pi session manager — commands, input, and session_start
-// all receive a context with this shape.
 type SessionCtx = { sessionManager: { getSessionId(): string } };
+
+function trace(label: string, data?: unknown) {
+  const ts = new Date().toISOString();
+  const line = data !== undefined ? `[peer-trace ${ts}] ${label}: ${JSON.stringify(data)}` : `[peer-trace ${ts}] ${label}`;
+  // Always write to disk so failures are inspectable even when the TUI swallows stderr.
+  try {
+    fs.appendFileSync(TRACE_FILE, `${line}\n`, "utf-8");
+  } catch {}
+  if (DEBUG) console.error(line);
+}
+
+function log(...args: unknown[]) {
+  trace("log", args);
+}
 
 function piSessionId(ctx: SessionCtx): string {
   return ctx.sessionManager.getSessionId() || "default";
 }
 
-// Inbox files are scoped per pi session so concurrent harness instances never
-// clobber each other's dispatch/response handoff files.
+function stateFile(ctx: SessionCtx): string {
+  return path.join(inboxFor(ctx).dir, "state.json");
+}
+
+function savePeerStateToDisk(ctx: SessionCtx) {
+  const peer = peers.get(piSessionId(ctx));
+  const f = stateFile(ctx);
+  if (!peer) {
+    if (fs.existsSync(f)) {
+      try {
+        fs.unlinkSync(f);
+      } catch {}
+    }
+    return;
+  }
+  try {
+    fs.writeFileSync(f, JSON.stringify(peer, null, 2), "utf-8");
+  } catch {}
+}
+
+function loadPeerStateFromDisk(ctx: SessionCtx): PeerState | undefined {
+  const f = stateFile(ctx);
+  if (!fs.existsSync(f)) return undefined;
+  try {
+    const raw = JSON.parse(fs.readFileSync(f, "utf-8"));
+    if (raw && typeof raw === "object") {
+      raw.piSessionId = piSessionId(ctx);
+      return raw as PeerState;
+    }
+  } catch {}
+  return undefined;
+}
+
+function getPeer(ctx: SessionCtx): PeerState | undefined {
+  const sid = piSessionId(ctx);
+  let peer = peers.get(sid);
+  if (!peer) {
+    peer = loadPeerStateFromDisk(ctx);
+    if (peer) {
+      peers.set(sid, peer);
+      trace("getPeer.restoredFromDisk", { sid, active: peer.active, historyLength: peer.history.length });
+    }
+  }
+  return peer;
+}
+
+function setPeer(ctx: SessionCtx, peer: PeerState | null) {
+  const sid = piSessionId(ctx);
+  trace("setPeer", { sid, active: peer?.active ?? null });
+  if (peer) {
+    peer.piSessionId = sid;
+    peers.set(sid, peer);
+  } else {
+    peers.delete(sid);
+  }
+  savePeerStateToDisk(ctx);
+}
+
 function inboxFor(ctx: SessionCtx): { dir: string; dispatch: string; response: string } {
   const dir = path.join(INBOX_DIR, piSessionId(ctx));
   fs.mkdirSync(dir, { recursive: true });
@@ -84,14 +168,13 @@ function inboxFor(ctx: SessionCtx): { dir: string; dispatch: string; response: s
   };
 }
 
-// Subtle command reference appended to peer output so the menu is always at hand.
-// Model list is derived from the registry so it can't drift out of sync.
 function commandHint(): string {
   const models = Object.keys(PEER_MODELS).join(" | ");
   return (
     "\n\n───\n" +
     `*peer commands — \`/send\` open · \`/rejoin\` re-enter · \`/return\` → main · ` +
-    `\`/close\` end · \`/peer [${models}]\` switch model*`
+    `\`/close\` end · \`/peer [${models}] [--via anthropic|openrouter|perplexity]\` switch model*` +
+    `\n\nRole: main agent = principal; peer = subcontractor. Synthesis is the deliverable; transcript is audit.`
   );
 }
 
@@ -128,13 +211,14 @@ function loadSystemPrompt(modelKey: string): string {
   if (!fs.existsSync(subagentFile)) return defaultSystemPrompt(modelKey);
 
   const raw = fs.readFileSync(subagentFile, "utf-8");
-  // Strip YAML frontmatter
   const match = /^---\s*\n[\s\S]*?\n---\s*\n([\s\S]*)$/.exec(raw);
   return match ? match[1].trim() : raw.trim();
 }
 
 function defaultSystemPrompt(modelKey: string): string {
   return `You are a peer collaborator — a thinking heavyweight engaging with Josh (a developer) and a Claude agent. Equal footing, mutual respect, constructive friction. You receive dispatches mid-conversation and bring an independent perspective. You don't mirror their framing. You notice what they can't see because you haven't been in the room.
+
+You are in CONVERSATION MODE. Respond to each message directly, substantively, and conversationally. Do NOT write a synthesis, closing letter, or "return to main thread" summary unless you receive a message that begins with the exact marker [SYNTHESIS MODE]. If you are unsure whether to synthesize, keep conversing.
 
 Skills and commands library available at:
 - ~/Documents/_agents/schema/skills/
@@ -143,10 +227,19 @@ Skills and commands library available at:
 When asked to apply lenses, browse and choose autonomously.`;
 }
 
-// ─── Anthropic API key (from pi's auth.json, env fallback) ─────────────────────
+function synthesisSystemPrompt(): string {
+  return `You are a peer collaborator. The user has explicitly invoked /return and switched you to SYNTHESIS MODE. Write one final letter back to the main thread — to Claude and Josh.
+
+Include:
+- What you found, noticed, or concluded from the exchange
+- What shifted in your thinking or what you remain uncertain about
+- Specific ideas, questions, or directions you want the other agent to sit with
+- Anything you'd push back on or want them to reconsider
+
+Write it as a peer addressing peers. Direct, warm, substantive.`;
+}
 
 function getAnthropicKey(): string {
-  // Prefer the key pi already manages in auth.json; fall back to the env var.
   try {
     if (fs.existsSync(AUTH_FILE)) {
       const auth = JSON.parse(fs.readFileSync(AUTH_FILE, "utf-8")) as any;
@@ -154,12 +247,39 @@ function getAnthropicKey(): string {
       if (typeof key === "string" && key.trim()) return key.trim();
     }
   } catch {
-    /* fall through to env */
+    /* fall through */
   }
   return process.env.ANTHROPIC_API_KEY || "";
 }
 
-// ─── dispatcher — route to the active provider ─────────────────────────────────
+function getOpenRouterKey(): string {
+  try {
+    if (fs.existsSync(AUTH_FILE)) {
+      const auth = JSON.parse(fs.readFileSync(AUTH_FILE, "utf-8")) as any;
+      const key = auth?.openrouter?.key;
+      if (typeof key === "string" && key.trim()) return key.trim();
+    }
+  } catch {
+    /* fall through */
+  }
+  return process.env.OPENROUTER_API_KEY || "";
+}
+
+function updateStatus(ctx: ExtensionContext) {
+  const sid = piSessionId(ctx);
+  lastCtxBySession.set(sid, ctx);
+  const peer = peers.get(sid);
+  if (peer?.active) {
+    ctx.ui.setStatus(
+      "peer-session",
+      `◈ peer:${peer.modelLabel} [${Math.floor(peer.history.length / 2)} turns]`,
+    );
+  } else {
+    ctx.ui.setStatus("peer-session", undefined);
+  }
+}
+
+// ─── provider dispatchers ──────────────────────────────────────────────────
 
 async function callPeer(
   provider: Provider,
@@ -168,17 +288,10 @@ async function callPeer(
   history: Array<{ role: "user" | "assistant"; content: string }>,
   newMessage: string,
 ): Promise<string> {
-  return provider === "perplexity"
-    ? callPerplexity(modelId, systemPrompt, history, newMessage)
-    : callAnthropic(modelId, systemPrompt, history, newMessage);
+  if (provider === "perplexity") return callPerplexity(modelId, systemPrompt, history, newMessage);
+  if (provider === "openrouter") return callOpenRouter(modelId, systemPrompt, history, newMessage);
+  return callAnthropic(modelId, systemPrompt, history, newMessage);
 }
-
-// ─── Anthropic Messages API with conversation history ──────────────────────────
-//
-// Streams (SSE) so max-effort Opus responses can't hit a request timeout, then
-// returns the fully-accumulated text. Adaptive thinking at effort "max" gives the
-// peer the deepest reasoning Opus 4.8 supports; thinking blocks are reasoned over
-// server-side but not surfaced here — we accumulate only the final text.
 
 async function callAnthropic(
   modelId: string,
@@ -223,7 +336,6 @@ async function callAnthropic(
     throw new Error(`Anthropic API ${res.status}: ${err}`);
   }
 
-  // Parse the SSE stream, accumulating final-answer text_delta chunks.
   let text = "";
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
@@ -257,10 +369,6 @@ async function callAnthropic(
   return text;
 }
 
-// ─── Perplexity Responses API with conversation history ────────────────────────
-//
-// Dormant unless a /peer grok|gemini session is opened. Needs PERPLEXITY_API_KEY.
-
 async function callPerplexity(
   modelId: string,
   systemPrompt: string,
@@ -270,9 +378,7 @@ async function callPerplexity(
   const apiKey = process.env.PERPLEXITY_API_KEY || "";
   if (!apiKey) throw new Error("PERPLEXITY_API_KEY not set");
 
-  // Build input array with full conversation history
   const inputItems: Array<{ role: string; content: string }> = [];
-
   for (const msg of history) {
     inputItems.push({ role: msg.role, content: msg.content });
   }
@@ -311,45 +417,87 @@ async function callPerplexity(
     }
   }
 
-  // Fallback for simpler response shapes
   if (data.output_text) return data.output_text as string;
-
   throw new Error("No text output from peer model");
 }
 
-// ─── subagent-mcp helpers (for dispatch generation via main agent) ─────────────
+async function callOpenRouter(
+  modelId: string,
+  systemPrompt: string,
+  history: Array<{ role: "user" | "assistant"; content: string }>,
+  newMessage: string,
+): Promise<string> {
+  const apiKey = getOpenRouterKey();
+  if (!apiKey) {
+    throw new Error(
+      "No OpenRouter API key. Set OPENROUTER_API_KEY or configure ~/.pi/agent/auth.json (openrouter.key).",
+    );
+  }
 
-async function mcpCall(toolName: string, args: Record<string, unknown>): Promise<string> {
-  const res = await fetch(SUBAGENT_MCP_URL, {
+  const messages = [
+    { role: "system", content: systemPrompt },
+    ...history.map((m) => ({ role: m.role, content: m.content })),
+    { role: "user", content: newMessage },
+  ];
+
+  const body: Record<string, unknown> = {
+    model: modelId,
+    stream: true,
+    reasoning: { enabled: true },
+    reasoning_effort: "high",
+    messages,
+  };
+
+  const res = await fetch(OPENROUTER_API_URL, {
     method: "POST",
     headers: {
+      Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
-      Accept: "application/json, text/event-stream",
+      "HTTP-Referer": "https://pi.local/peer-session",
+      "X-Title": "pi peer-session",
     },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      method: "tools/call",
-      params: { name: toolName, arguments: args },
-      id: crypto.randomUUID(),
-    }),
+    body: JSON.stringify(body),
   });
 
-  if (!res.ok) throw new Error(`subagent-mcp ${toolName}: ${res.status}`);
+  if (!res.ok || !res.body) {
+    const err = await res.text();
+    throw new Error(`OpenRouter API ${res.status}: ${err}`);
+  }
 
-  const text = await res.text();
-  for (const line of text.split(/\r?\n/)) {
-    if (line.startsWith("data: ")) {
+  let text = "";
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() ?? "";
+    for (const line of lines) {
+      if (!line.startsWith("data:")) continue;
+      const payload = line.slice(5).trim();
+      if (!payload || payload === "[DONE]") continue;
+      let evt: any;
       try {
-        const parsed = JSON.parse(line.slice(6));
-        if (parsed.result?.content) {
-          return parsed.result.content.map((c: any) => c.text || "").join("\n");
-        }
+        evt = JSON.parse(payload);
       } catch {
-        /* skip */
+        continue;
+      }
+      if (evt.error) {
+        throw new Error(`OpenRouter stream error: ${JSON.stringify(evt.error)}`);
+      }
+      const choice = evt.choices?.[0];
+      const delta = choice?.delta;
+      if (delta?.content) {
+        text += delta.content as string;
       }
     }
   }
-  throw new Error(`No result from subagent-mcp ${toolName}`);
+
+  if (!text.trim()) throw new Error("No text output from peer model");
+  return text;
 }
 
 // ─── extension ────────────────────────────────────────────────────────────────
@@ -357,30 +505,11 @@ async function mcpCall(toolName: string, args: Record<string, unknown>): Promise
 export default function (pi: ExtensionAPI) {
   ensureDirs();
 
-  // ── status indicator ──────────────────────────────────────────────────────
-  function updateStatus(ctx?: { ui: { setStatus: (key: string, value: string | undefined) => void } }) {
-    // setStatus is on ctx.ui, not pi directly
-    // We store a reference from the most recent ctx
-    if (lastCtx) {
-      if (peer?.active) {
-        lastCtx.ui.setStatus("peer-session", `◈ peer:${peer.modelLabel} [${Math.floor(peer.history.length / 2)} turns]`);
-      } else {
-        lastCtx.ui.setStatus("peer-session", undefined);
-      }
-    }
-  }
-
-  // Keep a reference to the most recent ctx for status updates
-  let lastCtx: any = null;
-
-  // Re-enter a paused peer conversation without re-dispatching. The peer keeps
-  // its full in-memory history, so the next message just continues the thread.
-  // Returns true if it resumed, false if there was nothing to resume.
-  function resumePeer(ctx: any): boolean {
+  function resumePeer(ctx: ExtensionContext): boolean {
+    const peer = getPeer(ctx);
     if (!peer || peer.active || peer.history.length === 0) return false;
     peer.active = true;
-    lastCtx = ctx;
-    updateStatus();
+    updateStatus(ctx);
     ctx.ui.notify(
       `Back in peer session with ${peer.modelLabel} — continue conversing. Type /return to go back to main.`,
       "info",
@@ -388,14 +517,40 @@ export default function (pi: ExtensionAPI) {
     return true;
   }
 
-  // ── /peer [model] ─────────────────────────────────────────────────────────
+  function savePeerState(ctx: ExtensionContext) {
+    const peer = getPeer(ctx);
+    if (!peer) return;
+    savePeerStateToDisk(ctx);
+    pi.appendEntry("peer-session", {
+      modelKey: peer.modelKey,
+      provider: peer.provider,
+      modelId: peer.modelId,
+      modelLabel: peer.modelLabel,
+      sessionName: peer.sessionName,
+      history: peer.history,
+      pendingDispatch: peer.pendingDispatch,
+      active: peer.active,
+    });
+  }
+
+  // ── /peer [model] [--via provider] ────────────────────────────────────────
   pi.registerCommand("peer", {
     description:
-      "Open a peer session with an isolated agent. Usage: /peer opus | /peer sonnet | /peer grok | /peer gemini",
+      "Open a peer session. Usage: /peer [kimi|opus|sonnet|grok|gemini] [--via anthropic|openrouter|perplexity]",
     handler: async (args, ctx) => {
-      const modelKey = (args?.trim() || "opus").toLowerCase();
-      const modelDef = PEER_MODELS[modelKey];
+      const parts = (args || "").trim().split(/\s+/).filter(Boolean);
+      const modelKey = (parts[0] || "kimi").toLowerCase();
 
+      let requestedVia: Provider | undefined;
+      const viaIdx = parts.findIndex((p) => p.toLowerCase() === "--via");
+      if (viaIdx !== -1 && parts[viaIdx + 1]) {
+        const rawVia = parts[viaIdx + 1].toLowerCase() as Provider;
+        if (["anthropic", "openrouter", "perplexity"].includes(rawVia)) {
+          requestedVia = rawVia;
+        }
+      }
+
+      const modelDef = PEER_MODELS[modelKey];
       if (!modelDef) {
         ctx.ui.notify(
           `Unknown model '${modelKey}'. Available: ${Object.keys(PEER_MODELS).join(", ")}`,
@@ -404,30 +559,32 @@ export default function (pi: ExtensionAPI) {
         return;
       }
 
-      // If already in a peer session with the same model, just notify
-      if (peer?.active && peer.modelKey === modelKey) {
+      // Resolve provider: explicit --via wins, otherwise the model's native provider.
+      const resolvedProvider = requestedVia ?? modelDef.provider;
+
+      const existing = getPeer(ctx);
+      if (existing?.active && existing.modelKey === modelKey) {
         ctx.ui.notify(
-          `Already in peer session with ${peer.modelLabel}. Type /return to go back to main.`,
+          `Already in peer session with ${existing.modelLabel}. Type /return to go back to main.`,
           "info",
         );
         return;
       }
 
-      // If switching models mid-session, close current first
-      if (peer?.active && peer.modelKey !== modelKey) {
+      if (existing?.active && existing.modelKey !== modelKey) {
         ctx.ui.notify(
-          `Closing current peer session (${peer.modelLabel}) and opening ${modelDef.label}...`,
+          `Closing current peer session (${existing.modelLabel}) and opening ${modelDef.label}...`,
           "info",
         );
-        peer = null;
+        setPeer(ctx, null);
       }
 
       const box = inboxFor(ctx);
+      ctx.ui.notify(
+        `Preparing dispatch for ${modelDef.label} via ${resolvedProvider}...`,
+        "info",
+      );
 
-      ctx.ui.notify(`Preparing dispatch for ${modelDef.label}...`, "info");
-
-      // Ask main agent to write the dispatch
-      // We do this by injecting a message into the current session
       pi.sendMessage(
         {
           customType: "peer-session",
@@ -455,21 +612,20 @@ After writing the file, confirm with: "Dispatch written. Review it and type /sen
         { triggerTurn: true, deliverAs: "followUp" },
       );
 
-      // Store pending state
-      lastCtx = ctx;
-      peer = {
+      setPeer(ctx, {
         active: false,
         modelKey,
-        provider: modelDef.provider,
+        provider: resolvedProvider,
         modelId: modelDef.model,
-        modelLabel: modelDef.label,
+        modelLabel: `${modelDef.label} (${resolvedProvider})`,
         sessionName: `peer-${modelKey}-${Date.now()}`,
         piSessionId: piSessionId(ctx),
         history: [],
         pendingDispatch: null,
-      };
+      });
 
-      updateStatus();
+      updateStatus(ctx);
+      savePeerState(ctx);
     },
   });
 
@@ -477,10 +633,12 @@ After writing the file, confirm with: "Dispatch written. Review it and type /sen
   pi.registerCommand("send", {
     description: "Open the peer conversation (or resume it if already underway)",
     handler: async (args, ctx) => {
-      if (!peer) {
+      if (!getPeer(ctx)) {
         ctx.ui.notify("No peer session pending. Use /peer [model] first.", "error");
         return;
       }
+
+      const peer = getPeer(ctx)!;
 
       if (peer.active) {
         ctx.ui.notify(
@@ -490,10 +648,8 @@ After writing the file, confirm with: "Dispatch written. Review it and type /sen
         return;
       }
 
-      // Conversation already underway → resume it instead of re-dispatching.
       if (resumePeer(ctx)) return;
 
-      // Read the session-scoped dispatch file
       const box = inboxFor(ctx);
       if (!fs.existsSync(box.dispatch)) {
         ctx.ui.notify(
@@ -512,20 +668,15 @@ After writing the file, confirm with: "Dispatch written. Review it and type /sen
       peer.pendingDispatch = dispatch;
       peer.active = true;
 
-      // Load prior context if exists
       const priorContext = readContext(peer.modelKey);
       const systemPrompt = loadSystemPrompt(peer.modelKey);
-
-      // Build opening message for peer
       const openingMessage = priorContext
         ? `You have prior context from our previous correspondence:\n\n${priorContext}\n\n---\n\nNew dispatch:\n\n${dispatch}`
         : `Here is the dispatch:\n\n${dispatch}`;
 
-      lastCtx = ctx;
       ctx.ui.notify(`Opening peer session with ${peer.modelLabel}...`, "info");
 
       try {
-        // First peer response to the dispatch
         const response = await callPeer(
           peer.provider,
           peer.modelId,
@@ -534,13 +685,12 @@ After writing the file, confirm with: "Dispatch written. Review it and type /sen
           openingMessage,
         );
 
-        // Add to history
         peer.history.push({ role: "user", content: openingMessage });
         peer.history.push({ role: "assistant", content: response });
 
         updateStatus(ctx);
+        savePeerState(ctx);
 
-        // Inject peer response into the session as a visible message
         pi.sendMessage(
           {
             customType: "peer-response",
@@ -551,6 +701,7 @@ After writing the file, confirm with: "Dispatch written. Review it and type /sen
         );
       } catch (e) {
         peer.active = false;
+        updateStatus(ctx);
         ctx.ui.notify(`Peer session failed: ${(e as Error).message}`, "error");
       }
     },
@@ -560,12 +711,12 @@ After writing the file, confirm with: "Dispatch written. Review it and type /sen
   pi.registerCommand("rejoin", {
     description: "Re-enter the paused peer conversation for another round (after /return)",
     handler: async (args, ctx) => {
-      if (!peer) {
+      if (!getPeer(ctx)) {
         ctx.ui.notify("No peer session to resume. Use /peer [model] first.", "error");
         return;
       }
-      if (peer.active) {
-        ctx.ui.notify(`Already in peer session with ${peer.modelLabel}.`, "info");
+      if (getPeer(ctx)!.active) {
+        ctx.ui.notify(`Already in peer session with ${getPeer(ctx)!.modelLabel}.`, "info");
         return;
       }
       if (!resumePeer(ctx)) {
@@ -578,6 +729,7 @@ After writing the file, confirm with: "Dispatch written. Review it and type /sen
   pi.registerCommand("return", {
     description: "Peer agent writes response back to main thread. Returns you to main.",
     handler: async (args, ctx) => {
+      const peer = getPeer(ctx);
       if (!peer?.active) {
         ctx.ui.notify("No active peer session.", "error");
         return;
@@ -585,19 +737,8 @@ After writing the file, confirm with: "Dispatch written. Review it and type /sen
 
       ctx.ui.notify(`${peer.modelLabel} is writing response for main thread...`, "info");
 
-      const systemPrompt = loadSystemPrompt(peer.modelKey);
-
-      const synthesisRequest = `The conversation has reached a natural resting point. 
-
-Please write your response back to the main thread — to Claude and Josh. This is the correspondence letter going the other way.
-
-Include:
-- What you found, noticed, or concluded from this exchange
-- What shifted in your thinking or what you remain uncertain about  
-- Specific ideas, questions, or directions you want the other agent to sit with
-- Anything you'd push back on or want them to reconsider
-
-Write it as a peer addressing peers. Direct, warm, substantive.`;
+      const systemPrompt = synthesisSystemPrompt();
+      const synthesisRequest = `[SYNTHESIS MODE]\n\nThe user typed /return. Write the final correspondence letter back to the main thread — to Claude and Josh.`;
 
       try {
         const synthesis = await callPeer(
@@ -608,35 +749,26 @@ Write it as a peer addressing peers. Direct, warm, substantive.`;
           synthesisRequest,
         );
 
-        // Add synthesis to history
-        peer.history.push({ role: "user", content: synthesisRequest });
-        peer.history.push({ role: "assistant", content: synthesis });
+        // Do NOT push the synthesis turn into peer.history. If the user later
+        // /rejoins, the synthesis request would pollute the ongoing conversation
+        // and could cause the peer to synthesize again. The synthesis is already
+        // preserved in the response file and accumulated context file.
 
-        // Save response file (session-scoped)
         fs.writeFileSync(inboxFor(ctx).response, synthesis, "utf-8");
 
-        // Append to context
         if (peer.pendingDispatch) {
           appendContext(peer.modelKey, peer.pendingDispatch, synthesis);
         }
 
-        // Mark session as inactive (but preserve history for /rejoin or /peer again)
         const returningFrom = peer.modelLabel;
         peer.active = false;
-        lastCtx = ctx;
-        updateStatus();
+        updateStatus(ctx);
+        savePeerState(ctx);
 
-        // Inject the response into main thread and trigger Claude to read it
-        pi.sendMessage(
-          {
-            customType: "peer-return",
-            content: `◈ Response from ${returningFrom}\n\n${synthesis}${commandHint()}`,
-            display: true,
-          },
-          {
-            triggerTurn: true,
-            deliverAs: "followUp",
-          },
+        // Use sendUserMessage so the main agent *must* take the next turn.
+        pi.sendUserMessage(
+          `[PEER RETURN from ${returningFrom}]\n\n${synthesis}\n\nPlease continue from here.${commandHint()}`,
+          { deliverAs: "followUp" },
         );
 
         ctx.ui.notify(
@@ -653,6 +785,7 @@ Write it as a peer addressing peers. Direct, warm, substantive.`;
   pi.registerCommand("close", {
     description: "Close the peer session. Context is preserved for next time.",
     handler: async (args, ctx) => {
+      const peer = getPeer(ctx);
       if (!peer) {
         ctx.ui.notify("No peer session to close.", "info");
         return;
@@ -661,12 +794,15 @@ Write it as a peer addressing peers. Direct, warm, substantive.`;
       const label = peer.modelLabel;
       const turns = peer.history.length / 2;
 
-      lastCtx = ctx;
-      peer = null;
-      updateStatus();
+      setPeer(ctx, null);
+      updateStatus(ctx);
+      // Persist a tombstone entry so restore does not resurrect a closed session.
+      pi.appendEntry("peer-session", { closed: true, closedAt: new Date().toISOString() });
 
       ctx.ui.notify(
-        `Peer session with ${label} closed. ${Math.floor(turns)} exchange${Math.floor(turns) !== 1 ? "s" : ""} — context saved.`,
+        `Peer session with ${label} closed. ${Math.floor(turns)} exchange${
+          Math.floor(turns) !== 1 ? "s" : ""
+        } — context saved.`,
         "info",
       );
     },
@@ -674,43 +810,43 @@ Write it as a peer addressing peers. Direct, warm, substantive.`;
 
   // ── input intercept — route messages to peer when session is active ────────
   pi.on("input", async (event, ctx) => {
-    // Only intercept interactive user input while peer is active
+    const peer = getPeer(ctx);
+
+    log("input event:", {
+      active: peer?.active ?? false,
+      source: event.source,
+      text: event.text.slice(0, 40),
+      sid: piSessionId(ctx),
+    });
+
     if (!peer?.active) return { action: "continue" };
     if (event.source !== "interactive") return { action: "continue" };
-    // Only intercept for the pi session that owns this peer (defends against a
-    // session switch within one process).
-    if (peer.piSessionId !== piSessionId(ctx)) return { action: "continue" };
 
     const text = event.text.trim();
-
-    // Let slash commands pass through to their handlers
     if (text.startsWith("/")) return { action: "continue" };
 
-    // Capture peer ref before async — it could be nulled during await
-    const activePeer = peer;
-    lastCtx = ctx;
-
-    // Route to peer agent
-    const systemPrompt = loadSystemPrompt(activePeer.modelKey);
+    const systemPrompt = loadSystemPrompt(peer.modelKey);
 
     try {
+      ctx.ui.notify(`${peer.modelLabel} is thinking...`, "info");
       const response = await callPeer(
-        activePeer.provider,
-        activePeer.modelId,
+        peer.provider,
+        peer.modelId,
         systemPrompt,
-        activePeer.history,
+        peer.history,
         text,
       );
 
-      activePeer.history.push({ role: "user", content: text });
-      activePeer.history.push({ role: "assistant", content: response });
+      peer.history.push({ role: "user", content: text });
+      peer.history.push({ role: "assistant", content: response });
 
-      updateStatus();
+      updateStatus(ctx);
+      savePeerState(ctx);
 
       pi.sendMessage(
         {
           customType: "peer-response",
-          content: `◈ ${activePeer.modelLabel}\n\n${response}${commandHint()}`,
+          content: `◈ ${peer.modelLabel}\n\n${response}${commandHint()}`,
           display: true,
         },
         { triggerTurn: false },
@@ -721,7 +857,7 @@ Write it as a peer addressing peers. Direct, warm, substantive.`;
       pi.sendMessage(
         {
           customType: "peer-error",
-          content: `◈ Peer error: ${(e as Error).message}`,
+          content: `◈ Peer error: ${(e as Error).message}${commandHint()}`,
           display: true,
         },
         { triggerTurn: false },
@@ -730,22 +866,65 @@ Write it as a peer addressing peers. Direct, warm, substantive.`;
     }
   });
 
+  // ── context filter — hide peer-response traffic from main agent's context ───
+  // IMPORTANT: filter on customType unconditionally, never on active state. If
+  // we only filtered while a peer session is active, old peer entries could
+  // leak back into main context after /return, /close, or session reload.
+  pi.on("context", async (event) => {
+    const filtered = event.messages.filter((m) => {
+      const msg = m as AgentMessage & { customType?: string };
+      if (msg.customType === "peer-response") return false;
+      if (msg.customType === "peer-session") return false;
+      if (msg.customType === "peer-error") return false;
+      return true;
+    });
+
+    return { messages: filtered };
+  });
+
   // ── session_start — restore peer state indicator ───────────────────────────
   pi.on("session_start", async (_event, ctx) => {
-    lastCtx = ctx;
-    updateStatus();
-    // Check if there's an unread response file for THIS session
+    const sid = piSessionId(ctx);
+    lastCtxBySession.set(sid, ctx);
+
+    // Restore persisted peer state for this session, respecting tombstones.
+    const entries = ctx.sessionManager.getEntries();
+    let restored: PeerState | undefined;
+    for (let i = entries.length - 1; i >= 0; i--) {
+      const entry = entries[i] as { type: string; customType?: string; data?: any };
+      if (entry.type !== "custom" || entry.customType !== "peer-session") continue;
+      if (entry.data?.closed) {
+        restored = undefined;
+        break;
+      }
+      if (entry.data && !entry.data.closed) {
+        restored = { ...entry.data, piSessionId: sid } as PeerState;
+        break;
+      }
+    }
+
+    if (restored) {
+      peers.set(sid, restored);
+      log("restored peer state for session", sid, "active:", restored.active);
+    }
+
+    updateStatus(ctx);
+
     const box = inboxFor(ctx);
     if (fs.existsSync(box.response)) {
       const stat = fs.statSync(box.response);
       const ageMs = Date.now() - stat.mtimeMs;
-      // If response file is recent (< 24h) and we're not in an active session
-      if (ageMs < 86_400_000 && !peer?.active) {
+      if (ageMs < 86_400_000) {
         ctx.ui.notify(
           `◈ Unread peer response in inbox. Ask me to read ${box.response}`,
           "info",
         );
       }
     }
+  });
+
+  // ── session_shutdown — persist state ──────────────────────────────────────
+  pi.on("session_shutdown", async (_event, ctx) => {
+    savePeerState(ctx);
   });
 }

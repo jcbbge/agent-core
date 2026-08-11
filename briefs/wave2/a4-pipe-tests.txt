@@ -1,0 +1,26 @@
+# A4 pipe tests — 2026-08-11 (agnt-a4-lifecycle)
+
+## Baseline (pre-change)
+echo '{"cwd":"/Users/jrg/agent-core","hook_event_name":"SessionEnd","session_id":"test-orch-a4"}' | bun ~/.tower/hooks/flight-recorder.mjs
+exit:0
+
+echo '{"cwd":"/Users/jrg/agent-core","last_assistant_message":"A4 pipe test verdict line","stop_hook_active":false}' | HERDR_ENV=0 bun ~/.tower/hooks/stop-verdict.mjs
+exit:0
+
+## Post-change — live shims (~/.tower/hooks/)
+echo '{"cwd":"/Users/jrg/agent-core","hook_event_name":"SessionEnd","session_id":"test-orch-a4"}' | bun ~/.tower/hooks/flight-recorder.mjs
+exit:0
+
+echo '{"cwd":"/Users/jrg/agent-core","last_assistant_message":"A4 pipe test verdict line","stop_hook_active":false}' | HERDR_ENV=0 bun ~/.tower/hooks/stop-verdict.mjs
+exit:0
+
+## Post-change — canonical bodies (primitives/hooks/)
+echo '{"cwd":"/Users/jrg/agent-core","hook_event_name":"SessionEnd","session_id":"test-orch-a4-canonical"}' | bun /Users/jrg/agent-core/primitives/hooks/flight-recorder.mjs
+exit:0
+
+echo '{"cwd":"/Users/jrg/agent-core","last_assistant_message":"A4 canonical pipe test","stop_hook_active":false}' | HERDR_ENV=0 bun /Users/jrg/agent-core/primitives/hooks/stop-verdict.mjs
+exit:0
+
+## lib.mjs re-export sanity
+cd /Users/jrg/agent-core && bun ~/.tower/cli.mjs inbox
+exit:0

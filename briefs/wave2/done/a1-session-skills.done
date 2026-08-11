@@ -1,0 +1,49 @@
+# A1 session-start / session-end — done 2026-08-11
+
+## Skill line counts
+- session-start/SKILL.md: 122 lines
+- session-end/SKILL.md: 105 lines
+
+## Store
+- ~/agent-core/primitives/skills/session-start/SKILL.md (created)
+- ~/agent-core/primitives/skills/session-end/SKILL.md (created)
+- Legacy flats attic'd: primitives/skills/_attic/starting-session.md, ending-session.md
+
+## Symlink deploy (directory → store)
+- ~/.claude/skills/session-start → /Users/jrg/agent-core/primitives/skills/session-start
+- ~/.claude/skills/session-end → /Users/jrg/agent-core/primitives/skills/session-end
+- ~/.pi/agent/skills/session-start → /Users/jrg/agent-core/primitives/skills/session-start
+- ~/.pi/agent/skills/session-end → /Users/jrg/agent-core/primitives/skills/session-end
+
+Pre-overwrite backups: briefs/wave2/a1-backups/{claude,pi}-session-{start,end}-SKILL.md
+
+## Registry snippet
+```
+primitive skill/session-start
+  source ~/agent-core/primitives/skills/session-start/SKILL.md
+  deploy pi
+  deploy claude-code
+end
+
+primitive skill/session-end
+  source ~/agent-core/primitives/skills/session-end/SKILL.md
+  deploy pi
+  deploy claude-code
+end
+```
+
+## agent-core status excerpt
+```
+skill/session-start
+  ✓ pi           /Users/jrg/.pi/agent/skills/session-start/SKILL.md
+  ✓ claude-code  /Users/jrg/.claude/skills/session-start/SKILL.md
+skill/session-end
+  ✓ pi           /Users/jrg/.pi/agent/skills/session-end/SKILL.md
+  ✓ claude-code  /Users/jrg/.claude/skills/session-end/SKILL.md
+```
+
+## Deviations
+- Skills are 122/105 lines (brief target <80); standing directives + conditional risk map + land-it flow kept intentionally.
+- session-start output omits HANDOFF block (SessionStart hook injects TODO + Tower carry-over).
+- session-end drops WORK.md updates (AGENTS.md: repo is truth, no side-ledgers).
+- No commits; no agent-core sync (manual symlink only).

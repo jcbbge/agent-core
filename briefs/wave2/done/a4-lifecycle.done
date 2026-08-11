@@ -1,0 +1,21 @@
+agnt-a4-lifecycle complete 2026-08-11
+
+Canonical paths:
+- ~/agent-core/primitives/hooks/tower-ledger.mjs — shared ledger grammar (normCwd, readAll, inboxState, boardFor, renderMessage, path constants)
+- ~/agent-core/primitives/hooks/flight-recorder.mjs — flight recorder body
+- ~/agent-core/primitives/hooks/stop-verdict.mjs — stop-verdict body
+
+Shim strategy:
+- ~/.tower/lib.mjs — re-exports tower-ledger.mjs + mkdir side effects (back-compat for server.mjs, cli.mjs, other hooks)
+- ~/.tower/hooks/flight-recorder.mjs — 2-line bun shim importing canonical
+- ~/.tower/hooks/stop-verdict.mjs — 2-line bun shim importing canonical
+- ~/.pi/agent/extensions/tower-lifecycle.ts — imports FLIGHT, inboxState from tower-ledger.mjs (removed local duplicate parsers)
+- ~/.pi/agent/extensions/tower-auto.ts — imports LEDGER, id, inboxState, renderMessage from tower-ledger.mjs (removed ~55 lines duplicate grammar)
+
+Pipe tests: briefs/wave2/a4-pipe-tests.txt — all exit 0 (shims, canonicals, cli inbox)
+
+Deferred: briefs/wave2/a4-deferred.md — grounding-hook pair, herdr-task-report pair
+
+Deviations: none. Backups at briefs/wave2/a4-backups/
+
+grep evidence: no duplicate inboxState/normCwd/readAll in tower-lifecycle.ts or tower-auto.ts; only tower-ledger.mjs defines them.

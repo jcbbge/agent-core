@@ -56,21 +56,6 @@ claiming files (mcp__tower__board_read).">
   `cwd` must be the agent's real repo cwd, never a scratch dir; `topic` must
   be namespaced `<project-slug>/<topic>`. File append works everywhere; no
   MCP required. (Verified in pi 2026-07-23.)
-- On a Herdr host (self-report): call `/Users/jrg/herdr-spine/bin/spine-report
-  task "<what I'm doing>"` at the start of each unit of work and
-  `spine-report verdict "<result>"` when done, so the fleet sidebar shows
-  purpose without attaching to the pane (see herdr-spine/docs/spine-tokens.md).
-- On a Herdr host with file/resource ownership at stake (wave-2 K4): claim
-  owned files/resources with `/Users/jrg/herdr-spine/bin/spine-claim claim
-  "<resource>" --ttl 30` as the first action, refresh with `spine-claim
-  heartbeat "<resource>" --ttl 30` at roughly ttl/3 (about every 10s for the
-  30s default) for the life of the task, and `spine-claim release
-  "<resource>"` when done — this is advisory coordination among cooperating
-  workers, not a lock (see herdr-spine/docs/pheromones.md for the full
-  contest-semantics and heartbeat-cadence contract). `spine-report`
-  communicates *what* an agent is doing to a human glancing at the sidebar;
-  `spine-claim` communicates *which resources* are owned to peer agents and
-  the orchestrator — use both together.
 
 ## Tasks
 1. <precise action> — done when: <exact, testable condition>

@@ -1,0 +1,8 @@
+AGENTS.md: museum doc → thin CLI/repo guide. Removed opencode, WORK.md session law, Zig 0.15.2, Opus co-author, fake primitive counts, inline pi flat-skills claim. Added Zig 0.16.0, pi+claude-code harness table (directory skill_format, store-only rules), sync standing ban, pointer to primitives/AGENTS.md.
+
+a3-reorg-stage.txt: 28 paths (1 AGENTS.md + 14 10_plugins deletions + 3 rtk hook deletions + 8 plugins additions + 1 peer-session mod + 2 aesthethic skill rename).
+
+Open for ORCH:
+- .gitignore (profiles/selection.json) excluded — likely A1; not in reorg slice.
+- New skills (cadence-protocol, fix-flaky-tests, navigating-big-files, shipping-web-apps, skill-review) and primitives/tools/bigfile/ excluded — A1/A2/A4.
+- composto/smart-search/voice-report/propose-extension deleted from 10_plugins without new plugins/ homes (intentional retirements or already tracked elsewhere in plugins/).

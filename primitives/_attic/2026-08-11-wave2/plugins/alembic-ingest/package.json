@@ -1,0 +1,7 @@
+{
+  "name": "alembic-ingest",
+  "version": "1.0.0",
+  "description": "Auto-emit shards on decision/insight/fact patterns in agent responses",
+  "main": "index.ts",
+  "type": "module"
+}

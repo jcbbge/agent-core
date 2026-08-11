@@ -1,0 +1,8 @@
+chore(agent-core): thin repo AGENTS.md + 10_plugins→plugins store reorg
+
+PHASE: Implement
+DONE: Rewrote ~/agent-core/AGENTS.md as CLI/repo guide (Zig 0.16.0, pi+claude-code only, defers doctrine to primitives/AGENTS.md). Staged-path list covers 10_plugins deletions, plugins/ move targets, rtk hook removals, aesthethic-interface-protocol flat rename.
+TODO: ORCH stage A1/A2/A4 paths separately (.gitignore profiles line, new session skills, bigfile tool, briefs). Run agent-core status after registry settles; sync only with coordinator clearance.
+BLOCKED: —
+
+Co-Authored-By: ORCH-FILLS-MODEL

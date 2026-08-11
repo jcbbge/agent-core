@@ -1,0 +1,66 @@
+# A2 store purge — DONE 2026-08-11
+agent: agnt-a2-store-purge
+
+## Attic inventory (primitives/_attic/2026-08-11-wave2/)
+
+### plugins/
+- alembic/ (index.ts, package.json)
+- alembic-boot/ (index.ts, package.json)
+- alembic-ingest/ (index.ts, package.json)
+- alembic-telemetry.ts
+- perplexity/ (index.ts, package.json)
+- perplexity-search.ts
+- subagent/ (index.ts, agents.ts)
+
+### hooks/
+- _deprecated/ (agent-spawn-check.sh, mind-wake.ts, no-fabrication.ts, superset-hooks.ts)
+
+### subagents/
+- FLEET.md, markarian.md, vega.md, cassiopeia.md, sirius.md, orion.md, aldebaran.md
+- procyon.md, pulsar.md, nebula.md, atlas.md, quasar.md
+- _deprecated-alembic/ (8 files)
+
+### skills/atelier/
+- SKILL.md.bak
+
+### rules/
+- debugging.md (post-merge)
+
+Kept live at plugins/: peer-session.ts, propose-extension.ts, tower.ts, uptime.ts, _docs/
+Kept live subagents: architect, coder, debugger, peer, reviewer, scout, sigil-distiller, tabs-processor, test-writer, worker
+
+## Debugging merge
+- Unique content from debugging.md (cascade errors, build-first, brace-depth script, fix protocol, nine-primitives mapping) appended as section 11 to debugging-discipline.md
+- debugging.md moved to attic; no links to debugging.md found under primitives/
+
+## Skill deploy evidence (all store=cc=pi shasum match)
+
+| skill | store path | shasum | cc readlink | pi readlink |
+|---|---|---|---|---|
+| criticality | skills/criticality/SKILL.md | 565a5dbc… | → store/criticality | → store/criticality |
+| micro-animation-director | skills/micro-animation-director/SKILL.md | 68a683d5… | → store/micro-animation-director | → store/micro-animation-director |
+| atelier | skills/atelier/SKILL.md (+ support/) | a56e962f… | → store/atelier | → store/atelier |
+| dev-browser | skills/dev-browser/SKILL.md | e87e0195… | → store/dev-browser | → store/dev-browser |
+| brief | skills/brief/SKILL.md | cfcec693… | → store/brief | → store/brief |
+| navigating-big-files | skills/navigating-big-files/SKILL.md | 6ab4d4ce… | → store/navigating-big-files | → store/navigating-big-files |
+
+Flat store files converted to directory form: criticality, micro-animation-director, navigating-big-files
+dev-browser adopted from cc (236 ln); flat dev-browser.md removed
+brief store overwritten from cc (147 ln, was 132 ln)
+navigating-big-files: fixed dangling cc symlink (was → primitives/03_skills/navigating-big-files)
+
+Backups: briefs/wave2/a2-backups/{dev-browser-cc, atelier-cc, brief-store-SKILL.md}
+
+## Registry updates (~/.agent-core/registry)
+- criticality: source → skills/criticality/SKILL.md
+- added: micro-animation-director, atelier, dev-browser, brief, navigating-big-files
+
+## agent-core status (post-registry)
+```
+summary: 27 ok  0 stale  0 missing
+skill/criticality: ✓ pi ✓ claude-code
+(all 15 registered skills green)
+```
+
+## Deviations
+- None. session-start/session-end show ok in status (A1 registry work; not touched by A2).
