@@ -1,0 +1,25 @@
+ca542e5 feat(arc/admin): order source + reorder link on catalog items (STG-646) (#216) (52 minutes ago) <developer3451>
+  The restock pass had no way to answer "where do we reorder this from?" — two
+  Arc-owned nullable columns on catalog_items carry it, free text rather than a
+  vendor FK because the supplier of a consumable is not the HubSpot vendor object.
+  [+6 lines omitted]
+6d7a2fd fix(arc/admin): bump nav-card icons 16px → 24px (T17 human QA #3) (72 minutes ago) <jrg>
+  T17 human-QA item #3: admin/dev nav-card icons were undersized at 16px
+  inside 96px cards. Bumped all 10 icon components to 24px (the nav-card
+  tier per icons/README.md). T17 human QA now complete: 4 pass, this fix,
+  [+1 lines omitted]
+1ce3b20 session(arc/orchestration): walkthrough + seven spawn packages shipped; fleet ready to launch (7 days ago) <jrg>
+  PHASE: Plan
+  DONE: 4-agent corpus fidelity sweep, full walkthrough with Josh (E/A/B/C/D walked; F/G added), 7 briefs finalized+mer...
+  TODO: NEW SESSION: read docs/developer/orchestration/ws-00-overview.md and launch per its order — provision session N...
+  [+2 lines omitted]
+a74f7e8 chore(arc/docs): graveyard T17 QA session docs + recovery plan; tick ws-00 pre-flight (#215) (7 days ago) <de...
+  PHASE: Plan
+  DONE: 9 QA-branch docs preserved in .graveyard/docs/orchestration; RECOVERY-MASTER interred; ws-00 pre-flight checkli...
+  TODO: launch session — provision Neon branch, herdr tabs per stream, spawn E first then A/B/C/D/F/G per ws-00
+  [+1 lines omitted]
+7ee032d docs(arc/orchestration): seven workstream spawn packages (walkthrough-finalized) (#214) (7 days ago) <develop...
+  * docs(arc/orchestration): DRAFT ws-00/A/B spawn packages — pre-walkthrough, not final
+  PHASE: Plan
+  DONE: corpus fidelity sweep (4 agents) synthesized; draft overview + WS-A/WS-B briefs
+  [+16 lines omitted]

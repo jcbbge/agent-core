@@ -1,0 +1,31 @@
+USER               PID  %CPU %MEM      VSZ    RSS   TT  STAT STARTED      TIME COMMAND
+jrg              18395  29.0  0.6 461692976 417840 s002  S+   12:44PM   0:13.75 pi   
+jrg              22465  24.1  4.0 509412432 2660448   ??  S    12:49PM   0:44.12 /Users/jrg/.bun/bin/bun test src --t...
+jrg              92707  11.7  0.5 461555360 357328 s009  S+   12:09PM   0:31.05 pi   
+jrg              23742  11.7  0.0 435312688   8720   ??  Ss   12:51PM   0:00.07 /bin/zsh -c snap=$(command cat <&3); ...
+jrg              27582   9.8  3.3 1428576912 2206304   ??  Ss   10:45AM  18:19.97 /Applications/OrbStack.app/Contents...
+jrg              20488   8.6  0.2 436192016 110368   ??  S    10:22AM   4:42.85 /Applications/Ghostty.app/Contents/Ma...
+root               596   6.9  0.0 435388048   4368   ??  Ss   Fri11AM  10:32.73 /usr/libexec/sysmond
+_windowserver      424   6.5  0.2 438155136 109152   ??  Rs   Fri11AM 482:00.33 /System/Library/PrivateFrameworks/Sky...
+jrg              11149   5.9  0.1 435481184  78640   ??  Ss   Fri12PM  49:41.63 /Users/jrg/.local/bin/herdr server
+jrg              22653   4.5  0.5 461611776 361696 s010  S+   12:50PM   0:06.45 pi   
+root               390   3.7  0.0 435515760  32432   ??  Ss   Fri11AM   7:19.16 /usr/libexec/xprotectd
+jrg              20707   2.4  0.6 461671360 426176 s000  S+   10:22AM   3:06.41 pi 
+_locationd         398   2.2  0.0 435306160  27776   ??  Ss   Fri11AM  11:49.74 /usr/libexec/locationd
+_driverkit         631   2.1  0.1 435301728  48992   ??  Ss   Fri11AM  30:57.62 /System/Library/DriverExtensions/Appl...
+jrg              20575   1.5  0.0 435326576  16144 s001  S+   10:22AM   1:19.85 /Users/jrg/.local/bin/herdr
+root               585   0.5  0.0 435299984   2048   ??  Ss   Fri11AM   0:50.51 /bin/sh /usr/local/bin/herdr-awake
+root               391   0.5  0.0 435429504  18864   ??  Ss   Fri11AM   4:51.31 /usr/libexec/opendirectoryd
+root               416   0.5  0.0 435330288  24864   ??  Ss   Fri11AM  15:00.58 /usr/sbin/bluetoothd
+root               417   0.3  0.0 435239648   4464   ??  Ss   Fri11AM   2:35.49 /usr/sbin/notifyd
+root               469   0.3  0.0 435456448  27408   ??  Ss   Fri11AM   5:30.22 /usr/libexec/syspolicyd
+jrg                766   0.3  0.0 435535824  21744   ??  S    Fri11AM   1:37.05 /System/Library/CoreServices/Siri.app...
+root               608   0.3  0.0 435334496  27872   ??  Ss   Fri11AM  10:03.48 /usr/libexec/searchpartyd
+root               453   0.2  0.0 435343968   6096   ??  Ss   Fri11AM   0:12.43 /System/Library/PrivateFrameworks/Sys...
+root                 1   0.2  0.0 435249168  23120   ??  Ss   Fri10AM  36:23.79 /sbin/launchd
+root             23750   0.2  0.0 435299440   1264   ??  S    12:51PM   0:00.00 sleep 15
+root               350   0.2  0.0 435460832  33488   ??  Ss   Fri11AM  20:06.34 /usr/libexec/logd
+jrg              43309   0.1  0.2 1951345424 112272   ??  S    11:12AM   0:17.36 /Applications/Google Chrome.app/Cont...
+jrg               2807   0.1  0.2 444590832 119472   ??  Ss   12:30PM   0:10.91 node /Users/jrg/.dev-browser/daemon.mjs
+jrg                643   0.1  0.0 435281600  18496   ??  S    Fri11AM   0:33.52 /usr/libexec/UserEventAgent (Aqua)
+... (825 lines truncated)

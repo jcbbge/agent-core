@@ -1,0 +1,48 @@
+ls -la
+  -> [0] rtk ls -la
+git status
+  -> [0] rtk git status
+git diff
+  -> [0] rtk git diff
+git log --oneline -10
+  -> [0] rtk git log --oneline -10
+grep -rn TODO src/
+  -> [0] rtk grep -rn TODO src/
+cat file.txt
+  -> [0] rtk read file.txt
+cat f1.txt f2.txt f3.txt
+  -> [0] rtk read f1.txt f2.txt f3.txt
+find . -name '*.ts' -type f
+  -> [0] rtk find . -name '*.ts' -type f
+wc -l file.txt
+  -> [0] rtk wc -l file.txt
+head -20 file.txt
+  -> [0] rtk read file.txt --max-lines 20
+tail -50 log.txt
+  -> [0] rtk read log.txt --tail-lines 50
+tree -L 2
+  -> [0] rtk tree -L 2
+ps aux
+  -> [0] rtk ps aux
+sed -n '10,20p' file.txt
+  -> [1] <no rewrite>
+diff a.txt b.txt
+  -> [0] rtk diff a.txt b.txt
+git status --porcelain
+  -> [0] rtk git status --porcelain
+git log --format=%H -1
+  -> [0] rtk git log --format=%H -1
+npx prettier --check .
+  -> [0] rtk prettier --check .
+echo === done ===
+  -> [1] <no rewrite>
+df -h
+  -> [0] rtk df -h
+du -sh *
+  -> [0] rtk du -sh *
+curl -s https://example.com/api.json
+  -> [0] rtk curl -s https://example.com/api.json
+docker ps
+  -> [0] rtk docker ps
+kubectl get pods
+  -> [0] rtk kubectl get pods

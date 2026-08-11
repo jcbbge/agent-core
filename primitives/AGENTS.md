@@ -22,7 +22,7 @@ here contaminates control arms.
 | Tower | active | MCP `mcp__tower__*` (CC) · `~/.tower/cli.mjs` + `board.jsonl` (everywhere) — see below |
 | Coraline | active | CLI `coraline` (33 languages) — no MCP registration |
 | Composto | active | CLI `composto` — IR compression; TS/JS/Python/Go/Rust, NOT Swift/Zig |
-| rtk | active (allowlisted 2026-08-11) | CLI token-saver proxy (`~/.local/bin/rtk`) — rewrites restricted to measured-safe verbs (ls/ps/wc/df/git status/git log); everything else runs raw. CC: PreToolUse `rtk-guard.sh` · pi: `rtk-rewrite` extension (same guard). NEVER edit `~/.claude/hooks/rtk-rewrite.sh` — rtk integrity-pins its hash; the guard wraps it from outside. Do not trust rtk-proxied diff/find/grep output as evidence — use full binary paths |
+| slim | active (2026-08-11) | 6-verb output compactor (`~/.local/bin/slim`; source `~/agent-core/primitives/tools/slim/`, Zig) — compacts ls/ps/wc/df/git status/git log only; truth law: child exit codes propagate, unparseable output passes raw, truncation always marked. CC: PreToolUse `slim-guard.sh` · pi: `slim-rewrite` extension. Pipes/compounds/machine-format flags never rewritten |
 | Bigfile | active | pi: via super-search `--file` · CC: `mcp__bigfile__*` |
 
 ## Tower — the message bus (orchestration convention)

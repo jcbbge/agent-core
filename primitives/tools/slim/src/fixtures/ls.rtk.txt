@@ -1,0 +1,155 @@
+.agent-browser/
+.agent-core/
+.agents/
+.amp/
+.bb/
+.bun/
+.cache/
+.cargo/
+.claude/
+.codex/
+.composer/
+.conductor/
+.config/
+.constellation/
+.copilot/
+.coraline/
+.cursor/
+.dev-browser/
+.docker/
+.dory/
+.factory/
+.future/
+.gemini/
+.grok/
+.herdr/
+.hermes/
+.homebrew/
+.humanlayer/
+.interceptor/
+.ipython/
+.kotadb/
+.local/
+.mastracode/
+.npm/
+.omnigent/
+.omp/
+.opencode/
+.openwhispr/
+.orbstack/
+.pi/
+.prime/
+.pyenv/
+.rivetkit/
+.rustup/
+.slate/
+.ssh/
+.strudel/
+.swiftpm/
+.t3/
+.terminfo/
+.tower/
+.Trash/
+.vscode/
+.vscode-shared/
+.zsh_sessions/
+agent-core/
+alembic/
+Applications/
+auto-research/
+backpack/
+backups/
+bb-plugins/
+bench/
+bin/
+blip/
+cairn/
+cairn-futspine/
+canvas/
+cbbgePT/
+circadian/
+circadian-wave/
+claude-config-backup-2026-06-21/
+conductor/
+config/
+constellation/
+constellation-zg/
+content/
+Desktop/
+Documents/
+dotfiles/
+Downloads/
+evals/
+flux/
+fut-spine/
+future/
+git/
+herdr-spine/
+icloud-tabs-inbox/
+imessage-viewer/
+infinity/
+interfacecraft/
+invoice-gen/
+kotadb/
+Library/
+local-llm/
+madewell/
+madewell-meta/
+Movies/
+Music/
+mw-fixture-1/
+OrbStack/
+pi-lens-REJECTED/
+pi-spine/
+pi-spine-wt/
+Pictures/
+prime-spine/
+project-atlas/
+project-closeloop/
+project-css-stickers/
+Public/
+rumen/
+scrumble/
+scrumble-lab/
+skills/
+solid-auth/
+source/
+src/
+strudel/
+strudel-lab/
+surreal/
+synth/
+tldraw-mastery/
+tower-share/
+trail-demo/
+transcribed/
+WhisperKit/
+whisperkit-models/
+.CFUserTextEncoding  7B
+.claude.json  114.1K
+.claude.json.bak-20260802  107.9K
+.DS_Store  22.0K
+.gitconfig  480B
+.gitconfig-infinity  389B
+.gitignore  43B
+.koyeb.yaml  129B
+.madewell-meta -> /Users/jrg/madewell-meta  24B
+.sbclrc  735B
+.viminfo  2.3K
+.z  2.5K
+.zcompdump  48.1K
+.zprofile  154B
+.zsh_history  42.9K
+.zshrc  5.7K
+.zshrc.kaku-backup-1776539248  4.3K
+.zshrc.pre-opencode-removal-20260612-154823  5.1K
+AGENTS.md -> /Users/jrg/agent-core/primitives/AGENTS.md  42B
+history.txt  1.1K
+icloud-tabs-export.json  108.0K
+lidtest-arm  1.4K
+lidtest-read  1.5K
+package-lock.json  82B
+root-repo-history-2026-07-07.bundle  460.1K
+test_fetch.js  558B
+test_fetch2.js  558B
+test_fetch3.js  654B
