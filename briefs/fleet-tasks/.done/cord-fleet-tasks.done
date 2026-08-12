@@ -1,0 +1,60 @@
+# CORD fleet-tasks DONE — mission m-fleet-tasks closed
+
+CORD: fleet-tasks (w2H:p1). Closed 2026-08-12 ~18:46 UTC via CONCIERGE closeout.
+
+## Shipped
+
+- `fleet-task` CLI (bun/ts): `primitives/tools/fleet-task/` — init / mission open|close|show /
+  unit open|close|show / write --merge / read / render / prune. Four states ○◐✓⊘, merge-by-id,
+  mission→unit→task with stored rollups, one in_progress per scope.
+- Global store `~/.fleet-tasks/state.json` (D1), atomic writes + lockfile.
+- Role write-gate (D6): herdr pane role-token primary path (verified live from w2H:p1, no flags);
+  AGNT/SAGT read-only; fail-closed with `--role` escape hatch.
+- Tower transition findings (D4): rollup transitions post to `<project>/fleet-tasks`.
+- CTRL TASKS section (D2) in `~/herdr-spine/bin/ctl-fleet`, both planes, above WORK, silence rule,
+  mtime-cached. Docs + A6 human-QA ticked (operator veto stands).
+
+## Commits (CORD-gated)
+
+- agent-core `3c91cfd` — CLI + mission artifacts (U1+U2)
+- agent-core `5f1b9e4` — rolefix: herdr pane-get envelope path + regression tests
+- herdr-spine `f9419cb` — TASKS section (U3)
+- herdr-spine `4838882` — A6 human-QA tick
+
+## Evidence
+
+- Suites reproduced by CORD: CLI 14/14 (incl. AC-role-envelope-cord/agnt), ctl-fleet 7/7.
+- Verify beats: U3 nQ 3/3 (2 bad-test, 1 bad-impl); rolefix red→green demonstrated both directions.
+- Live primary-path write from CORD pane, no `--role`: herdr token 1-CORD resolved, write accepted.
+- D4 transition rows on board topic `agent-core/fleet-tasks`, incl. `m-fleet-tasks in_progress→completed`.
+- Live render (CTL_FLEET_DUMP against ~/.fleet-tasks/state.json, 18:45 UTC):
+  `agent-core  m-fleet-tasks  ✓4 ◐0 ○0 ⊘0` — all four units ✓.
+- Mission closed via `fleet-task mission close --id m-fleet-tasks` (final dogfood act).
+
+## Closeout incident (honest disclosure)
+
+CONCIERGE closeout caught that the live store still showed ◐ units: my 18:21–18:22 UTC writes had
+landed in `/tmp/ft-cord-verify.zIaX` — `FLEET_TASKS_HOME` was still exported in my shell (second
+occurrence of this exact self-inflicted bug this mission). Board D4 rows were correct (D4 posts
+regardless of home); the live store was not. Fixed: unset, replayed the two missing transitions
+(u-rolefix t1, u-dogfood t3) against the live store, re-verified render ✓4.
+
+## Lessons codified (also on board)
+
+1. Escape-hatch flags mask dead primary paths — dogfood early.
+2. herdr pane `done` is an attention flag, not a completion contract — done-notifications should
+   key on `.done` markers, not pane status.
+3. D4 side effect fires regardless of FLEET_TASKS_HOME — test-scoped writes post real board rows.
+4. CORD shells accumulate env — `env | grep FLEET_TASKS` before any live-store write.
+
+## Reap status
+
+All ORCH + worker panes reaped (fleet-task-cli, ctl-fleet-tasks, fleet-task-rolefix + their
+coder/test-maker/tester/arbiter panes). w2H holds only this CORD pane, which reaps at session end.
+
+## What remains (not this mission)
+
+- Registry/AGENTS.md stack-table entry for fleet-task — cursor-parity owns those files; escalate
+  to CONCIERGE if wanted.
+- Optional: suppress D4 posts for temp FLEET_TASKS_HOME (lesson 3).
+- Optional: point done-notification automation at `.done` markers (lesson 2).
