@@ -22,11 +22,16 @@ agent focused and head-down on the specific task at hand, nothing else.
 - Any tier may spawn one-off assist subagents at any time (research, a
   verification pass, a measurement) instead of bloating its own context —
   the assist is briefed, does its unit, reports, and is reaped.
-- Cache geometry (proem doctrine, 2026-08-11): a prompt is a cache key with
-  a shape. Briefs and spawn prompts carry a byte-identical shared prefix
-  across siblings; per-agent specifics (names, ids, paths) go at the TAIL.
-  One brief file per fanout when workers share a mission; volatility never
-  goes in the prefix.
+- Cache geometry (proem doctrine, 2026-08-11; rationale amended same day
+  after the proem probe): a prompt is a cache key with a shape. Briefs and
+  spawn prompts carry a byte-identical shared prefix across siblings;
+  per-agent specifics (names, ids, paths) go at the TAIL. One brief file
+  per fanout when workers share a mission; volatility never goes in the
+  prefix. WHY (measured): the pi gateway's cache does NOT reward
+  engineered cross-spawn prefixes (probe verdict DOES-NOT-PAY, 0192af0) —
+  the law stands for CONTEXT BUDGET and legibility, and because
+  Anthropic-side prompt caching in Claude Code does reward stable
+  prefixes. Do not cite gateway cache as the justification.
 
 ## Naming convention (herdr pane names — MANDATORY)
 
