@@ -70,7 +70,7 @@ fn runWait(allocator: std.mem.Allocator, io: std.Io, init: std.process.Init, arg
             };
             const result = wait.wait(allocator, io, .{
                 .pane_id = pane_id,
-                .until = parsed.until,
+                .until = parsed.until[0..parsed.until_count],
                 .timeout_ms = parsed.timeout_ms,
                 .socket_path = socket_path,
             }) catch {
@@ -174,7 +174,7 @@ fn printHelp(io: std.Io) !void {
         \\latch — blocking wait/hold primitive for herdr, files, Tower, and gates
         \\
         \\usage:
-        \\  latch wait --pane <pane-id> [--until <status>] [--timeout <dur>]
+        \\  latch wait --pane <pane-id> [--until <status>]... [--timeout <dur>]
         \\  latch wait --file <path> [--timeout <dur>]
         \\  latch wait --board <topic> [--timeout <dur>]
         \\  latch hold <gate> [--timeout <dur>]
@@ -184,7 +184,7 @@ fn printHelp(io: std.Io) !void {
         \\  --pane <pane-id>   herdr pane agent status (default until: idle or done)
         \\  --file <path>      path exists or changes (kqueue EVFILT_VNODE)
         \\  --board <topic>    new Tower board row with topic (append-only tail scan)
-        \\  --until <status>   pane only — match one status
+        \\  --until <status>   pane only — match one status (repeatable, any-of)
         \\  --timeout <dur>    30s / 10m / 1h (default: 30m)
         \\
         \\hold:

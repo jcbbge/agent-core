@@ -1,0 +1,22 @@
+# tower-perf pipe tests — 2026-08-12 (decisions-w2)
+
+echo '{"cwd":"/Users/jrg/agent-core","stop_hook_active":false}' | bun ~/.tower/hooks/stop-guard.mjs
+exit:0
+
+echo '{"cwd":"/Users/jrg/agent-core","prompt":"tower-perf final"}' | bun ~/.tower/hooks/prompt-inject.mjs
+exit:0
+
+echo '{"cwd":"/Users/jrg/agent-core","session_id":"tower-perf-final"}' | bun ~/.tower/hooks/session-start.mjs
+exit:0
+
+bun ~/.tower/cli.mjs inbox
+exit:0
+
+echo '{"prompt":"tower-perf final"}' | ~/.claude/hooks/herdr-task-report.sh prompt
+exit:0
+
+HERDR_ENV=1 HERDR_PANE_ID=w1A:p1 HERDR_SOCKET_PATH=/Users/jrg/.config/herdr/herdr.sock echo '{"tool_name":"Read","tool_input":{"file_path":"/tmp/x"}}' | ~/.claude/hooks/herdr-task-report.sh tool
+exit:0
+
+bun /Users/jrg/agent-core/primitives/hooks/tower-ledger-diff.test.mjs
+exit:0

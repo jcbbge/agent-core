@@ -1,0 +1,23 @@
+tower-perf — decisions-w2 — 2026-08-12
+
+## Shipped
+- Incremental inbox/board cursors in primitives/hooks/tower-ledger.mjs
+  (~/.tower/cursors/ledger.inbox.cursor.json, board.scope.cursor.json)
+- Fire-and-forget report-metadata in primitives/hooks/herdr-task-report.sh
+  (deployed ~/.claude/hooks/herdr-task-report.sh)
+- Differential test: primitives/hooks/tower-ledger-diff.test.mjs (all pass)
+- Flywheel retirement note in research/fringe-tooling-brainstorm.md (d51b432 + re-measurements)
+
+## Re-measurement (15 runs, flywheel method)
+| hook | baseline med | post med | cut |
+| stop-guard | 290.5 | 31.0 | 89% |
+| prompt-inject | 200.2 | 31.5 | 84% |
+| session-start | 222.0 | 43.2 | 81% |
+| task-report tool [HERDR] | 43.1 | 33.1 | 23% |
+
+## Pipe tests
+briefs/decisions/done/tower-perf-pipe-tests.txt — all exit 0
+
+## Root cause found
+normCwd() git rev-parse per row (~190ms), not JSONL parse (~4ms).
+Cursors apply normCwd once at ingest; hooks load pre-bucketed state.

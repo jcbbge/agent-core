@@ -26,14 +26,27 @@ test "duration invalid suffix" {
 }
 
 test "status match default until" {
-    try std.testing.expect(wait.statusMatches(null, "idle"));
-    try std.testing.expect(wait.statusMatches(null, "done"));
-    try std.testing.expect(!wait.statusMatches(null, "working"));
+    try std.testing.expect(wait.statusMatches(&.{}, "idle"));
+    try std.testing.expect(wait.statusMatches(&.{}, "done"));
+    try std.testing.expect(!wait.statusMatches(&.{}, "working"));
 }
 
 test "status match explicit until" {
-    try std.testing.expect(wait.statusMatches("working", "working"));
-    try std.testing.expect(!wait.statusMatches("working", "idle"));
+    try std.testing.expect(wait.statusMatches(&.{"working"}, "working"));
+    try std.testing.expect(!wait.statusMatches(&.{"working"}, "idle"));
+}
+
+test "status match any-of until" {
+    try std.testing.expect(wait.statusMatches(&.{ "done", "blocked" }, "done"));
+    try std.testing.expect(wait.statusMatches(&.{ "done", "blocked" }, "blocked"));
+    try std.testing.expect(!wait.statusMatches(&.{ "done", "blocked" }, "idle"));
+}
+
+test "wait argv parses repeated until" {
+    const parsed = try argv.parseWaitArgs(&.{ "--pane", "w1Q:p1", "--until", "done", "--until", "blocked" });
+    try std.testing.expectEqual(@as(u8, 2), parsed.until_count);
+    try std.testing.expectEqualStrings("done", parsed.until[0]);
+    try std.testing.expectEqualStrings("blocked", parsed.until[1]);
 }
 
 test "extract agent_status from event json" {

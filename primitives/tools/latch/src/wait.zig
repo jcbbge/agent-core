@@ -22,15 +22,20 @@ pub const WaitResult = struct {
 
 pub const Options = struct {
     pane_id: []const u8,
-    /// When null, match idle or done.
-    until: ?[]const u8,
+    /// Empty slice: match idle or done.
+    until: []const []const u8,
     timeout_ms: u64,
     socket_path: []const u8,
 };
 
-pub fn statusMatches(until: ?[]const u8, status: []const u8) bool {
-    if (until) |wanted| return std.mem.eql(u8, wanted, status);
-    return std.mem.eql(u8, status, "idle") or std.mem.eql(u8, status, "done");
+pub fn statusMatches(until: []const []const u8, status: []const u8) bool {
+    if (until.len == 0) {
+        return std.mem.eql(u8, status, "idle") or std.mem.eql(u8, status, "done");
+    }
+    for (until) |wanted| {
+        if (std.mem.eql(u8, wanted, status)) return true;
+    }
+    return false;
 }
 
 pub fn wait(_: std.mem.Allocator, io: std.Io, opts: Options) WaitError!WaitResult {

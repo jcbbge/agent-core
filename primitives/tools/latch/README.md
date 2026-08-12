@@ -7,7 +7,7 @@ Single Zig binary (stdlib only). Sub-10 ms start; truth-legal exit codes.
 ## Verbs
 
 ```
-latch wait --pane <pane-id> [--until <status>] [--timeout <dur>]
+latch wait --pane <pane-id> [--until <status>]... [--timeout <dur>]
 latch wait --file <path> [--timeout <dur>]
 latch wait --board <topic> [--timeout <dur>]
 latch hold <gate> [--timeout <dur>]
@@ -23,7 +23,8 @@ Exactly one of `--pane`, `--file`, or `--board` is required for `wait`.
 Blocks on herdr socket NDJSON events until the pane's `agent_status` matches.
 
 - Default success: status is `idle` or `done`.
-- `--until <status>`: match one explicit status.
+- `--until <status>`: match one explicit status. Repeat for any-of semantics
+  (e.g. `--until done --until blocked` exits 0 when either lands).
 - Socket: `$HERDR_SOCKET_PATH` or `~/.config/herdr/herdr.sock`.
 
 ### `wait --file`

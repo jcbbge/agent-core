@@ -1,0 +1,4 @@
+decisions-w1 @ 2026-08-12T03:28Z
+merge: wake-slim (cbadfc6) fast-forward into circadian main
+tests: 462/463 pass — 1 env fail (relindex LIVE wake: R7 kill switch withholds session-evidence; not wake-slim regression). All 15 wake-slim unit tests green.
+live proof: pi AGNT pane w1M:p16 (role=3-AGNT, cwd ~/circadian) → payload_tokens=3159 (kill-switch fail-safe). buildPayload sim (killSwitch=false): full ~9151 tok, slim ~6577 tok, delta −2574 tok (−28%). vs proem bare-spawn baseline ~31.5k input tok/fleet worker.

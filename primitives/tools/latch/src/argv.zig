@@ -14,12 +14,15 @@ pub const WaitTarget = enum {
     board,
 };
 
+pub const MaxUntil = 8;
+
 pub const WaitArgs = struct {
     target: WaitTarget,
     pane_id: ?[]const u8 = null,
     file_path: ?[]const u8 = null,
     board_topic: ?[]const u8 = null,
-    until: ?[]const u8 = null,
+    until_count: u8 = 0,
+    until: [MaxUntil][]const u8 = undefined,
     timeout_ms: u64,
 };
 
@@ -32,7 +35,8 @@ pub fn parseWaitArgs(args: []const []const u8) ParseError!WaitArgs {
     var pane_id: ?[]const u8 = null;
     var file_path: ?[]const u8 = null;
     var board_topic: ?[]const u8 = null;
-    var until: ?[]const u8 = null;
+    var until_count: u8 = 0;
+    var until: [MaxUntil][]const u8 = undefined;
     var timeout_ms: u64 = duration.defaultTimeoutMs();
 
     var i: usize = 0;
@@ -59,7 +63,9 @@ pub fn parseWaitArgs(args: []const []const u8) ParseError!WaitArgs {
         if (std.mem.eql(u8, arg, "--until")) {
             i += 1;
             if (i >= args.len) return error.MissingTarget;
-            until = args[i];
+            if (until_count >= MaxUntil) return error.MissingTarget;
+            until[until_count] = args[i];
+            until_count += 1;
             continue;
         }
         if (std.mem.eql(u8, arg, "--timeout")) {
@@ -89,13 +95,14 @@ pub fn parseWaitArgs(args: []const []const u8) ParseError!WaitArgs {
     if (target_count == 0) return error.MissingTarget;
     if (target_count > 1) return error.MultipleTargets;
 
-    if (until != null and target != .pane) return error.MissingTarget;
+    if (until_count > 0 and target != .pane) return error.MissingTarget;
 
     return .{
         .target = target,
         .pane_id = pane_id,
         .file_path = file_path,
         .board_topic = board_topic,
+        .until_count = until_count,
         .until = until,
         .timeout_ms = timeout_ms,
     };
@@ -128,7 +135,7 @@ pub fn parseHoldArgs(args: []const []const u8) ParseError!HoldArgs {
 }
 
 pub fn waitUsageMessage() []const u8 {
-    return "usage: latch wait (--pane <pane-id> | --file <path> | --board <topic>) [--until <status>] [--timeout <dur>]\n";
+    return "usage: latch wait (--pane <pane-id> | --file <path> | --board <topic>) [--until <status>]... [--timeout <dur>]\n";
 }
 
 pub fn holdUsageMessage() []const u8 {
