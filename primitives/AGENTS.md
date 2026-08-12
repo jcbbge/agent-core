@@ -188,17 +188,24 @@ Harness deltas live in `primitives/directives/<harness>.md`; deployed entrypoint
   `~/.prime/agent/AGENTS.md` (which defers to this file for machine-wide
   context)
 
-## Fleet spawn + comms (law, 2026-08-11)
+## Fleet spawn + comms (law, 2026-08-11; amended 2026-08-12)
 
-- **Spawn:** `~/bin/spine-spawn` only (= `python3 ~/herdr-spine/bin/spine-spawn`).
-  **Never** `bun …/spine-spawn` (bun parses the Python file as JS and dies).
-- **Hierarchy:** CORD → ORCH → AGNT/SAGT via `spine-spawn orch|worker|fanout`.
+- **Spawn (agnostic core):** Provider/model/harness/platform/vendor-agnostic by design —
+  nothing in the canonical core expresses a harness preference. Fleets are
+  harness-homogeneous: the root spawn's harness defines every downstream agent (pi
+  root → pi fleet; claude root → claude fleet; cursor root → cursor fleet). Harness
+  selection is the operator's per-mission intake decision, cost-driven. Per-harness
+  spawn verbs, flags, and paths live in `primitives/directives/<harness>.md`.
+- **Hierarchy:** CORD → ORCH → AGNT/SAGT via the harness's spawn path — see deltas.
   Briefs on disk; CLAIM-first / board findings / `.done`-last.
 - **Comms:** `~/.tower/COMMS-ARCH.md`. Status (idle/done) is NOT mail and is
   NOT a summons. Fleet mail = Tower board (`<project>/<topic>`). Operator
   mail only when `to:"operator"`. Collect via board + `.done` + CTRL/TOWR —
   **never** re-prompt idle panes for status.
-- **Wake:** Circadian still injects memory for fleet panes, but
-  greeting-instruction is omitted when `role` is `1-CORD|2-ORCH|3-AGNT|4-SAGT`
-  (or `CIRCADIAN_SKIP_GREETING=1`). Brief overrides greeting.
+- **Wake:** Circadian injects memory as pure data (`<mind:greeting>` block
+  included when fitness allows); it carries NO behavioral mandate and no
+  role-suppression machinery (removed 2026-08-12, circadian a2a01a7 — law 1,
+  `primitives/rules/session-lifecycle.md`). Speaking the greeting is the
+  concierge profile's job; fleet profiles (CORD/ORCH) carry the no-greeting
+  norm. Brief overrides everything at wake.
 - **Contrived smoke briefs:** `~/agent-core/briefs/fleet-smoke/`
