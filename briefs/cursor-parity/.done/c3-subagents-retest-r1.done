@@ -1,0 +1,14 @@
+agnt-tester-w2b-ph complete 2026-08-12T17:12Z
+
+Verdict: pass
+Evidence: ~/agent-core/briefs/cursor-parity/c3-subagents-tester-results.md (RETest r1 section)
+
+Pass/fail:
+- zig build: PASS (exit 0)
+- c3_subagents_acceptance.sh (main, AGENT_CORE_LIVE=1) run 1: PASS (exit 0; 8 passed, 0 failed)
+- c3_subagents_acceptance.sh (main, AGENT_CORE_LIVE=1) run 2: PASS (exit 0; 8 passed, 0 failed)
+- c3_subagents_acceptance.sh (main, fixture-only): PASS (exit 0; 7 passed, 0 failed; LIVE-COUNT skipped)
+- Previously failing T-C3-AG-NO-PI: PASS (status no-mapping sub-check)
+- Q → arbiter: none
+
+Code/tests touched: none

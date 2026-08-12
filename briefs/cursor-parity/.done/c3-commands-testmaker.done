@@ -1,0 +1,21 @@
+agnt-c3-commands-testmaker complete 2026-08-12T17:48Z
+
+Artifact: cli/test/integration/c3_commands_acceptance.sh
+Fixture: cli/test/fixtures/command-tower.md
+
+Criterion coverage (7 IDs):
+- T-C3-CMD-RESOLVE-PI
+- T-C3-CMD-RESOLVE-CC
+- T-C3-CMD-RESOLVE-CURSOR
+- T-C3-CMD-STATUS-OK
+- T-C3-CMD-STATUS-MISSING
+- T-C3-CMD-IDENTITY-PORT
+- T-C3-CMD-LIVE-DEPLOYED (skipped unless AGENT_CORE_LIVE=1)
+
+Oracle: bash cli/test/integration/c3_commands_acceptance.sh (from cli/ after zig build)
+Tests not run (test-maker role). Hand off to tester.
+
+Provenance:
+- date -u: 2026-08-12T17:48:00Z
+- pwd -P: /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-test-maker-w2b-pa
+- worktree branch: wt-agnt-test-maker-w2b-pa

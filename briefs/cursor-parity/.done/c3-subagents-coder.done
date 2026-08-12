@@ -1,0 +1,7 @@
+c3-subagents coder done 2026-08-12
+cli commit: 6f74f49 feat(registry): agents/ resolves to {agents_dir}/{name}.md
+registry: ~/.agent-core/registry (harness agents dirs + 10 primitives)
+synced: 10 agents/* × claude-code + cursor (20 deploys)
+status: 86 ok 0 stale 0 missing
+project .cursor/agents: unchanged (5 role stubs: coordinator, concierge, coder, researcher, orchestrator)
+deploy: ~/.claude/agents/*.md (10 regular files), ~/.cursor/agents/*.md (10 regular files)

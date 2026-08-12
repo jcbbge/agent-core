@@ -1,0 +1,13 @@
+agnt-c3-commands-tester complete 2026-08-12T17:51Z
+
+Verdict: pass
+Evidence: ~/agent-core/briefs/cursor-parity/c3-commands-tester-results.md
+
+Pass/fail:
+- zig build: PASS (exit 0)
+- c3_commands_acceptance.sh (main, AGENT_CORE_LIVE=1): PASS (exit 0; 7 passed, 0 failed)
+- c3_commands_acceptance.sh (main, fixture-only): PASS (exit 0; 6 passed, 0 failed)
+- c3_commands_acceptance.sh (test-maker worktree): PASS (exit 0; 6 passed, 0 failed)
+- Q → arbiter: none
+
+Code/tests touched: none

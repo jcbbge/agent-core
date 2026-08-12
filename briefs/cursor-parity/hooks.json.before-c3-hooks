@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "bash '/Users/jrg/.cursor/herdr-agent-state.sh' session"
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "bash '/Users/jrg/agent-core/primitives/hooks/slim-guard-cursor.sh'",
+        "matcher": "Shell"
+      }
+    ]
+  },
+  "version": 1
+}

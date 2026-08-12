@@ -1,0 +1,23 @@
+agnt-c3-hooks-testmaker complete 2026-08-12T17:14Z
+
+Artifact: cli/test/integration/c3_hooks_acceptance.sh
+Fixtures:
+- cli/test/fixtures/hooks-sample.json (unmarked sessionStart entry)
+- cli/test/fixtures/hook-slim-guard.sh (slim-guard.sh source for isolated registry)
+
+Criterion coverage (7 IDs):
+- T-C3-HK-MERGE-UPSERT
+- T-C3-HK-MERGE-UPDATE
+- T-C3-HK-STATUS-OK
+- T-C3-HK-STATUS-STALE-MANAGED
+- T-C3-HK-STATUS-UNMANAGED-OK
+- T-C3-HK-SCRIPT-DEPLOYED
+- T-C3-HK-CC-UNCHANGED
+
+Oracle: bash cli/test/integration/c3_hooks_acceptance.sh (from cli/ after zig build)
+Tests not run (test-maker role). Hand off to tester.
+
+Provenance:
+- date -u: 2026-08-12T17:14:00Z
+- pwd -P: /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-test-maker-w2b-pk
+- worktree branch: wt-agnt-test-maker-w2b-pk

@@ -1,0 +1,13 @@
+agnt-c3-hooks-tester complete 2026-08-12T17:19Z
+
+Verdict: fail
+Evidence: ~/agent-core/briefs/cursor-parity/c3-hooks-tester-results.md
+
+Pass/fail:
+- zig build: PASS (exit 0)
+- c3_hooks_acceptance.sh: FAIL (exit 1; 5 passed, 2 failed)
+  - T-C3-HK-STATUS-UNMANAGED-OK: FAIL
+  - T-C3-HK-SCRIPT-DEPLOYED: FAIL
+- Q → arbiter: Q1 (STATUS-UNMANAGED-OK), Q2 (SCRIPT-DEPLOYED)
+
+Code/tests touched: none

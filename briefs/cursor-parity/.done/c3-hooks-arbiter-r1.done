@@ -1,0 +1,18 @@
+ARBITER c3-hooks nQ round 1/3 — DONE
+date -u: 2026-08-12T17:2xZ (round 1)
+agent: agnt-c3-hooks-arbiter
+board: agent-core/cursor-parity (finding posted, t-msqcxin7-v0l8)
+
+Q1 T-C3-HK-STATUS-UNMANAGED-OK → BAD IMPLEMENTATION
+  hooks_json.zig:111-113 raw byte-compare (current vs compact re-serialized merge)
+  stales on any reformatting unmanaged edit; violates design "unmanaged drift does not stale".
+  Route: CODER — canonicalize before compare (or deep-compare Values).
+
+Q2 T-C3-HK-SCRIPT-DEPLOYED → BAD IMPLEMENTATION
+  status.zig:262 `script_state == .missing or !json_in_sync` lets .stale script
+  fall through to ✓ at status.zig:277. Route: CODER — `script_state != .ok or !json_in_sync`.
+
+Non-blocking note: c3_hooks_acceptance.sh:332-333 inverted checksum branch (false green
+if re-sync ever fails to restore); not implicated in this failure.
+
+No code or tests edited by arbiter.
