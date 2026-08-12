@@ -1,14 +1,14 @@
 # Global Agent Context
 **Updated:** 2026-08-12
 
-Loaded by every harness — claude, pi, prime, cursor. CANONICAL FILE:
-`~/agent-core/primitives/AGENTS.md` (git-tracked). Wiring per harness:
-`~/.pi/agent/AGENTS.md`, `~/.claude/CLAUDE.md`, and
-`~/AGENTS.md` are symlinks to it (cursor loads `~/AGENTS.md`); prime's own
-global (`~/.prime/agent/AGENTS.md`) opens by directing every session to read
-this file.
-Edit the canonical only. PROVIDER/MODEL-AGNOSTIC by contract:
-no provider names outside the Harness deltas section; capabilities are
+Loaded by every harness — claude, pi, prime, cursor. CANONICAL CORE:
+`~/agent-core/primitives/AGENTS.md` (git-tracked). Deployed entrypoints are
+composed at sync time (`~/.claude/CLAUDE.md`, `~/.pi/agent/AGENTS.md`,
+`~/AGENTS.md`); prime's own global (`~/.prime/agent/AGENTS.md`) opens by
+directing every session to read this file.
+Edit the canonical core and per-harness deltas in `primitives/directives/`,
+not deployed entrypoints. PROVIDER/MODEL-AGNOSTIC by contract:
+no provider names outside per-harness delta files; capabilities are
 described by path and CLI, never by model. FACTUAL reference (what exists, how to
 reach it). Tool-preference doctrine lives in skills and agent definitions —
 this file is also injected into eval-harness arms, and preference language
@@ -180,27 +180,13 @@ lifecycle" (never registered) · coraline MCP registration (CLI only) ·
 executor `:8788`, anima `:3098`, dev-brain `:3097`, SurrealDB `:8002`,
 Manifold / UHP / Mesh-OS.
 
-## Harness deltas (the only section that differs in application)
+## Harness deltas
 
-- **Claude Code:** `TodoWrite` for 3+ step tasks · MCP names
-  `mcp__<server>__<tool>`
-- **pi:** `/reload` hot-reload · skills under `~/.pi/agent/skills/` ·
-  gateway model IDs `cursor/<id>[@ctx][:thinking|:fast]` (inference-gateway
-  provider config in `~/.pi/agent/auth.json`; thinking and `:fast` do NOT
-  stack — pass `--thinking` separately, spine-spawn supports it) ·
-  daily entry = `herdr` then `herdr pi [profile[:option]]` · fleet =
-  `spine-spawn … --kind pi --profile <name>[:option]` (profiles:
-  `~/agent-core/primitives/profiles/` + `profile-model`)
+Harness deltas live in `primitives/directives/<harness>.md`; deployed entrypoints are composed — edit sources, not deployed files.
+
 - **prime:** pi-based RLM runtime; harness-specific doc at
   `~/.prime/agent/AGENTS.md` (which defers to this file for machine-wide
   context)
-- **cursor:** loads `~/AGENTS.md` (symlink to canonical) · hooks in
-  `~/.cursor/hooks.json` (preToolUse `slim-guard-cursor.sh` rewrites the six
-  slim verbs on Shell calls) · MCP in `~/.cursor/mcp.json` (`tower`,
-  `bigfile`) · tool skills symlinked into `~/.cursor/skills-cursor/`
-  (`herdr`, `super-search`, `navigating-big-files`, `slim`, `latch`,
-  `vein`, `assay` → `~/agent-core/primitives/skills/`) · fleet agents run
-  under cursor-shim with repo rule `.cursor/rules/cursor-fleet.md`
 
 ## Fleet spawn + comms (law, 2026-08-11)
 
