@@ -189,8 +189,12 @@ fn normalizeWhitespaceCase(allocator: std.mem.Allocator, text: []const u8) ![]u8
 fn makeSnippet(allocator: std.mem.Allocator, text: []const u8, match_pos: usize) ![]u8 {
     const before: usize = 40;
     const after: usize = 40;
-    const start = if (match_pos > before) match_pos - before else 0;
-    const end = @min(text.len, match_pos + after);
+    var start = if (match_pos > before) match_pos - before else 0;
+    var end = @min(text.len, match_pos + after);
+    // Byte windows can bisect UTF-8 codepoints; clamp to valid UTF-8 so JSON
+    // classify payloads are accepted by the local LLM (400 on invalid UTF-8).
+    while (start < end and (text[start] & 0xC0) == 0x80) start += 1;
+    while (end > start and !std.unicode.utf8ValidateSlice(text[start..end])) end -= 1;
     return try allocator.dupe(u8, text[start..end]);
 }
 

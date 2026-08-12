@@ -53,7 +53,19 @@ pub fn build(b: *std.Build) void {
     const smoke_tests = b.addTest(.{ .root_module = smoke_mod });
     const run_smoke_tests = b.addRunArtifact(smoke_tests);
 
+    const acceptance_mod = b.createModule(.{
+        .root_source_file = b.path("test/llm_acceptance.zig"),
+        .target = target,
+        .optimize = optimize,
+        .imports = &.{
+            .{ .name = "assay", .module = lib_mod },
+        },
+    });
+    const acceptance_tests = b.addTest(.{ .root_module = acceptance_mod });
+    const run_acceptance_tests = b.addRunArtifact(acceptance_tests);
+
     const test_step = b.step("test", "Run assay tests");
     test_step.dependOn(&run_tests.step);
     test_step.dependOn(&run_smoke_tests.step);
+    test_step.dependOn(&run_acceptance_tests.step);
 }

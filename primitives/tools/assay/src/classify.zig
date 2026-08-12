@@ -11,12 +11,14 @@ pub const Label = enum {
     unclassified,
 
     pub fn parse(text: []const u8) ?Label {
-        const trimmed = std.mem.trim(u8, " \t\r\n", text);
-        if (std.ascii.eqlIgnoreCase(trimmed, "SHAPED")) return .shaped;
-        if (std.ascii.eqlIgnoreCase(trimmed, "ECHOED")) return .echoed;
-        if (std.ascii.eqlIgnoreCase(trimmed, "THEME-ONLY") or
-            std.ascii.eqlIgnoreCase(trimmed, "THEME_ONLY") or
-            std.ascii.eqlIgnoreCase(trimmed, "THEME ONLY"))
+        const trimmed = std.mem.trim(u8, text, " \t\r\n");
+        const line_end = std.mem.indexOfScalar(u8, trimmed, '\n') orelse trimmed.len;
+        const first_line = std.mem.trim(u8, trimmed[0..line_end], " \t\r\n");
+        if (std.ascii.eqlIgnoreCase(first_line, "SHAPED")) return .shaped;
+        if (std.ascii.eqlIgnoreCase(first_line, "ECHOED")) return .echoed;
+        if (std.ascii.eqlIgnoreCase(first_line, "THEME-ONLY") or
+            std.ascii.eqlIgnoreCase(first_line, "THEME_ONLY") or
+            std.ascii.eqlIgnoreCase(first_line, "THEME ONLY"))
             return .theme_only;
         return null;
     }
@@ -59,7 +61,11 @@ pub const Result = struct {
 };
 
 pub fn run(allocator: std.mem.Allocator, opts: Options, evidence: []const EvidenceHit) !Result {
-    var llm_up = llm.probe(allocator, opts.io, opts.llm) catch false;
+    var llm_up = llm.probe(allocator, opts.io, opts.llm) catch |e| blk: {
+        std.debug.print("classify.probe err={s} evidence={d}\n", .{@errorName(e), evidence.len});
+        break :blk false;
+    };
+    std.debug.print("classify.probe llm_up={} evidence={d}\n", .{llm_up, evidence.len});
 
     var out = std.ArrayList(ClassifiedHit).empty;
     errdefer {
@@ -73,12 +79,17 @@ pub fn run(allocator: std.mem.Allocator, opts: Options, evidence: []const Eviden
 
     for (evidence) |hit| {
         const label: Label = if (!llm_up) .unclassified else blk: {
-            const raw = llm.classifySnippet(allocator, opts.io, opts.llm, hit.atom_hint, hit.snippet) catch {
+            const raw = llm.classifySnippet(allocator, opts.io, opts.llm, hit.atom_hint, hit.snippet) catch |e| {
+                std.debug.print("classifySnippet err={s} atom_len={d} snip_len={d}\n", .{@errorName(e), hit.atom_hint.len, hit.snippet.len});
                 llm_up = false;
                 break :blk .unclassified;
             };
             defer allocator.free(raw);
-            break :blk Label.parse(raw) orelse .unclassified;
+            const parsed = Label.parse(raw) orelse {
+                std.debug.print("classify parse miss raw={s}\n", .{raw[0..@min(raw.len, 80)]});
+                break :blk .unclassified;
+            };
+            break :blk parsed;
         };
 
         try out.append(allocator, .{
@@ -140,7 +151,9 @@ fn truncateAtom(text: []const u8) []const u8 {
 
 fn truncateSnippet(text: []const u8) []const u8 {
     if (text.len <= 80) return text;
-    return text[0..80];
+    var end: usize = 80;
+    while (end > 0 and !std.unicode.utf8ValidateSlice(text[0..end])) end -= 1;
+    return text[0..end];
 }
 
 pub fn freeResult(allocator: std.mem.Allocator, result: *Result) void {

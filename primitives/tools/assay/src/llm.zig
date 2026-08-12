@@ -21,20 +21,22 @@ pub fn probe(allocator: std.mem.Allocator, io: std.Io, config: Config) LlmUnavai
     defer allocator.free(url);
 
     var body = std.ArrayList(u8).empty;
-    defer body.deinit(allocator);
-    var writer = std.Io.Writer.fromArrayList(&body);
+    var aw = std.Io.Writer.Allocating.fromArrayList(allocator, &body);
 
     var client: std.http.Client = .{ .allocator = allocator, .io = io };
     defer client.deinit();
 
     const result = client.fetch(.{
         .location = .{ .url = url },
-        .response_writer = &writer,
+        .response_writer = &aw.writer,
         .keep_alive = false,
     }) catch return error.LlmUnavailable;
 
+    var content = aw.toArrayList();
+    defer content.deinit(allocator);
+
     if (result.status != .ok) return error.LlmUnavailable;
-    if (body.items.len == 0) return false;
+    if (content.items.len == 0) return false;
 
     const model = pickModel(allocator, io, config) catch return false;
     defer allocator.free(model);
@@ -50,8 +52,7 @@ fn probeChat(allocator: std.mem.Allocator, io: std.Io, config: Config, model: []
     defer allocator.free(url);
 
     var body = std.ArrayList(u8).empty;
-    defer body.deinit(allocator);
-    var writer = std.Io.Writer.fromArrayList(&body);
+    var aw = std.Io.Writer.Allocating.fromArrayList(allocator, &body);
 
     var client: std.http.Client = .{ .allocator = allocator, .io = io };
     defer client.deinit();
@@ -65,9 +66,12 @@ fn probeChat(allocator: std.mem.Allocator, io: std.Io, config: Config, model: []
         .method = .POST,
         .payload = payload,
         .extra_headers = &headers,
-        .response_writer = &writer,
+        .response_writer = &aw.writer,
         .keep_alive = false,
     }) catch return false;
+
+    var content = aw.toArrayList();
+    defer content.deinit(allocator);
 
     return result.status == .ok;
 }
@@ -79,28 +83,34 @@ pub fn pickModel(allocator: std.mem.Allocator, io: std.Io, config: Config) LlmUn
     defer allocator.free(url);
 
     var body = std.ArrayList(u8).empty;
-    defer body.deinit(allocator);
-    var writer = std.Io.Writer.fromArrayList(&body);
+    var aw = std.Io.Writer.Allocating.fromArrayList(allocator, &body);
 
     var client: std.http.Client = .{ .allocator = allocator, .io = io };
     defer client.deinit();
 
     const result = client.fetch(.{
         .location = .{ .url = url },
-        .response_writer = &writer,
+        .response_writer = &aw.writer,
         .keep_alive = false,
     }) catch return error.LlmUnavailable;
     if (result.status != .ok) return error.LlmUnavailable;
 
+    var content = aw.toArrayList();
+    defer content.deinit(allocator);
+
+    if (std.mem.indexOf(u8, content.items, "\"id\":\"local\"") != null) {
+        return try allocator.dupe(u8, "local");
+    }
+
     // Minimal parse: first "id":"model-name"
     const needle = "\"id\":\"";
-    if (std.mem.indexOf(u8, body.items, needle)) |start| {
-        const rest = body.items[start + needle.len ..];
+    if (std.mem.indexOf(u8, content.items, needle)) |start| {
+        const rest = content.items[start + needle.len ..];
         if (std.mem.indexOf(u8, rest, "\"")) |end| {
             return try allocator.dupe(u8, rest[0..end]);
         }
     }
-    return error.LlmUnavailable;
+    return try allocator.dupe(u8, "local");
 }
 
 pub fn classifySnippet(
@@ -136,8 +146,7 @@ pub fn classifySnippet(
     defer allocator.free(url);
 
     var body = std.ArrayList(u8).empty;
-    defer body.deinit(allocator);
-    var writer = std.Io.Writer.fromArrayList(&body);
+    var aw = std.Io.Writer.Allocating.fromArrayList(allocator, &body);
 
     var client: std.http.Client = .{ .allocator = allocator, .io = io };
     defer client.deinit();
@@ -151,14 +160,18 @@ pub fn classifySnippet(
         .method = .POST,
         .payload = payload,
         .extra_headers = &headers,
-        .response_writer = &writer,
+        .response_writer = &aw.writer,
         .keep_alive = false,
     }) catch return error.LlmUnavailable;
 
+    var content = aw.toArrayList();
+    defer content.deinit(allocator);
+
     if (result.status != .ok) return error.LlmUnavailable;
 
-    return try extractAssistantContent(allocator, body.items);
+    return try extractAssistantContent(allocator, content.items);
 }
+
 
 fn buildChatPayload(
     allocator: std.mem.Allocator,
