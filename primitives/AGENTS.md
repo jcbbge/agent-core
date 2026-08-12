@@ -1,12 +1,12 @@
 # Global Agent Context
-**Updated:** 2026-08-11
+**Updated:** 2026-08-12
 
-Loaded by every harness — claude, pi, prime. CANONICAL FILE:
+Loaded by every harness — claude, pi, prime, cursor. CANONICAL FILE:
 `~/agent-core/primitives/AGENTS.md` (git-tracked). Wiring per harness:
 `~/.pi/agent/AGENTS.md`, `~/.claude/CLAUDE.md`, and
-`~/AGENTS.md` are symlinks to it; prime's own global
-(`~/.prime/agent/AGENTS.md`) opens by directing every session to read this
-file.
+`~/AGENTS.md` are symlinks to it (cursor loads `~/AGENTS.md`); prime's own
+global (`~/.prime/agent/AGENTS.md`) opens by directing every session to read
+this file.
 Edit the canonical only. PROVIDER/MODEL-AGNOSTIC by contract:
 no provider names outside the Harness deltas section; capabilities are
 described by path and CLI, never by model. FACTUAL reference (what exists, how to
@@ -22,12 +22,12 @@ here contaminates control arms.
 | Tower | active | MCP `mcp__tower__*` (CC) · `~/.tower/cli.mjs` + `board.jsonl` (everywhere) — see below |
 | Coraline | active | CLI `coraline` (33 languages) — no MCP registration |
 | Composto | active | CLI `composto` — IR compression; TS/JS/Python/Go/Rust, NOT Swift/Zig |
-| slim | active (2026-08-11) | 6-verb output compactor (`~/.local/bin/slim`; source `~/agent-core/primitives/tools/slim/`, Zig) — compacts ls/ps/wc/df/git status/git log only; truth law: child exit codes propagate, unparseable output passes raw, truncation always marked. CC: PreToolUse `slim-guard.sh` · pi: `slim-rewrite` extension. Pipes/compounds/machine-format flags never rewritten |
+| slim | active (2026-08-11) | 6-verb output compactor (`~/.local/bin/slim`; source `~/agent-core/primitives/tools/slim/`, Zig) — compacts ls/ps/wc/df/git status/git log only; truth law: child exit codes propagate, unparseable output passes raw, truncation always marked. CC: PreToolUse `slim-guard.sh` · pi: `slim-rewrite` extension · cursor: preToolUse `slim-guard-cursor.sh` (`~/.cursor/hooks.json`). Pipes/compounds/machine-format flags never rewritten |
 | latch | active (2026-08-11) | blocking wait/hold primitive (`~/.local/bin/latch`; source `primitives/tools/latch/`, Zig) — wait on pane state/files/board/gates with distinct exit codes; replaces polling loops |
 | vein | active (2026-08-11) | transcript-corpus miner (`~/.local/bin/vein`; source `primitives/tools/vein/`, Zig) — reproduces the session-mining studies in seconds; the acceptance instrument for tooling decisions |
 | assay | active (2026-08-11) | memory-propagation instrument (source `primitives/tools/assay/`, Zig) — cohort tool, proposes only; golden set = 5 hand-labeled sessions, decoy-FP 0/25 is the standing honesty metric |
 | cursor-shim | active (2026-08-11, operator-sanctioned reversal of the same-day CLI retirement) | `~/cursor-shim/` — self-contained, rip-out-able bridge running `cursor-agent` tiers inside herdr+Tower topology; spawn via `cursor-fleet` / `cursor-spine` ONLY (spine-spawn still refuses cursor kinds and points there); enforces the Made Well Verify beat (bifurcated test/impl worktrees, arbiter, nQ≤3). Docs: `~/cursor-shim/docs/inner-loop-verify.md`; rules: `~/cursor-shim/rules/cursor-fleet.md`; proof: `docs/qa-verify.sh` (71/71). Delete the dir = integration gone |
-| Bigfile | active | pi: via super-search `--file` · CC: `mcp__bigfile__*` |
+| Bigfile | active | pi: via super-search `--file` · CC: `mcp__bigfile__*` · cursor: MCP `bigfile` (`~/.cursor/mcp.json` → `bun run primitives/tools/bigfile/src/server.ts`) |
 
 ## Tower — the message bus (orchestration convention)
 
@@ -56,16 +56,19 @@ is the bus (how their output reaches the user).
 
 ## Search — one canonical router
 
-Every harness: `bun ~/.claude/skills/super-search/search.ts "<query>"
-[--pattern] [--repo] [--file] [--scope] [--limit]` (CC: also the
-`super-search` skill wrapper).
+Every harness: `bun ~/agent-core/primitives/skills/super-search/search.ts
+"<query>" [--pattern] [--repo] [--file] [--scope] [--limit]` (CC + cursor:
+also the `super-search` skill wrapper).
+Canonical home: `~/agent-core/primitives/skills/super-search/` —
+`~/.claude/skills/super-search` and `~/.cursor/skills-cursor/super-search`
+symlink to it.
 Layers: colgrep (project) · coraline (`~/source`) · pickbrain (memory) ·
 ripgrep (exact) · bigfile (>3k-line files).
 Extend this skill — never build a second router.
 
 Layers are also callable individually: `grep` (ripgrep); `colgrep`,
 `coraline`, `pickbrain`, `composto` CLIs; CC additionally has
-`mcp__bigfile__*` MCP tools.
+`mcp__bigfile__*` MCP tools; cursor has the `bigfile` MCP server.
 
 ## Bigfile — huge-file navigation
 
@@ -191,6 +194,13 @@ Manifold / UHP / Mesh-OS.
 - **prime:** pi-based RLM runtime; harness-specific doc at
   `~/.prime/agent/AGENTS.md` (which defers to this file for machine-wide
   context)
+- **cursor:** loads `~/AGENTS.md` (symlink to canonical) · hooks in
+  `~/.cursor/hooks.json` (preToolUse `slim-guard-cursor.sh` rewrites the six
+  slim verbs on Shell calls) · MCP in `~/.cursor/mcp.json` (`tower`,
+  `bigfile`) · tool skills symlinked into `~/.cursor/skills-cursor/`
+  (`herdr`, `super-search`, `navigating-big-files`, `slim`, `latch`,
+  `vein`, `assay` → `~/agent-core/primitives/skills/`) · fleet agents run
+  under cursor-shim with repo rule `.cursor/rules/cursor-fleet.md`
 
 ## Fleet spawn + comms (law, 2026-08-11)
 
