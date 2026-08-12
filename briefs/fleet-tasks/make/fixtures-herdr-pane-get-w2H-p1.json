@@ -1,0 +1,32 @@
+{
+  "id": "cli:pane:get",
+  "result": {
+    "pane": {
+      "agent": "cursor",
+      "agent_status": "working",
+      "cwd": "/Users/jrg/agent-core",
+      "display_agent": "CORD fleet-tasks",
+      "focused": false,
+      "foreground_cwd": "/Users/jrg/agent-core",
+      "label": "CORD fleet-tasks",
+      "pane_id": "w2H:p1",
+      "revision": 128,
+      "scroll": {
+        "max_offset_from_bottom": 694,
+        "offset_from_bottom": 0,
+        "viewport_rows": 53
+      },
+      "tab_id": "w2H:t1",
+      "terminal_id": "term_658dc46b347991bb",
+      "terminal_title": "Cord Coordinator W2H",
+      "terminal_title_stripped": "Cord Coordinator W2H",
+      "tokens": {
+        "name": "fleet-tasks",
+        "role": "1-CORD",
+        "task": "Shell"
+      },
+      "workspace_id": "w2H"
+    },
+    "type": "pane_info"
+  }
+}

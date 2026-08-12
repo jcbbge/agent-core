@@ -1,0 +1,76 @@
+# ORCH fleet-task-rolefix DONE — U1 herdr envelope path
+
+ORCH: fleet-task-rolefix (w2H:pP)
+Verify: cursor-fleet make rolefix → tester-rolefix PASS 14/14
+Left UNCOMMITTED for CORD. Workers never committed. Live ~/.fleet-tasks untouched by tests/penetration (temp FLEET_TASKS_HOME only).
+
+## Per-file diff summary
+
+### role.ts
+- `roleFromHerdr()` now reads `data.result?.pane?.tokens?.role` (herdr 0.8.0 envelope).
+- No multi-shape fallback. HERDR_MAP unchanged.
+
+### fleet-task.test.ts
+- Added `AC-role-envelope-cord` (1-CORD fixture → write succeeds without --role).
+- Added `AC-role-envelope-agnt` (same shape, role=3-AGNT → write denied).
+
+### test-helpers.ts
+- `loadHerdrPaneFixture` / `installHerdrStub` / `runFleetTaskWithHerdr` — PATH stub prints the live-captured `herdr pane get` JSON from
+  `briefs/fleet-tasks/make/fixtures-herdr-pane-get-w2H-p1.json`.
+
+## Test tail (MAIN, after integrate)
+
+```
+cd ~/agent-core/primitives/tools/fleet-task && bun test fleet-task.test.ts
+…
+ 14 pass
+ 0 fail
+ 88 expect() calls
+Ran 14 tests across 1 file.
+```
+
+Tester artifact: `briefs/fleet-tasks/.done/tester-rolefix.done` (pass, 14/14).
+
+## Red → green demonstration (regression that would have caught the defect)
+
+```
+git stash push -- primitives/tools/fleet-task/role.ts   # restore old top-level tokens path
+bun test fleet-task.test.ts
+→ 13 pass, 1 fail
+  FAIL AC-role-envelope-cord — Expected: 0, Received: 1
+  (AC-role-envelope-agnt still pass — deny path)
+
+git stash pop
+bun test fleet-task.test.ts
+→ 14 pass, 0 fail
+```
+
+## Live penetration (real herdr, NO --role, as CORD)
+
+```
+FLEET_TASKS_HOME=/tmp/fleet-task-live-cord.PlKtq6
+HERDR_PANE_ID=w2H:p1   # real pane; herdr pane get → tokens.role=1-CORD
+unset FLEET_TASK_ROLE
+fleet-task init
+→ {"ok":true,"home":"/tmp/fleet-task-live-cord.PlKtq6"}
+fleet-task mission open --id m-rolefix-live --project agent-core \
+  --project-root /Users/jrg/agent-core --title "rolefix live cord penetration"
+→ {"ok":true,"id":"m-rolefix-live"}   LIVE_EXIT=0
+```
+
+Live store `~/.fleet-tasks` still only had mission `m-fleet-tasks` after this (temp home used).
+
+## Verify beat artifacts
+
+- make brief: `briefs/fleet-tasks/make/rolefix.md`
+- fixture: `briefs/fleet-tasks/make/fixtures-herdr-pane-get-w2H-p1.json`
+- make-rolefix-impl.done / make-rolefix-tests.done / tester-rolefix.done
+- Workers reaped: w2H:pQ (coder), w2H:pR (test-maker), w2H:pS (tester)
+
+## Handoff
+
+UNCOMMITTED partition for CORD gate. Stage ONLY:
+- primitives/tools/fleet-task/role.ts
+- primitives/tools/fleet-task/fleet-task.test.ts
+- primitives/tools/fleet-task/test-helpers.ts
+(optional orchestration artifacts under briefs/fleet-tasks/ if CORD wants them in-tree)

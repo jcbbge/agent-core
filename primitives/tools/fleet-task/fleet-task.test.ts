@@ -15,6 +15,8 @@ import {
   tailBoardFindings,
   boardLineCount,
   cleanupHome,
+  loadHerdrPaneFixture,
+  runFleetTaskWithHerdr,
 } from "./test-helpers";
 
 const GLYPH = {
@@ -554,5 +556,38 @@ describe("fleet-task acceptance", () => {
     });
     expect(r.status).toBe(0);
     expect(existsSync(join(h, "state.json"))).toBe(true);
+  });
+
+  test("AC-role-envelope-cord — herdr pane get envelope resolves 1-CORD; write succeeds without --role", () => {
+    const h = home();
+    seedMissionUnit(h, "m-herdr-env", "u-herdr-env");
+
+    const payload = JSON.stringify([
+      { id: "t1", content: "from herdr cord", status: "pending", owner_role: "orch" },
+    ]);
+    const r = runFleetTaskWithHerdr(
+      ["write", "--unit", "u-herdr-env", "--merge", "false", "--json", payload],
+      h,
+      { envelope: loadHerdrPaneFixture("1-CORD") },
+    );
+    r.cleanupHerdr();
+    expect(r.status).toBe(0);
+  });
+
+  test("AC-role-envelope-agnt — herdr pane get envelope resolves 3-AGNT; write denied without --role", () => {
+    const h = home();
+    seedMissionUnit(h, "m-herdr-env-deny", "u-herdr-env-deny");
+
+    const payload = JSON.stringify([
+      { id: "t1", content: "from herdr agnt", status: "pending", owner_role: "orch" },
+    ]);
+    const r = runFleetTaskWithHerdr(
+      ["write", "--unit", "u-herdr-env-deny", "--merge", "false", "--json", payload],
+      h,
+      { envelope: loadHerdrPaneFixture("3-AGNT") },
+    );
+    r.cleanupHerdr();
+    expect(r.status).not.toBe(0);
+    expect(r.stderr).toMatch(/--role|role/i);
   });
 });

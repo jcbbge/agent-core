@@ -1,0 +1,26 @@
+worktree: /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-test-maker-w2h-pr
+role: test-maker
+partition: primitives/tools/fleet-task/fleet-task.test.ts, primitives/tools/fleet-task/test-helpers.ts
+
+tests_added:
+  - AC-role-envelope-cord — herdr pane get envelope resolves 1-CORD; write succeeds without --role
+  - AC-role-envelope-agnt — herdr pane get envelope resolves 3-AGNT; write denied without --role
+
+acceptance_mapping:
+  AC-role-envelope-cord: first test (write exit 0 with HERDR_PANE_ID, no --role/FLEET_TASK_ROLE, fixture role 1-CORD)
+  AC-role-envelope-agnt: second test (write non-zero, stderr mentions role/--role, fixture role 3-AGNT only swapped)
+  AC-suite: prior 12 + 2 new = 14 expected after impl merge
+
+fixture:
+  source: ~/agent-core/briefs/fleet-tasks/make/fixtures-herdr-pane-get-w2H-p1.json
+  supply: PATH-prepending stub binary `herdr` (installHerdrStub in test-helpers.ts) prints captured JSON on `herdr pane get w2H:p1`
+
+run:
+  cd ~/agent-core/primitives/tools/fleet-task && bun test fleet-task.test.ts
+
+expected_before_impl:
+  AC-role-envelope-cord FAIL (role undeterminable → write denied)
+  AC-role-envelope-agnt may pass or fail depending on deny path; cord case is the primary regression signal
+
+expected_after_impl:
+  14/14 pass

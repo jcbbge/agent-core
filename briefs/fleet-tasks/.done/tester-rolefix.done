@@ -1,0 +1,32 @@
+result: pass
+command: cd ~/agent-core/primitives/tools/fleet-task && bun test fleet-task.test.ts
+counts: 14 pass, 0 fail, 88 expect() calls
+failing_tests: (none)
+
+new_tests_confirmed:
+  - AC-role-envelope-cord — herdr pane get envelope resolves 1-CORD; write succeeds without --role
+  - AC-role-envelope-agnt — herdr pane get envelope resolves 3-AGNT; write denied without --role
+
+full_output:
+bun test v1.3.14 (0d9b296a)
+
+fleet-task.test.ts:
+(pass) fleet-task acceptance > AC1 — init creates state.json; mission/unit open persist schema; duplicate mission fails [59.97ms]
+(pass) fleet-task acceptance > AC2 — write seed + merge patch; read/unit show + rollups per §1.5 [131.00ms]
+(pass) fleet-task acceptance > AC3 — render prints ○ ◐ ✓ ⊘ for mixed statuses [101.99ms]
+(pass) fleet-task acceptance > AC4 — illegal transition rejected; store unchanged for that task [112.64ms]
+(pass) fleet-task acceptance > AC5 — second orch in_progress in one unit rejected [61.55ms]
+(pass) fleet-task acceptance > AC6 — needs_in_progress true when owner scope has pending and no in_progress [58.55ms]
+(pass) fleet-task acceptance > AC7 — prune removes completed/cancelled; rollups recompute [143.93ms]
+(pass) fleet-task acceptance > AC8 — role gate: agnt write denied; orch write ok; undeterminable denied; agnt read ok [107.28ms]
+(pass) fleet-task acceptance > AC9 — rollup-changing write posts Tower finding with contract topic/from/body [141.95ms]
+(pass) fleet-task acceptance > AC10 — /tmp project_root: rollup write exits 0 with Tower post failure warning [97.18ms]
+(pass) fleet-task acceptance > AC11 — concurrent writers: valid JSON, no lost updates [109.24ms]
+(pass) fleet-task acceptance > AC12 — entry runnable via bun path with FLEET_TASKS_HOME [15.29ms]
+(pass) fleet-task acceptance > AC-role-envelope-cord — herdr pane get envelope resolves 1-CORD; write succeeds without --role [215.91ms]
+(pass) fleet-task acceptance > AC-role-envelope-agnt — herdr pane get envelope resolves 3-AGNT; write denied without --role [191.71ms]
+
+ 14 pass
+ 0 fail
+ 88 expect() calls
+Ran 14 tests across 1 file. [1.56s]

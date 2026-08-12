@@ -1,0 +1,14 @@
+# make-rolefix-impl — implementer done
+
+worktree: /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-coder-w2h-pq
+
+partition: primitives/tools/fleet-task/role.ts (only)
+
+diff summary:
+- roleFromHerdr(): parse herdr pane get JSON as { result: { pane: { tokens: { role } } } }
+- read role from data.result.pane.tokens.role (not top-level tokens)
+- HERDR_MAP unchanged (1-CORD|2-ORCH|3-AGNT|4-SAGT)
+
+symlink: ~/.local/bin/fleet-task -> /Users/jrg/agent-core/primitives/tools/fleet-task/fleet-task.ts (MAIN; not modified)
+
+commit: none (per brief)
