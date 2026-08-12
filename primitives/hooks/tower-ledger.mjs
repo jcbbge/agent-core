@@ -22,9 +22,19 @@ import { execFileSync } from 'node:child_process'
 export const TOWER = join(homedir(), '.tower')
 export const LEDGER = join(TOWER, 'ledger.jsonl')
 export const BOARD = join(TOWER, 'board.jsonl')
+export const PHEROMONES = process.env.TOWER_PHEROMONES_PATH || join(TOWER, 'pheromones.jsonl')
 export const DELIVERABLES = join(TOWER, 'deliverables')
 export const ODOMETER = join(TOWER, 'odometer.jsonl')
 export const FLIGHT = join(TOWER, 'flight')
+
+export const SCENT_TTL_DEFAULTS = {
+  'work-available': 1800,
+  'work-claimed': 30,
+  'work-done': 86400,
+  'need-help': 3600,
+}
+
+const SCENTS = new Set(Object.keys(SCENT_TTL_DEFAULTS))
 const CURSORS = join(TOWER, 'cursors')
 const LEDGER_INBOX_CURSOR = join(CURSORS, 'ledger.inbox.cursor.json')
 const BOARD_SCOPE_CURSOR = join(CURSORS, 'board.scope.cursor.json')
@@ -62,7 +72,93 @@ const normCwdUncached = (p) => {
 }
 
 export const id = () => `t-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`
+const pheromoneId = () => `ph-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`
 export const append = (file, obj) => appendFileSync(file, JSON.stringify(obj) + '\n')
+
+function pheromoneLive(row, nowMs) {
+  const ttl = row.ttl_s ?? SCENT_TTL_DEFAULTS[row.scent] ?? 0
+  return nowMs < new Date(row.ts).getTime() + ttl * 1000
+}
+
+function normRoute(route) {
+  if (!route || typeof route !== 'object') return { to_role: null, to_pane: null, reply_to: null }
+  return {
+    to_role: route.to_role ?? null,
+    to_pane: route.to_pane ?? null,
+    reply_to: route.reply_to ?? null,
+  }
+}
+
+/** Append one pheromone row (§4.2). Validates evidence, scent enum, ref/payload_ref rules. */
+export function emitPheromone(cwd, { scent, topic, from, route, ref, payload_ref, evidence, ttl_s }) {
+  if (!SCENTS.has(scent)) throw new Error(`invalid scent: ${scent}`)
+  if (!evidence || !String(evidence).trim()) throw new Error('evidence required')
+  if ((scent === 'work-available' || scent === 'work-done') && !payload_ref) {
+    throw new Error(`payload_ref required for ${scent}`)
+  }
+  if ((scent === 'work-claimed' || scent === 'work-done') && !ref) {
+    throw new Error(`ref required for ${scent}`)
+  }
+  const row = {
+    id: pheromoneId(),
+    ts: new Date().toISOString(),
+    cwd,
+    topic,
+    from: from ?? null,
+    scent,
+    route: normRoute(route),
+    ref: ref ?? null,
+    payload_ref: payload_ref ?? null,
+    evidence: String(evidence),
+    ttl_s: ttl_s ?? SCENT_TTL_DEFAULTS[scent],
+  }
+  append(PHEROMONES, row)
+  return row
+}
+
+/** Pure §4.4 field derivation over synthetic rows (tests + scan annotations). */
+export function pheromoneFieldFromRows(cwd, rows, { topic, now } = {}) {
+  const scope = normCwd(cwd)
+  const nowMs = now == null ? Date.now() : typeof now === 'number' ? now : new Date(now).getTime()
+  let scoped = rows.filter((r) => normCwd(r.cwd ?? '') === scope)
+  if (topic) scoped = scoped.filter((r) => r.topic === topic)
+
+  const doneRefs = new Set(
+    scoped.filter((r) => r.scent === 'work-done' && r.ref).map((r) => r.ref)
+  )
+
+  const liveClaims = new Map()
+  for (const r of scoped) {
+    if (r.scent !== 'work-claimed' || !r.ref || !pheromoneLive(r, nowMs)) continue
+    const prev = liveClaims.get(r.ref)
+    if (!prev || new Date(r.ts).getTime() > new Date(prev.ts).getTime()) liveClaims.set(r.ref, r)
+  }
+
+  const open = []
+  const claimed = []
+  const done = []
+  const evaporated = []
+  const help = scoped.filter((r) => r.scent === 'need-help' && pheromoneLive(r, nowMs))
+
+  for (const av of scoped.filter((r) => r.scent === 'work-available')) {
+    if (doneRefs.has(av.id)) {
+      done.push(av)
+    } else if (liveClaims.has(av.id)) {
+      claimed.push(av)
+    } else {
+      const ttlMs = (av.ttl_s ?? SCENT_TTL_DEFAULTS['work-available']) * 1000
+      if (nowMs >= new Date(av.ts).getTime() + ttlMs) evaporated.push(av)
+      else open.push(av)
+    }
+  }
+
+  return { open, claimed, done, evaporated, help }
+}
+
+// Full-file read is fine; cursor machinery can be added later mirroring boardFor if volume demands.
+export function pheromoneField(cwd, { topic, now } = {}) {
+  return pheromoneFieldFromRows(cwd, readAllFull(PHEROMONES), { topic, now })
+}
 
 const parseLines = (text) =>
   text
@@ -298,4 +394,10 @@ export function renderMessage(m) {
 }
 
 // Reference exports for differential tests
-export const _test = { inboxStateFromFull, boardForFromFull, syncLedgerInboxCursor, syncBoardScopeCursor }
+export const _test = {
+  inboxStateFromFull,
+  boardForFromFull,
+  syncLedgerInboxCursor,
+  syncBoardScopeCursor,
+  pheromoneFieldFromRows,
+}
