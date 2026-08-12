@@ -1,0 +1,16 @@
+[component]
+id = "hook/session-boundary-cursor"
+kind = "hook"
+what = "Cursor sessionStart hook — injects Session Boundary Contract legs 1-4 as additional_context"
+contract = [
+  "a recorder never blocks: the hook exits 0 even on garbage stdin",
+  "output, when present, is one JSON object with a non-empty additional_context string",
+]
+
+[[oracle]]
+run = "test/session-boundary-cursor.sh never-blocks"
+[[oracle]]
+run = "test/session-boundary-cursor.sh injection-shape"
+
+[suite]
+run = "test/session-boundary-cursor.sh never-blocks && test/session-boundary-cursor.sh injection-shape"

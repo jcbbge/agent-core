@@ -1,0 +1,53 @@
+# component-verify coverage burn-down — registry ids with no VERIFY manifest.
+# Generated 2026-08-12 by: component-verify --coverage
+# Regenerate and re-commit whenever a manifest lands or a primitive registers.
+directive/core
+skill/debug-hypothesis
+skill/debugging-async
+skill/install
+hook/slim-guard
+skill/building-with-solidjs
+skill/building-with-solidstart
+skill/criticality
+skill/micro-animation-director
+skill/atelier
+skill/dev-browser
+skill/brief
+skill/navigating-big-files
+skill/icloud-tabs-distiller
+skill/starting-session
+skill/ending-session
+skill/concierge
+skill/coordinator
+skill/orchestrator
+skill/cadence-protocol
+skill/emil-design-eng
+skill/retro
+skill/shipping-web-apps
+skill/enforcer
+skill/thermo-nuclear-code-quality-review
+skill/video-transcribe
+skill/editorial-magazine
+skill/make-interfaces-feel-better
+skill/tldraw-offline
+skill/verify-then-write
+skill/build-skill
+skill/slim
+skill/latch
+skill/vein
+skill/assay
+skill/super-search
+skill/herdr
+command/tower
+command/tabs
+agents/architect
+agents/coder
+agents/debugger
+agents/peer
+agents/reviewer
+agents/scout
+agents/sigil-distiller
+agents/tabs-processor
+agents/test-writer
+agents/worker
+coverage: 0/49 registry ids carry a manifest; 49 without (drift). manifests found: 6 (root /Users/jrg/.spine/worktrees/agent-core/component-verify-test)
