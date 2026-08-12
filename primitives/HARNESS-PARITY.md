@@ -77,4 +77,6 @@ Arc project-scoped skills, cursor's own built-ins, pi-native extensions).
   unregistered user skills needs an explicit blast-radius rule first).
 
 SOURCES: all cells verified by running the listed commands 2026-08-12 in the
-session that wrote this file; cli 4ad4285; agent-core status 163/0/0.
+session that wrote this file; cli 4ad4285; agent-core status 214/0/0;
+component-verify --all 16/16 oracles PASS (6 components, run from main
+post-merge 2026-08-12).
