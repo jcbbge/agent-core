@@ -120,9 +120,9 @@ This is the **critical moment** — when sense-making completes, when the decisi
 
 | Primitive | How criticality applies |
 |-----------|------------------------|
-| **session-start** | Check state: subcritical (need more context), supercritical (too many open threads), critical (flow) |
+| **starting-session** | Check state: subcritical (need more context), supercritical (too many open threads), critical (flow) |
 | **debug-hypothesis** | Subcritical = more observations needed. Supercritical = too many hypotheses, prune to one. |
-| **session-end** | If at critical state, capture output fully before breaking. If subcritical, note what's missing. |
+| **ending-session** | If at critical state, capture output fully before breaking. If subcritical, note what's missing. |
 | **synthesizing-insights** | Wait for critical state before synthesizing — let associations accumulate first. |
 
 ---

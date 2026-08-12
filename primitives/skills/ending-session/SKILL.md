@@ -1,5 +1,5 @@
 ---
-name: session-end
+name: ending-session
 description: Close a session cleanly. Commit with the standard handoff format so
   git log carries the handoff. Project-agnostic — detects the project's own
   definition of done. Call at the end of every session.
@@ -7,9 +7,9 @@ argument-hint: <optional — summary of what was done>
 allowed-tools: Bash Read Write Edit
 metadata:
   author: jrg
-  version: "4.0"
+  version: "4.1"
   tags: session, handoff, git, workflow
-  changelog: "4.0 — thin reconcile: drop WORK.md/Nebula duplication; format in AGENTS.md"
+  changelog: "4.1 — renamed session-end → ending-session (operator, gerund form). 4.0 — thin reconcile: drop WORK.md/Nebula duplication; format in AGENTS.md"
 ---
 
 # Session End
@@ -65,7 +65,7 @@ If a gate requires human review you cannot satisfy, stop and report **BLOCKED**.
 
 ## Step 4 — Tear down ephemeral resources (if any)
 
-If session-start provisioned something ephemeral, run the project's spin-down (e.g. `./scripts/<provision>.sh down`). Skip if nothing was provisioned.
+If starting-session provisioned something ephemeral, run the project's spin-down (e.g. `./scripts/<provision>.sh down`). Skip if nothing was provisioned.
 
 ---
 

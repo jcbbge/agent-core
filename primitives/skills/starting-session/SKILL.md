@@ -1,5 +1,5 @@
 ---
-name: session-start
+name: starting-session
 description: Orient at the start of any session. Call before touching anything.
   Reads git state and surfaces risk zones. Handoff and Tower carry-over are
   hook-injected — do not re-extract them here.
@@ -7,9 +7,9 @@ argument-hint: <optional — project name or context>
 allowed-tools: Bash Read
 metadata:
   author: jrg
-  version: "4.0"
+  version: "4.2"
   tags: session, orientation, git, workflow
-  changelog: "4.0 — thin reconcile: drop handoff/WORK.md duplication; hooks inject carry-over"
+  changelog: "4.2 — renamed session-start → starting-session (operator, gerund form). 4.1 — self-sufficient fallback: extract handoff/flight when the harness injects nothing (parity audit 2026-08-12). 4.0 — thin reconcile: drop handoff/WORK.md duplication; hooks inject carry-over"
 ---
 
 # Session Start
@@ -26,6 +26,15 @@ SessionStart hook + Circadian already surface:
 - Memory substrate (constitution, NOW, session evidence)
 
 If those lines are in context, **do not re-run handoff extraction or reprint them.**
+
+**If they are NOT in context** (injection is harness-dependent — as of 2026-08-12
+claude-code injects all four; pi injects Tower carry-over + memory only; cursor
+injects none), extract the two that matter yourself, minimally:
+
+```bash
+git log --format='%h %s%n%b' -5 | grep -m1 '^TODO: '   # the handoff
+ls -t ~/.tower/flight/*.md 2>/dev/null | head -1        # flight snapshot (<24h = read it)
+```
 
 Commit convention and work tracking live in `~/agent-core/primitives/AGENTS.md` — read on demand, not here.
 
@@ -63,7 +72,7 @@ git status --short
 
 ## Step 2 — Ephemeral provision (only if the project ships a provisioner)
 
-Run only when the project provides a session-provisioning script (e.g. `scripts/<provision>.sh`). Skip otherwise. Session-end tears down what this spins up.
+Run only when the project provides a session-provisioning script (e.g. `scripts/<provision>.sh`). Skip otherwise. Ending-session tears down what this spins up.
 
 ---
 
