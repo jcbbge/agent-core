@@ -57,6 +57,11 @@ Arc project-scoped skills, cursor's own built-ins, pi-native extensions).
 - **The cursor adapter pattern:** scripts in `primitives/hooks/` wired via
   `~/.cursor/hooks.json` (sessionStart injects `additional_context` — proven
   by marker control test 2026-08-12; sessionEnd/preCompact capture).
+- **New component = manifest + oracles BEFORE registration:** every component
+  carries a `VERIFY.toml` (contract lines + index-matched oracles) runnable by
+  `component-verify` (`primitives/tools/component-verify/`); registering a
+  primitive without one is drift, visible via `component-verify --coverage`
+  (burn-down: `briefs/component-verify.coverage.txt`).
 - **A cell marked N/A must name why** (architecture, not omission). The only
   N/A today: pi agent definitions (profiles are pi's agents), cursor
   circadian *write-side* (wake reads are wired; sleep/REM run machine-side in

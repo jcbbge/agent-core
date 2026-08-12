@@ -1,0 +1,25 @@
+[component]
+id = "tool/component-verify"
+kind = "binary"
+what = "the drop-in acceptance runner — executes VERIFY.toml manifests, answers PASS/FAIL per contract line"
+contract = [
+  "a holding contract prints one PASS line per sentence and exits 0",
+  "a violated contract prints FAIL with the oracle's tail and exits non-zero",
+  "a malformed manifest (contract/oracle count mismatch) is a hard error, never a skip",
+  "--coverage lists exactly the registry ids lacking a manifest",
+  "--all reports every component and exits non-zero if any oracle failed",
+]
+
+[[oracle]]
+run = "test/acceptance.sh pass-line"
+[[oracle]]
+run = "test/acceptance.sh fail-tail"
+[[oracle]]
+run = "test/acceptance.sh mismatch-refused"
+[[oracle]]
+run = "test/acceptance.sh coverage-exact"
+[[oracle]]
+run = "test/acceptance.sh all-semantics"
+
+[suite]
+run = "test/acceptance.sh all"

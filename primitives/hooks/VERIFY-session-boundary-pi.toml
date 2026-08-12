@@ -1,0 +1,16 @@
+[component]
+id = "extension/session-boundary-pi"
+kind = "extension"
+what = "pi before_agent_start extension — injects Session Boundary Contract legs 2-3 exactly once per session"
+contract = [
+  "the module imports clean under bun and default-exports a register function",
+  "the handler injects the documented session-boundary message shape exactly once per process",
+]
+
+[[oracle]]
+run = "bun test/session-boundary-pi.oracle.ts import-clean"
+[[oracle]]
+run = "bun test/session-boundary-pi.oracle.ts fired-once"
+
+[suite]
+run = "bun test/session-boundary-pi.oracle.ts import-clean && bun test/session-boundary-pi.oracle.ts fired-once"

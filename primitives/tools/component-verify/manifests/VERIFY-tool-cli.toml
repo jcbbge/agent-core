@@ -1,0 +1,21 @@
+# tool/cli lives at ~/agent-core/cli — a nested git repo (gitlink in the
+# agent-core tree), so its manifest cannot be colocated from this repo's
+# branches. Staged here with cwd pointing home; move to cli/VERIFY.toml
+# in a cli-repo commit when convenient.
+[component]
+id = "tool/cli"
+kind = "binary"
+cwd = "~/agent-core/cli"
+what = "agent-core CLI — registry-driven store→harness deploy, port, status/drift detection"
+contract = [
+  "a skill registered as source <dir>/SKILL.md deploys its whole directory (relative paths, exec bits, tree checksums) and flat skills never drag siblings",
+  "deployed harness trees match the store: status reports 0 stale, 0 missing",
+]
+
+[[oracle]]
+run = "bash test/integration/skilldir_acceptance.sh"
+[[oracle]]
+run = "zig-out/bin/agent-core status | sed $'s/\\x1b\\[[0-9;]*m//g' | grep -E 'summary: [0-9]+ ok +0 stale +0 missing'"
+
+[suite]
+run = "bash test/integration/skilldir_acceptance.sh && bash test/integration/c2_acceptance.sh && bash test/integration/c3_commands_acceptance.sh && bash test/integration/c3_subagents_acceptance.sh && bash test/integration/c3_hooks_acceptance.sh"

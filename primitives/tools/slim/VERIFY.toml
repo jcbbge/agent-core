@@ -1,0 +1,24 @@
+[component]
+id = "tool/slim"
+kind = "binary"
+what = "6-verb shell-output compactor (ls, ps, wc, df, git status, git log)"
+contract = [
+  "child exit codes propagate unchanged",
+  "unparseable output passes through raw",
+  "truncation is always marked",
+]
+
+[[oracle]]
+run = "test/truth-law.sh exit-codes"
+[[oracle]]
+run = "test/truth-law.sh raw-passthrough"
+[[oracle]]
+run = "test/truth-law.sh truncation-marked"
+
+[suite]
+run = "zig build test && test/truth-law.sh exit-codes && test/truth-law.sh raw-passthrough && test/truth-law.sh truncation-marked"
+
+[[metric]]
+name = "context-reduction-pct"
+run = "test/metric-context-reduction.sh"
+expect = ">= 40"
