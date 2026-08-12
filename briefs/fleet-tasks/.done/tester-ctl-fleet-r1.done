@@ -1,0 +1,10 @@
+command: cd /Users/jrg/herdr-spine && bash test/ctl-fleet-tasks.sh
+exit_code: 1
+result: fail
+pass_count: 5
+fail_count: 2
+failing_criteria: A5, A2
+passed_criteria: A4, A1a, A1b, A1c, A3
+log: /tmp/tester-ctl-fleet-r1-20260812-123849.log
+human_qa: test/qa/ctl-fleet-tasks-human.md (A6 unticked — human class)
+q_for_arbiter: A5 awk syntax error during test; A2 in-progress unit ORCH prefix/active_form assertion failed

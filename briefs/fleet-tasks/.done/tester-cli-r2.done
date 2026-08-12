@@ -1,0 +1,28 @@
+command: cd ~/agent-core/primitives/tools/fleet-task && bun test fleet-task.test.ts
+exit_code: 0
+result: pass
+pass_count: 12
+fail_count: 0
+q_for_arbiter: none
+
+--- full output ---
+bun test v1.3.14 (0d9b296a)
+
+fleet-task.test.ts:
+(pass) fleet-task acceptance > AC1 — init creates state.json; mission/unit open persist schema; duplicate mission fails [58.39ms]
+(pass) fleet-task acceptance > AC2 — write seed + merge patch; read/unit show + rollups per §1.5 [130.19ms]
+(pass) fleet-task acceptance > AC3 — render prints ○ ◐ ✓ ⊘ for mixed statuses [103.37ms]
+(pass) fleet-task acceptance > AC4 — illegal transition rejected; store unchanged for that task [107.98ms]
+(pass) fleet-task acceptance > AC5 — second orch in_progress in one unit rejected [51.67ms]
+(pass) fleet-task acceptance > AC6 — needs_in_progress true when owner scope has pending and no in_progress [53.26ms]
+(pass) fleet-task acceptance > AC7 — prune removes completed/cancelled; rollups recompute [132.44ms]
+(pass) fleet-task acceptance > AC8 — role gate: agnt write denied; orch write ok; undeterminable denied; agnt read ok [90.10ms]
+(pass) fleet-task acceptance > AC9 — rollup-changing write posts Tower finding with contract topic/from/body [136.35ms]
+(pass) fleet-task acceptance > AC10 — /tmp project_root: rollup write exits 0 with Tower post failure warning [92.23ms]
+(pass) fleet-task acceptance > AC11 — concurrent writers: valid JSON, no lost updates [109.94ms]
+(pass) fleet-task acceptance > AC12 — entry runnable via bun path with FLEET_TASKS_HOME [14.91ms]
+
+ 12 pass
+ 0 fail
+ 85 expect() calls
+Ran 12 tests across 1 file. [1091.00ms]

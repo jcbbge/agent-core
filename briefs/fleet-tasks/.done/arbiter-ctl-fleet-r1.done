@@ -1,0 +1,53 @@
+# ARBITER ruling — ctl-fleet-tasks (U3) — nQ round 1/3
+
+RULING: BAD TEST
+ROUTE: test-maker (correct the suite; re-run)
+nQ: 1/3
+
+## Rationale
+
+Independently reproduced the 1-pass/6-fail result, then traced the suite
+(bash -x) and verified the implementation directly. Both failure clusters are
+artifacts of the test harness, not the code:
+
+1. A1a/A1b/A1c/A2/A3 (phantom rc=1): `capture_dump` is invoked through command
+   substitution — `out="$(capture_dump)"` (test/ctl-fleet-tasks.sh:86) — so
+   `CAPTURE_DUMP_RC=0` is assigned inside a subshell and never reaches the
+   parent. Every caller then reads `rc=${CAPTURE_DUMP_RC:-1}` and fails on the
+   rc gate. The trace shows the dump itself exiting 0 and, for the missing-store
+   case, correctly omitting the TASKS header — exactly the specified behavior.
+   The brief's fact #1 (bash 3.2 `"${extra[@]}"` unbound) is stale: the current
+   `run_dump` guards the expansion with `${#extra[@]} -gt 0`, and a direct
+   simulation of the no-arg path under host bash 3.2.57 with `set -euo pipefail`
+   returns rc=0.
+
+2. A5 (awk range closes on its start line): the extraction
+   `/function refreshSlow/,/^function [a-zA-Z]/` terminates immediately because
+   awk tests the end pattern against the record that matched the start pattern;
+   `slow_body` captures only the signature line. The implementation is correct:
+   bin/ctl-fleet:380-381 — `function refreshSlow() {` followed by
+   `loadTasksStore();` as its first statement, with store I/O confined there.
+
+No assertion the suite can actually reach indicts the implementation. Fixing
+the harness (capture rc without a subshell — e.g. have capture_dump write rc to
+a temp file or restructure so the caller runs run_dump directly; extend the awk
+range past the start record) is the path that serves craft and keeps the loop
+honest: green must mean the spec held, not that the oracle was muted.
+
+## Watch item for round 2 (not ruled on)
+
+Once the suite runs green-path, A2 expects unit line `ORCH fleet-task-cli`
+while the fixture's `owner_agent` slug is `ORCH fleet-task` (plan uses unit
+`title`). If that surfaces red, it becomes a fresh Q on fixture vs renderer —
+deferred per brief.
+
+## Evidence acquired this session
+
+- `bash --version` → 3.2.57(1)-release (arm64-apple-darwin25)
+- `bash test/ctl-fleet-tasks.sh` → reproduced: PASS A4; FAIL A5, A1a-c, A2, A3
+- Direct dump with fixture store → exit 0, TASKS block rendered
+- `bash -x` trace → `++ CAPTURE_DUMP_RC=0` set in subshell; parent reads rc=1
+- awk extraction test → 1 line (signature only)
+- bin/ctl-fleet:380-381 → loadTasksStore() is first statement of refreshSlow
+
+Finding posted: agent-core/fleet-tasks (cli-16bfc6b1-c515-418f-b106-d15c8a1864d2)

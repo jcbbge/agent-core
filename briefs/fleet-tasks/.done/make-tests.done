@@ -1,0 +1,30 @@
+fleet-task test-maker (wt-agnt-test-maker-w2h-p7)
+
+worktree: /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-test-maker-w2h-p7
+
+test command:
+  cd primitives/tools/fleet-task && bun test fleet-task.test.ts
+
+artifacts:
+  primitives/tools/fleet-task/fleet-task.test.ts
+  primitives/tools/fleet-task/test-helpers.ts
+
+criterion map:
+  AC1  — test "AC1 — init creates state.json; mission/unit open persist schema; duplicate mission fails"
+  AC2  — test "AC2 — write seed + merge patch; read/unit show + rollups per §1.5"
+  AC3  — test "AC3 — render prints ○ ◐ ✓ ⊘ for mixed statuses"
+  AC4  — test "AC4 — illegal transition rejected; store unchanged for that task"
+  AC5  — test "AC5 — second orch in_progress in one unit rejected"
+  AC6  — test "AC6 — needs_in_progress true when owner scope has pending and no in_progress"
+  AC7  — test "AC7 — prune removes completed/cancelled; rollups recompute"
+  AC8  — test "AC8 — role gate: agnt write denied; orch write ok; undeterminable denied; agnt read ok"
+  AC9  — test "AC9 — rollup-changing write posts Tower finding with contract topic/from/body"
+  AC10 — test "AC10 — /tmp project_root: rollup write exits 0 with Tower post failure warning"
+  AC11 — test "AC11 — concurrent writers: valid JSON, no lost updates, lockfile required"
+  AC12 — test "AC12 — entry runnable via bun path with FLEET_TASKS_HOME"
+
+notes:
+  - All tests set FLEET_TASKS_HOME to a fresh temp dir; never touch ~/.fleet-tasks/.
+  - Tests invoke bun primitives/tools/fleet-task/fleet-task.ts (coder supplies entry).
+  - AC9 reads ~/.tower/board.jsonl tail; requires real agent-core project_root.
+  - AC12 PATH symlink verified by ORCH on main; test covers bun entry only.

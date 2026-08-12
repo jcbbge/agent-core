@@ -44,6 +44,16 @@ All NEW spawns are **kind=cursor via the cursor-shim**: research SAGTs via `~/cu
 - Epistemics: cursor internals claims need a this-session source (doc fetch, CLI output, file read); else `[UNKNOWN]`. Commits in agent-core per the commit convention; stage explicitly.
 - Comms law: findings to `agent-core/fleet-tasks`; operator mail only the final deliverable + genuine decision forks.
 
+## 5b. OPERATOR RULINGS on design forks (2026-08-12 ~16:35 UTC, via CONCIERGE — bind the future implementation mission)
+
+Design doc: `research/fleet-task-tool-design.md` (committed `560bf07`). Rulings:
+- D1 store: **GLOBAL `~/.fleet-tasks/`** (operator overrode the per-project recommendation) — one store, all projects.
+- D2 chrome: **CTRL TASKS section** in the Engine Shop fleet pane (as recommended).
+- D3 language: **bun/TypeScript v1** (as recommended).
+- D4 Tower side-effects: **YES** — task transitions echo to the board as findings.
+- D5 MCP: **CLI only in v1** (as recommended).
+- D6 AGNT access: **read-only** — only CORD/ORCH write; ORCH scores tasks after worker `.done` (as recommended).
+
 ## 6. Done-when
 
 - Phase 1 findings on the board with citations (cursor task system + internal prior art).

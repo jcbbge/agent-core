@@ -1,0 +1,11 @@
+command: cd /Users/jrg/herdr-spine && bash test/ctl-fleet-tasks.sh
+exit_code: 1
+result: fail
+pass_count: 6
+fail_count: 1
+failing_criteria: A2
+passed_criteria: A4, A5, A1a, A1b, A1c, A3
+log: /tmp/tester-ctl-fleet-r2-run.log
+dump_log: /tmp/tester-ctl-fleet-r2-dump.log
+human_qa: test/qa/ctl-fleet-tasks-human.md (A6 unticked — human class)
+q_for_arbiter: A2 — test expects unit line ORCH fleet-task-cli  ◐ Drafting the CLI core; impl renders ORCH fleet-task  ◐ Drafting the CLI core

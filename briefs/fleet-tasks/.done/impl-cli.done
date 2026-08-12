@@ -1,0 +1,103 @@
+# ORCH fleet-task-cli DONE — U1+U2
+
+ORCH: fleet-task-cli (w2H:p2)
+Verify: cursor-fleet make → tester → arbiter nQ1 (all bad test) → test-maker fix → tester r2 PASS 12/12
+Left UNCOMMITTED for CORD. No schema deviations. Workers never committed.
+
+## Per-file list (created/modified)
+
+### Product (main checkout)
+- ~/agent-core/primitives/tools/fleet-task/fleet-task.ts
+- ~/agent-core/primitives/tools/fleet-task/types.ts
+- ~/agent-core/primitives/tools/fleet-task/store.ts
+- ~/agent-core/primitives/tools/fleet-task/rollup.ts
+- ~/agent-core/primitives/tools/fleet-task/validate.ts
+- ~/agent-core/primitives/tools/fleet-task/role.ts
+- ~/agent-core/primitives/tools/fleet-task/tower.ts
+- ~/agent-core/primitives/tools/fleet-task/README.md
+
+### Tests
+- ~/agent-core/primitives/tools/fleet-task/fleet-task.test.ts
+- ~/agent-core/primitives/tools/fleet-task/test-helpers.ts
+
+### Install / live store
+- ~/.local/bin/fleet-task → ~/agent-core/primitives/tools/fleet-task/fleet-task.ts (symlink)
+- ~/.fleet-tasks/state.json (created by init; currently empty missions {})
+
+### Briefs / .done (orchestration artifacts)
+- ~/agent-core/briefs/fleet-tasks/make/fleet-task-cli.md
+- ~/agent-core/briefs/fleet-tasks/make/tester-cli.md
+- ~/agent-core/briefs/fleet-tasks/make/tester-cli-r2.md
+- ~/agent-core/briefs/fleet-tasks/make/arbiter-cli-r1.md
+- ~/agent-core/briefs/fleet-tasks/make/testmaker-fix-r1.md
+- ~/agent-core/briefs/fleet-tasks/.done/make-impl.done
+- ~/agent-core/briefs/fleet-tasks/.done/make-tests.done
+- ~/agent-core/briefs/fleet-tasks/.done/tester-cli.done
+- ~/agent-core/briefs/fleet-tasks/.done/arbiter-cli-r1.done
+- ~/agent-core/briefs/fleet-tasks/.done/testmaker-cli-r1.done
+- ~/agent-core/briefs/fleet-tasks/.done/tester-cli-r2.done
+- ~/agent-core/briefs/fleet-tasks/.done/impl-cli.done (this file)
+
+## Test command + tail
+
+```
+cd ~/agent-core/primitives/tools/fleet-task && bun test fleet-task.test.ts
+```
+
+```
+ 12 pass
+ 0 fail
+ 85 expect() calls
+Ran 12 tests across 1 file. [1075.00ms]
+```
+
+(Reproduced by ORCH on main after tester-cli-r2.)
+
+## Task 1 end-to-end transcript (FLEET_TASKS_HOME=/tmp/fleet-task-e2e.*)
+
+```
+bun fleet-task.ts --role cord init
+→ {"ok":true,"home":"/tmp/fleet-task-e2e.…"}
+
+bun … mission open --id m-e2e --project agent-core --project-root /Users/jrg/agent-core --title "e2e mission"
+→ {"ok":true,"id":"m-e2e"}
+
+bun … unit open --mission m-e2e --id u-e2e --title "e2e unit" --owner-agent orch-fleet-task-cli
+→ {"ok":true,"id":"u-e2e"}
+
+bun … write --unit u-e2e --merge false --json '[{t1 pending},{t2 pending}]'
+→ ok, needs_in_progress:true, unit progress pending:2 total:2
+
+bun … write --unit u-e2e --merge true --json '[{t1 in_progress}]'
+→ ok, unit+mission rollup in_progress; Tower: u-e2e pending→in_progress, m-e2e pending→in_progress
+
+bun … render --unit u-e2e
+→ m-e2e / u-e2e: e2e unit
+    ◐ seed task
+    ○ second
+
+bun … write t2→in_progress → exit 1 "at most one in_progress orch task…"
+bun … write t2→completed → exit 1 "illegal transition … pending → completed"
+```
+
+Install: `cd /tmp && fleet-task read --role agnt` → exit 0.
+
+## Task 3 board-row evidence (D4)
+
+Sample from `~/.tower/board.jsonl` / `bun ~/.tower/cli.mjs board` (cwd=agent-core):
+
+- `fleet-task@agent-core` · `u-ac9 pending→in_progress` / `m-ac9 pending→in_progress` / `u-ac9 in_progress→completed` / `m-ac9 in_progress→completed`
+- `fleet-task@agent-core` · `u-e2e pending→in_progress` / `m-e2e pending→in_progress`
+- AC10 covered by suite: /tmp project_root → exit 0 + stderr Tower warning (soft fail)
+
+## Schema deviations
+
+None. Pinned global `~/.fleet-tasks/state.json` shape honored (ctl-fleet ORCH can read).
+
+## Registry registration
+
+Not required for v1 (same as statem: PATH CLI + README). If CORD wants agent-core registry / AGENTS.md stack table entry, escalate to CONCIERGE — ORCH did not edit registry/directives/AGENTS.md.
+
+## nQ note
+
+Round 1: 5 fails → arbiter all BAD TEST → test-maker fixed → tester 12/12. Coder untouched after initial make.

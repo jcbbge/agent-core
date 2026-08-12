@@ -1,0 +1,10 @@
+artifact: /Users/jrg/herdr-spine/test/ctl-fleet-tasks.sh
+role: AGNT test-maker-ctl-fleet-r1
+arbiter: BAD TEST r1 — harness fixes only (no impl read, no test run)
+
+fixes:
+  - phantom rc=1: capture_dump writes exit code to $DUMP_RC_FILE; callers use dump_rc() after command substitution
+  - A5 awk: flag-based extraction for refreshSlow, renderTasksMachine, renderTasksProject (range no longer closes on start line)
+  - test_a3: declare local rc (bash 3.2 hygiene)
+
+handoff: tester re-run bash test/ctl-fleet-tasks.sh from ~/herdr-spine

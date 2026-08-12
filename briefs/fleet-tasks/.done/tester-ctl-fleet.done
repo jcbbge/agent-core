@@ -1,0 +1,9 @@
+command: cd /Users/jrg/herdr-spine && bash test/ctl-fleet-tasks.sh
+exit_code: 1
+result: fail
+pass_count: 1
+fail_count: 6
+failing_criteria: A5, A1a, A1b, A1c, A2, A3
+passed_criteria: A4
+log: /tmp/tester-ctl-fleet-20260812-121659.log
+human_qa: test/qa/ctl-fleet-tasks-human.md (A6 unticked — human class)
