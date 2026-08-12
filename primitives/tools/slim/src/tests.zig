@@ -93,8 +93,16 @@ test "T-TRUTH-RAWPASS" {
     try std.testing.expectEqualStrings(raw, got);
 }
 
-// Criterion: truth-law raw passthrough on unparseable git status input.
 test "T-TRUTH-RAWPASS-GS" {
+    const alloc = std.testing.allocator;
+    const raw = "On branch main\nnothing to commit, working tree clean\n";
+    const got = git_status.filter(alloc, raw) catch try alloc.dupe(u8, raw);
+    defer alloc.free(got);
+    try std.testing.expectEqualStrings(raw, got);
+}
+
+// Oracle-authored variant (test-maker): noise input with no porcelain markers.
+test "T-TRUTH-RAWPASS-GS-NOISE" {
     const alloc = std.testing.allocator;
     const raw =
         \\not a git status block

@@ -22,6 +22,7 @@ Binary: `zig-out/bin/slim`
 ## Tests
 
 - Goldens: embedded fixtures under `src/fixtures/`
+- Git/ls integration: deterministic fixture repo built at test time by `test/fixtures/build-git-repo.sh` (gitignored; pinned authors/dates), goldens frozen under `test/fixtures/`
 - Hook smoke: `test/hook-swap-smoke.sh` (uses a copied guard, never the real hook)
 - Latency gate: `test/latency.sh` (rewrite p95 < 10 ms)
 
@@ -42,5 +43,5 @@ Then swap `rtk`→`slim` in `~/.claude/hooks/rtk-guard.sh` and `~/agent-core/pri
 ## Deviations
 
 - `ps.raw.txt` line 4 corruption removed from fixtures; `ps.rtk.txt` regenerated from slim filter on cleaned raw
-- Git frozen-fixture tests under `test/fixtures/` (deterministic repo + goldens; replaces rtk differential SKIPs)
+- Git/ls differential tests replaced with frozen fixtures (`T-FIX-GS`, `T-FIX-GL`, `T-FIX-LS`); rtk oracle retired
 - Zig 0.16 `std.mem.trim(slice, charset)` argument order differs from 0.15

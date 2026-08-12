@@ -31,6 +31,9 @@ pub fn build(b: *std.Build) void {
 
     const tests = b.addTest(.{ .root_module = lib_mod });
     const run_tests = b.addRunArtifact(tests);
+    // Tests exec zig-out/bin/slim — depend on the INSTALL step, not just exe
+    // compilation, so a clean-tree `zig build test` is self-sufficient.
+    run_tests.step.dependOn(b.getInstallStep());
     run_tests.setCwd(b.path("."));
     const test_step = b.step("test", "Run slim tests");
     test_step.dependOn(&run_tests.step);

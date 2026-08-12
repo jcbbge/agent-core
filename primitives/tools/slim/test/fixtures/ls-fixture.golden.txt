@@ -1,0 +1,3 @@
+subdir/
+alpha.txt  6B
+beta.txt  5B
