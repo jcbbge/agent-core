@@ -1,19 +1,23 @@
 #!/usr/bin/env bash
 # session-boundary-cursor.sh — Cursor sessionStart hook.
 #
-# Injects Session Boundary Contract legs 1-3
+# Injects Session Boundary Contract legs 1-4
 # (primitives/rules/session-lifecycle.md, "The Session Boundary Contract"):
 #   1. Tower carry-over — unrelayed operator mail + open questions
 #   2. Last TODO: handoff (git log — repo is truth)
 #   3. Flight snapshot pointer, <24h (~/.tower/flight/)
-#
-# Leg 4 (memory substrate / circadian mind) is OUT OF SCOPE here: the
-# circadian kill switch is active and cursor has no circadian adapter.
+#   4. Memory substrate (circadian mind wake) — ~/circadian/src/wake.ts,
+#      run via bun, stdout appended verbatim after legs 1-3. Currently in
+#      kill-switch mode (R7): emits constitution + NOW only, not the full
+#      SELF/USER/greeting substrate — that is normal upstream circadian
+#      behavior, not a defect of this adapter. Wake also appends a
+#      scoreboard row per run — normal wake side effect, acceptable here.
 #
 # Ported from ~/.tower/hooks/session-start.mjs (the claude-code reference
 # adapter for the same contract). This is a boundary adapter per the layer
 # doctrine: data only, never instructions, silent when there is nothing to
-# say.
+# say. Leg 4 is a data provider (circadian), not a behavioral mandate —
+# whatever wake emits is appended as-is, never interpreted or gated here.
 #
 # Output: Cursor's sessionStart hook output schema accepts
 # {"additional_context": "..."} and injects it into the conversation's
@@ -84,8 +88,21 @@ if [ -d "$FLIGHT_DIR" ]; then
   fi
 fi
 
-# Leg 4 (circadian memory substrate) intentionally omitted — circadian kill
-# switch is active, and cursor has no circadian adapter to provide it.
+# --- Leg 4: memory substrate (circadian mind wake) ------------------------
+# A recorder never blocks: wake failing, missing, or erroring never fails
+# this hook. Run standalone from the target cwd so wake's own cwd-scoped
+# retrieval (session-relevant units) matches what a real session would see.
+# No shell-level `timeout` wrapper here on purpose — it is a homebrew
+# binary (/opt/homebrew/bin/timeout), not guaranteed on PATH inside a hook
+# runner's environment; the script-level timeout instead lives in
+# ~/.cursor/hooks.json's per-hook `timeout` field (documented cursor hooks
+# config option), which bounds the whole sessionStart script including
+# this leg.
+WAKE_TS="/Users/jrg/circadian/src/wake.ts"
+if [ -x "$BUN" ] && [ -f "$WAKE_TS" ]; then
+  WAKE_OUT="$(cd "$CWD" 2>/dev/null && "$BUN" "$WAKE_TS" 2>/dev/null || true)"
+  [ -n "$WAKE_OUT" ] && LINES+=("$WAKE_OUT")
+fi
 
 if [ "${#LINES[@]}" -eq 0 ]; then
   exit 0
