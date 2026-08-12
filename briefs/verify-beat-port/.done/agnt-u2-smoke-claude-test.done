@@ -1,0 +1,11 @@
+agnt-u2-smoke-claude-test — U2 make-bifurcation smoke (claude), test-maker arm: PASS
+2026-08-12T18:35Z (approx; see board t-msqfk9wh-ac45 on herdr-spine/verify-beat-port)
+
+Brief: ephemeral oracle brief u2-make-claude.md (mktemp dir u2-verify-beat.pKJrZN, cleaned up by oracle EXIT trap). Content reconstructed verbatim from qa/u2-verify-beat-checks.sh lines 257-262: "# U2 make smoke (claude) — Brief for make bifurcation acceptance. Each make run must fork implementer and test-maker into separate git worktrees under ~/.spine/worktrees/."
+
+Evidence:
+- Test-arm worktree: /Users/jrg/.spine/worktrees/herdr-spine/u2-smoke-claude-test, branch spine/u2-smoke-claude-test, HEAD 4838882, clean, registered in `git worktree list`.
+- Impl-arm worktree: /Users/jrg/.spine/worktrees/herdr-spine/u2-smoke-claude, branch spine/u2-smoke-claude, same HEAD, distinct path — bifurcation criterion (c) holds.
+- Impl-arm pane w2K:pQ exited on model-config error (cursor/composer-2.5 unavailable) before acting; does not affect topology evidence.
+
+No repo edits. No commit.

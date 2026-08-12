@@ -1,0 +1,8 @@
+u3-test-maker nQ2 complete 2026-08-12
+test: ~/herdr-spine/bin/handlers/tests/test_50_scent_digest.py
+arbiter: BAD_TEST (fixture prompt logging + pacing substring)
+fixes:
+  - fake herdr logs agent prompt as one line (newlines -> spaces)
+  - pacing drop assert matches "digest dropped" not "pacing"
+DID NOT COMMIT
+DID NOT RUN (test-maker does not run tests)

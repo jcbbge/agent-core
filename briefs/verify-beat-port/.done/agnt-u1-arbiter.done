@@ -1,0 +1,1 @@
+BAD TEST — check 1b's regex requires `spine-spawn --kind` adjacency, but the CLI's real grammar interposes the mode token (`spine-spawn orch|worker|fanout --kind pi|claude`), which docs/spawn.md:150 documents correctly; test-maker must loosen the regex to tolerate the mode argument.

@@ -1,0 +1,33 @@
+# assay-writer.done
+
+unit: assay-writer
+orch: orch-orchestrator-w28-p7 / ORCH [assay-writer]
+cord: CORD [assay-writer] w28:p2
+verified: 2026-08-12T04:32:00Z (ORCH) · CORD gate 2026-08-12T04:35Z — every condition personally reproduced
+
+## Done conditions (all met, CORD-reproduced)
+
+1. `cd primitives/tools/assay && zig build test` → exit 0 (CORD ran it)
+2. Live probe: golden classify ran live against http://127.0.0.1:10240/v1 (Classify OK, 0 UNCLASSIFIED hits, 5/5 sessions); AC1/AC3 acceptance tests exercise live POST + parse and pass
+3. Golden regenerated: `briefs/fringe/assay-labels/golden-report.md` — SHAPED floors EVALUATED (s3/s5 PASS, s1/s2/s4 FAIL honestly; no UNKNOWN/DEGRADED)
+4. Decoy false-SHAPED: 0/25 — unmoved, no tuning
+5. Green on main: commit 40de5cc (7 files, assay partition + golden report)
+
+## Code changes (primitives/tools/assay/ only)
+
+- src/llm.zig — Zig 0.16 Allocating.fromArrayList writers; content.deinit; prefer model local
+- src/classify.zig — Label.parse trim(slice,values) + first-line; UTF-8-safe truncateSnippet
+- src/match.zig — UTF-8-safe makeSnippet (fixes LLM 400 on mid-codepoint truncates)
+- test/llm_acceptance.zig + build.zig — Made Well acceptance module (test-maker, plan-only)
+- test/qa-doc-orch-golden.md — integration gates H-ORCH-1/H-ORCH-2 (verified by CORD against reproduced evidence)
+
+## Made Well path
+
+make bifurcate (coder ∥ test-maker, separate worktrees) → tester fail → arbiter nQ1 bad-impl (classify trim + writer leaks) → coder nQ1 → tester pass → golden root-cause UTF-8 → ORCH integration → CORD gate green → land 40de5cc.
+
+## CORD gate notes
+
+- An early "sub-fleet done" fleet mail was premature: CORD gate found tests still RED (arbiter ruling unlanded) and posted RED instead of DONE; the loop then completed correctly. False green refused.
+- Substrate finding (fleet-wide, separate unit recommended): herdr agent start rejects multi-line argv (invalid_agent_argument); cursor-spine interactive path blocked until patched. Workaround used all session: start bare + `herdr agent prompt`. Details on board agent-core/assay-writer.
+
+Workers reaped (p7/p8/p9; tester/arbiter panes already gone). Workspace w28 back to CORD-only.

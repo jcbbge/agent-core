@@ -1,0 +1,22 @@
+[U2] agnt-u2-bg-manual DONE — break-glass manual smoke
+
+Verdict: PASS (existence proof)
+- Spawned as AGNT u2-bg-manual (pane w2K:p17) with SPINE_VERIFY_GATE=off
+- stderr: "VERIFY GATE BYPASSED (SPINE_VERIFY_GATE=off) — break-glass, auditing to tower"
+- Agent reached working (prompt submitted, status flip observed)
+- Ledger verify-gate-bypass row t-msqfkw0f-clc4 (pane w2K:p17, profile=coder, via=spine-spawn)
+- Binding brief path /tmp/u2-bg-XXXX.md is a broken placeholder (XXXX not substituted by mktemp); associated verify unit 67d5e59696e26943 points at empty /tmp/u2-verify.XXXXXX.md — environmental oracle trap, same class as u2-noncoder/u2-breakglass evaporated briefs
+- gate ON unmarked coder → VERIFY GATE refuse before topology (stderr names unit key + fix path) — reconfirmed live
+
+No production files touched. No commit.
+
+Artifacts
+- This .done
+- Tower DONE on herdr-spine/verify-beat-port
+
+Provenance
+- date -u: 2026-08-12T18:37:25Z
+- pwd -P: /Users/jrg/herdr-spine
+- git rev-parse HEAD: e2a1222af5f346114361713636548035b47db940
+- herdr pane: w2K:p17
+- parent/spawner: w2K:p3 (from spine-spawn err log)

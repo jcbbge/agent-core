@@ -1,0 +1,16 @@
+# shim-nonrepo-wall — implementer done
+
+worktree: /Users/jrg/.cursor/worktrees/cursor-shim/wt-agnt-coder-w29-p19
+
+partition: cursor-spine, cursor-fleet, docs/qa-verify.sh
+
+diff summary:
+- cursor-spine: `is_git_repo_dir()` helper; gate all `--worktree` (forced or explicit) on `git -C "$DIR" rev-parse --git-dir`; log `isolation: <dir> is not a git repo — worktree N/A, profile-discipline fallback`
+- cursor-fleet make: conditional `MAKE_WT_ARGS=(--worktree)` only when target dir is a git repo; in-place spawn + fallback log for non-repo dirs
+- docs/qa-verify.sh: +6 AC1–AC3 cases (non-repo dry-run, git-repo unchanged, make guard); replaced unconditional `make isolates both in worktrees` grep
+
+evidence:
+- qa-verify non-repo section: 6/6 PASS (non-repo skips worktree, logs fallback, git-repo still forces)
+- dry-run: `--dir /tmp` → `worktree : 0` + fallback line; `--dir $(pwd)` → `worktree : 1` + `--worktree wt-agnt-coder-w1j-p1`
+
+commit: none (per brief; CORD gates)

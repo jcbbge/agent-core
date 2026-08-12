@@ -1,0 +1,49 @@
+# U2 Implementer — verify-beat port DONE
+
+## Changed paths
+
+- bin/spine-spawn — verify-mark / verify-status / make subcommands; Plan→Implementation gate for `--profile coder`; forced `git worktree add` isolation; `SPINE_VERIFY_GATE=off` break-glass audit to ~/.tower/ledger.jsonl; docstring fix for cursor kind
+- docs/verify-beat.md — spine wall summary
+- .gitignore — `.verify/`
+
+## Reproduce gate refuse (exit 2, before pane create)
+
+```bash
+BRIEF=/path/to/unmarked-brief.md
+python3 ~/herdr-spine/bin/spine-spawn worker \
+  --label agnt-demo --kind pi --profile coder --brief "$BRIEF"
+python3 ~/herdr-spine/bin/spine-spawn worker \
+  --label agnt-demo --kind claude --profile coder --brief "$BRIEF"
+```
+
+## Local verification (2026-08-12, worktree wt-agnt-coder-w2k-p6)
+
+```bash
+# unmarked coder refuse → exit 2, stderr names verify-mark/make + isolation law
+python3 bin/spine-spawn worker --kind pi --profile coder --brief /tmp/unmarked.md --label smoke
+
+# coder without --brief → exit 2
+python3 bin/spine-spawn worker --kind pi --profile coder --label nolabel --prompt test
+
+# verify-mark → exit 0; marker at ~/herdr-spine/.verify/<key>/.authored
+python3 bin/spine-spawn verify-mark /tmp/brief.md
+python3 bin/spine-spawn verify-status /tmp/brief.md   # exit 0 when marked, 1 when missing
+
+# break-glass → WARN stderr + ledger verify-gate-bypass row
+SPINE_VERIFY_GATE=off python3 bin/spine-spawn worker --kind pi --profile coder --brief /tmp/brief.md --label bg
+grep verify-gate-bypass ~/.tower/ledger.jsonl | tail -1
+```
+
+Verified exit codes (2026-08-12T18:35:10Z): pi_refuse=2, no_brief=2, break-glass ledger append confirmed.
+
+Marked coder spawn logs worktree under `~/.spine/worktrees/<repo>/<label>/` before split.
+
+## Deviations
+
+None. Marker store anchors to git common-dir parent (`~/herdr-spine/.verify/`) so worktree checkouts share one gate ledger — per locked design item 3.
+
+## Provenance
+
+- date -u: Wed Aug 12 18:35:10 UTC 2026
+- pwd -P: /Users/jrg/.cursor/worktrees/herdr-spine/wt-agnt-coder-w2k-p6
+- git rev-parse HEAD: 4838882f7ff8881fd8476e5af39e2ec7302e46c3

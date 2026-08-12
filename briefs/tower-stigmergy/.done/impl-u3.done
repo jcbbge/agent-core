@@ -1,0 +1,5 @@
+U3 50-scent-digest DONE
+commit: 248a35e
+tests: python3 bin/handlers/tests/test_50_scent_digest.py 9/9
+nQ: 2 BAD_TEST fixture rounds
+board notes on herdr-spine/scent-digest at runtime

@@ -1,0 +1,11 @@
+impl-live.done
+ORCH tower-dryrun Phase B complete 2026-08-12T19:19:00Z
+commit: e55ff54 (unchanged this phase)
+demo pane: w2G:pN (AGNT tester)
+emit: ph-msqh0ioi-7b8s (--to-role AGNT, before spawn)
+birth-idle: prompt-failed (agent not ready; spine-643abfe5)
+re-fire: handler idle event after agent ready + pace clear → prompted spine-f1943239
+worker claim: ph-msqh33uo-edro
+worker done: ph-msqh35tr-5uam
+field: work-available ph-msqh0ioi-7b8s in done
+note: cursor panes do not re-idle after birth (working→done); birth-idle is the only natural edge; verified_prompt needs agent ready (re-fire after ready closed the loop)

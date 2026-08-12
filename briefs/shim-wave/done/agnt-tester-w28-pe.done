@@ -1,0 +1,12 @@
+agnt-tester-w28-pe complete 2026-08-11T23:19Z
+
+Verdict: pass
+Evidence: ~/agent-core/briefs/shim-wave/agnt-tester-w28-pe-verify-results.md
+
+Pass/fail:
+- zig build: PASS (exit 0)
+- zig build test: PASS (exit 0; 6/6 tests)
+- live probe POST model local: PASS (HTTP 200, content_len=2, snippet=Ok)
+- Q → arbiter: none
+
+Code/tests touched: none

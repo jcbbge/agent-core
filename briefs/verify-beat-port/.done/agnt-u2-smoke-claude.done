@@ -1,0 +1,25 @@
+# COLLECTED agnt-u2-smoke-claude (implementer arm) — 2026-08-12T18:41Z
+# Collector: orch-verify-beat-port (board + .done only; no pane re-prompt)
+
+## Sources
+- spine-daemon parent-wake: w2K:pQ idle@18:33:43Z → done@18:33:49Z
+- spine-daemon finding 18:33:48Z: claude exited on model-config error
+  ("selected model cursor/composer-2.5 … may not exist or you may not have access")
+- Sibling board note t-msqfk9wh-ac45 + .done agnt-u2-smoke-claude-test.done
+  (test arm PASS; notes impl arm died before acting; topology unaffected)
+- Worker-authored .done: MISSING (this file is the collector record)
+
+## Verdict
+TOPOLOGY PASS / AGENT FAIL (pre-existing model wiring)
+
+- Bifurcation criterion holds: distinct checkouts still present
+  - impl:  ~/.spine/worktrees/herdr-spine/u2-smoke-claude      branch spine/u2-smoke-claude
+  - test:  ~/.spine/worktrees/herdr-spine/u2-smoke-claude-test branch spine/u2-smoke-claude-test
+- Impl agent never executed the brief: profile-model resolved `coder` → `cursor/composer-2.5`,
+  which claude kind cannot run. Out of U2 partition (agent-core profiles); later ORCH make
+  evidence (u2ev-9985-claude) and suite re-run already demonstrated live claude bifurcation green.
+- No repo edits from this worker. Pane w2K:pQ already reaped.
+
+## Route
+None for U2 (mission already DONE @ 872cf68). Optional follow-up outside partition:
+profile-model should not hand cursor/* slugs to --kind claude|pi.

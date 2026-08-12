@@ -1,0 +1,28 @@
+# ARBITER RULING — U2 verify-beat suite (7 failures)
+
+RULING: BAD TEST
+
+RATIONALE (one line): The implementation is provably correct against the spec — unmarked coder spawns refuse with exit 2 naming fix+law, no-brief refuses exit 2, break-glass warns and writes the ledger row, make emits valid JSON on stdout — and every one of the 7 failures traces to a structural defect in the suite's own harness, not to the code under test.
+
+ROUTE: back to the test-maker to correct the suite; re-run.
+
+## Evidence (independently re-verified by arbiter, 2026-08-12T18:35Z)
+
+Implementation truth (direct probes from /Users/jrg/herdr-spine):
+- `spine-spawn worker --kind pi --profile coder --brief <unmarked>` → exit 2; stderr: "REFUSED: VERIFY GATE (Plan->Implementation): no test criteria authored … fix: 'spine-spawn make …' (or … 'spine-spawn verify-mark …')". Names fix AND law.
+- Same for `--kind claude` → exit 2.
+- Coder without `--brief` → exit 2; stderr explains the missing unit/gate.
+- Ledger rows exist: `"kind": "verify-gate-bypass", "via": "spine-spawn"` (confirmed via rg over ~/.tower/ledger.jsonl).
+- `bin/spine-spawn:916` prints make result JSON to stdout; `:108` logs to stderr; `:252` writes ledger via `json.dumps` (default separators → `": "` with space).
+
+Suite defects (each maps to observed failures):
+1. `stderr_of` / `combined_of` end with `|| true` (qa/u2-verify-beat-checks.sh:59-67) → captured `pi_rc`/`claude_rc`/`nobrief_rc`/`make_rc` are ALWAYS 0 → a-pi-refuse, a-claude-refuse, a-no-brief, c-make-{pi,claude} rc-checks fail structurally even when the CLI refuses correctly.
+2. Ledger grep uses `"kind":"verify-gate-bypass"` (no space, lines 380/385/390) but Python `json.dumps` writes `"kind": "verify-gate-bypass"` (with space) → d-breakglass-ledger* miss real, correct rows.
+3. `c-make-*-json` parses `combined_of` (stdout+stderr merged, line 268→279); make logs on stderr, so `json.load` fails even when make's stdout JSON is valid.
+
+Residual (not ruled on, not a suite defect): make can hit `agent_name_taken` if prior smoke left agents registered — environmental; re-run on a clean fleet.
+
+## Provenance
+- date -u: Wed Aug 12 18:35:19 UTC 2026
+- pwd -P: /Users/jrg/herdr-spine
+- Arbiter wrote no code and no tests; only this .done file.

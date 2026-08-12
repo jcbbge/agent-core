@@ -1,0 +1,34 @@
+# ARBITER RULING — unit assay-writer, nQ round 1/3
+
+RULING: bad implementation
+ROUTE-TO: coder
+FIX-SCOPE: primitives/tools/assay/src/classify.zig (line 14 trim arg order) and
+primitives/tools/assay/src/llm.zig (Allocating-writer response-buffer ownership
+at the four client.fetch sites: probe :30, probeChat :64, pickModel :89,
+classifySnippet :155). No test changes — the suite is spec-correct.
+
+RATIONALE: Both defects are in the implementation, independently reproduced
+this session (zig build exit 0; zig build test exit 1 — AC3 hard fail, 4
+leaks). (1) AC3: classify.zig:14 calls std.mem.trim(u8, " \t\r\n", text) with
+slice/values swapped — Zig trim is trim(T, slice, values_to_strip). With the
+LLM's raw reply "SHAPED" the swapped call returns whitespace, so Label.parse
+returns null and the test reports "unparseable classify label: SHAPED". Live
+curl POST (model local, HTTP 200) proves the model output is correct; the
+parser is wrong. (2) Leaks: llm.zig calls aw.toArrayList(), which transfers
+the response buffer out of the Allocating writer; the result is never deinit'd
+and `defer body.deinit(allocator)` frees only the emptied original list.
+DebugAllocator traces all four leaks to the llm.zig fetch sites, not the test.
+Not bad test: AC3 asserts exactly the spec (non-empty, parseable, classified
+label) and AC1's leak detection is correct behavior. Not pre-existing: both
+defects sit inside this unit's scope of work.
+
+FIX DIRECTION (for coder; not applied by arbiter): swap to
+std.mem.trim(u8, text, " \t\r\n"); at each fetch site free the toArrayList()
+result (defer content.deinit(allocator)) or read via aw.getWritten() without
+taking ownership. Tester re-runs zig build test after the fix.
+
+Board: posted to Tower topic agent-core/assay-writer (t-mspkvdlg-q7up).
+Evidence: briefs/shim-wave/agnt-tester-w28-verify-results.md + arbiter's own
+reproduction and source reads.
+
+Recorded by: ARBITER (Polaris), fresh agent. No code or tests written.

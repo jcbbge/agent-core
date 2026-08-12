@@ -1,0 +1,12 @@
+agnt-u2-smoke-pi — U2 make-bifurcation smoke (pi), implementer arm: PASS
+2026-08-12T18:36:30Z
+
+Brief: ephemeral oracle brief u2-make-pi.md (mktemp dir u2-verify-beat.MP5Osz, cleaned up by oracle EXIT trap). Content reconstructed verbatim from qa/u2-verify-beat-checks.sh lines 257-262: "# U2 make smoke (pi) — Brief for make bifurcation acceptance. Each make run must fork implementer and test-maker into separate git worktrees under ~/.spine/worktrees/."
+
+Evidence:
+- Impl-arm worktree: /Users/jrg/.spine/worktrees/herdr-spine/u2-smoke-pi, branch spine/u2-smoke-pi, HEAD 4838882, clean, registered in `git worktree list`.
+- Test-arm worktree: /Users/jrg/.spine/worktrees/herdr-spine/u2-smoke-pi-test, branch spine/u2-smoke-pi-test, same HEAD, distinct path — bifurcation criterion (c) holds.
+- verify-mark unit f6bd83e481492776 present at ~/herdr-spine/.verify/f6bd83e481492776/.authored (make recorded fork before spawn).
+- Brief path absent at wake (expected oracle trap cleanup); binding content recovered from oracle script + session read at spawn.
+
+No repo edits. No commit.

@@ -1,0 +1,7 @@
+U1 pheromone stream DONE
+commit: 7fe23dd agent-core (tower-ledger.mjs + tower-pheromone.test.mjs)
+tests: pheromone + ledger-diff green
+live: ph-msqbv2r1-vhkv open→claimed
+backups: cli/server .bak-20260812T165125Z
+AFTER sha: cli=afc5ca55373fb9dee8895e54191028f0fc9f1ce04b33291ddc7dab8b74ae222d server=5657cf0f6a199baf9f195cfc697e8a3198dac7bdb3f4f958a4224661acf4ecd4
+board: t-msqbv9zl-lkmj

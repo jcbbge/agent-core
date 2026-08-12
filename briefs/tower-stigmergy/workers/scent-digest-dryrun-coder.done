@@ -1,0 +1,5 @@
+scent-digest-dryrun coder complete 2026-08-12
+worktree: /Users/jrg/.cursor/worktrees/herdr-spine/wt-agnt-coder-w2g-pe
+modified: bin/handlers/50-scent-digest
+LIVE_PATH at lines 36-38; dry-run branch main() lines 224-230
+committed: no

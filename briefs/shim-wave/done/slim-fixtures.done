@@ -1,0 +1,3 @@
+slim-fixtures @ 2026-08-12T06:12Z
+tests: 39/39 pass, 0 skip, 0 leak (zig build test on main)
+commit: 76476f3 test(slim): frozen-fixture git tests replace rtk differential SKIPs

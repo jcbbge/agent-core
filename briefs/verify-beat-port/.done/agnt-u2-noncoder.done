@@ -1,0 +1,19 @@
+[U2] agnt-u2-noncoder DONE — non-coder gate control smoke
+
+Verdict: PASS (existence proof)
+- Spawned as AGNT u2-noncoder (pane w2K:pC, agent name u2-noncoder)
+- Profile path: orchestrator (non-coder) — enforce_verify_gate early-returns when profile_base != coder (bin/spine-spawn:259)
+- No VERIFY GATE refusal observed; agent reached working/interactive_ready
+- Binding brief path /var/folders/.../T/u2-verify-beat.rZeggs/u2-noncoder.md was gone at wake (oracle trap cleanup); reconstructed from qa/u2-verify-beat-checks.sh:345-355 as "# non-coder gate control"
+- No production files touched. No commit.
+
+Artifacts
+- This .done
+- Tower CLAIM + DONE on herdr-spine/verify-beat-port
+
+Provenance
+- date -u: 2026-08-12T18:34:02Z
+- pwd -P: /Users/jrg/.cursor/worktrees/herdr-spine/wt-agnt-coder-w2k-p6
+- git rev-parse HEAD: 4838882f7ff8881fd8476e5af39e2ec7302e46c3
+- herdr pane: w2K:pC
+- parent/spawner token: w2K:p9
