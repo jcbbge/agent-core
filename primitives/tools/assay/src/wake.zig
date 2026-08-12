@@ -239,6 +239,7 @@ fn parseAtomsFromMindSelf(
             }
 
             const belief = try resolveBelief(allocator, mind_dir, normalized);
+            allocator.free(normalized);
             try list.append(.{
                 .claim = claim_owned,
                 .quote = quote,
