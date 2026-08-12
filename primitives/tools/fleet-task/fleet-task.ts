@@ -17,15 +17,8 @@ import {
   requiredTaskFields,
   type TaskPatch,
 } from "./validate.ts";
-import {
-  GLYPH,
-  nowIso,
-  type Mission,
-  type OwnerRole,
-  type Store,
-  type Task,
-  type Unit,
-} from "./types.ts";
+import { renderOptions, renderStore } from "./render.ts";
+import { nowIso, type Mission, type OwnerRole, type Store, type Task, type Unit } from "./types.ts";
 
 const rawArgv = process.argv.slice(2);
 
@@ -52,7 +45,7 @@ verbs:
   unit open|close|show
   write --unit <id> --merge true|false --json '<array>'
   read [--unit <id>|--mission <id>|--status <status>]
-  render [--unit <id>|--mission <id>]
+  render [--unit <id>|--mission <id>] [--ids]
   prune --unit <id> --completed|--cancelled
 
 global: --role cord|orch|agnt|sagt  FLEET_TASK_ROLE  FLEET_TASKS_HOME`);
@@ -426,34 +419,9 @@ function cmdRender(): void {
   const unitId = opt("--unit");
   const missionId = opt("--mission");
   const store = readStore();
-  const lines: string[] = [];
-
-  function renderUnit(unit: Unit, mission: Mission, indent = ""): void {
-    lines.push(`${indent}${mission.id} / ${unit.id}: ${unit.title}`);
-    for (const task of unit.tasks) {
-      lines.push(`${indent}  ${GLYPH[task.status]} ${task.content}`);
-    }
-  }
-
-  if (unitId) {
-    const { mission, unit } = findUnit(store, unitId);
-    renderUnit(unit, mission);
-  } else if (missionId) {
-    const mission = findMission(store, missionId);
-    lines.push(`${mission.id}: ${mission.title}`);
-    for (const unit of Object.values(mission.units)) {
-      renderUnit(unit, mission, "  ");
-    }
-  } else {
-    for (const mission of Object.values(store.missions)) {
-      lines.push(`${mission.id}: ${mission.title}`);
-      for (const unit of Object.values(mission.units)) {
-        renderUnit(unit, mission, "  ");
-      }
-    }
-  }
-
-  process.stdout.write(`${lines.join("\n")}\n`);
+  const renderOpt = renderOptions(argv);
+  const scope = unitId ? { unitId } : missionId ? { missionId } : undefined;
+  process.stdout.write(renderStore(store, renderOpt, scope));
 }
 
 function cmdPrune(): void {
