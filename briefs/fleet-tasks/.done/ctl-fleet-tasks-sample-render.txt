@@ -1,0 +1,14 @@
+TASKS
+  agent-core  m-fleet-tasks  ✓2 ◐1 ○3 ⊘0
+    ORCH fleet-task-cli  ◐ Drafting the CLI core
+      ✓ Schema pinned
+      ◐ Draft the CLI core
+      ○ Board + .done
+    ORCH Schema rollout  ✓ Schema rollout
+  herdr-spine  m-spine-ctl  ✓1 ◐0 ○1 ⊘1
+    ORCH spike-retired  ⊘ spike-retired
+    CORD fleet-tasks-cord  ○ fleet-tasks-cord
+      ✓ Review rollout
+      ○ Hold verify gate
+
+WORK

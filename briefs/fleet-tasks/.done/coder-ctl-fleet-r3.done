@@ -1,0 +1,12 @@
+# CODER .done — unitLabel prefers unit.title (arbiter r3 route)
+
+## Change
+`bin/ctl-fleet` `unitLabel()`: prefer non-empty `unit.title`, then
+owner_agent slug (`orch|cord-…`), then `unit.id`.
+
+## Evidence
+- `bin/ctl-fleet:313-320` — title check first; slug/id fallbacks unchanged order.
+- Plan golden: `ORCH fleet-task-cli  ◐ …` (unit title, not owner slug).
+
+## Handoff
+Tester re-run: `bash test/ctl-fleet-tasks.sh` — expect A2 green (7/7 agent criteria).

@@ -1,0 +1,28 @@
+# Test-maker fix pass — fleet-task CLI nQ round 1
+
+role: test-maker (repair after arbiter-cli-r1)
+artifact: ~/agent-core/primitives/tools/fleet-task/fleet-task.test.ts
+worktree: main ~/agent-core (in-place repair; no bifurcated worktree)
+suite: NOT run (tester handoff)
+
+## Changes per AC
+
+**AC1** — mission.progress after unit open now expects unit-rollup grain
+`{pending:1, total:1, in_progress:0, completed:0, cancelled:0}` (one pending
+child unit). Empty-children zeros apply only when mission has zero units.
+
+**AC2** — Fixed runtime index: parenthesized cast so `["u-ac2"]` indexes the
+units map after the cast (AC7 pattern). mission.progress now expects unit-rollup
+grain `{in_progress:1, total:1, pending:0, completed:0, cancelled:0}`.
+
+**AC9** — Legal transition chain: seed pending, then `pending → in_progress`,
+then `in_progress → completed` (two rollup-changing writes) before asserting
+Tower finding.
+
+**AC10** — Split into seed (no rollup change) + patch `pending → in_progress`
+(rollup-changing write) under `/tmp` project_root; assert exit 0 and stderr
+Tower warning.
+
+**AC11** — Removed flaky `sawLock` lockfile polling. Kept deterministic
+assertions: both writers exit 0, lockfile absent after, valid store JSON, both
+task ids `w1` and `w2` present (no lost updates).

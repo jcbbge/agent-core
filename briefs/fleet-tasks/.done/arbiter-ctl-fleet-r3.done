@@ -1,0 +1,41 @@
+# ARBITER .done — ctl-fleet TASKS Verify Q (nQ round 3/3 — LAST)
+
+nQ: 3/3
+RULING: BAD IMPLEMENTATION
+ROUTE: coder
+
+## Rationale (one line)
+Plan golden render specifies the unit line as `ORCH <unit title>` and the
+test asserts exactly that against the fixture, while `unitLabel()` prefers
+the owner_agent slug — the code deviates from the spec, so the coder owns
+the fix.
+
+## Evidence (independently verified this session)
+- Plan golden: `briefs/fleet-tasks/make/ctl-fleet-tasks.md:83` —
+  `    ORCH fleet-task-cli  ◐ Drafting the CLI core`; ORCH brief
+  `orch-impl-ctl-fleet.md:94` — "Unit line: owner (`ORCH <unit title>` …)".
+- Fixture `test/fixtures/fleet-tasks/two-projects.json`: unit `u-cli`
+  title = `fleet-task-cli`, owner_agent = `orch-fleet-task`.
+- Test `test/ctl-fleet-tasks.sh:229` asserts
+  `ORCH fleet-task-cli  ◐ Drafting the CLI core` — faithful to the plan.
+- Implementation `unitLabel()` (`bin/ctl-fleet:313-320`) matches
+  `owner_agent` against `/^(?:orch|cord)-(.+)$/` first and returns the slug
+  (`fleet-task`); `unit.title` is only the fallback. Rendered line:
+  `ORCH fleet-task  ◐ Drafting the CLI core` (retest r2 log, A2 lone fail,
+  6/7 pass).
+- Consistent with r2 arbiter's pre-verified coder route
+  (`.done/arbiter-ctl-fleet-r2.done` Route detail).
+
+## Route detail
+- coder: `unitLabel()` should prefer `unit.title` (fallback: owner_agent
+  slug, then `unit.id`) per the plan golden render. One-function change in
+  `bin/ctl-fleet`; no test or fixture edits.
+- After coder fix: re-run `bash test/ctl-fleet-tasks.sh` — expect 7/7 with
+  A6 still unticked (human class, per tester r2 note).
+
+## Board
+finding posted: agent-core/fleet-tasks (t-msqdn3vg-2dga)
+
+No code or tests written. Independence preserved. nQ budget exhausted after
+this ruling — if the coder fix does not turn A2 green on retest, the unit
+is stuck and escalates to the human via CORD fleet-tasks.

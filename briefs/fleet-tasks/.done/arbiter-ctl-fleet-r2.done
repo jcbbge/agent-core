@@ -1,0 +1,33 @@
+# ARBITER .done — ctl-fleet TASKS Verify Q (nQ round 2/3)
+
+nQ: 2/3
+RULING: BAD TEST
+ROUTE: test-maker
+
+## Rationale (one line)
+A5's awk extraction blocks use `in` as a variable — reserved on macOS BSD awk
+(verified empirically: `awk '{ in=1 }'` → syntax error, rc=2) — so extraction
+never runs and the criterion falsely fails; a suite with a broken harness
+cannot certify anything, so the oracle is unmuted first.
+
+## Evidence (independently verified this session)
+- A5: `test/ctl-fleet-tasks.sh:353,365,372` — three awk blocks with
+  `{ in=1; ... }`. Residual harness bug from the r1 BAD TEST fix.
+- A2: fixture `two-projects.json` unit title = `fleet-task-cli`,
+  owner_agent = `orch-fleet-task`. Plan golden render
+  (`make/ctl-fleet-tasks.md:83`) specifies `ORCH fleet-task-cli ◐ …`
+  (unit title). Implementation `unitLabel()` (`bin/ctl-fleet:313-320`)
+  prefers the owner_agent slug → renders `fleet-task`. Test assertion is
+  faithful to the plan; the implementation deviates. A2 is a real product
+  defect with a clean signal independent of the A5 harness bug.
+
+## Route detail
+- test-maker: rename awk variable `in` (e.g. `capture`) in the three
+  extraction blocks; leave A2 untouched.
+- Next round: A2 routes to coder — `unitLabel()` should prefer `unit.title`
+  per plan golden render. Pre-verified, no re-triage needed.
+
+## Board
+finding posted: agent-core/fleet-tasks (cli-62f47036-6bd2-4894-a8ca-7da521c4fcfd)
+
+No code or tests written. Independence preserved.

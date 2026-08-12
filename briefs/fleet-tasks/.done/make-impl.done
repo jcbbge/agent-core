@@ -1,0 +1,23 @@
+make-impl done — fleet-task CLI (coder/implementer)
+worktree: /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-coder-w2h-p6
+
+Created:
+  primitives/tools/fleet-task/fleet-task.ts
+  primitives/tools/fleet-task/types.ts
+  primitives/tools/fleet-task/store.ts
+  primitives/tools/fleet-task/rollup.ts
+  primitives/tools/fleet-task/validate.ts
+  primitives/tools/fleet-task/role.ts
+  primitives/tools/fleet-task/tower.ts
+  primitives/tools/fleet-task/README.md
+
+Symlink:
+  ~/.local/bin/fleet-task -> /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-coder-w2h-p6/primitives/tools/fleet-task/fleet-task.ts
+
+Invoke:
+  fleet-task <verb> [options]
+  bun /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-coder-w2h-p6/primitives/tools/fleet-task/fleet-task.ts <verb> [options]
+  FLEET_TASKS_HOME=<tmpdir> fleet-task --role orch init   # tests use temp store
+  fleet-task --role cord|orch <write-verb> ...            # writes require cord|orch
+
+Live store: ~/.fleet-tasks/state.json (created by init if absent)

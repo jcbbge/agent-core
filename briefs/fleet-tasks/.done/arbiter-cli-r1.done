@@ -1,0 +1,110 @@
+# Arbiter ruling — fleet-task CLI, nQ round 1 of 3
+
+arbiter: arbiter-cli-r1 (fresh; wrote no code, no tests)
+suite: cd ~/agent-core/primitives/tools/fleet-task && bun test fleet-task.test.ts
+tester report: 7 pass / 5 fail (arbiter re-run: 8 pass / 4 fail — see AC11)
+verdict summary: ALL FIVE = BAD TEST. Route: test-maker. Coder has nothing to fix.
+
+Evidence method: read of brief/design/test/impl + read-only CLI reproductions in
+throwaway FLEET_TASKS_HOME dirs (no product/test files touched, nothing committed).
+
+---
+
+## AC1 — BAD TEST → test-maker
+
+Failure: after `unit open`, test expects `mission.progress` all-zeros
+(fleet-task.test.ts:94-100).
+
+Rationale: the test misapplies the "Empty children → zeros" clause
+(make brief line 111) to a mission that HAS one child — after `unit open` the
+mission's children = [u-ac1] with rollup `pending`. Design §1.5
+("units → mission: same aggregation over unit rollup_status values",
+research/fleet-task-tool-design.md:108) and the brief's "From child statuses
+(tasks→unit, units→mission)" (line 106) yield {pending:1, total:1}, which is
+exactly what the impl computes (fleet-task.ts:86-92 → rollup.ts:31-45).
+The empty-children rule governs a mission with ZERO units, not a mission whose
+unit is empty. Impl is spec-faithful; the assertion mis-reads the spec.
+
+## AC2 — BAD TEST → test-maker (two test-side bugs)
+
+Failure: `unit.progress` is `undefined` (fleet-task.test.ts:177).
+
+Rationale (a) — the actual failure: lines 172-176 place `["u-ac2"]` INSIDE the
+`as Record<string, Record<string, unknown>>` type argument (a TypeScript
+indexed-access type), not after the cast as a runtime index. At runtime `unit`
+is the whole units MAP (`{u-ac2: {...}}`), which has no `progress` key — hence
+`undefined`. Compare the correct parenthesization the same file uses at
+lines 358-363 (AC7, passing). Arbiter reproduced the exact CLI sequence
+manually: state.json on disk carries the correct
+`unit.progress = {pending:1, in_progress:1, total:2}`.
+
+Rationale (b) — latent, will fail next round if only (a) is fixed: the
+mission.progress expectation at lines 188-194 is task-grain
+{pending:1, in_progress:1, total:2}. Per design §1.5 the mission aggregates
+UNIT rollup_status values, so with one unit at in_progress the correct value is
+{in_progress:1, total:1} — what the impl stores (verified on disk).
+
+## AC9 — BAD TEST → test-maker
+
+Failure: rollup-changing write exited 1 (fleet-task.test.ts:429).
+
+Rationale: the test patches the task `pending → completed` directly
+(fleet-task.test.ts:422-428). The brief's pinned Legal transitions
+(lines 119-122: `pending → in_progress → completed|cancelled`; also
+`pending → cancelled`; all others reject) make `pending → completed` illegal.
+The impl correctly rejects it (validate.ts:3-8, types.ts:64-69); arbiter
+reproduced: exit 1, stderr "fleet-task: illegal transition for task only:
+pending → completed". With the legal path (pending → in_progress → completed)
+the impl exits 0 and posts contract-exact findings — verified live on
+~/.tower/board.jsonl: topic `agent-core/fleet-tasks`, from
+`fleet-task@agent-core`, body `u-arb9 pending→in_progress` etc. (tower.ts:12-35).
+Fix: transition through in_progress before completing.
+
+## AC10 — BAD TEST → test-maker
+
+Failure: write exited 0 but stderr empty; expected Tower-failure warning
+(fleet-task.test.ts:487).
+
+Rationale: the test's ONLY write seeds a `pending` task into a unit whose
+rollup is already `pending` (empty children → pending, brief line 111). No
+rollup_status CHANGES, so per the D4 contract (brief lines 158-160: post only
+"when a unit or mission rollup_status CHANGES") no Tower post is attempted and
+stderr is correctly empty. AC10 demands "a rollup-changing write"; this write
+is not one. Arbiter verified the impl path the AC actually specifies: a
+rollup-changing write (pending → in_progress) with project_root under /tmp
+exits 0 with stderr "fleet-task: warning: Tower post failed (post refused:
+run from a real repo cwd, not scratch/temp)" (tower.ts:31-34; Tower refusal
+regex ~/.tower/cli.mjs:124 covers /private/var/folders after realpath).
+Fix: make the write flip the rollup (e.g. seed in_progress, or patch
+pending → in_progress).
+
+## AC11 — BAD TEST → test-maker
+
+Failure: both writers exit 0 but `sawLock` false (fleet-task.test.ts:522);
+tester run failed, arbiter re-run PASSED — flaky by construction.
+
+Rationale: the test polls `existsSync(state.json.lock)` every 2 ms
+(fleet-task.test.ts:513-516) for a lockfile whose critical section here is
+sub-millisecond-to-few-ms (these writes cause no rollup change → no Tower
+subprocess inside the lock). Observing an ephemeral file by interval polling
+from a second process is a coin flip. The impl DOES implement the pinned
+lockfile contract (store.ts:55-86: `wx` exclusive create, 30 s staleness
+reclamation, 5 s bounded wait, unlock in finally) and the no-lost-updates /
+valid-JSON legs of the AC pass. Fix: make the lock observable
+deterministically — e.g. pre-create/hold the lockfile and assert the writer
+waits then proceeds (or times out bounded), or drop `sawLock` and keep the
+corruption/lost-update assertions which are the AC's substance.
+
+---
+
+## Routing
+
+- test-maker: fix AC1 (mission.progress = {pending:1,total:1}), AC2 (runtime
+  index outside the `as` cast; mission.progress = {in_progress:1,total:1}),
+  AC9 (legal transition chain), AC10 (use a rollup-changing write),
+  AC11 (deterministic lock observation). Re-run full suite.
+- coder: NO action — implementation verified spec-faithful on all five points.
+- escalate: not needed; nothing pre-existing or out-of-scope found.
+
+nQ: round 1 consumed of 3. If the suite is still red after round 3, escalate
+to the human via concierge.
