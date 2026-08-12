@@ -67,6 +67,7 @@ pub fn readLineInto(allocator: std.mem.Allocator, reader: *std.Io.File.Reader, l
                 else => return error.ReadFailed,
             };
             _ = r.discardDelimiterInclusive('\n') catch {};
+            line_buf.deinit(allocator);
             line_buf.* = aw.toArrayList();
             return line_buf.items.len > 0;
         },
