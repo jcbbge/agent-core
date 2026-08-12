@@ -1,7 +1,7 @@
 // Shared subprocess helpers for fleet-task acceptance tests.
 // Tests invoke the CLI entry via bun; never touch live ~/.fleet-tasks/.
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -9,6 +9,11 @@ import { fileURLToPath } from "node:url";
 export const CLI = join(dirname(fileURLToPath(import.meta.url)), "fleet-task.ts");
 export const AGENT_CORE_ROOT = "/Users/jrg/agent-core";
 export const TOWER_BOARD = join(process.env.HOME ?? "", ".tower", "board.jsonl");
+export const HERDR_PANE_FIXTURE = join(
+  AGENT_CORE_ROOT,
+  "briefs/fleet-tasks/make/fixtures-herdr-pane-get-w2H-p1.json",
+);
+export const HERDR_PANE_ID = "w2H:p1";
 
 export type RunResult = {
   status: number | null;
@@ -116,4 +121,62 @@ export function boardLineCount(): number {
 
 export function cleanupHome(home: string): void {
   rmSync(home, { recursive: true, force: true });
+}
+
+type HerdrEnvelope = {
+  id: string;
+  result: {
+    pane: {
+      pane_id: string;
+      tokens: { role: string };
+      [key: string]: unknown;
+    };
+    type: string;
+  };
+};
+
+/** Live-captured herdr 0.8.0 pane get envelope; role field swappable for deny-path cases. */
+export function loadHerdrPaneFixture(role = "1-CORD"): HerdrEnvelope {
+  const data = JSON.parse(readFileSync(HERDR_PANE_FIXTURE, "utf8")) as HerdrEnvelope;
+  data.result.pane.tokens.role = role;
+  return data;
+}
+
+/** PATH-prepending stub that prints the fixture for `herdr pane get <id>`. */
+export function installHerdrStub(envelope: HerdrEnvelope): { binDir: string; cleanup: () => void } {
+  const binDir = mkdtempSync(join(tmpdir(), "fleet-task-herdr-stub-"));
+  const fixturePath = join(binDir, "pane-get.json");
+  writeFileSync(fixturePath, JSON.stringify(envelope));
+  const herdrPath = join(binDir, "herdr");
+  writeFileSync(
+    herdrPath,
+    `#!/bin/sh
+if [ "$1" = "pane" ] && [ "$2" = "get" ]; then
+  cat "${fixturePath}"
+  exit 0
+fi
+echo "herdr stub: unsupported: $*" >&2
+exit 1
+`,
+  );
+  chmodSync(herdrPath, 0o755);
+  return { binDir, cleanup: () => rmSync(binDir, { recursive: true, force: true }) };
+}
+
+export function runFleetTaskWithHerdr(
+  args: string[],
+  home: string,
+  opts: {
+    envelope: HerdrEnvelope;
+    paneId?: string;
+    extraEnv?: Record<string, string | undefined>;
+  },
+): RunResult & { cleanupHerdr: () => void } {
+  const { binDir, cleanup } = installHerdrStub(opts.envelope);
+  const result = runFleetTask(args, home, {
+    HERDR_PANE_ID: opts.paneId ?? HERDR_PANE_ID,
+    PATH: `${binDir}:${process.env.PATH ?? ""}`,
+    ...opts.extraEnv,
+  });
+  return { ...result, cleanupHerdr: cleanup };
 }

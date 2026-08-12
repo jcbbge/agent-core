@@ -31,8 +31,10 @@ function roleFromHerdr(): RoleResolution {
   if (r.exitCode !== 0) return { ok: false, reason: "undeterminable" };
 
   try {
-    const data = JSON.parse(r.stdout.toString()) as { tokens?: { role?: string } };
-    const raw = data.tokens?.role;
+    const data = JSON.parse(r.stdout.toString()) as {
+      result?: { pane?: { tokens?: { role?: string } } };
+    };
+    const raw = data.result?.pane?.tokens?.role;
     if (!raw || !(raw in HERDR_MAP)) return { ok: false, reason: "undeterminable" };
     return { ok: true, role: HERDR_MAP[raw] };
   } catch {
