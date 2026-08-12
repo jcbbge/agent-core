@@ -94,6 +94,17 @@ export default function (pi: any) {
       const pointer = flightPointerLine();
       if (pointer) lines.push(pointer);
 
+      // Boot card stamp (primitives/tools/boot-card/): which Session
+      // Boundary Contract legs this extension actually loaded this run.
+      // This extension owns legs 2-3 only; leg 1 is tower-auto's, leg 4 is
+      // circadian-mind's — reported by name, never re-derived here.
+      try {
+        const stamp = `[boot] handoff ${handoff ? "✓" : "✗(none declared)"} · flight ${pointer ? "✓" : "✗(none<24h)"} · tower: tower-auto extension · memory: circadian-mind extension`;
+        lines.push(stamp);
+      } catch {
+        // a recorder never blocks the flight: stamp failure must never break the extension
+      }
+
       if (lines.length === 0) return; // silent when there is nothing to say
 
       return {

@@ -42,6 +42,10 @@ fi
 [ -n "$CWD" ] && [ -d "$CWD" ] || CWD="$PWD"
 
 LINES=()
+TOWER_LOADED=0
+HANDOFF_LOADED=0
+FLIGHT_LOADED=0
+MEMORY_LOADED=0
 
 # --- Leg 1: Tower carry-over ---------------------------------------------
 if [ -x "$BUN" ] && [ -f "$TOWER_CLI" ]; then
@@ -51,6 +55,7 @@ if [ -x "$BUN" ] && [ -f "$TOWER_CLI" ]; then
   UNRELAYED="${UNRELAYED:-0}"
   OPENQ="${OPENQ:-0}"
   if [ "$UNRELAYED" -gt 0 ] || [ "$OPENQ" -gt 0 ]; then
+    TOWER_LOADED=1
     LINES+=("[Tower] Carried over from earlier sessions: ${UNRELAYED} unrelayed message(s), ${OPENQ} open question(s). Run /tower to see them; relay/surface before new work.")
   fi
 else
@@ -70,6 +75,7 @@ if command -v git >/dev/null 2>&1 && (cd "$CWD" 2>/dev/null && git rev-parse --g
       HASH="${HEADER%% *}"
       TODO_TRIMMED="$(printf '%s' "$TODO" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
       if [ "$TODO_TRIMMED" != "—" ]; then
+        HANDOFF_LOADED=1
         LINES+=("[Tower] Last handoff (${HASH}): TODO: ${TODO_TRIMMED}")
       fi
     fi
@@ -83,6 +89,7 @@ if [ -d "$FLIGHT_DIR" ]; then
     MTIME="$(stat -f %m "$FLIGHT_DIR/$LATEST" 2>/dev/null || stat -c %Y "$FLIGHT_DIR/$LATEST" 2>/dev/null)"
     NOW="$(date +%s)"
     if [ -n "$MTIME" ] && [ $((NOW - MTIME)) -lt 86400 ]; then
+      FLIGHT_LOADED=1
       LINES+=("[Tower] Flight snapshot from the previous context: ${FLIGHT_DIR}/${LATEST} - read it if the handoff above seems incomplete.")
     fi
   fi
@@ -101,8 +108,21 @@ fi
 WAKE_TS="/Users/jrg/circadian/src/wake.ts"
 if [ -x "$BUN" ] && [ -f "$WAKE_TS" ]; then
   WAKE_OUT="$(cd "$CWD" 2>/dev/null && "$BUN" "$WAKE_TS" 2>/dev/null || true)"
-  [ -n "$WAKE_OUT" ] && LINES+=("$WAKE_OUT")
+  if [ -n "$WAKE_OUT" ]; then
+    MEMORY_LOADED=1
+    LINES+=("$WAKE_OUT")
+  fi
 fi
+
+# Boot card stamp (primitives/tools/boot-card/): one line reporting which
+# Session Boundary Contract legs this adapter actually loaded this run.
+# This adapter owns all four legs in one script, unlike claude-code/pi
+# where legs are split across separate adapters.
+TOWER_GLYPH="✗(clear)"; [ "$TOWER_LOADED" -eq 1 ] && TOWER_GLYPH="✓"
+HANDOFF_GLYPH="✗(none declared)"; [ "$HANDOFF_LOADED" -eq 1 ] && HANDOFF_GLYPH="✓"
+FLIGHT_GLYPH="✗(none<24h)"; [ "$FLIGHT_LOADED" -eq 1 ] && FLIGHT_GLYPH="✓"
+MEMORY_GLYPH="✗(no output)"; [ "$MEMORY_LOADED" -eq 1 ] && MEMORY_GLYPH="✓"
+LINES+=("[boot] tower ${TOWER_GLYPH} · handoff ${HANDOFF_GLYPH} · flight ${FLIGHT_GLYPH} · memory ${MEMORY_GLYPH}")
 
 if [ "${#LINES[@]}" -eq 0 ]; then
   exit 0
