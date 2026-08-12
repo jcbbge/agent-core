@@ -1,0 +1,8 @@
+* main
++ Staged: 1 files
+   staged.txt
+~ Modified: 1 files
+   tracked.txt
+? Untracked: 2 files
+   untracked-a.txt
+   untracked-b.txt

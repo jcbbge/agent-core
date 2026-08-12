@@ -31,6 +31,7 @@ pub fn build(b: *std.Build) void {
 
     const tests = b.addTest(.{ .root_module = lib_mod });
     const run_tests = b.addRunArtifact(tests);
+    run_tests.setCwd(b.path("."));
     const test_step = b.step("test", "Run slim tests");
     test_step.dependOn(&run_tests.step);
 }

@@ -42,5 +42,5 @@ Then swap `rtk`→`slim` in `~/.claude/hooks/rtk-guard.sh` and `~/agent-core/pri
 ## Deviations
 
 - `ps.raw.txt` line 4 corruption removed from fixtures; `ps.rtk.txt` regenerated from slim filter on cleaned raw
-- Differential tests SKIP on live-repo byte drift (rtk present)
+- Git frozen-fixture tests under `test/fixtures/` (deterministic repo + goldens; replaces rtk differential SKIPs)
 - Zig 0.16 `std.mem.trim(slice, charset)` argument order differs from 0.15

@@ -1,0 +1,9 @@
+b99fe27 tip commit (2 years, 7 months ago) <Fixture Author>
+094f181 add notes (2 years, 7 months ago) <Fixture Author>
+3cb7000 long body commit (2 years, 7 months ago) <Fixture Author>
+  body line 1
+  body line 2
+  body line 3
+  [+5 lines omitted]
+de0ca02 add tracked file (2 years, 7 months ago) <Fixture Author>
+4e98221 initial commit (2 years, 7 months ago) <Fixture Author>
