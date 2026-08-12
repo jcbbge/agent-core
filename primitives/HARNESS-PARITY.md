@@ -16,8 +16,11 @@ build it before calling the harness registered.
 ~/agent-core/cli/zig-out/bin/agent-core status   # expect: N ok, 0 stale, 0 missing
 ```
 
-Current: **163 ok / 0 stale / 0 missing** (full skill directories included —
-port engine deploys the whole tree as of cli 4ad4285).
+Current: **214 ok / 0 stale / 0 missing** (full skill directories included —
+port engine deploys the whole tree as of cli 4ad4285; config-audit
+registrations of 2026-08-12 added 12 skills, and the registry's
+"config-audit exclusions" block names every deliberate non-deploy:
+Arc project-scoped skills, cursor's own built-ins, pi-native extensions).
 
 ## The matrix
 

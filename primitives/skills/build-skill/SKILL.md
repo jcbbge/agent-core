@@ -1,0 +1,1 @@
+/Users/jrg/auto-research/skill-for-building-skills/SKILL.md
