@@ -1,0 +1,5 @@
+ORCH U2 verify-beat-port DONE
+commit: 872cf68a8d274405974c0d777acdf504d36b038b
+suite: all acceptance checks passed (after nQ1 bad-test suite fix)
+date: Wed Aug 12 18:41:12 UTC 2026
+pwd: /Users/jrg/herdr-spine

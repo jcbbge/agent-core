@@ -1,0 +1,7 @@
+coder: agnt-coder-w2g-p5
+tower-ledger: ~/agent-core/primitives/hooks/tower-ledger.mjs
+cli: ~/.tower/cli.mjs
+server: ~/.tower/server.mjs
+exports: PHEROMONES, SCENT_TTL_DEFAULTS, emitPheromone, pheromoneField, _test.pheromoneFieldFromRows
+verbs: emit, field, scan
+mcp: pheromone_emit, pheromone_field

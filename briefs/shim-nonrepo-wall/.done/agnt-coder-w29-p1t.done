@@ -1,0 +1,18 @@
+# shim-nonrepo-wall — implementer done (w29-p1t)
+
+worktree: /Users/jrg/.cursor/worktrees/wt-agnt-coder-w29-p1n/wt-agnt-coder-w29-p1t
+
+partition: cursor-spine, cursor-fleet, docs/qa-verify.sh
+
+diff summary:
+- cursor-spine: `is_git_repo_dir()` helper; gate forced `--worktree` on git repo only (non-repo logs profile-discipline fallback, never "forcing"); explicit `--worktree` on non-repo cleared via elif branch
+- cursor-fleet make: `if git -C "$DIR" rev-parse --git-dir` branches — git repo keeps `--worktree` on both roles; non-repo in-place spawn + fallback log
+- docs/qa-verify.sh: shim-nonrepo-wall section (14 AC1–AC3 assertions)
+
+evidence:
+- qa-verify shim-nonrepo-wall: 14/14 PASS
+- qa-verify total: 87 passed (3 unrelated FAIL: .monitor.json env, working-tree-dirty expected, intermittent AC3)
+- AC1 dry-run: `--dir /tmp/...` → `worktree : 0`, cmd omits `--worktree`, stderr has fallback only (no forcing log)
+- AC2 dry-run: `--dir <git-repo>` → `worktree : 1`, cmd carries `--worktree`
+
+commit: none (per brief; CORD gates)

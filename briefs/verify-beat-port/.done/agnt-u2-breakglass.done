@@ -1,0 +1,34 @@
+# U2 break-glass smoke — COLLECTED (u2-breakglass collector)
+
+## Worker collected: u2-breakglass-test
+
+### Board
+- Primary evidence: u2-breakglass finding @ herdr-spine/verify-beat-port (2026-08-12T18:33:31Z)
+- Malformed post: `undefined` @ 2026-08-12T18:34:56Z (no agent body — likely u2-breakglass-test board_post failure)
+- No dedicated u2-breakglass-test CLAIM/DONE board entries
+
+### Worker .done
+- MISSING: ~/agent-core/briefs/verify-beat-port/.done/agnt-u2-breakglass-test.done (not present at collection time)
+- Ephemeral brief path gone: /var/folders/.../tmp.Nxra66KwGH/u2-breakglass.md
+
+## Verdict (implementation smoke — from board + direct CLI evidence)
+
+PASS — break-glass behavior verified on spine-spawn:
+- unmarked `--profile coder` refuse → exit 2 (before topology)
+- verify-mark / verify-status → 0/1; markers at ~/herdr-spine/.verify/<key>/.authored
+- `SPINE_VERIFY_GATE=off` → loud WARN stderr + verify-gate-bypass row in ~/.tower/ledger.jsonl
+
+## Acceptance oracle gap (test-harness, not spine-spawn)
+
+u2-verify-beat-checks.sh reports 6 fails — route to test-maker/arbiter:
+1. stderr_of uses `|| true` → refuse exit codes always 0
+2. VERIFY_DIR=${REPO_ROOT}/.verify but markers live at git-common-dir ~/herdr-spine/.verify
+3. ledger grep expects `"via":"spine-spawn"` but json.dumps emits `"via": "spine-spawn"`
+
+Implementer .done stands (agnt-u2-implementer.done).
+
+## Provenance
+- date -u: 2026-08-12T18:35:09Z
+- pwd -P: /Users/jrg/.cursor/worktrees/herdr-spine/wt-agnt-coder-w2k-p6
+- git rev-parse HEAD: 4838882f7ff8881fd8476e5af39e2ec7302e46c3
+- collector: u2-breakglass (agnt-gate-test pattern)

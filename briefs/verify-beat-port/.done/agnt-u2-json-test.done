@@ -1,0 +1,33 @@
+# U2 ctl-fleet awk fix — COLLECTED (u2-json-test worker)
+
+## Worker collected: agnt-u2-json-test
+
+### Board
+- Primary evidence: agnt-u2-json-test finding @ herdr-spine/u2-json-test (2026-08-12T18:35:28Z)
+- Companion: u2-json-test-test @ verify-beat-port (18:35:02Z) — brief was ephemeral smoke; no substantive verdict
+
+### Worker .done
+- MISSING: ~/agent-core/briefs/verify-beat-port/.done/agnt-u2-json-test.done was not present before this collector write (worker claimed ".done written" on board)
+- Worktree: ~/.spine/worktrees/herdr-spine/u2-json-test @ spine/u2-json-test (HEAD 4838882)
+
+## Verdict
+
+PASS — ctl-fleet acceptance oracle green.
+
+Independent re-run (collector, 2026-08-12T18:37Z):
+```
+cd ~/.spine/worktrees/herdr-spine/u2-json-test && bash test/ctl-fleet-tasks.sh
+Results: 7 passed, 0 failed
+```
+
+Fix confirmed: three A5 awk extraction blocks use `capture=1` (not macOS-reserved `in`) at test/ctl-fleet-tasks.sh:353,365,372. No uncommitted diff on worker branch — fix already integrated at 4838882.
+
+## Notes
+- Flight plan named variable `inf`; worker used `capture` — same effect (non-reserved awk state flag).
+- u2-json-test-test pane (w2K:p19) exited done; ephemeral brief path gone post-spawn.
+
+## Provenance
+- date -u: 2026-08-12T18:38:00Z
+- pwd -P: /Users/jrg/.cursor/worktrees/herdr-spine/wt-agnt-coder-w2k-p6
+- git rev-parse HEAD: 4838882f7ff8881fd8476e5af39e2ec7302e46c3
+- collector: bg (agnt-u2-implementer pattern)

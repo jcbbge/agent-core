@@ -1,0 +1,5 @@
+u3-test-maker complete 2026-08-12
+test: ~/herdr-spine/bin/handlers/tests/test_50_scent_digest.py
+criteria: ~/agent-core/briefs/tower-stigmergy/workers/u3-criteria.md
+DID NOT COMMIT
+DID NOT RUN (handler impl absent in test-maker worktree — expected)

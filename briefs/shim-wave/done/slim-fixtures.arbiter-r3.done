@@ -1,0 +1,42 @@
+# ARBITER RULING — unit slim-fixtures, nQ round 3/3 (FINAL)
+
+RULING: bad test
+ROUTE-TO: test-maker
+FIX-SCOPE: Only primitives/tools/slim/src/fixture_tests.zig in the test-maker
+worktree may change. Every remaining legacy call is enumerated by CORD's
+verified API map (against /opt/homebrew/Cellar/zig/0.16.0/lib/zig/std/Io/Dir.zig);
+there are no others. Two acceptable fixes, test-maker picks ONE:
+  (a) Direct rename, using only these verified names:
+      - line 91/93  tmp_base.makeOpenPath(name, .{})
+                    → std.Io.Dir.createDirPathOpen(tmp_base, io, name, .{})   (Dir.zig:870)
+      - line 92/94  dir.close()  → dir.close(io)                              (Dir.zig:490)
+      - line 96/98  dir.realpathAlloc(alloc, ".")
+                    → dir.realPathFileAlloc(io, ".", alloc)  returns [:0]u8   (Dir.zig:944)
+      (io = the std.Io.Threaded instance's io(), per rounds 1-2.)
+  (b) PREFERRED — delete the API surface entirely: T-FIX-DET only needs two
+      distinct absolute paths under /tmp. Construct "/tmp/slim-fixture-det-1"
+      and "/tmp/slim-fixture-det-2" as strings, create with
+      std.Io.Dir.createDirAbsolute(io, path, .{}) (Dir.zig:809) or
+      createDirPathOpen, and pass the strings straight to buildGitFixture —
+      deleting makeOpenPath/realpathAlloc/close entirely.
+No impl code, no spec changes. This fix-scope is exhaustive: it covers every
+legacy call in the file, so a correct application leaves zero remaining
+whack-a-mole surface.
+
+RATIONALE: The failure is a compile error at fixture_tests.zig:91 naming
+`Io.Dir.makeOpenPath`, a member that does not exist in Zig 0.16.0 — same
+failure class as rounds 1-2 (test-maker authoring against a pre-0.16 stdlib
+mental model). The impl tree is unchanged and green (38/38, exit 0, zero
+skips, Tester-reproduced), so neither spec nor implementation is implicated
+and there is still zero assertion evidence against the impl — the suite has
+never run. Not pre-existing/out-of-scope: the defect lives entirely inside
+the test-maker's own file. This is NOT the "stuck" state the nQ ceiling
+guards against: rounds 1-2 stalled because each fix-scope named only the
+lines in the error message; this round's fix-scope is CORD-verified as a
+complete enumeration of every remaining legacy call, so the loop now has a
+guaranteed-resolving path. Option (b) is the world-class-DX choice — the
+test needs two paths, not a directory-handle dance, and deleting the API
+surface deletes the failure class. If the suite is still red after this
+exhaustive fix, that is genuine stuck and escalates to the human.
+
+Recorded by: ARBITER (Polaris), fresh agent. No code or tests written.

@@ -1,0 +1,20 @@
+agnt-u2-test-maker complete 2026-08-12T18:31:00Z
+artifact: ~/agent-core/briefs/verify-beat-port/qa/u2-verify-beat-checks.sh
+worktree: /Users/jrg/.cursor/worktrees/herdr-spine/wt-agnt-test-maker-w2k-p7
+head: 4838882f7ff8881fd8476e5af39e2ec7302e46c3
+handoff: tester runs suite against integrated bin/spine-spawn; test-maker did not run tests
+
+Checks asserted:
+  a-pi-refuse / a-claude-refuse — unmarked --profile coder refuses for --kind pi and claude (nonzero exit)
+  a-pi-refuse-msg / a-claude-refuse-msg — refusal stderr names fix (verify-mark or spine-spawn make) and isolation law
+  a-pi-refuse-gate — refusal stderr identifies verify gate
+  a-no-brief — coder without --brief refused (locked design §8)
+  a-fail-before-topology — refused spawn does not change herdr pane set (gate before topology)
+  b-verify-mark / b-marker-file — verify-mark exits 0; .verify/<sha1[:16]>/.authored created
+  b-verify-status / b-verify-status-out — verify-status exits 0 after mark; reports authored
+  b-verify-status-missing — verify-status exits 1 with MISSING for unmarked brief
+  c-make-pi / c-make-claude — make bifurcates per kind; JSON stdout; two distinct worktree/cwd paths
+  noncoder-unchanged — orchestrator profile does not hit verify gate (locked design §9)
+  d-breakglass-warn — SPINE_VERIFY_GATE=off emits WARN/BYPASS on stderr
+  d-breakglass-ledger — ~/.tower/ledger.jsonl gets verify-gate-bypass via spine-spawn
+  doc-verify-beat — docs/verify-beat.md exists and summarizes verify wall

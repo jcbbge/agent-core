@@ -1,0 +1,5 @@
+U4 e2e DONE
+avail=ph-msqc44d9-3efq claim=ph-msqc4s1j-eppd done=ph-msqc4s2o-7tje
+idle-flip board: herdr-spine/scent-digest w2G:pC 1 match prompt-failed (reap race)
+scan _state=done
+provenance posted to board

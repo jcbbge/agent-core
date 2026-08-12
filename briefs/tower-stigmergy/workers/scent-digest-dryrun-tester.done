@@ -1,0 +1,10 @@
+scent-digest-dryrun tester — PASS
+2026-08-12
+
+Command: cd /Users/jrg/herdr-spine && python3 bin/handlers/tests/test_50_scent_digest.py
+Exit: 0
+Result: all 11 passed
+
+Live flag: ~/.tower/scent-digest-live ABSENT (ls: No such file or directory)
+
+Criteria: scent-digest-dryrun-criteria.md (mechanical asserts all green via suite)

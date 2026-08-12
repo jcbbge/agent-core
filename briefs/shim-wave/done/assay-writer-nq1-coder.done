@@ -1,0 +1,19 @@
+assay-writer nQ1 coder round 2 — 2026-08-11T23:20Z
+
+Unit: arbiter nQ1 bad-implementation fixes (classify trim + llm Allocating-writer leaks)
+Role: agnt-coder-w28-pd (implementer)
+
+Files touched:
+- primitives/tools/assay/src/classify.zig
+- primitives/tools/assay/src/llm.zig
+
+Evidence:
+- zig build: PASS (exit 0) from primitives/tools/assay
+- zig build test: NOT RUN (tester wall)
+- git diff: only the two files above
+
+Fixes applied:
+1. std.mem.trim(u8, text, " \t\r\n") in Label.parse
+2. Four fetch sites: Allocating.fromArrayList + defer content.deinit after toArrayList()
+
+Hand off: tester re-runs zig build test + live probe

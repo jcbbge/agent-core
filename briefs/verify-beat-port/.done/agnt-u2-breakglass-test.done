@@ -1,0 +1,32 @@
+# U2 break-glass-test — COLLECTED (u2-breakglass collector, round 2)
+
+## Worker: u2-breakglass-test
+
+### Board
+- u2-breakglass finding @ 18:33:31Z — direct CLI smoke PASS (refuse exit 2, verify-mark/status, break-glass WARN+ledger)
+- u2-breakglass-smoke finding @ 18:36:37Z — worker re-run PASS with full evidence + marker key 0007ac1c294c4eb1
+- Malformed `undefined` posts @ 18:34:56Z, 18:37:12Z (board_post failures; no agent body)
+- Prior COLLECTED @ 18:35:13Z, 18:35:35Z, 18:36:55Z
+
+### Worker .done
+- agnt-u2-breakglass-test.done: written by collector (worker never authored its own)
+- Proxy: agnt-u2-breakglass-smoke.done (18:36:34Z) — same break-glass criteria, explicit note that test worker .done was missing
+
+## Verdict: PASS
+
+Break-glass smoke criteria satisfied (design § break-glass + qa check d):
+- gate ON unmarked coder → exit 2 (VERIFY GATE before topology)
+- verify-mark/status → 0; marker at ~/herdr-spine/.verify/0007ac1c294c4eb1/.authored
+- SPINE_VERIFY_GATE=off → WARN stderr + ledger verify-gate-bypass row (via=spine-spawn)
+- Environmental: agent_name_taken on spawn retry (prior pane) — audit path confirmed before topology failure
+
+No repo edits. Implementer .done stands.
+
+## Route upward
+Acceptance suite u2-verify-beat-checks.sh: arbiter ruled BAD TEST (7 harness defects). Test-maker fix pending.
+
+## Provenance
+- date -u: 2026-08-12T18:38:00Z
+- pwd -P: /Users/jrg/.cursor/worktrees/herdr-spine/wt-agnt-coder-w2k-p6
+- git rev-parse HEAD: 4838882f7ff8881fd8476e5af39e2ec7302e46c3
+- collector: u2-breakglass

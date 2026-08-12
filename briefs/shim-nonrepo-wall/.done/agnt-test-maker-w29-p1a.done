@@ -1,0 +1,47 @@
+# AGNT test-maker — shim-nonrepo-wall (w29-p1a)
+
+STATUS: done
+ROLE: test-maker
+WORKTREE: /Users/jrg/.cursor/worktrees/cursor-shim/wt-agnt-test-maker-w29-p1a
+
+ARTIFACT: docs/qa-verify.sh
+
+## Tests added (14 new assertions in `### shim-nonrepo-wall`)
+
+| Check | Criterion |
+|---|---|
+| AC1: spine gates forced worktree on git repo | static — `rev-parse --git-dir` guard in cursor-spine |
+| AC1: spine names profile-discipline fallback | static — exact fallback log string in cursor-spine |
+| AC1: coder non-repo dry-run worktree off | dry-run — `worktree  : 0` for `--dir <non-repo>` |
+| AC1: coder non-repo dry-run cmd omits --worktree | dry-run — cmd line has no `--worktree` |
+| AC1: non-repo coder logs profile-discipline fallback | pre-HERDR stderr — fallback line emitted |
+| AC1: non-repo coder does not log forced worktree | pre-HERDR stderr — no "forcing --worktree" |
+| AC1: non-repo coder verify gate unchanged (REFUSED w/o criteria) | gate REFUSED without verify-mark |
+| AC1: non-repo coder PERMITTED after criteria | gate permitted with verify-mark (unchanged law) |
+| AC2: coder git-repo dry-run worktree on | dry-run — `worktree  : 1` with explicit `--dir <git-repo>` |
+| AC2: coder git-repo dry-run cmd carries --worktree | dry-run — interactive cmd includes `--worktree` |
+| AC3: make guards worktree fork on git repo | static — `rev-parse --git-dir` in make section |
+| AC3: make names profile-discipline fallback | static — fallback log string in cursor-fleet |
+| AC3: make still forks worktrees for git repo (both roles) | static — ≥2 `--worktree` refs in make section |
+| AC3: make git guard precedes worktree fork | static — git check line precedes first `--worktree` in make |
+
+## Expected red-on-old / green-on-new
+
+Before implementer merge, AC1 dry-run + stderr checks fail (today: non-repo still `worktree  : 1` and logs "forcing --worktree"). AC3 static checks fail (no git guard / fallback in cursor-fleet make). AC2 and prior 76 assertions should remain green.
+
+After implementer merge: `bash docs/qa-verify.sh` → 90 passed, 0 failed.
+
+## Run (tester)
+
+```bash
+cd ~/cursor-shim && bash docs/qa-verify.sh
+```
+
+## Provenance
+
+- Brief: ~/agent-core/briefs/shim-nonrepo-wall/brief.md
+- Instruction: ~/cursor-shim/.instr/agnt-test-maker-w29-p1a.md
+- Did not read implementation diff; tests derived from acceptance criteria only.
+- Did not run the suite (test-maker hands off to tester).
+
+HANDOFF: tester runs `bash docs/qa-verify.sh`; expect 14 new FAIL until coder lands, then full green.

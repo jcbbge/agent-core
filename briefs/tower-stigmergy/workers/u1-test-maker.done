@@ -1,0 +1,5 @@
+u1-test-maker complete 2026-08-12
+test: ~/agent-core/primitives/hooks/tower-pheromone.test.mjs
+criteria: ~/agent-core/briefs/tower-stigmergy/workers/u1-criteria.md
+DID NOT COMMIT
+DID NOT RUN (impl may be absent — expected)

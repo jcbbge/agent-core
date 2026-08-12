@@ -1,0 +1,18 @@
+# shim-nonrepo-wall — implementer done (w29-p3c)
+
+worktree: /private/tmp/qa-nonrepo-dir.7ff6RV (non-repo --dir spawn; no worktree fork)
+
+partition: cursor-spine, cursor-fleet
+
+diff summary:
+- cursor-spine: `is_git_repo_dir()` helper; gate forced/explicit `--worktree` on `git -C "$DIR" rev-parse --git-dir`; log `isolation: <dir> is not a git repo — worktree N/A, profile-discipline fallback`
+- cursor-fleet make: conditional `MAKE_WT_ARGS=(--worktree)` only when target dir is a git repo; in-place spawn + fallback log for non-repo dirs
+
+evidence:
+- AC1 dry-run: `--dir /private/tmp/qa-nonrepo-dir.7ff6RV` → `worktree : 0` + fallback line; cmd omits `--worktree`
+- AC1 live: interactive spawn via instr-file pointer; criteria gate PERMITTED + fallback logged (no launch failure)
+- AC2 dry-run: `--dir <git-repo>` → `worktree : 1` + cmd carries `--worktree wt-agnt-coder-w29-p3c`
+- verify gate unchanged: criteria-authored check still enforced on non-dry-run coder spawns
+- profile: CODER isolation wall observed — built from plan/brief only; no tests written, run, or judged
+
+commit: none (per brief; CORD gates)

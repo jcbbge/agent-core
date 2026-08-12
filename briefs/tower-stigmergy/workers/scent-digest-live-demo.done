@@ -1,0 +1,13 @@
+digest received: yes
+
+claim cmd:
+bun ~/.tower/cli.mjs emit work-claimed constellation-zg/tower-stigmergy /Users/jrg/agent-core/briefs/tower-stigmergy/impl-mission.md --ref ph-msqh0ioi-7b8s --evidence /Users/jrg/agent-core/briefs/tower-stigmergy/impl-mission.md
+
+claim stdout:
+ph-msqh33uo-edro
+
+done cmd:
+bun ~/.tower/cli.mjs emit work-done constellation-zg/tower-stigmergy /Users/jrg/agent-core/briefs/tower-stigmergy/impl-mission.md --ref ph-msqh0ioi-7b8s --evidence /Users/jrg/agent-core/briefs/tower-stigmergy/impl-mission.md
+
+done stdout:
+ph-msqh35tr-5uam

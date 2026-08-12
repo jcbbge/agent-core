@@ -1,0 +1,8 @@
+agnt-u1-test-maker complete round=2 2026-08-12T18:33:15Z
+artifact: ~/agent-core/briefs/verify-beat-port/qa/u1-spawn-doctrine-checks.sh
+change: check 1b regex loosened — spine-spawn .*--kind (pi\|claude|pi|claude) tolerates mode token between spine-spawn and --kind
+other_checks: untouched
+handoff: tester re-runs suite against integrated docs/spawn.md; test-maker did not run tests
+provenance:
+  date_utc: Wed Aug 12 18:33:15 UTC 2026
+  pwd: /Users/jrg/herdr-spine

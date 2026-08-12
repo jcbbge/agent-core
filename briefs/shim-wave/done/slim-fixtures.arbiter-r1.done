@@ -1,0 +1,22 @@
+# ARBITER RULING — unit slim-fixtures, nQ round 1/3
+
+RULING: bad test
+ROUTE-TO: test-maker
+FIX-SCOPE: Only primitives/tools/slim/src/fixture_tests.zig in the test-maker
+worktree (shim-agnt-test-maker-1786507695) may change — replace the nonexistent
+Zig 0.16.0 std API references (`std.process.Term` at line 45, `std.fs.cwd()` at
+line 71) with the real 0.16.0 API; no impl code, no spec changes.
+
+RATIONALE: Both compilation errors are in fixture_tests.zig, authored by the
+test-maker, and both name std API members that do not exist in Zig 0.16.0.
+Verified by direct read: line 45 declares `fn exitCode(term: std.process.Term)`
+— the coder's integration_tests.zig uses the same std.process.run surface
+successfully by switching on `result.term` with inferred type, never naming the
+type. The impl tree compiles clean and passes 38/38 (reproduced by the Tester),
+so neither spec nor implementation is implicated; the suite never ran, so there
+is zero assertion evidence against the impl. Not pre-existing: slim's
+src/filters/* is untouched by both parties. The test-maker never runs its own
+tests (role discipline), so it could not have caught this — the fix is to make
+the suite compile against the actual 0.16.0 std API, then Tester re-runs.
+
+Recorded by: ARBITER (Polaris), fresh agent. No code or tests written.

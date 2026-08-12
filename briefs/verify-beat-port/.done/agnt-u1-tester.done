@@ -1,0 +1,15 @@
+verdict: fail
+script_exit: 1
+script: /Users/jrg/agent-core/briefs/verify-beat-port/qa/u1-spawn-doctrine-checks.sh
+target: /Users/jrg/herdr-spine
+failed_checks:
+  - partition: unexpected changed file outside partition: .gitignore
+  - partition: unexpected changed file outside partition: bin/spine-spawn
+passed_checks: 1a,1b,1c,1d,1e,1f,1g,task-1,task-2,task-3,task-4,task-5,universal-law
+rg_spawn_md_exit: 1
+rg_ctl_fleet_md_exit: 1
+provenance:
+  date_utc: Wed Aug 12 18:33:48 UTC 2026
+  pwd: /Users/jrg/herdr-spine
+  head: 4838882f7ff8881fd8476e5af39e2ec7302e46c3
+q_to_arbiter: U1 content checks all pass; partition gate fails on .gitignore and bin/spine-spawn changes outside U1 docs/spawn.md partition. Arbiter: rule on whether these are expected (U2 owns bin/) or block U1 exit.

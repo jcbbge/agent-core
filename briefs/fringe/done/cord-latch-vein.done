@@ -1,0 +1,58 @@
+# DONE CORD — cord-latch-vein
+
+Date: 2026-08-11
+Workspace: w1Q · pane w1Q:p1
+Commit: 794196c (main) — feat(tools): latch + vein, 81 files
+
+## Integration gate — evidence personally verified by CORD
+
+### latch (primitives/tools/latch/)
+- zig build + zig build test: exit 0 (CORD run)
+- Exit-code matrix, all live under CORD's hand:
+  - 0 event: file wait, touch at 1s → wakeup 1012ms
+  - 2 usage: bare `latch wait`
+  - 3 timeout: file wait --timeout 2s; hold --timeout 2s
+  - 4 vanished: wait on nonexistent pane w1Q:pZZ
+  - hold stamped: gate touch at 1s → exit 0 at 1006ms
+- GATE ZERO GREEN: 593s blocking `latch wait --pane` inside a real herdr
+  pane, zero harness stuck-detection/kill/nag
+  (briefs/fringe/latch-vein/gate-zero-evidence.md)
+- Notable worker fix: live herdr emits `pane_closed` (underscore), not
+  `pane.closed` — close-during-wait now exits 4 correctly.
+
+### vein (primitives/tools/vein/)
+- zig build + zig build test: exit 0 (CORD run, post-fix)
+- Pass-1/2 (40 sessions) EXACT vs oracle: 2246 calls (1597 CC / 649 pi),
+  1,988,837 result bytes (CORD summed via csv parser), 2080/2246 (92.6%)
+  ineligible, 33 exact ≥3-repeat loops / 162 excess, 298 errors
+  (274/16/3/3/2), hooks 1826 / 922,998 ms, afplay 312 / 657,476 ms (71.2%)
+- Pass-3 (20 sessions) EXACT: 988 calls (618/370), 1,049,463 B,
+  63 eligible / 83,181 B, 85 errors (61/14/5/5), hooks 266 / 161,961 ms,
+  afplay 53 / 111,276 ms
+- CORD re-ran both sets post-fix: CSVs and all 8 reports byte-identical
+  to test/acceptance/ oracle files. Scan wall: 0.3s (pass12), 0.08s (pass3)
+- Schema drift: literal UNKNOWN + exit 4 (CORD-reproduced)
+
+### Truth-law hole caught at the gate (fixed before commit)
+- `vein scan --sessions` silently skipped entries that were neither known
+  session IDs nor absolute .jsonl paths — unknown ID AND relative path to
+  an existing drift fixture both exited 0 with an empty CSV. CORD repro,
+  root cause read (resolveRef fall-through swallowed by caller).
+- Fix (agnt-vein-resolve-fix via orch-vein): unresolvable entry → stderr
+  `UNKNOWN: unresolvable session <token>` + exit 3; relative .jsonl that
+  exists resolves honestly (drift fixture → UNKNOWN exit 4). README pins
+  the codes. CORD re-verified all three repro cases + full acceptance.
+
+### Usage note (not a defect)
+- `latch wait --pane` --until is single-valued (last-wins); CORD's
+  `--until done --until idle` watched idle only and timed out at 20m
+  despite the pane reaching done. Default (no --until) = idle OR done.
+  Documented in README ("match one status").
+
+## Fleet
+- ORCH latch (w1Q:p2), ORCH vein (w1Q:p3): evidence gated, panes reaped.
+- All AGNT panes reaped by their ORCHs; markers under briefs/fringe/done/.
+
+## Handoff
+- Install both binaries to ~/.local/bin: operator scope (per brief).
+- Board: DONE CORD finding posted to agent-core/latch-vein.

@@ -1,0 +1,5 @@
+Unit D parity tester complete 2026-08-12T20:31:30Z
+verdict: FAIL (4 failures)
+evidence: briefs/cursor-parity/d-parity-tester-results.md
+board: agent-core/cursor-parity t-msqjqvea-0h8y
+failures: F-D-A5 F-D-DIR-CC F-D-DIR-PI F-D-DIR-CUR

@@ -1,0 +1,9 @@
+impl-dryrun.done
+ORCH tower-dryrun Phase A complete 2026-08-12T18:50:39Z
+commit: e55ff54b24031b4a75987a0e0860c5136648786e (bin/handlers/50-scent-digest + bin/handlers/tests/test_50_scent_digest.py)
+tests: python3 bin/handlers/tests/test_50_scent_digest.py → all 11 passed (ORCH reproduced; tester PASS)
+dry-run artifacts ≥2:
+  - spine-e783a4f1… pane w2G:pH dry-run would prompt ph-msqg279u-jmni
+  - spine-8477c4e3… pane w2G:pJ dry-run would prompt ph-msqg279u-jmni, ph-msqg2lmk-gtzw
+LIVE flag: ABSENT (not created by ORCH)
+next: IDLE await CORD cutover go for Phase B

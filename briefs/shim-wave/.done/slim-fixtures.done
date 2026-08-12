@@ -1,0 +1,24 @@
+# slim-fixtures — DONE (2026-08-11)
+
+## Landed
+- main @ 0634b9d — "test(slim): close the fixture suite — self-sufficient test step, T-FIX-LS, exit-code truth-law"
+- Builds on operator-landed 76476f3 (oracle suite: fixture_tests.zig, build-git-repo.sh, git goldens, setCwd).
+
+## Final state (main, clean tree, zig-out deleted)
+- `zig build test` → exit 0, 42/42 passed, ZERO skips. Determinism-twice identical. Goldens eyeballed.
+
+## Done-when battery
+- [x] zig build test exit 0, ZERO skips (42/42 on main, clean tree)
+- [x] T-DIFF-GS/GL replaced by frozen-fixture oracle tests (T-FIX-DET, T-FIX-GS, T-FIX-GL, T-EXIT-GIT)
+- [x] T-DIFF-LS also replaced (T-FIX-LS) — 3rd skip found at runtime, covered per ZERO-skips gate
+- [x] Deterministic git repo fixture: pinned dates/author/committer, init.defaultBranch, no network
+- [x] Frozen fixtures + goldens committed; regeneration script committed
+- [x] Truth law preserved: raw-pass + non-zero-exit tests (unit + integration levels)
+- [x] README documents regeneration
+- [x] No rtk dependency
+
+## Verify beat record
+- Make: coder + test-maker parallel worktrees (cursor-fleet make; two cursor-spime bugs fixed en route — worktree naming, multi-line instruction encoding)
+- Arbiter: 5 rounds — 3 bad-test rulings (Zig 0.16 Io.Dir API), 1 bad-implementation (build.zig install-step gap), nQ ceiling hit at round 4 → operator override (A: continue), round 5 → operator override (A2: arbiter authors the fix)
+- Tester: PASS on landed tree 0634b9d (authoritative clean-state run)
+- Integration: CORD mechanical merge; operator direct-landed the oracle suite mid-flight (76476f3); delta rebased onto main tip and landed ff

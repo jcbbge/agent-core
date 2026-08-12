@@ -1,0 +1,34 @@
+# AGNT U2 test-maker fix — harness defects (arbiter nQ1 BAD TEST)
+
+STATUS: done
+
+ARTIFACT: ~/agent-core/briefs/verify-beat-port/qa/u2-verify-beat-checks.sh
+
+## Harness fixes (diff summary)
+
+1. **Exit-code preservation** — Replaced `stderr_of`/`combined_of` (subshell + `|| true` swallowed rc) with `capture_stderr`, `capture_combined`, and `capture_stdout_stderr` helpers that write output into named vars and rc into a second named var (no command substitution, no `|| true`).
+
+2. **Ledger matching** — Replaced grep on `"kind":"verify-gate-bypass"` with `ledger_bypass_row` using Python `json.loads` per line (tolerant of `json.dumps` spacing).
+
+3. **Make JSON stdout-only** — `make_check_kind` now uses `capture_stdout_stderr`; `c-make-*-json` parses `make_stdout` only (stderr logged separately on failure).
+
+4. **Make two-cwd + unique slugs** — Slugs are `u2-smoke-${kind}-$$`; path harvest recurses nested `impl`/`test` dicts; fallback finds both `<slug>` and `<slug>-test` under `~/.spine/worktrees/`.
+
+## Local smoke (test-maker, not full tester run)
+
+```
+SKIP_MAKE=1 SKIP_PANE=1 bash ~/agent-core/briefs/verify-beat-port/qa/u2-verify-beat-checks.sh /Users/jrg/herdr-spine
+EXIT=0
+```
+
+Sections exercised: refuse (pi/claude/no-brief), verify-mark/status, noncoder control, break-glass ledger, docs.
+Skipped locally: pane topology (SKIP_PANE=1), make bifurcation (SKIP_MAKE=1).
+
+## Provenance
+
+- date -u: Wed Aug 12 2026 (session)
+- pwd -P: /Users/jrg/herdr-spine
+- Source: arbiter ruling `agnt-u2-arbiter.done` (BAD TEST); task brief `agnt-test-maker-w2k-p1p.md`
+- Did not read or edit `bin/spine-spawn`; no commits.
+
+HANDOFF: tester re-run full suite (omit SKIP_MAKE unless fleet-heavy).

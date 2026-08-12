@@ -1,0 +1,19 @@
+[U2] agnt-u2-breakglass-smoke DONE — break-glass smoke
+
+Verdict: PASS (existence proof)
+- Binding brief path /var/folders/.../tmp.gNfn7EVFdY/u2-breakglass.md evaporated (oracle mktemp cleanup); reconstructed from qa/u2-verify-beat-checks.sh:357-368 as "# break-glass brief"
+- gate ON unmarked coder refuse → exit 2 (VERIFY GATE before topology)
+- verify-mark → exit 0; verify-status → exit 0; marker at ~/herdr-spine/.verify/0007ac1c294c4eb1/.authored
+- SPINE_VERIFY_GATE=off → WARN stderr ("VERIFY GATE BYPASSED ... break-glass, auditing to tower") + ledger verify-gate-bypass row (t-msqfkngy-au4r, via=spine-spawn)
+- break-glass spawn hit agent_name_taken (prior u2-breakglass-smoke pane w2K:p1B) — environmental; WARN + ledger audit confirmed before topology failure
+
+Artifacts
+- This .done (supplements collector agnt-u2-breakglass.done; prior u2-breakglass-test .done was never written)
+- Tower finding on herdr-spine/verify-beat-port
+
+No production files touched. No commit.
+
+Provenance
+- date -u: 2026-08-12T18:36:34Z
+- pwd -P: /Users/jrg/.cursor/worktrees/herdr-spine/wt-agnt-coder-w2k-p6
+- git rev-parse HEAD: 4838882f7ff8881fd8476e5af39e2ec7302e46c3

@@ -1,0 +1,5 @@
+U1 orch-spawn-doctrine-fix DONE
+commit: e2a1222af5f346114361713636548035b47db940
+gate: content checks green; arbiter allowed exit despite U2 parallel dirt on partition check
+ctl-fleet.md: no amendment (rg exit 1)
+

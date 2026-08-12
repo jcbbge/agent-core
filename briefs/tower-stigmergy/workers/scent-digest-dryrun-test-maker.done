@@ -1,0 +1,5 @@
+test-maker complete 2026-08-12
+worktree: /Users/jrg/.cursor/worktrees/herdr-spine/wt-agnt-test-maker-w2g-pf
+artifact: bin/handlers/tests/test_50_scent_digest.py (11 tests)
+criteria: ~/agent-core/briefs/tower-stigmergy/workers/scent-digest-dryrun-criteria.md
+committed: no
