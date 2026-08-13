@@ -123,6 +123,19 @@ skill (invoke on demand).
   "I don't know" is a complete answer.
 - Commits carrying external values get a SOURCES: line.
 
+## Write discipline (law, 2026-08-12)
+
+The grounding guard (PreToolUse on Edit/Write — CC `grounding-hook.mjs`,
+pi `grounding-hook.ts`) blocks a second consecutive write to the same file
+with no evidence loaded between. Work WITH its contract, never bounce off it:
+
+- **One write per file per thought.** Consecutive edits to one file are
+  composed into a SINGLE Edit/Write call before firing — never a queue of
+  small edits to the same target.
+- Genuinely need a second write to the same file? **Read it first, by
+  contract** — the read comes before the attempt, not after the refusal.
+  If the door says push, do not pull first.
+
 ## Control flow (operator law, 2026-08-10)
 
 Canonical doc: `~/agent-core/primitives/rules/control-flow.md`. The ONE
