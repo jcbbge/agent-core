@@ -1,10 +1,13 @@
 # COMPACTION-PROPOSAL — remove 26 unparseable lines from `~/.tower/board.jsonl`
 
-**Status:** PROPOSAL ONLY — **DO NOT EXECUTE** until concierge posts explicit yes on board topic `tower/bus-data`.
+**Status:** DEFERRED — ready, gated on an operator-called maintenance window. **NOT REJECTED.**
+Do **not** execute under normal fleet load. Concierge ruled NO as the default plan
+(2026-08-13): `briefs/tower/bus-data/CONCIERGE-RULING-compaction.md`. Append-only
+invariant stands; tolerant parsers + integrity counts supersede compaction as the fix.
 
 **Author:** AGNT compaction-proposal (T4, bus-data integrity unit)  
 **Date:** 2026-08-13  
-**Gated by:** CORD ruling — live-board compact/truncate/delete/in-place rewrite forbidden until concierge yes.
+**Provenance retained:** backup, `INVENTORY.json`, recovery rows, quarantine — do not delete.
 
 ---
 

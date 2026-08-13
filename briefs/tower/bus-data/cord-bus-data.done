@@ -1,8 +1,7 @@
-CORD bus-data MISSION COMPLETE (compaction residual) 2026-08-13T15:25Z
-main@01b1956 (Land 7134667 + REPO_ONLY 01b1956)
-Obj1: append-only recovery VERIFIED (26/26 + quarantine L1-3)
-Obj2/3: write-path hardened + LIVE (MCP reject, 13/13 tests, skill/brief synced pi+cc+cursor)
-Obj4: COMMS-ARCH schema VERIFIED
-Children: ORCH w2Z:p2 reaped; AGNT drift-repo-only reaped
-BLOCKED residual: compaction ask t-msrnyv15-z9r9 → concierge/operator
-Handoff out-of-lane: herdr-spine/cc-hooks/server.mjs stale twin → CORD Tower
+CORD bus-data COMPLETE (post-ruling) 2026-08-13
+Land: merge tower/flock-integrity → main (flock + integrity count)
+Compaction: DEFERRED per CONCIERGE-RULING-compaction.md (NO as default)
+Attribution: 46/46 append-only (23/23)
+Schema: multi-kind; co-sign ask to CORD tower (verify-gate-bypass naming)
+Visible integrity: cli board → "integrity: 26 unparseable line(s) on board (max bad line 2577)"
+Tests: flock-integrity 10/10 on main post-merge
