@@ -3,7 +3,7 @@
 //
 //   bun ~/.tower/cli.mjs status   — counts + pending items for this cwd
 //   bun ~/.tower/cli.mjs inbox    — full pending messages/questions, verbatim
-//   bun ~/.tower/cli.mjs board [topic] — blackboard for this cwd (optional topic filter)
+//   bun ~/.tower/cli.mjs board    — blackboard for this cwd
 //   bun ~/.tower/cli.mjs post <claim|finding|note> <topic> "<body>" [--from <name>]
 //                                 — append a board row (fleet agents on any
 //                                   harness; the ONLY sanctioned non-MCP write)
@@ -15,7 +15,7 @@
 // Used by the /tower command (dynamic context injection) and directly by the
 // developer from any terminal.
 
-import { inboxState, renderMessage, readAll, boardFor, normCwd, BOARD, ODOMETER, emitPheromone, pheromoneField, pheromoneFieldFromRows, readAllFull, PHEROMONES, ledgerInboxCursor, deriveInboxStateFromCursor, assertAuthoredBoardFrom } from './lib.mjs'
+import { inboxState, renderMessage, readAll, boardFor, normCwd, BOARD, ODOMETER, emitPheromone, pheromoneField, pheromoneFieldFromRows, readAllFull, PHEROMONES, ledgerInboxCursor, deriveInboxStateFromCursor, assertAuthoredBoardFrom, append, readJsonlStats } from './lib.mjs'
 
 // ─── defensive JSONL field access (rows are append-only, partial rows happen) ─
 function preview(value, max = 100) {
@@ -125,10 +125,16 @@ if (cmd === 'status') {
   if (unrelayed.length === 0 && openQuestions.length === 0) console.log('Inbox clear.')
   for (const m of [...unrelayed, ...openQuestions]) console.log(renderMessage(m) + '\n')
 } else if (cmd === 'board') {
-  const topic = process.argv[3]?.trim() || undefined
-  const rows = boardFor(cwd, topic ? { topic } : {})
+  const rows = boardFor(cwd)
   if (rows.length === 0) console.log('Board empty for this project.')
-  for (const r of rows) console.log(`[${r.ts ?? '?'}] (${r.type ?? '?'}) ${r.from ?? '?'} @ ${r.topic ?? '?'}: ${rowPreview(r)}`)
+  for (const r of rows) console.log(`[${r.ts ?? '?'}] (${r.type ?? r.kind ?? '?'}) ${r.from ?? '?'} @ ${r.topic ?? '?'}: ${rowPreview(r)}`)
+  const integrity = readJsonlStats(BOARD)
+  if (integrity.bad_line_count > 0) {
+    const maxBad = integrity.bad_line_numbers.length ? Math.max(...integrity.bad_line_numbers) : '?'
+    console.log(`integrity: ${integrity.bad_line_count} unparseable line(s) on board (max bad line ${maxBad})`)
+  } else {
+    console.log('integrity: 0 unparseable lines on board')
+  }
 } else if (cmd === 'post') {
   // Fleet write path for harnesses without the Tower MCP (pi panes, plain
   // shells). Same row schema the MCP writes; refuses scratch cwds like the
@@ -147,7 +153,6 @@ if (cmd === 'status') {
     console.error('post refused: run from a real repo cwd, not scratch/temp')
     process.exit(2)
   }
-  const { appendFileSync } = require('node:fs')
   const fromResolved = from ?? `cli:${process.env.USER ?? 'unknown'}`
   assertAuthoredBoardFrom(type, fromResolved)
   const row = {
@@ -163,7 +168,7 @@ if (cmd === 'status') {
   // Never resolve state relative to import.meta.url: this file is symlinked from
   // ~/.tower/ into the canonical repo, so a file-relative path writes posts into the
   // git working tree instead of the live bus — silently, with no error.
-  appendFileSync(BOARD, JSON.stringify(row) + '\n')
+  append(BOARD, row)
   console.log(`posted ${row.id} (${type}) @ ${topic}`)
 } else if (cmd === 'emit') {
   if (SCRATCH_CWD) {

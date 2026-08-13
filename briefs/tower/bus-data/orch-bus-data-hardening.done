@@ -1,0 +1,6 @@
+ORCH bus-data-hardening DONE 2026-08-13
+branch: tower/flock-integrity @ 3e2e108
+T1 DEFERRED verify GO · T2 flock GO · T3 integrity count GO (live 26) · T4 attribution 46/46 · T5 schema ask posted (CORD tower answer UNKNOWN)
+tests: flock-integrity 10/10 x2; write-path 13/13; stress concat=0
+Land: CORD bus-data
+field work-done: ph-msro2bbg-xpzs ph-msrosz2u-zaf2 (schema ph-msroszo6-cn3g via CORD/SAGT report)

@@ -1,0 +1,42 @@
+agnt-flock-integrity-arbiter-nq1 complete 2026-08-13T15:58:00Z
+role: ARBITER (Failure Triage, nQ round 1 of 3)
+unit: flock-integrity
+integration tree: /Users/jrg/.cursor/worktrees/agent-core/wt-orch-flock-integrity (tower/flock-integrity)
+
+RULING: BAD TEST
+ROUTE: test-maker (correct the suite; re-run)
+
+Rationale (one line): The plan's T3 done-when explicitly permits "a stats sibling used by
+readers" for { rows, bad_line_count, bad_line_numbers? }, the implementer shipped exactly
+that (parseJsonl/readJsonlStats carry the stats; readAllFull intentionally stays
+backward-compatible rows[]; cli board footer proves the live count 26), so the suite's
+readAllFull(...).bad_line_count assertions target the wrong API — and the one
+renderMessage(ledger) red imposes a not.toContain('undefined') body invariant the spec
+never required, against a fixture row with no `message` field, imported via an absolute
+path outside the integration tree.
+
+Evidence (read this session, integration tree):
+- briefs/tower/bus-data/agnt-flock-integrity.md T3 done-when: "Extend parse/readAllFull
+  (or add a stats sibling used by readers) so consumers get { rows, bad_line_count,
+  bad_line_numbers? }" — the parenthetical authorizes the implementer's shape.
+- primitives/hooks/tower-ledger.mjs: parseJsonl (L230-242) and readJsonlStats (L247-250)
+  return { rows, bad_line_count, bad_line_numbers }; readAllFull (L253-255) returns
+  readJsonlStats(file).rows — backward compatible by design.
+- FLOCK-INTEGRITY-PROOF.md: live surface `cli.mjs board` footer reports
+  "integrity: 26 unparseable line(s) on board (max bad line 2577)" — the spec'd
+  user-visible count exists and matches the pre-verified live number.
+- flock-integrity.test.mjs: six failures destructure/assert bad_line_count on
+  readAllFull (L122-125, L136-138, L162-172, L184-186, L213-215, L295-297) instead of
+  readJsonlStats/parseJsonl. The seventh (L201-206) feeds machineRowSample (body, no
+  message) to tower-ledger renderMessage, whose body line is m.message verbatim
+  (tower-ledger.mjs L468) — spec only requires "machine rows without from still render
+  (from ?? '?')", and the head does render "from unknown"; the absolute import at L15
+  also points at the main checkout, not this integration tree.
+- Passing tests corroborate the implementation: concurrent stress concat=0,
+  single-process append shape, and renderMessage(lib) — the defensive renderer actually
+  serving ~/.tower consumers — all green.
+
+No code or test edits made. Verdict only.
+Next: test-maker revises count assertions to readJsonlStats/parseJsonl and aligns the
+renderMessage(ledger) case with the spec'd from-fallback contract (or drops the
+unspec'd undefined-ban); then re-run `bun test primitives/mcps/tower/flock-integrity.test.mjs`.
