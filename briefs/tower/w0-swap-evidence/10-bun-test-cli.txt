@@ -1,0 +1,22 @@
+bun test v1.3.14 (0d9b296a)
+
+../../../../primitives/mcps/tower/cli.test.mjs:
+173 |     const raced = await Promise.race([
+174 |       proc.exited.then((code) => ({ kind: 'exit', code })),
+175 |       new Promise((resolve) => setTimeout(() => resolve({ kind: 'timeout' }), 2000)),
+176 |     ])
+177 |     if (raced.kind === 'timeout') proc.kill()
+178 |     expect(raced.kind).toBe('timeout')
+                             ^
+error: expect(received).toBe(expected)
+
+Expected: "timeout"
+Received: "exit"
+
+      at <anonymous> (/Users/jrg/agent-core/primitives/mcps/tower/cli.test.mjs:178:24)
+(fail) all/projects red-on-old (backup cli) > backup all times out — reproduces pre-fix hang [8.62ms]
+
+ 25 pass
+ 1 fail
+ 54 expect() calls
+Ran 26 tests across 1 file. [4.32s]

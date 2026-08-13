@@ -1,0 +1,19 @@
+Checking MCP server health…
+
+claude.ai Google Calendar: https://calendarmcp.googleapis.com/mcp/v1 - ✔ Connected
+claude.ai Google Drive: https://drivemcp.googleapis.com/mcp/v1 - ✔ Connected
+claude.ai Gmail: https://gmailmcp.googleapis.com/mcp/v1 - ✔ Connected
+claude.ai Slack: https://mcp.slack.com/mcp - ! Needs authentication
+claude.ai Notion: https://mcp.notion.com/mcp - ! Needs authentication
+claude.ai monday.com: https://mcp.monday.com/mcp - ! Needs authentication
+claude.ai Linear: https://mcp.linear.app/mcp - ! Needs authentication
+claude.ai Intercom: https://mcp.intercom.com/mcp - ! Needs authentication
+claude.ai HubSpot: https://mcp.hubspot.com/anthropic - ✔ Connected
+claude.ai Figma: https://mcp.figma.com/mcp - ! Needs authentication
+claude.ai Canva: https://mcp.canva.com/mcp - ! Needs authentication
+claude.ai Box: https://mcp.box.com - ! Needs authentication
+claude.ai Atlassian: https://mcp.atlassian.com/v1/mcp - ! Needs authentication
+claude.ai Asana: https://mcp.asana.com/sse - ! Needs authentication
+varlock-docs: https://docs.mcp.varlock.dev/mcp (HTTP) - ✔ Connected
+tower: /Users/jrg/.bun/bin/bun run /Users/jrg/.tower/server.mjs - ✔ Connected
+bigfile: /Users/jrg/.bun/bin/bun run /Users/jrg/agent-core/primitives/tools/bigfile/src/server.ts - ✔ Connected

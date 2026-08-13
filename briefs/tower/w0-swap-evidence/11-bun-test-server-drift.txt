@@ -1,0 +1,66 @@
+bun test v1.3.14 (0d9b296a)
+
+../../../../primitives/mcps/tower/server-drift.test.mjs:
+142 |   })
+143 | })
+144 | 
+145 | describe('backup on disk (AC: pre-edit backup)', () => {
+146 |   test('server.mjs.bak-20260812 exists', () => {
+147 |     expect(existsSync(BACKUP_PATH)).toBe(true)
+                                          ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at <anonymous> (/Users/jrg/agent-core/primitives/mcps/tower/server-drift.test.mjs:147:37)
+(fail) backup on disk (AC: pre-edit backup) > server.mjs.bak-20260812 exists [0.11ms]
+158 |     const [stdout, stderr, code] = await Promise.all([
+159 |       new Response(proc.stdout).text(),
+160 |       new Response(proc.stderr).text(),
+161 |       proc.exited,
+162 |     ])
+163 |     expect(code).toBe(0)
+                       ^
+error: expect(received).toBe(expected)
+
+Expected: 0
+Received: 1
+
+      at <anonymous> (/Users/jrg/agent-core/primitives/mcps/tower/server-drift.test.mjs:163:18)
+(fail) cli regression (AC: tests green) > cli.test.mjs all green [4389.12ms]
+221 | 
+222 |     try {
+223 |       await withMcp(scratch, async (rpc) => {
+224 |         const result = await rpc('tools/call', { name: 'relay_inbox', arguments: {} })
+225 |         const text = result?.content?.[0]?.text ?? ''
+226 |         expect(text).toContain(seedId)
+                           ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "t-sdrift-msr24lhf"
+Received: "Tower inbox is clear — nothing unrelayed, no open questions."
+
+      at <anonymous> (/Users/jrg/agent-core/primitives/mcps/tower/server-drift.test.mjs:226:22)
+      at async withMcp (/Users/jrg/agent-core/primitives/mcps/tower/server-drift.test.mjs:84:18)
+      at async <anonymous> (/Users/jrg/agent-core/primitives/mcps/tower/server-drift.test.mjs:223:13)
+(fail) relay_inbox behavior (AC: CC4 — fixes preserved) > relay_inbox render+ack in one call [617.03ms]
+245 | })
+246 | 
+247 | describe('board findings (AC: findings to tower/server-drift)', () => {
+248 |   test('tower/server-drift topic has finding', () => {
+249 |     const rows = readBoardRows().filter((r) => r.topic === 'tower/server-drift')
+250 |     expect(rows.length).toBeGreaterThan(0)
+                              ^
+error: expect(received).toBeGreaterThan(expected)
+
+Expected: > 0
+Received: 0
+
+      at <anonymous> (/Users/jrg/agent-core/primitives/mcps/tower/server-drift.test.mjs:250:25)
+(fail) board findings (AC: findings to tower/server-drift) > tower/server-drift topic has finding [0.23ms]
+
+ 7 pass
+ 4 fail
+ 19 expect() calls
+Ran 11 tests across 1 file. [5.89s]

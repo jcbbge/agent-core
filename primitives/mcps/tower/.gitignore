@@ -5,3 +5,7 @@ ledger.jsonl
 board.jsonl
 odometer.jsonl
 pheromones.jsonl
+*.jsonl
+flight/
+deliverables/
+cursors/
