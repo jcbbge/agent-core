@@ -120,9 +120,15 @@ describe('install.sh drift guard (AC: drift resolved)', () => {
     ])
     const combined = `${stdout}\n${stderr}`
     expect(code).toBe(0)
+    // Three outcomes now count as reconciled. The third was added 2026-08-13 with
+    // herdr-spine b42132e: once ~/.tower/server.mjs is a symlink into the canonical
+    // home, install_tower_auto() must leave it ALONE — `cp` follows a symlink and
+    // rewrites its target, so writing here would silently edit the git-tracked file.
+    // Skipping is the correct reconciled state, not a failure to reconcile.
     const reconciled =
       combined.includes('tower server.mjs already carries relay_inbox (identical).') ||
-      combined.includes('Installed tower server.mjs with relay_inbox')
+      combined.includes('Installed tower server.mjs with relay_inbox') ||
+      combined.includes('tower server.mjs is a symlink (externally managed')
     expect(reconciled).toBe(true)
   }, 120_000)
 })
