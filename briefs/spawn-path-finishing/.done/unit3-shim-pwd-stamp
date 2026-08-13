@@ -1,0 +1,10 @@
+unit3 shim-pwd-stamp — LANDED 2026-08-12 (CORD-gated, manual land)
+commit: b8a17a4 feat(fleet): stamp workspace pwd metadata on cursor-fleet up
+evidence:
+  - gate: bash docs/qa-verify.sh → 131 passed, 0 failed, on main post-commit
+  - AC1: up stamps herdr workspace report-metadata <ws> --source cursor-fleet --token pwd=<abs> --ttl-ms 86400000
+  - AC2: stamp failure non-fatal (|| log WARN)
+  - AC3: 7 new qa-verify cases (static, up-block scoped)
+  - verify beat: 1 oracle bounce (same-line || vs multiline stamp) — impl clean
+  - live $pwd snapshot: collected at land (see board finding)
+files: cursor-fleet, docs/qa-verify.sh
