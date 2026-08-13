@@ -195,3 +195,28 @@ Authored rows never carry `kind`; machine rows never carry authored `type`.
 Append-only JSONL, one object per line, newline-terminated (`tower-ledger.mjs`
 `append`). No file lock on append — concurrent writers may interleave lines;
 cursor locks exist only for read cursors, not writes.
+
+### JSONL consumer integrity (2026-08-13)
+
+Tower JSONL files (`board.jsonl`, `ledger.jsonl`, `pheromones.jsonl`, …) are
+append-only. Malformed lines can exist from historical concurrent writes or
+hand-edits; consumers must not throw on them.
+
+- **Skip-and-count is mandatory.** Every consumer that reads JSONL MUST tolerate
+  unparseable lines: parse what you can, skip what you cannot, and surface a
+  count. Use `parseJsonl(text)` or `readJsonlStats(file)` from
+  `tower-ledger.mjs` (re-exported via `lib.mjs`). Returned shape:
+  `{ rows, bad_line_count, bad_line_numbers }` — `rows` holds only successfully
+  parsed objects; `bad_line_numbers` lists 1-based line indices of damaged
+  lines. Missing file → zeros / empty rows.
+- **Scoped readers already comply.** `readAll`, `boardFor`, and `inboxState`
+  route through tolerant parsing; they must never throw solely because a line
+  fails `JSON.parse`.
+- **Surface the count.** `bun ~/.tower/cli.mjs board` prints an integrity
+  summary line when the global board has unparseable rows (machine-plane
+  privilege). `cli status` mirrors the same line. A bus that hides damage is
+  worse than one that reports it.
+- **Compaction is DEFERRED.** Physical rewrite or truncation of `board.jsonl` to
+  remove bad lines is banned. Ruling and rationale:
+  `briefs/tower/bus-data/CONCIERGE-RULING-compaction.md` — fix readers once;
+  keep the append-only record intact.

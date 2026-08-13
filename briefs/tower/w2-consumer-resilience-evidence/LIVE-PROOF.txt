@@ -1,0 +1,16 @@
+# LIVE-PROOF — w2-consumer-resilience coder arm
+# 2026-08-13 — worktree wt-agnt-coder-w2y-p14
+
+Command:
+  cd /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-coder-w2y-p14
+  bun primitives/mcps/tower/cli.mjs status
+
+Exit code: 0
+
+Output (relevant lines):
+  Tower @ /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-coder-w2y-p14
+  unrelayed: 0 · open questions: 0 · progress beacons (all time): 111
+  burn today: 30 spawn(s) · 175k subagent tokens (cli.mjs burn for detail)
+  integrity: board badRows=26 lastBadOffset=1421793 · ledger badRows=0 lastBadOffset=-1
+
+Expected badRows ~26 on live ~/.tower/board.jsonl: CONFIRMED (26)

@@ -120,12 +120,22 @@ if (cmd === 'status') {
     const tok = spends.reduce((s, r) => s + (r.tokens ?? 0), 0)
     console.log(`  burn today: ${spends.length} spawn(s) · ${Math.round(tok / 1000)}k subagent tokens (cli.mjs burn for detail)`)
   }
+  const integrity = readJsonlStats(BOARD)
+  if (integrity.bad_line_count > 0) {
+    const maxBad = integrity.bad_line_numbers.length ? Math.max(...integrity.bad_line_numbers) : '?'
+    console.log(`integrity: ${integrity.bad_line_count} unparseable line(s) on board (max bad line ${maxBad})`)
+  } else {
+    console.log('integrity: 0 unparseable lines on board')
+  }
 } else if (cmd === 'inbox') {
   const { unrelayed, openQuestions } = inboxState(cwd)
   if (unrelayed.length === 0 && openQuestions.length === 0) console.log('Inbox clear.')
   for (const m of [...unrelayed, ...openQuestions]) console.log(renderMessage(m) + '\n')
 } else if (cmd === 'board') {
-  const rows = boardFor(cwd)
+  // Optional topic filter (F9). Empty/omitted argv → project-wide listing.
+  const topicArg = process.argv[3]
+  const topic = topicArg && String(topicArg).trim() ? String(topicArg).trim() : undefined
+  const rows = boardFor(cwd, topic ? { topic } : undefined)
   if (rows.length === 0) console.log('Board empty for this project.')
   for (const r of rows) console.log(`[${r.ts ?? '?'}] (${r.type ?? r.kind ?? '?'}) ${r.from ?? '?'} @ ${r.topic ?? '?'}: ${rowPreview(r)}`)
   const integrity = readJsonlStats(BOARD)

@@ -1,0 +1,10 @@
+ORCH w2-consumer-resilience DONE
+pane: w2Y:pZ
+ref_closed: ph-msrpa83e-efs6
+work_done_pheromone: ph-msrqjzgt-eoup
+evidence: /Users/jrg/agent-core/briefs/tower/w2-consumer-resilience-evidence/FINAL.md
+live_bad_line_count: 26
+tests: jsonl-integrity.test.mjs 15 pass / 1 skip / 0 fail
+main_tip: 7f42ba48de45f53423150fc74bff5b1c1ff38bdb
+dirty_pending_cord_land: COMMS-ARCH.md cli.mjs jsonl-integrity.test.mjs
+consumer_throwers: 0
