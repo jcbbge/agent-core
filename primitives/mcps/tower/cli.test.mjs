@@ -178,3 +178,57 @@ describe('all/projects red-on-old (backup cli)', () => {
     expect(raced.kind).toBe('timeout')
   }, 5000)
 })
+
+// Oracle: F9 CLI `board <topic>` — authored from plan/brief only, not from cli.mjs fix.
+describe('board topic filter (AC: F9 CLI board <topic>)', () => {
+  const CLI = `${import.meta.dir}/cli.mjs`
+  const AGENT_CORE = '/Users/jrg/agent-core'
+  const FILTER_TOPIC = 'tower/w3-plane-fixes'
+
+  async function spawnBoardLines(topicArg) {
+    const argv = ['bun', CLI, 'board']
+    if (topicArg !== undefined) argv.push(topicArg)
+    const proc = Bun.spawn(argv, { cwd: AGENT_CORE, stdout: 'pipe', stderr: 'pipe' })
+    const [stdout, stderr, code] = await Promise.all([
+      new Response(proc.stdout).text(),
+      new Response(proc.stderr).text(),
+      proc.exited,
+    ])
+    expect(code).toBe(0)
+    expect(stderr).not.toContain('TypeError')
+    const trimmed = stdout.trimEnd()
+    if (trimmed === 'Board empty for this project.') return []
+    return trimmed.split('\n').filter((line) => line.length > 0)
+  }
+
+  test('board <topic> output is narrower than project-wide when multiple topics exist (AC: F9 filter)', async () => {
+    const { boardFor } = await import('./lib.mjs')
+    const allRows = boardFor(AGENT_CORE)
+    const topicRows = boardFor(AGENT_CORE, { topic: FILTER_TOPIC })
+    expect(allRows.length).toBeGreaterThan(0)
+    expect(topicRows.length).toBeGreaterThan(0)
+    expect(allRows.length).toBeGreaterThan(topicRows.length)
+
+    const unfilteredLines = await spawnBoardLines(undefined)
+    const filteredLines = await spawnBoardLines(FILTER_TOPIC)
+
+    expect(unfilteredLines.length).toBeGreaterThan(filteredLines.length)
+    for (const line of filteredLines) {
+      expect(line).toContain(`@ ${FILTER_TOPIC}:`)
+    }
+  }, 15_000)
+
+  test('board without topic is project-wide listing, not topic-filtered (AC: omitted topic)', async () => {
+    const unfiltered = await spawnBoardLines(undefined)
+    const filtered = await spawnBoardLines(FILTER_TOPIC)
+    expect(unfiltered.length).toBeGreaterThan(filtered.length)
+    const hasOtherTopic = unfiltered.some((line) => !line.includes(`@ ${FILTER_TOPIC}:`))
+    expect(hasOtherTopic).toBe(true)
+  }, 10_000)
+
+  test('board with empty topic argv matches project-wide listing (AC: empty topic)', async () => {
+    const noTopic = await spawnBoardLines(undefined)
+    const emptyTopic = await spawnBoardLines('')
+    expect(emptyTopic.length).toBe(noTopic.length)
+  }, 10_000)
+})

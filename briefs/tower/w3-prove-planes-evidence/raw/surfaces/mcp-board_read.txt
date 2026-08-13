@@ -1,0 +1,4 @@
+CallMcpTool board_read { topic: tower/w3-prove-planes, limit: 5 }
+Result: 5 rows returned with full body text (no truncation in MCP response)
+Sample row bodies returned verbatim including full "MCP round-trip probe: finding from AGNT w3-board task-1"
+exit: pass

@@ -1,0 +1,19 @@
+{
+  "method": "Full scan of ~/.tower/ledger.jsonl via bun one-liner; inboxState filter applied for unrelayed",
+  "scan_ts": "2026-08-13T13:51:23Z",
+  "ledger_lines": 2693,
+  "deliverable": {
+    "total": 462,
+    "with_to_operator": 9,
+    "without_to_operator": 453,
+    "pct_without_to": 98.05
+  },
+  "alert": {
+    "total": 10,
+    "unrelayed_at_scan_end": 0
+  },
+  "progress": {
+    "total": 1462
+  },
+  "f1_verdict": "CONFIRMED — send_to_user deliverable rows lack to field; 453/462 (98%) cannot enter unrelayed per tower-ledger.mjs filter (deliverable requires to==='operator')"
+}

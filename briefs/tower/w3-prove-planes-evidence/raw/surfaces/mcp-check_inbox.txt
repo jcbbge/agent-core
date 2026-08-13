@@ -1,0 +1,6 @@
+CallMcpTool check_inbox { from: AGNT w3-surfaces }
+Pre-reply: still_unanswered=[t-msrktev3-k02o], unrelayed_count=0
+Post-reply check_inbox { question_id: t-msrktev3-k02o }:
+  answers=[{ question_id: t-msrktev3-k02o, answer: "SURFACE-OK (probe answer — not operator)", ts: 2026-08-13T13:51:15.201Z }]
+  still_unanswered=[]
+exit: pass

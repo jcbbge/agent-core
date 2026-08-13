@@ -1,0 +1,4 @@
+MCP-equivalent full body (from raw board):
+FAN-OUT: 4 AGNTs working on w2Y:p4..p7 (board, ledger-verbatim, surfaces, aux-spine). Briefs: briefs/tower/agnt-w3-{board,ledger,surfaces,aux}.md. Evidence: briefs/tower/w3-prove-planes-evidence/. Schema ruling from bus-data absorbed (two row kinds). F9 pre-probe: CLI board topic arg ignored (52/52). Collecting via board + workers/*.done — not re-prompting.
+len=359
+CLI would show first 100: FAN-OUT: 4 AGNTs working on w2Y:p4..p7 (board, ledger-verbatim, surfaces, aux-spine). Briefs: briefs

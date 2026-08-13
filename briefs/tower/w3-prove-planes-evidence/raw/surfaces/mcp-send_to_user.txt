@@ -1,0 +1,3 @@
+CallMcpTool send_to_user { kind: progress, from: AGNT w3-surfaces, message: "W3 surfaces probe..." }
+Result: Delivered to Tower as t-msrktcp7-kn4o (progress). Ambient: visible in /tower and prompt-time summaries.
+exit: pass

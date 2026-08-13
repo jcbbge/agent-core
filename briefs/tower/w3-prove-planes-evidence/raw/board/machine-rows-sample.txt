@@ -1,0 +1,5 @@
+{"ts":"2026-08-12T00:13:09Z","kind":"lineage","via":"cursor-shim","role":"SAGT researcher","child":"w1J:pF","parent":"w1J:p1","model":"composer-2.5-fast"}
+{"ts":"2026-08-12T00:20:23Z","kind":"lineage","via":"cursor-shim","role":"SAGT researcher","child":"w1J:pG","parent":"w1J:p1","model":"composer-2.5-fast"}
+{"ts":"2026-08-12T00:20:38Z","kind":"lineage","via":"cursor-shim","role":"SAGT researcher","child":"w1J:pH","parent":"w1J:p1","model":"composer-2.5-fast"}
+{"ts":"2026-08-12T00:20:57Z","kind":"lineage","via":"cursor-shim","role":"SAGT researcher","child":"w1J:pJ","parent":"w1J:p1","model":"composer-2.5-fast"}
+{"ts":"2026-08-12T00:21:26Z","kind":"lineage","via":"cursor-shim","role":"SAGT researcher","child":"w1J:pK","parent":"w1J:p1","model":"composer-2.5-fast"}

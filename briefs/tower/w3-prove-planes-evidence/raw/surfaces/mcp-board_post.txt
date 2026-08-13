@@ -1,0 +1,3 @@
+CallMcpTool board_post { topic: tower/w3-probe-surfaces, type: note, from: AGNT w3-surfaces }
+Result: Posted as t-msrktczp-a40w
+exit: pass

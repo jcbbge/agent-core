@@ -1,0 +1,35 @@
+# flight probe — AGNT w3-aux 2026-08-13
+
+## Hook path (writes ~/.tower/flight/)
+
+Canonical: /Users/jrg/agent-core/primitives/hooks/flight-recorder.mjs
+Shim:      /Users/jrg/agent-core/primitives/mcps/tower/hooks/flight-recorder.mjs
+           (re-exports canonical body)
+
+Docstring target: ~/.tower/flight/<date>-<event>-<session8>.md
+Events: PreCompact + SessionEnd (hook_event_name from stdin JSON)
+Always exit 0.
+
+## Recent files (ls -lt)
+
+$ ls -lt ~/.tower/flight/ | head -5
+-rw-r--r--@ 1 jrg  staff    765 Aug 13 08:04 2026-08-13-cursor-sessionEnd-d9325e36.md
+-rw-r--r--@ 1 jrg  staff    333 Aug 13 08:04 2026-08-13-sessionEnd-d9325e36.md
+-rw-r--r--@ 1 jrg  staff    332 Aug 13 07:31 2026-08-13-SessionEnd-45ffad6f.md
+-rw-r--r--@ 1 jrg  staff    332 Aug 13 07:31 2026-08-13-SessionEnd-464ed0e1.md
+-rw-r--r--@ 1 jrg  staff    332 Aug 13 07:31 2026-08-13-SessionEnd-8fffa49c.md
+
+EXIT:0
+
+## Sample read-back: 2026-08-13-cursor-sessionEnd-d9325e36.md
+
+# Flight snapshot — cursor sessionEnd
+
+ts: 2026-08-13T13:04:57.638Z
+session: d9325e36-1c6e-484d-9e07-af9fb47030d6
+cwd: /Users/jrg/.cursor/worktrees/ws-d-menuplan-mirror/wt-agnt-test-maker-w2x-pk
+branch: wt-agnt-test-maker-w2x-pk
+reason: completed
+
+## Tower pending
+unrelayed: 0 · open questions: 0

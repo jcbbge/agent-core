@@ -1,0 +1,41 @@
+# odometer probe — AGNT w3-aux 2026-08-13
+
+## burn
+
+$ bun ~/.tower/cli.mjs burn
+2026-08-04: 10 spawn(s) · 55k subagent tokens
+2026-08-06: 14 spawn(s) · 71k subagent tokens
+2026-08-09: 16 spawn(s) · 208k subagent tokens
+2026-08-10: 21 spawn(s) · 304k subagent tokens
+2026-08-11: 10 spawn(s) · 66k subagent tokens
+2026-08-12: 18 spawn(s) · 185k subagent tokens
+2026-08-13: 30 spawn(s) · 175k subagent tokens
+
+today by spawn:
+  03:49:58 Agent/Explore [sonnet] "Repo grounding: portal client auth" - 0k tok, 0 tools, 0s
+  ... (30 rows truncated in capture)
+  05:28:11 SubagentStop [claude-sonnet-5] "?" - 22k tok, 0 tools, 0s
+EXIT:0
+
+## scan (CLI — pheromone-scoped when no odometer rows in cwd scope)
+
+$ bun ~/.tower/cli.mjs scan
+No pheromone rows for this scope.
+EXIT:0
+
+Note: `scan` in this session cwd returned pheromone scope message, not odometer lines.
+Odometer plane evidence is `~/.tower/odometer.jsonl` directly.
+
+## odometer.jsonl file stats
+
+$ ls -la ~/.tower/odometer.jsonl
+-rw-r--r--@ 1 jrg  staff  287596 Aug 13 00:28 /Users/jrg/.tower/odometer.jsonl
+
+## Recent tail lines
+
+$ tail -3 ~/.tower/odometer.jsonl
+{"ts":"2026-08-13T05:27:34.555Z","session":"45ffad6f-e3c5-4ed5-9c9a-5b1c900a11ee","cwd":"/Users/jrg/.tower","tool":"SubagentStop","phase":"stop","agentId":"a99d248026017b971","label":null,"model":"claude-sonnet-5","agentType":null,"tokens":18350,"inputTokens":88,"toolUses":0,"durationMs":0}
+{"ts":"2026-08-13T05:27:55.065Z","session":"45ffad6f-e3c5-4ed5-9c9a-5b1c900a11ee","cwd":"/Users/jrg/.tower","tool":"SubagentStop","phase":"stop","agentId":"a99681632640e9ee7","label":null,"model":"claude-sonnet-5","agentType":null,"tokens":15858,"inputTokens":62,"toolUses":0,"durationMs":0}
+{"ts":"2026-08-13T05:28:11.452Z","session":"45ffad6f-e3c5-4ed5-9c9a-5b1c900a11ee","cwd":"/Users/jrg/.tower","tool":"SubagentStop","phase":"stop","agentId":"a85dc285fc31c54d7","label":null,"model":"claude-sonnet-5","agentType":null,"tokens":22395,"inputTokens":72,"toolUses":0,"durationMs":0}
+
+GAP: no new odometer line appended during this probe window (mtime Aug 13 00:28). burn aggregates existing rows — plane UNBROKEN, live append not exercised here.

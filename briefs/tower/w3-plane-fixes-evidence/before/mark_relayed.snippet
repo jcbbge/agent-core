@@ -1,0 +1,4 @@
+    case 'mark_relayed': {
+      append(LEDGER, { id: id(), ts: now, cwd: CWD, kind: 'ack', ids: args.ids })
+      return `Acknowledged ${args.ids.length} message(s). Guard cleared for: ${args.ids.join(', ')}.`
+    }

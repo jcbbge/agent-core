@@ -1,0 +1,30 @@
+role: TEST-MAKER (AGNT f1-f4 oracle)
+worktree: /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-test-maker-w2y-pc
+head: 1c8353dbc99925e2152f7664b7a16ab029814440
+partition: primitives/mcps/tower/plane-fixes.test.mjs only (no server.mjs edits)
+
+test_artifact: primitives/mcps/tower/plane-fixes.test.mjs
+  describe F1 — send_to_user default to:operator (AC: deliverable/alert operator-addressed)
+    - deliverable mints to:"operator" and enters inboxState unrelayed (AC: F1 deliverable)
+    - alert mints to:"operator" and enters inboxState unrelayed (AC: F1 alert)
+    - progress omits operator-blocking to and stays out of unrelayed (AC: F1 progress non-blocking)
+  describe F4 — mark_relayed refuses ids not in unrelayed (AC: no silent clear)
+    - refuses arbitrary id with clear error — no ack row appended (AC: F4 refuse)
+    - refuses mixed valid+invalid ids — no ack for any id (AC: F4 whole-call refuse)
+    - accepts id in scoped unrelayed and appends ack (AC: F4 happy path contrast)
+
+test_command: cd /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-test-maker-w2y-pc/primitives/mcps/tower && bun test plane-fixes.test.mjs
+test_run: NOT RUN — test-maker handoff; tester executes after implementer lands server.mjs fix
+
+expected_red_before_fix: F1 deliverable lacks to:operator (never enters unrelayed); F4 mark_relayed acks arbitrary ids
+expected_green_after_fix: 6 pass / 0 fail
+
+probe_ids: TEST-ONLY (dynamic plane-f1-* / plane-f4-* message needles; seeded t-plane-f4-* ids in F4 tests)
+
+progress_non_unrelayed: locked by test — progress must not appear in inboxState.unrelayed
+
+server.mjs_diff: none (implementer partition)
+plane-fixes.test.mjs_diff: new file, 6 real MCP tests, no mocks
+COMMS-ARCH.md_diff: none (implementer optional note)
+
+deviations: added F4 happy-path contrast test (valid unrelayed id acks) beyond brief minimum; aids arbiter distinguish fix vs over-refuse

@@ -115,6 +115,8 @@ the question; questions surface to one party, not every pane).
    operator-visible when `to` is absent), NOT for `deliverable`. Fix:
    `send_to_user` must mint `to:"operator"` on `deliverable`/`alert` rows
    (or accept an explicit `to` param, defaulting to `"operator"`).
+   **IMPLEMENTED 2026-08-13 (w3-plane-fixes):** `server.mjs` `send_to_user`
+   defaults `to:"operator"` on deliverable/alert; optional `to` param exposed.
 5. Amend TOWER-AUTO-CONTRACT.md to reference this file; delete the §9
    fabrication clause. Confirmed still open (2026-08-10): the file has zero
    references to COMMS-ARCH or "fabricat", and its §9 step 5 ("WS-2 handler

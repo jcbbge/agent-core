@@ -1,0 +1,14 @@
+bun test v1.3.14 (0d9b296a)
+
+plane-fixes.test.mjs:
+(pass) F1 — send_to_user default to:operator (AC: deliverable/alert operator-addressed) > deliverable mints to:"operator" and enters inboxState unrelayed [649.56ms]
+(pass) F1 — send_to_user default to:operator (AC: deliverable/alert operator-addressed) > alert mints to:"operator" and enters inboxState unrelayed [296.50ms]
+(pass) F1 — send_to_user default to:operator (AC: deliverable/alert operator-addressed) > progress omits operator-blocking to and stays out of unrelayed [295.65ms]
+(pass) F4 — mark_relayed refuses ids not in unrelayed (AC: no silent clear) > refuses arbitrary id with clear error — no ack row appended [662.22ms]
+(pass) F4 — mark_relayed refuses ids not in unrelayed (AC: no silent clear) > refuses mixed valid+invalid ids — no ack for any id [1144.56ms]
+(pass) F4 — mark_relayed refuses ids not in unrelayed (AC: no silent clear) > accepts id in scoped unrelayed and appends ack [915.91ms]
+
+ 6 pass
+ 0 fail
+ 32 expect() calls
+Ran 6 tests across 1 file. [3.98s]

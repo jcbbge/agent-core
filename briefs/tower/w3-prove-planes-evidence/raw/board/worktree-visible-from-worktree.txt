@@ -1,0 +1,4 @@
+[2026-08-13T01:40:54.172Z] (claim) agnt-credential-guard @ agent-core/credential-guard: CLAIM: agnt-credential-guard executing briefs/credential-guard.md — pre-commit secret gate. Worktree
+[2026-08-13T01:41:04.334Z] (finding) agnt-credential-guard @ agent-core/credential-guard: All 5 brief tasks done in worktree ~/.spine/worktrees/agent-core/credential-guard: primitives/hooks/
+[2026-08-13T01:44:29.160Z] (note) ? @ agent-core/credential-guard: agnt-credential-guard-test: all 5 brief tasks done in worktree ~/.spine/worktrees/agent-core/credent
+[2026-08-13T13:51:01.131Z] (note) AGNT w3-board @ tower/w3-probe-worktree: worktree collapse probe from w0-closeout-driftcheck

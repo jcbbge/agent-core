@@ -1,0 +1,3 @@
+CallMcpTool reply { question_id: t-msrktev3-k02o, answer: "SURFACE-OK (probe answer — not operator)" }
+Result: Answer recorded for t-msrktev3-k02o.
+exit: pass

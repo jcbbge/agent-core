@@ -1,0 +1,1 @@
+[2026-08-13T13:47:45.532Z] (finding) CORD bus-data @ tower/bus-data: ESCALATE→concierge (not acting): 91 verify-gate-bypass rows, all via=cursor-shim, earliest 2026-08-1

@@ -44,6 +44,7 @@ const TOOLS = [
         kind: { type: 'string', enum: ['deliverable', 'alert', 'progress'], description: 'Delivery class. Default: progress.' },
         title: { type: 'string', description: 'Short title (used for deliverable filenames and summaries).' },
         from: { type: 'string', description: 'Who is sending — your agent role, e.g. "scout", "review:bugs".' },
+        to: { type: 'string', description: 'Audience for deliverable/alert. Default: "operator". Progress ignores this.' },
       },
       required: ['message'],
     },
@@ -187,6 +188,9 @@ function callTool(name, args) {
     case 'send_to_user': {
       const kind = args.kind ?? 'progress'
       const entry = { id: id(), ts: now, cwd: CWD, kind, title: args.title, from: args.from, message: args.message }
+      if (kind === 'deliverable' || kind === 'alert') {
+        entry.to = args.to ?? 'operator'
+      }
       append(LEDGER, entry)
       let fileNote = ''
       if (kind === 'deliverable') {
@@ -234,8 +238,19 @@ function callTool(name, args) {
       )
     }
     case 'mark_relayed': {
-      append(LEDGER, { id: id(), ts: now, cwd: CWD, kind: 'ack', ids: args.ids })
-      return `Acknowledged ${args.ids.length} message(s). Guard cleared for: ${args.ids.join(', ')}.`
+      // Prefer relay_inbox (renders verbatim then acks) over blind mark_relayed.
+      const state = inboxState(CWD)
+      const unrelayedIds = new Set(state.unrelayed.map((m) => m.id))
+      const ids = Array.isArray(args.ids) ? args.ids.map(String) : []
+      const invalid = ids.filter((i) => !unrelayedIds.has(i))
+      if (invalid.length > 0) {
+        throw new Error(
+          `Refused mark_relayed: id(s) not currently unrelayed: ${invalid.join(', ')}. ` +
+            'Use relay_inbox after verbatim display, or pass only ids from inboxState.unrelayed.'
+        )
+      }
+      append(LEDGER, { id: id(), ts: now, cwd: CWD, kind: 'ack', ids })
+      return `Acknowledged ${ids.length} message(s). Guard cleared for: ${ids.join(', ')}.`
     }
     case 'board_post': {
       // COMMS-ARCH.md §Project isolation: refuse scratch/temp cwds outright.

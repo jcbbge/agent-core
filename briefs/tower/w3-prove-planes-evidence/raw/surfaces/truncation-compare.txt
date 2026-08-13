@@ -1,0 +1,10 @@
+sample_id=t-mryqeipk-nqpw
+sample_topic=herdr-spine-w2
+full_body_len=327
+CLI_NO_MATCH; first line with ellipsis cut:
+[2026-08-13T01:44:29.160Z] (note) ? @ agent-core/credential-guard: agnt-credential-guard-test: all 5 brief tasks done in worktree ~/.spine/worktrees/agent-core/credent
+MCP_FULL_BODY_FIRST_200:
+CLAIM (late-posted, apologies): worker-field-b owns bin/handlers/30-choreo, bin/spine-choreo, config/choreo.fragment.toml, docs/choreography.md on branch worktree-agent-a1c5f106d4d427d9e. K5 choreogra
+MCP_FULL_BODY_LAST_80:
+verified live in spine-field-b (already torn down, no orphans). About to commit.
+truncation_observed=yes

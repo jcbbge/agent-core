@@ -1,0 +1,4 @@
+CallMcpTool mark_relayed { ids: ["t-nonexistent-probe-id"] }
+Result: Acknowledged 1 message(s). Guard cleared for: t-nonexistent-probe-id.
+Note: accepts nonexistent id without error — gap for F4-style validation (sibling owns deep F1 matrix)
+exit: gap

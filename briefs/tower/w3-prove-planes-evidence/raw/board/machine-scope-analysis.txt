@@ -1,0 +1,5 @@
+total machine rows in board: 465
+machine in agent-core scope: 0
+global sample cwd->scope: undefined ->  kind: lineage
+global sample cwd->scope: undefined ->  kind: lineage
+global sample cwd->scope: undefined ->  kind: lineage

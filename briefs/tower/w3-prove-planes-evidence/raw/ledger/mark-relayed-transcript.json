@@ -1,0 +1,38 @@
+{
+  "finding": "F4",
+  "probe_from": "AGNT w3-ledger-probe",
+  "steps": [
+    {
+      "tool": "send_to_user",
+      "args": {
+        "from": "AGNT w3-ledger-probe",
+        "kind": "alert",
+        "title": "w3-probe-mark-relayed",
+        "message": "W3-PROBE F4 mark_relayed test — do not doorbell"
+      },
+      "return": "Delivered to Tower as t-msrktnl7-njgn (alert)."
+    },
+    {
+      "tool": "check_inbox",
+      "args": {},
+      "return": {"unrelayed_count": 1, "still_unanswered": []}
+    },
+    {
+      "tool": "mark_relayed",
+      "args": {"ids": ["t-msrktnl7-njgn"]},
+      "return": "Acknowledged 1 message(s). Guard cleared for: t-msrktnl7-njgn.",
+      "note": "Called WITHOUT relaying message to operator / doorbell"
+    },
+    {
+      "tool": "check_inbox",
+      "args": {},
+      "return": {"unrelayed_count": 0, "still_unanswered": []}
+    }
+  ],
+  "ledger_ack_row": {
+    "id": "t-msrktrby-yi6x",
+    "kind": "ack",
+    "ids": ["t-msrktnl7-njgn"]
+  },
+  "verdict": "F4 CONFIRMED — mark_relayed clears unrelayed guard on caller-supplied id with no proof of display"
+}

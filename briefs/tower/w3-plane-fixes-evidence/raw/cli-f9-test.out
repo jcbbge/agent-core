@@ -1,0 +1,12 @@
+bun test v1.3.14 (0d9b296a)
+
+cli.test.mjs:
+(pass) board topic filter (AC: F9 CLI board <topic>) > board <topic> output is narrower than project-wide when multiple topics exist (AC: F9 filter) [120.05ms]
+(pass) board topic filter (AC: F9 CLI board <topic>) > board without topic is project-wide listing, not topic-filtered (AC: omitted topic) [85.53ms]
+(pass) board topic filter (AC: F9 CLI board <topic>) > board with empty topic argv matches project-wide listing (AC: empty topic) [83.60ms]
+
+ 3 pass
+ 26 filtered out
+ 0 fail
+ 31 expect() calls
+Ran 3 tests across 1 file. [302.00ms]

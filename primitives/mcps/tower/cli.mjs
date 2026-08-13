@@ -3,7 +3,7 @@
 //
 //   bun ~/.tower/cli.mjs status   — counts + pending items for this cwd
 //   bun ~/.tower/cli.mjs inbox    — full pending messages/questions, verbatim
-//   bun ~/.tower/cli.mjs board    — blackboard for this cwd
+//   bun ~/.tower/cli.mjs board [topic] — blackboard for this cwd (optional topic filter)
 //   bun ~/.tower/cli.mjs post <claim|finding|note> <topic> "<body>" [--from <name>]
 //                                 — append a board row (fleet agents on any
 //                                   harness; the ONLY sanctioned non-MCP write)
@@ -125,7 +125,8 @@ if (cmd === 'status') {
   if (unrelayed.length === 0 && openQuestions.length === 0) console.log('Inbox clear.')
   for (const m of [...unrelayed, ...openQuestions]) console.log(renderMessage(m) + '\n')
 } else if (cmd === 'board') {
-  const rows = boardFor(cwd)
+  const topic = process.argv[3]?.trim() || undefined
+  const rows = boardFor(cwd, topic ? { topic } : {})
   if (rows.length === 0) console.log('Board empty for this project.')
   for (const r of rows) console.log(`[${r.ts ?? '?'}] (${r.type ?? '?'}) ${r.from ?? '?'} @ ${r.topic ?? '?'}: ${rowPreview(r)}`)
 } else if (cmd === 'post') {

@@ -1,0 +1,66 @@
+{
+  "probe_from": "AGNT w3-ledger-probe",
+  "cases": {
+    "a_deliverable_no_to": {
+      "tool": "send_to_user",
+      "args": {
+        "kind": "deliverable",
+        "from": "AGNT w3-ledger-probe",
+        "title": "w3-probe-deliverable-no-to",
+        "message": "W3-PROBE deliverable WITHOUT to field — verbatim matrix case (a)"
+      },
+      "id": "t-msrktfc5-p1ey",
+      "ledger_row": {
+        "id": "t-msrktfc5-p1ey",
+        "kind": "deliverable",
+        "from": "AGNT w3-ledger-probe",
+        "to": "ABSENT"
+      },
+      "check_inbox_after": {"unrelayed_count": 0},
+      "relay_inbox_rendered": false,
+      "verdict": "Does NOT enter unrelayed — F1 still false in live behavior"
+    },
+    "b_alert": {
+      "tool": "send_to_user",
+      "args": {
+        "kind": "alert",
+        "from": "AGNT w3-ledger-probe",
+        "title": "w3-probe-alert",
+        "message": "W3-PROBE alert — synthetic urgent probe, not real urgency"
+      },
+      "id": "t-msrkthqq-7ecz",
+      "check_inbox_before_relay": {"unrelayed_count": 0},
+      "relay_inbox_rendered": true,
+      "relay_inbox_excerpt": "Tower t-msrkthqq-7ecz · alert · w3-probe-alert · from AGNT w3-ledger-probe",
+      "verdict": "Alert with undefined to DOES enter unrelayed and blocks until relay_inbox ack"
+    },
+    "c_progress": {
+      "tool": "send_to_user",
+      "args": {
+        "kind": "progress",
+        "from": "AGNT w3-ledger-probe",
+        "title": "w3-probe-progress",
+        "message": "W3-PROBE progress status line — should NOT block turn-end or become operator mail"
+      },
+      "id": "t-msrktfc8-fwly",
+      "check_inbox_after": {"unrelayed_count": 0},
+      "relay_inbox_rendered": false,
+      "verdict": "Progress does NOT enter unrelayed — UNBROKEN per COMMS-ARCH"
+    },
+    "d_board_finding": {
+      "tool": "board_post",
+      "args": {
+        "topic": "tower/w3-probe-ledger",
+        "type": "finding",
+        "from": "AGNT w3-ledger-probe",
+        "body": "W3-PROBE finding: fleet board row must not become operator deliverable"
+      },
+      "id": "t-msrkthqq-sjuq",
+      "surface": "board.jsonl only",
+      "relay_inbox_rendered": false,
+      "check_inbox_after": {"unrelayed_count": 0},
+      "verdict": "Board finding does NOT appear as operator deliverable — UNBROKEN"
+    }
+  },
+  "doorbell": "not exercised — gap recorded per brief default"
+}

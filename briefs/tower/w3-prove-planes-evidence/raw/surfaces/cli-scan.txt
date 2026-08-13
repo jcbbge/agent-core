@@ -1,0 +1,3 @@
+=== VERB: scan ===
+No pheromone rows for this scope.
+exit:0

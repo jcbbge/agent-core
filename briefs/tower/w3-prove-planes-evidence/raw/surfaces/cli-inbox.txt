@@ -1,0 +1,3 @@
+=== VERB: inbox ===
+Inbox clear.
+exit:0

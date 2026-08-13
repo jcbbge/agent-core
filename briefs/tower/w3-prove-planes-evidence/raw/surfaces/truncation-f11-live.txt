@@ -1,0 +1,10 @@
+cli_board_line_count=52
+lines_over_110_chars=49
+CLI_TRUNCATED_SAMPLE:
+[2026-08-13T01:53:49.915Z] (finding) cli:jrg @ session/concierge-close-0812: CLOSED. cursor-shim c524d06 cursor-finish + 822cd83 --workspace + b8a17a4 pwd-stamp + 1f60b98 circad
+cli_line_len=177
+MATCH_ID=t-msrktj07-ltng
+FULL_BODY_LEN=359
+FULL_BODY:
+FAN-OUT: 4 AGNTs working on w2Y:p4..p7 (board, ledger-verbatim, surfaces, aux-spine). Briefs: briefs/tower/agnt-w3-{board,ledger,surfaces,aux}.md. Evidence: briefs/tower/w3-prove-planes-evidence/. Schema ruling from bus-data absorbed (two row kinds). F9 pre-probe: CLI board topic arg ignored (52/52). Collecting via board + workers/*.done — not re-prompting.
+FIRST_100_CHARS_MATCH_CLI=check

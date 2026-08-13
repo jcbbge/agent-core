@@ -1,0 +1,17 @@
+=== VERB: projects ===
+Tower projects — 14 drawer(s)
+  arc              build     rumen  
+                   —               !3/?1
+  agent-core       —               !0/?1
+  bench            discovery      
+  cairn            commit         
+  constellation    discovery      
+  content          discovery      
+  future           land           
+  madewell         discovery      
+  mw-fixture-1     —              
+  scrumble         commit         
+  tower-sdrift-ack-gVZSVp —               !1/?0
+  tower-sdrift-ack-X4Os5Q —               !1/?0
+  tower-sdrift-ack-XuQvKl —               !1/?0
+exit:0
