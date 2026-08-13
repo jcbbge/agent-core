@@ -84,14 +84,40 @@ function readBytes(path) {
   }
 }
 
-// .mjs files are load-bearing at the deployed path — hooks and the server
-// are executed from there, so any divergence is live drift (FAIL). .md
-// docs are read by humans, never by runtime code; a missing or stale
-// deployed doc can't break anything at runtime, so it's a WARN, not a
-// FAIL — a deliberate scope decision (see the report-back for the
-// README.md gap this classification actually caught live).
+// Deployment class is DECLARED here, not inferred from the file extension.
+//
+// REPO_ONLY: files that live in the canonical home by design and have no
+// deployed twin at all. drift-check.mjs is this tool itself; DEPLOYMENT.md
+// and README.md are the docs that tell you to edit here rather than there.
+// Nothing deploys them and nothing should, so their absence under ~/.tower/
+// is the CORRECT state — not a finding.
+//
+// This used to be decided by extension, which made the tool report itself as
+// a FAIL the moment it was added to the canonical set. That is crying wolf,
+// and a check that cries wolf gets ignored — the precise failure mode this
+// check exists to prevent. Its credibility is its function, so the class is
+// declared explicitly and a repo-only file can never be a FAIL.
+//
+// The absence is asserted rather than assumed: if one of these ever DOES
+// appear at the deployed path it is unmaintained staleness, and that is a
+// WARN worth seeing.
+const REPO_ONLY = new Set(['drift-check.mjs', 'DEPLOYMENT.md', 'README.md'])
+
+// For everything that IS deployed: .mjs files are load-bearing at the
+// deployed path — hooks and the server execute from there, so divergence is
+// live drift (FAIL). Deployed .md docs are read by humans, never by runtime
+// code, so a stale one cannot break anything at runtime (WARN).
 function severityFor(relPath) {
   return relPath.endsWith('.mjs') ? 'FAIL' : 'WARN'
+}
+
+function checkRepoOnly(rel, deployedPath) {
+  return existsSync(deployedPath)
+    ? {
+        status: 'WARN',
+        detail: `${rel}: repo-only by design, but a copy exists at ${deployedPath} — stale, nothing maintains it`,
+      }
+    : { status: 'SKIP', detail: `${rel}: repo-only by design (no deployed twin expected)` }
 }
 
 function compare(label, aPath, bPath, severity) {
@@ -142,6 +168,12 @@ function main() {
   for (const rel of manifest) {
     const canonicalPath = join(CANONICAL_DIR, rel)
     const deployedPath = join(DEPLOYED_DIR, rel)
+
+    if (REPO_ONLY.has(rel)) {
+      results.push({ rel, ...checkRepoOnly(rel, deployedPath) })
+      continue
+    }
+
     const severity = severityFor(rel)
     results.push({ rel, ...compare(rel, deployedPath, canonicalPath, severity) })
 
@@ -184,6 +216,7 @@ function main() {
   const fails = results.filter((r) => r.status === 'FAIL')
   const warns = results.filter((r) => r.status === 'WARN')
   const oks = results.filter((r) => r.status === 'OK')
+  const skips = results.filter((r) => r.status === 'SKIP')
 
   console.log(`Tower drift check`)
   console.log(`  canonical: ${CANONICAL_DIR}`)
@@ -195,7 +228,7 @@ function main() {
   }
   console.log('')
   console.log(
-    `${manifest.length} manifest file(s), ${oks.length} ok, ${fails.length} FAIL, ${warns.length} warn`
+    `${manifest.length} manifest file(s), ${oks.length} ok, ${skips.length} repo-only, ${fails.length} FAIL, ${warns.length} warn`
   )
   const elapsedMs = Number(process.hrtime.bigint() - start) / 1e6
   console.log(`runtime: ${elapsedMs.toFixed(1)}ms`)
