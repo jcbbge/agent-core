@@ -65,8 +65,24 @@ state. Deployed paths are symlinks into the canonical home.
 4. **Exercise `ask-bridge.mjs` LIVE** — it is the last open verification gap from
    wave 1. It has only ever been build-resolved, never run. It resolves lib via a
    runtime homedir-anchored dynamic import (`ask-bridge.mjs:152`).
-5. **Push the branch** if a network path exists: `git push -u origin
-   tower/w0-version-control`. `origin/main` is 27615bb; nothing since is pushed.
+5. ~~Push the branch.~~ **DO NOT ATTEMPT — I tried and it is REJECTED. Operator-only
+   to resolve; do not burn time on it.** `git push -u origin tower/w0-version-control`
+   fails with GitHub push protection GH013. The blocking secrets are **not from W0 and
+   not in any of my commits** — they are in pre-existing commits already on `main`,
+   both authored by the operator: `a5ff57d` (2026-08-12, credential-guard) at
+   `primitives/hooks/test/credential-guard.sh:51-52`, and `3ce033f` (2026-08-11,
+   latch + vein) at `primitives/tools/vein/test/acceptance/pass12-commands.csv:3020`,
+   all flagged "Aiven Service Password". Both verified as ancestors of `main`. They
+   look like deliberate TEST FIXTURES, which is precisely why they scan as secrets.
+
+   **Consequence: the entire agent-core repo is unpushable, not just this branch.**
+   `origin/main` stays at `27615bb`, so ALL W0 work exists ONLY ON LOCAL DISK.
+   Anything that wipes this working tree loses it — treat the local repo as the only
+   copy. Resolution requires either allowlisting each secret through the GitHub
+   unblock URLs printed by `git push`, or rewriting those two commits to use
+   non-matching fixtures. **An agent should do neither** — they are operator commits
+   that are ancestors of `main`, which is outside this lane's authority and outside
+   W0's scope. The operator has been notified by desktop doorbell.
 
 ## RULINGS AND CONSTRAINTS I AM HOLDING THAT ARE NOT WRITTEN ELSEWHERE
 
