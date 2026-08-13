@@ -107,6 +107,8 @@ const REPO_ONLY = new Set([
   'README.md',
   'write-path.test.mjs',
   'write-path.criteria.md',
+  'plane-fixes.test.mjs',
+  'rotate.test.mjs',
 ])
 
 // For everything that IS deployed: .mjs files are load-bearing at the
