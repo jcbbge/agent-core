@@ -1,7 +1,8 @@
-CORD bus-data Land COMPLETE 2026-08-13
-main@7134667 merge(tower): land board write-path hardening + bus-data recovery
-Obj1 data: append-only recovery VERIFIED (26/26 lines covered; L1-3 quarantined)
-Obj2/3 write path: VERIFIED + landed (assertAuthoredBoardFrom; brief SKILL; 13/13 tests; live MCP reject)
-Obj4 schema: COMMS-ARCH Board row schema VERIFIED
-ORCH w2Z:p2 reaped
-RESIDUAL BLOCKED: compaction execution awaits concierge yes — COMPACTION-PROPOSAL.md
+CORD bus-data MISSION COMPLETE (compaction residual) 2026-08-13T15:25Z
+main@01b1956 (Land 7134667 + REPO_ONLY 01b1956)
+Obj1: append-only recovery VERIFIED (26/26 + quarantine L1-3)
+Obj2/3: write-path hardened + LIVE (MCP reject, 13/13 tests, skill/brief synced pi+cc+cursor)
+Obj4: COMMS-ARCH schema VERIFIED
+Children: ORCH w2Z:p2 reaped; AGNT drift-repo-only reaped
+BLOCKED residual: compaction ask t-msrnyv15-z9r9 → concierge/operator
+Handoff out-of-lane: herdr-spine/cc-hooks/server.mjs stale twin → CORD Tower
