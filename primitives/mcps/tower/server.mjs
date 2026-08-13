@@ -1,0 +1,350 @@
+#!/usr/bin/env bun
+// Tower — fleet message bus for Claude Code. MCP stdio server, zero deps.
+//
+// WHAT THIS IS
+// The terminal-native send_to_user mechanism for a fleet of parallel agents.
+// Subagents, workflows, and background tasks cannot speak to the user mid-run:
+// their output reaches only the orchestrator, at the end. Tower gives every
+// agent at any depth a line to the user — and gives the user a line back into
+// running loops — with a structural verbatim guarantee: a Stop hook refuses to
+// let the orchestrator end its turn while unrelayed messages exist.
+//
+// THE CONTRACT
+//   send_to_user  — deliverables/alerts BLOCK the orchestrator's turn-end until
+//                   relayed verbatim; progress is ambient (no block).
+//   ask_user      — opens a question; the orchestrator surfaces it, the user
+//                   answers in the terminal, the orchestrator calls reply();
+//                   the asking agent polls check_inbox for the answer.
+//   board_*       — a blackboard for parallel agents: claims ("I own file X"),
+//                   findings, notes. Peers read it instead of being blind.
+//
+// STORAGE — append-only JSONL under ~/.tower/ (derived state, no locks):
+//   ledger.jsonl — messages, questions, answers, acks
+//   board.jsonl  — blackboard entries
+//   deliverables/ — kind=deliverable messages also written as files
+// Scoping: every entry records the server's cwd (the session's project dir);
+// hooks filter by their own cwd so sessions only guard their own messages.
+
+import { appendFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { LEDGER, BOARD, DELIVERABLES, id, append, inboxState, normCwd, boardFor, renderMessage, emitPheromone, pheromoneField } from './lib.mjs'
+
+const CWD = normCwd(process.cwd())
+
+// ── tools ───────────────────────────────────────────────────────────────────
+const TOOLS = [
+  {
+    name: 'send_to_user',
+    description:
+      'Surface a message to the user EXACTLY as written, without ending your run. kinds: "deliverable" (generated content, drafts, results the user must see verbatim — blocks the orchestrator turn-end until relayed), "alert" (something urgent or load-bearing — also blocks), "progress" (specific numbers/status — ambient, never blocks, shows in /tower and prompt-time summaries). Always include from= your agent role/name.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', description: 'The content to display to the user, verbatim.' },
+        kind: { type: 'string', enum: ['deliverable', 'alert', 'progress'], description: 'Delivery class. Default: progress.' },
+        title: { type: 'string', description: 'Short title (used for deliverable filenames and summaries).' },
+        from: { type: 'string', description: 'Who is sending — your agent role, e.g. "scout", "review:bugs".' },
+      },
+      required: ['message'],
+    },
+  },
+  {
+    name: 'ask_user',
+    description:
+      'Ask the user a question mid-run without ending your turn. Returns a question id. The orchestrator surfaces the question; poll check_inbox with your question id (or from=) to receive the answer. Use sparingly — only for decisions genuinely owned by the user.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        question: { type: 'string', description: 'The question, verbatim.' },
+        options: { type: 'array', items: { type: 'string' }, description: 'Optional candidate answers.' },
+        from: { type: 'string', description: 'Who is asking — your agent role/name.' },
+      },
+      required: ['question'],
+    },
+  },
+  {
+    name: 'reply',
+    description:
+      'Orchestrator-side: record the user\'s answer to an open question so the asking agent receives it via check_inbox. Quote the user faithfully.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        question_id: { type: 'string', description: 'The id of the question being answered.' },
+        answer: { type: 'string', description: "The user's answer, faithfully conveyed." },
+      },
+      required: ['question_id', 'answer'],
+    },
+  },
+  {
+    name: 'check_inbox',
+    description:
+      'Check for answers to your questions and the current open/unrelayed state. Filter with from= (your role) or question_id=.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        question_id: { type: 'string', description: 'Return the answer to this question if present.' },
+        from: { type: 'string', description: 'Only items involving this agent role.' },
+      },
+    },
+  },
+  {
+    name: 'mark_relayed',
+    description:
+      'Orchestrator-side: acknowledge deliverable/alert messages AFTER relaying them verbatim to the user. Clears the Stop-hook guard for those ids.',
+    inputSchema: {
+      type: 'object',
+      properties: { ids: { type: 'array', items: { type: 'string' }, description: 'Message ids that were relayed.' } },
+      required: ['ids'],
+    },
+  },
+  {
+    name: 'board_post',
+    description:
+      'Post to the fleet blackboard so parallel peers can see it: a claim ("I own apps/api/src/routes/"), a finding (something load-bearing you discovered), or a note. Peers are blind to your context — the board is how the fleet coordinates.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        topic: { type: 'string', description: 'Thread key, e.g. "m2-sweep", "file-claims".' },
+        body: { type: 'string', description: 'The claim/finding/note, concise and self-contained.' },
+        type: { type: 'string', enum: ['claim', 'finding', 'note'], description: 'Default: note.' },
+        from: { type: 'string', description: 'Who is posting — your agent role/name.' },
+      },
+      required: ['topic', 'body'],
+    },
+  },
+  {
+    name: 'board_read',
+    description:
+      'Read the fleet blackboard. Do this BEFORE claiming files or duplicating work another agent may have done. Filter by topic; newest last.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        topic: { type: 'string', description: 'Only this thread.' },
+        limit: { type: 'number', description: 'Max entries (default 50).' },
+      },
+    },
+  },
+  {
+    name: 'relay_inbox',
+    description:
+      'Render the Tower inbox verbatim and acknowledge it in ONE call. Returns every unrelayed deliverable/alert in full plus every open question (id, from, message), then appends exactly one ledger ack covering the rendered deliverable/alert ids. Questions are never acked — answer one by passing {question_id, answer} in the answers param; from= overrides the answer author (default "relay_inbox"). Call this whenever unrelayed Tower traffic exists or the user asks what Tower is holding.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        answers: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              question_id: { type: 'string', description: 'id of the open Tower question being answered.' },
+              answer: { type: 'string', description: "The user's answer text, verbatim." },
+            },
+            required: ['question_id', 'answer'],
+          },
+          description: 'Optional answers to open questions, recorded atomically with the render.',
+        },
+        from: { type: 'string', description: 'Answer author override (default "relay_inbox").' },
+      },
+    },
+  },
+  {
+    name: 'pheromone_emit',
+    description:
+      'Emit a stigmergic pheromone to the fleet field (append-only pheromones.jsonl). Scents: work-available, work-claimed, work-done, need-help. Evidence is mandatory. from= is required.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        scent: { type: 'string', enum: ['work-available', 'work-claimed', 'work-done', 'need-help'] },
+        topic: { type: 'string', description: 'Thread key, e.g. "constellation-zg/tower-stigmergy".' },
+        from: { type: 'string', description: 'Who is emitting — your agent role/name (required).' },
+        payload_ref: { type: 'string', description: 'Path or id to the work artifact (required for work-available/work-done).' },
+        ref: { type: 'string', description: 'Reference pheromone id (required for work-claimed/work-done).' },
+        evidence: { type: 'string', description: 'What makes this real: artifact path, marker, token (required).' },
+        to_role: { type: 'string', description: 'Route hint: target role.' },
+        to_pane: { type: 'string', description: 'Route hint: target pane.' },
+        reply_to: { type: 'string', description: 'Route hint: lineage reply target.' },
+        ttl_s: { type: 'number', description: 'TTL in seconds (defaults per scent).' },
+      },
+      required: ['scent', 'topic', 'from', 'evidence'],
+    },
+  },
+  {
+    name: 'pheromone_field',
+    description:
+      'Read the derived pheromone field for this session cwd. Returns open, claimed, done, evaporated, and help buckets (read-time evaporation).',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        topic: { type: 'string', description: 'Only this thread.' },
+      },
+    },
+  },
+]
+
+function callTool(name, args) {
+  const now = new Date().toISOString()
+  switch (name) {
+    case 'send_to_user': {
+      const kind = args.kind ?? 'progress'
+      const entry = { id: id(), ts: now, cwd: CWD, kind, title: args.title, from: args.from, message: args.message }
+      append(LEDGER, entry)
+      let fileNote = ''
+      if (kind === 'deliverable') {
+        const slug = (args.title ?? 'deliverable').toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)
+        const path = join(DELIVERABLES, `${entry.id}-${slug}.md`)
+        appendFileSync(path, `# ${args.title ?? 'Deliverable'}\n\nfrom: ${args.from ?? 'unknown'} · ${now} · ${CWD}\n\n${args.message}\n`)
+        fileNote = ` Saved verbatim to ${path}.`
+      }
+      const guard =
+        kind === 'progress'
+          ? 'Ambient: visible in /tower and prompt-time summaries.'
+          : 'The orchestrator cannot end its turn until this is relayed to the user verbatim.'
+      return `Delivered to Tower as ${entry.id} (${kind}).${fileNote} ${guard}`
+    }
+    case 'ask_user': {
+      const entry = { id: id(), ts: now, cwd: CWD, kind: 'question', from: args.from, message: args.question, options: args.options }
+      append(LEDGER, entry)
+      return `Question ${entry.id} is open. The orchestrator will surface it; poll check_inbox({ question_id: "${entry.id}" }) for the answer. Continue other work while you wait if you can.`
+    }
+    case 'reply': {
+      append(LEDGER, { id: id(), ts: now, cwd: CWD, kind: 'answer', ref: args.question_id, message: args.answer })
+      return `Answer recorded for ${args.question_id}. The asking agent will receive it on its next check_inbox.`
+    }
+    case 'check_inbox': {
+      const state = inboxState(CWD)
+      let answers = state.answers
+      let open = state.openQuestions
+      if (args.question_id) {
+        answers = answers.filter((a) => a.ref === args.question_id)
+        open = open.filter((q) => q.id === args.question_id)
+      }
+      if (args.from) {
+        const qids = new Set(state.all.filter((r) => r.kind === 'question' && r.from === args.from).map((r) => r.id))
+        answers = answers.filter((a) => qids.has(a.ref))
+        open = open.filter((q) => q.from === args.from)
+      }
+      return JSON.stringify(
+        {
+          answers: answers.map((a) => ({ question_id: a.ref, answer: a.message, ts: a.ts })),
+          still_unanswered: open.map((q) => ({ id: q.id, from: q.from, question: q.message })),
+          unrelayed_count: state.unrelayed.length,
+        },
+        null,
+        2
+      )
+    }
+    case 'mark_relayed': {
+      append(LEDGER, { id: id(), ts: now, cwd: CWD, kind: 'ack', ids: args.ids })
+      return `Acknowledged ${args.ids.length} message(s). Guard cleared for: ${args.ids.join(', ')}.`
+    }
+    case 'board_post': {
+      // COMMS-ARCH.md §Project isolation: refuse scratch/temp cwds outright.
+      if (/^\/(private\/)?tmp\//.test(CWD) || CWD.includes('/scratchpad/')) {
+        return `Refused: "${CWD}" is a scratch/temp path. Post from your real repo cwd.`
+      }
+      const entry = { id: id(), ts: now, cwd: CWD, topic: args.topic, type: args.type ?? 'note', from: args.from, body: args.body }
+      append(BOARD, entry)
+      return `Posted to board topic "${args.topic}" as ${entry.id}. Peers will see it on their next board_read.`
+    }
+    case 'board_read': {
+      const rows = boardFor(CWD, { topic: args.topic, limit: args.limit })
+      if (rows.length === 0) return 'Board is empty for this scope. You are first — post your claims before starting.'
+      return rows.map((r) => `[${r.ts}] (${r.type}) ${r.from ?? '?'} @ ${r.topic}: ${r.body}`).join('\n')
+    }
+    case 'relay_inbox': {
+      const state = inboxState(CWD)
+      const parts = []
+      if (state.unrelayed.length === 0 && state.openQuestions.length === 0) {
+        parts.push('Tower inbox is clear — nothing unrelayed, no open questions.')
+      } else {
+        for (const m of state.unrelayed) parts.push(renderMessage(m))
+        for (const q of state.openQuestions) parts.push(renderMessage(q))
+      }
+      // ONE ack row covering exactly the deliverable/alert ids rendered above
+      // (skip when none). Questions are never acked — they are answered.
+      if (state.unrelayed.length > 0) {
+        append(LEDGER, { id: id(), ts: now, cwd: CWD, kind: 'ack', ids: state.unrelayed.map((m) => m.id) })
+      }
+      // Answers ride the same call so question + answer land atomically.
+      const recorded = []
+      for (const a of Array.isArray(args.answers) ? args.answers : []) {
+        if (!a?.question_id || typeof a?.answer !== 'string' || !a.answer.trim()) continue
+        append(LEDGER, { id: id(), ts: now, cwd: CWD, kind: 'answer', ref: String(a.question_id), message: a.answer, from: args.from ?? 'relay_inbox' })
+        recorded.push(String(a.question_id))
+      }
+      if (recorded.length > 0) parts.push(`Recorded answers for: ${recorded.join(', ')}`)
+      return parts.join('\n\n')
+    }
+    case 'pheromone_emit': {
+      if (/^\/(private\/)?tmp\//.test(CWD) || CWD.includes('/scratchpad/')) {
+        return `Refused: "${CWD}" is a scratch/temp path. Emit from your real repo cwd.`
+      }
+      if (!args.from) throw new Error('from is required')
+      const row = emitPheromone(CWD, {
+        scent: args.scent,
+        topic: args.topic,
+        from: args.from,
+        route: { to_role: args.to_role ?? null, to_pane: args.to_pane ?? null, reply_to: args.reply_to ?? null },
+        ref: args.ref ?? null,
+        payload_ref: args.payload_ref ?? null,
+        evidence: args.evidence,
+        ttl_s: args.ttl_s,
+      })
+      return `Emitted pheromone ${row.id} (${row.scent}) on topic "${row.topic}".`
+    }
+    case 'pheromone_field': {
+      const field = pheromoneField(CWD, { topic: args.topic })
+      return JSON.stringify(field, null, 2)
+    }
+    default:
+      throw new Error(`Unknown tool: ${name}`)
+  }
+}
+
+// ── MCP stdio (newline-delimited JSON-RPC 2.0) ─────────────────────────────
+const respond = (idv, result) => process.stdout.write(JSON.stringify({ jsonrpc: '2.0', id: idv, result }) + '\n')
+const respondErr = (idv, message) =>
+  process.stdout.write(JSON.stringify({ jsonrpc: '2.0', id: idv, error: { code: -32000, message } }) + '\n')
+
+let buffer = ''
+process.stdin.on('data', (chunk) => {
+  buffer += chunk
+  let nl
+  while ((nl = buffer.indexOf('\n')) !== -1) {
+    const line = buffer.slice(0, nl).trim()
+    buffer = buffer.slice(nl + 1)
+    if (!line) continue
+    let msg
+    try {
+      msg = JSON.parse(line)
+    } catch {
+      continue
+    }
+    handle(msg)
+  }
+})
+
+function handle(msg) {
+  const { id: idv, method, params } = msg
+  if (idv === undefined || idv === null) return // notification — no response
+  try {
+    if (method === 'initialize') {
+      respond(idv, {
+        protocolVersion: params?.protocolVersion ?? '2024-11-05',
+        capabilities: { tools: {} },
+        serverInfo: { name: 'tower', version: '1.0.0' },
+      })
+    } else if (method === 'tools/list') {
+      respond(idv, { tools: TOOLS })
+    } else if (method === 'tools/call') {
+      const text = callTool(params.name, params.arguments ?? {})
+      respond(idv, { content: [{ type: 'text', text }] })
+    } else if (method === 'ping') {
+      respond(idv, {})
+    } else {
+      respondErr(idv, `Method not supported: ${method}`)
+    }
+  } catch (err) {
+    respondErr(idv, String(err?.message ?? err))
+  }
+}

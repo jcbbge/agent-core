@@ -1,0 +1,10 @@
+// Tower shared storage layer — imported by server.mjs, hook scripts, and cli.mjs.
+// Ledger grammar canonical home: ~/agent-core/primitives/hooks/tower-ledger.mjs
+// This file re-exports for back-compat and runs mkdir side effects.
+
+import { mkdirSync } from 'node:fs'
+export * from '/Users/jrg/agent-core/primitives/hooks/tower-ledger.mjs'
+import { TOWER, DELIVERABLES, FLIGHT } from '/Users/jrg/agent-core/primitives/hooks/tower-ledger.mjs'
+
+mkdirSync(DELIVERABLES, { recursive: true })
+mkdirSync(FLIGHT, { recursive: true })
