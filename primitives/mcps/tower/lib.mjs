@@ -3,8 +3,8 @@
 // This file re-exports for back-compat and runs mkdir side effects.
 
 import { mkdirSync } from 'node:fs'
-export * from '/Users/jrg/agent-core/primitives/hooks/tower-ledger.mjs'
-import { TOWER, DELIVERABLES, FLIGHT, normCwd, _test } from '/Users/jrg/agent-core/primitives/hooks/tower-ledger.mjs'
+export * from '../../hooks/tower-ledger.mjs'
+import { TOWER, DELIVERABLES, FLIGHT, normCwd, _test } from '../../hooks/tower-ledger.mjs'
 
 mkdirSync(DELIVERABLES, { recursive: true })
 mkdirSync(FLIGHT, { recursive: true })

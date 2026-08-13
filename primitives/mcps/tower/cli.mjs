@@ -15,7 +15,7 @@
 // Used by the /tower command (dynamic context injection) and directly by the
 // developer from any terminal.
 
-import { inboxState, renderMessage, readAll, boardFor, normCwd, BOARD, ODOMETER, emitPheromone, pheromoneField, pheromoneFieldFromRows, readAllFull, PHEROMONES, ledgerInboxCursor, deriveInboxStateFromCursor } from './lib.mjs'
+import { inboxState, renderMessage, readAll, boardFor, normCwd, BOARD, ODOMETER, emitPheromone, pheromoneField, pheromoneFieldFromRows, readAllFull, PHEROMONES, ledgerInboxCursor, deriveInboxStateFromCursor, assertAuthoredBoardFrom } from './lib.mjs'
 
 // ─── defensive JSONL field access (rows are append-only, partial rows happen) ─
 function preview(value, max = 100) {
@@ -147,12 +147,14 @@ if (cmd === 'status') {
     process.exit(2)
   }
   const { appendFileSync } = require('node:fs')
+  const fromResolved = from ?? `cli:${process.env.USER ?? 'unknown'}`
+  assertAuthoredBoardFrom(type, fromResolved)
   const row = {
     id: `cli-${crypto.randomUUID()}`,
     ts: new Date().toISOString(),
     cwd,
     type,
-    from: from ?? `cli:${process.env.USER ?? 'unknown'}`,
+    from: String(fromResolved).trim(),
     topic,
     body,
   }

@@ -75,6 +75,17 @@ export const id = () => `t-${Date.now().toString(36)}-${Math.random().toString(3
 const pheromoneId = () => `ph-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`
 export const append = (file, obj) => appendFileSync(file, JSON.stringify(obj) + '\n')
 
+/** Authored fleet-mail rows on board.jsonl — require non-empty from at write time. */
+export const AUTHORED_BOARD_TYPES = new Set(['claim', 'finding', 'note'])
+
+/** Machine-plane rows use kind+via (lineage, bypass audit, etc.) — no from, no throw on read. */
+export function assertAuthoredBoardFrom(type, from) {
+  const t = type ?? 'note'
+  if (!AUTHORED_BOARD_TYPES.has(t)) return
+  const f = typeof from === 'string' ? from.trim() : ''
+  if (!f) throw new Error(`board post refused: authored type "${t}" requires non-empty from`)
+}
+
 function pheromoneLive(row, nowMs) {
   const ttl = row.ttl_s ?? SCENT_TTL_DEFAULTS[row.scent] ?? 0
   return nowMs < new Date(row.ts).getTime() + ttl * 1000

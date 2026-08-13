@@ -1,0 +1,4 @@
+AGNT compaction-proposal T4 complete 2026-08-13.
+Artifact: briefs/tower/bus-data/COMPACTION-PROPOSAL.md
+Strategy: new-file + atomic-swap (primary); lock+rewrite documented as alternative
+Execution: NOT RUN — gated on concierge yes on tower/bus-data

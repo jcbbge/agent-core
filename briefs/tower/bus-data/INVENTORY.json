@@ -1,0 +1,1388 @@
+{
+  "backup": {
+    "path": "/Users/jrg/agent-core/briefs/tower/bus-data/backups/board.jsonl.20260813T134935Z.bak",
+    "source_sha256": "10cc463f2f0c4bba890783f2f28cdb460f9100e1253a5b11e54f0c7053e36baf",
+    "backup_sha256": "10cc463f2f0c4bba890783f2f28cdb460f9100e1253a5b11e54f0c7053e36baf",
+    "source_lines": 6472,
+    "backed_up_at": "2026-08-13T13:49:35Z"
+  },
+  "bad_lines": [
+    {
+      "line": 1,
+      "damage_class": "non_json_text",
+      "raw_byte_len": 16,
+      "extractable": {},
+      "recoverable": false,
+      "notes": "L1 non-JSON tool text per ORCH samples"
+    },
+    {
+      "line": 2,
+      "damage_class": "non_json_text",
+      "raw_byte_len": 15,
+      "extractable": {},
+      "recoverable": false,
+      "notes": "L2 non-JSON tool text per ORCH samples"
+    },
+    {
+      "line": 3,
+      "damage_class": "truncated",
+      "raw_byte_len": 91,
+      "extractable": {
+        "ts": {
+          "read": "2026-07-24T09:18:30Z"
+        }
+      },
+      "recoverable": false,
+      "notes": "L3 truncated mid-object per ORCH samples"
+    },
+    {
+      "line": 553,
+      "damage_class": "unescaped_body",
+      "raw_byte_len": 863,
+      "extractable": {
+        "id": {
+          "read": "t-find-1785206344-w1"
+        },
+        "from": {
+          "read": "worker-1"
+        },
+        "topic": {
+          "read": "tower-auto"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-07-28T02:39:04.735Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/herdr-spine"
+        },
+        "body": {
+          "read": "FINDING (touches WS-2 partition): one tower_ask call produced TWO ledger questions for one human question \u2014 the WS-1 row"
+        }
+      },
+      "recoverable": true,
+      "notes": "unescaped body; id=t-find-1785206344-w1 from=worker-1 topic=tower-auto"
+    },
+    {
+      "line": 2113,
+      "damage_class": "invalid_escape",
+      "raw_byte_len": 1566,
+      "extractable": {
+        "id": {
+          "read": "ws1-done-1786216197"
+        },
+        "from": {
+          "read": "ws1"
+        },
+        "topic": {
+          "read": "fut-rename"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-08T19:09:57Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/fut"
+        },
+        "body": {
+          "read": "DONE ws1: 14 files changed (12 src/*.rs + tests/e2e.rs... wait 13 src + 1 test = 14). Renamed: project doc-comments Fut-"
+        }
+      },
+      "recoverable": true,
+      "notes": "invalid escape; id=ws1-done-1786216197 from=ws1"
+    },
+    {
+      "line": 2502,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 614,
+      "extractable": {
+        "id": {
+          "read": "c003-test-runner-claim"
+        },
+        "from": {
+          "read": "c003-test-runner"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T05:18:22Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "CLAIM gate execution \u2014 pane w1B:pN \u2014 READ-ONLY on code and tests; writes only .madewell/work/test-results/\"}n{\"id\": \"spi"
+        }
+      },
+      "recoverable": true,
+      "notes": "concatenated objects; id=c003-test-runner-claim from=c003-test-runner"
+    },
+    {
+      "line": 2504,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 1555,
+      "extractable": {
+        "id": {
+          "read": "c003-test-runner-done"
+        },
+        "from": {
+          "read": "c003-test-runner"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T05:22:27Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "DONE gate \u2014 fmt=0 clippy=0 test=101 (FAIL). --lib 376p/13f, main.rs unittests 0p/0f, e2e.rs 54p/7f, doctests 0p/0f = 430"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2507,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 833,
+      "extractable": {
+        "id": {
+          "read": "c003-triage-c-claim"
+        },
+        "from": {
+          "read": "c003-triage-c"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T05:25:59Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "CLAIM triage cluster-C-e2e \u2014 pane w1B:pR \u2014 READ-ONLY, verdict only\"}n{\"id\":\"c003-triage-b-claim\",\"ts\":\"2026-08-10T05:26:"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2511,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 2125,
+      "extractable": {
+        "id": {
+          "read": "c003-triage-b-done"
+        },
+        "from": {
+          "read": "c003-triage-b"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T05:35:57Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "DONE triage cluster-B-config-and-guards \u2014 10/10 triaged, verdict-only, read-only throughout. Tally: bucket(a) PRE-EXISTI"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2513,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 1797,
+      "extractable": {
+        "id": {
+          "read": "c003-triage-c-done"
+        },
+        "from": {
+          "read": "c003-triage-c"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T05:44:18Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "DONE triage cluster-C-e2e \u2014 7/7 e2e failures triaged: bucket(a)=1 (public_directional_focus...zoomed_and_tiny \u2014 pre-exis"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2514,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 613,
+      "extractable": {
+        "id": {
+          "read": "c003-fix-impl-claim"
+        },
+        "from": {
+          "read": "c003-fix-impl"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T05:47:59Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "CLAIM fix wave, implementation only \u2014 pane w1B:pS \u2014 owns src/client/mod.rs, phoropter.rs, layout.rs. No test edits.\"}n{\""
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2515,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 2826,
+      "extractable": {
+        "id": {
+          "read": "c003-fix-impl-done"
+        },
+        "from": {
+          "read": "c003-fix-impl"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T05:54:31Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "DONE fix-impl \u2014 3/3 fixes applied, cargo build/fmt/clippy all clean (exit 0/0/0). FIX1 mod.rs OpenTabBar arm (~1337-1355"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2516,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 696,
+      "extractable": {
+        "id": {
+          "read": "c003-fix-tests-claim"
+        },
+        "from": {
+          "read": "c003-fix-tests"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T05:56:43Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "CLAIM test fix pass \u2014 pane w1B:pT \u2014 owns cfg(test) blocks in src/ and tests/e2e.rs. No implementation code. Read gate re"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2521,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 614,
+      "extractable": {
+        "id": {
+          "read": "c003-test-runner-2-claim"
+        },
+        "from": {
+          "read": "c003-test-runner-2"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T06:17:24Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "CLAIM gate execution \u2014 pane w1B:pV \u2014 READ-ONLY on code and tests; writes only .madewell/work/test-results/\"}n{\"id\": \"spi"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2523,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 1438,
+      "extractable": {
+        "id": {
+          "read": "c003-test-runner-2-done"
+        },
+        "from": {
+          "read": "c003-test-runner-2"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T06:22:39Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "DONE gate run 2 \u2014 RED. fmt=0 clippy=0. cargo test --no-fail-fast run A: 448/451 passed (3 failed); run B (immediate reru"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2525,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 653,
+      "extractable": {
+        "id": {
+          "read": "c003-triage-d-claim"
+        },
+        "from": {
+          "read": "c003-triage-d"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T06:25:13Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "CLAIM triage of gate run 2 residue (config test not-applied, e2e switcher hang, layout tie-break, chaos flake) \u2014 pane w1"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2527,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 3739,
+      "extractable": {
+        "id": {
+          "read": "c003-triage-d-done"
+        },
+        "from": {
+          "read": "c003-triage-d"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T06:45:33Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "DONE triage run2-residue \u2014 4/4 triaged, read-only throughout. (1) config.rs a_pre_item_shaped test: bucket (i) NOT APPLI"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2530,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 649,
+      "extractable": {
+        "id": {
+          "read": "c003-fix-impl-2-claim"
+        },
+        "from": {
+          "read": "c003-fix-impl-2"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T06:49:38Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "CLAIM fix wave 2, implementation \u2014 pane w1B:pX \u2014 owns src/client/layout.rs and the race investigation. No test edits.\"}n"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2542,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 582,
+      "extractable": {
+        "id": {
+          "read": "c003-triage-e-claim"
+        },
+        "from": {
+          "read": "c003-triage-e"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T07:46:35Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "CLAIM triage of the second intermittent \u2014 pane w1B:pZ \u2014 READ-ONLY, verdict only\"}n{\"id\": \"spine-1ce26db1-c437-48eb-a913-"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2556,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 624,
+      "extractable": {
+        "id": {
+          "read": "c003-fix-3-claim"
+        },
+        "from": {
+          "read": "c003-fix-3"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T08:20:04Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "CLAIM final fix \u2014 pane w1B:p11 \u2014 owns src/daemon/mod.rs is_uncorrelated_transition_error + the ignore attribute on one e"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2559,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 3568,
+      "extractable": {
+        "id": {
+          "read": "c003-fix-3-done"
+        },
+        "from": {
+          "read": "c003-fix-3"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T08:28:13Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "DONE fix-3 (final code change). GRACE N=2: is_uncorrelated_transition_error/command_response now take a per-terminal bus"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2569,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 2159,
+      "extractable": {
+        "id": {
+          "read": "c003-fix-tests-3-done"
+        },
+        "from": {
+          "read": "c003-fix-tests-3"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T08:38:52Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "DONE fix-tests-3. Fixed all 7 cfg(test) call sites in src/daemon/mod.rs, cfg(test) only, no other files touched. E0061 x"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2571,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 624,
+      "extractable": {
+        "id": {
+          "read": "c003-test-runner-4-3-claim"
+        },
+        "from": {
+          "read": "c003-test-runner-4-3"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T08:40:51Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "CLAIM gate execution \u2014 pane w1B:p14 \u2014 READ-ONLY on code and tests; writes only .madewell/work/test-results/\"}n{\"id\": \"sp"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2573,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 747,
+      "extractable": {
+        "id": {
+          "read": "c003-test-runner-4-3-done"
+        },
+        "from": {
+          "read": "c003-test-runner-4-3"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T08:44:50Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "DONE gate run 4 \u2014 fmt 0, clippy 0, test x2 both 450 passed/0 failed/1 ignored, exit 0 both runs. Deterministically green"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2574,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 585,
+      "extractable": {
+        "id": {
+          "read": "c003-acceptance-claim"
+        },
+        "from": {
+          "read": "c003-acceptance"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T08:47:27Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "CLAIM acceptance evidence \u2014 pane w1B:p15 \u2014 writes .madewell/work/test-results/ only\"}n{\"id\": \"spine-26001228-c9d9-4e60-a"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    },
+    {
+      "line": 2577,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 848,
+      "extractable": {
+        "id": {
+          "read": "c003-acceptance-done"
+        },
+        "from": {
+          "read": "c003-acceptance"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "type": {
+          "read": "finding"
+        },
+        "ts": {
+          "read": "2026-08-10T09:04:08Z"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "body": {
+          "read": "DONE acceptance evidence \u2014 all 7 checklist criteria mechanically proven (motion capture, 4-edge docking, live dial+focus"
+        }
+      },
+      "recoverable": true,
+      "notes": ""
+    }
+  ],
+  "authorless_authored": [
+    {
+      "line": 2814,
+      "id": "t-msnv8p8c-b9mo",
+      "type": "claim",
+      "topic": "herdr/skill-audit",
+      "ts": "2026-08-10T23:31:51.611Z",
+      "cwd": "/Users/jrg/agent-core",
+      "body_preview": "SAGT skill-propagation claiming herdr skill parity task. cwd=/Users/jrg/agent-core pane=w1A:p15. Will make ~/agent-core/",
+      "attribution_candidates": []
+    },
+    {
+      "line": 2816,
+      "id": "t-msnvbx0a-8qxu",
+      "type": "finding",
+      "topic": "herdr/skill-audit",
+      "ts": "2026-08-10T23:34:21.658Z",
+      "cwd": "/Users/jrg/agent-core",
+      "body_preview": "SAGT skill-propagation DONE. ~/agent-core/primitives/skills/herdr/SKILL.md is now byte-identical to ~/.claude/skills/her",
+      "attribution_candidates": []
+    },
+    {
+      "line": 3537,
+      "id": "t-mspdknt6-x65y",
+      "type": "finding",
+      "topic": "cursor-shim/lever-6-statem-reap",
+      "ts": "2026-08-12T00:52:48.906Z",
+      "cwd": "/Users/jrg/cursor-shim",
+      "body_preview": "AGNT done: wired --statem (STATEM infra pane after CTRL), orch statem-tabs.json registration, down --wait-done with agen",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "cursor-shim"
+        }
+      ]
+    },
+    {
+      "line": 3700,
+      "id": "t-mspkcvu3-96og",
+      "type": "note",
+      "topic": "agent-core/slim-fixtures",
+      "ts": "2026-08-12T04:02:43.371Z",
+      "cwd": "/Users/jrg/agent-core",
+      "body_preview": "",
+      "attribution_candidates": []
+    },
+    {
+      "line": 3738,
+      "id": "t-mspkkat1-juy9",
+      "type": "note",
+      "topic": "agent-core/slim-fixtures",
+      "ts": "2026-08-12T04:08:29.365Z",
+      "cwd": "/Users/jrg/agent-core",
+      "body_preview": "",
+      "attribution_candidates": []
+    },
+    {
+      "line": 3828,
+      "id": "t-mspl4ubu-6yib",
+      "type": "note",
+      "topic": "agent-core/slim-fixtures",
+      "ts": "2026-08-12T04:24:27.785Z",
+      "cwd": "/Users/jrg/agent-core",
+      "body_preview": "",
+      "attribution_candidates": []
+    },
+    {
+      "line": 3889,
+      "id": "t-mspnibex-ao14",
+      "type": "note",
+      "topic": "agent-core/slim-fixtures",
+      "ts": "2026-08-12T05:30:55.689Z",
+      "cwd": "/Users/jrg/agent-core",
+      "body_preview": "",
+      "attribution_candidates": []
+    },
+    {
+      "line": 4589,
+      "id": "t-msqfaf83-v99w",
+      "type": "note",
+      "topic": "herdr-spine/verify-beat-port",
+      "ts": "2026-08-12T18:28:36.627Z",
+      "cwd": "/Users/jrg/herdr-spine",
+      "body_preview": "",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "herdr-spine"
+        }
+      ]
+    },
+    {
+      "line": 4591,
+      "id": "t-msqfas7j-gn7q",
+      "type": "note",
+      "topic": "herdr-spine/verify-beat-port",
+      "ts": "2026-08-12T18:28:53.455Z",
+      "cwd": "/Users/jrg/herdr-spine",
+      "body_preview": "",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "herdr-spine"
+        }
+      ]
+    },
+    {
+      "line": 4706,
+      "id": "t-msqfik5b-csbu",
+      "type": "finding",
+      "topic": "herdr-spine/verify-beat-port",
+      "ts": "2026-08-12T18:34:56.255Z",
+      "cwd": "/Users/jrg/herdr-spine",
+      "body_preview": "",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "herdr-spine"
+        }
+      ]
+    },
+    {
+      "line": 4725,
+      "id": "t-msqfjel8-qwg0",
+      "type": "finding",
+      "topic": "herdr-spine/verify-beat-port",
+      "ts": "2026-08-12T18:35:35.708Z",
+      "cwd": "/Users/jrg/herdr-spine",
+      "body_preview": "[U2] COLLECTED agnt-u2-breakglass \u2014 board u2-breakglass finding (18:33:31Z) + collector .done at ~/agent-core/briefs/ver",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "herdr-spine"
+        }
+      ]
+    },
+    {
+      "line": 4734,
+      "id": "t-msqfk9wh-ac45",
+      "type": "note",
+      "topic": "herdr-spine/verify-beat-port",
+      "ts": "2026-08-12T18:36:16.288Z",
+      "cwd": "/Users/jrg/herdr-spine",
+      "body_preview": "[U2] DONE: make-bifurcation smoke (claude kind), test-maker arm PASS. Brief path /var/folders/.../u2-verify-beat.pKJrZN/",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "herdr-spine"
+        }
+      ]
+    },
+    {
+      "line": 4746,
+      "id": "t-msqfl494-zori",
+      "type": "note",
+      "topic": "herdr-spine/verify-beat-port",
+      "ts": "2026-08-12T18:36:55.624Z",
+      "cwd": "/Users/jrg/herdr-spine",
+      "body_preview": "[U2] COLLECTED agnt-u2-breakglass-smoke \u2014 board u2-breakglass finding (18:33:31Z) + worker .done at ~/agent-core/briefs/",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "herdr-spine"
+        }
+      ]
+    },
+    {
+      "line": 4747,
+      "id": "t-msqflh0c-luld",
+      "type": "finding",
+      "topic": "herdr-spine/verify-beat-port",
+      "ts": "2026-08-12T18:37:12.156Z",
+      "cwd": "/Users/jrg/herdr-spine",
+      "body_preview": "",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "herdr-spine"
+        }
+      ]
+    },
+    {
+      "line": 4754,
+      "id": "t-msqfm5xj-kxln",
+      "type": "note",
+      "topic": "herdr-spine/verify-beat-port",
+      "ts": "2026-08-12T18:37:44.455Z",
+      "cwd": "/Users/jrg/herdr-spine",
+      "body_preview": "[U2] COLLECTED agnt-u2-breakglass-test \u2014 board u2-breakglass (18:33:31Z) + u2-breakglass-smoke (18:36:37Z); proxy .done ",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "herdr-spine"
+        }
+      ]
+    },
+    {
+      "line": 4757,
+      "id": "t-msqfmfyn-0qht",
+      "type": "finding",
+      "topic": "herdr-spine/verify-beat-port",
+      "ts": "2026-08-12T18:37:57.455Z",
+      "cwd": "/Users/jrg/herdr-spine",
+      "body_preview": "[U2] COLLECTED agnt-u2-breakglass (agnt-gate-test) \u2014 board: u2-breakglass@18:33:31Z + u2-breakglass-smoke@18:36:37Z. .do",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "herdr-spine"
+        }
+      ]
+    },
+    {
+      "line": 4758,
+      "id": "t-msqfmgyx-gk0n",
+      "type": "finding",
+      "topic": "herdr-spine/verify-beat-port",
+      "ts": "2026-08-12T18:37:58.761Z",
+      "cwd": "/Users/jrg/herdr-spine",
+      "body_preview": "[U2] COLLECTED agnt-u2-json-test \u2014 board finding (18:35:28Z) on herdr-spine/u2-json-test is substantive: ctl-fleet-tasks",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "herdr-spine"
+        }
+      ]
+    },
+    {
+      "line": 4760,
+      "id": "t-msqfmp4b-ik98",
+      "type": "note",
+      "topic": "herdr-spine/verify-beat-port",
+      "ts": "2026-08-12T18:38:09.323Z",
+      "cwd": "/Users/jrg/herdr-spine",
+      "body_preview": "[U2] COLLECTED agnt-u2-smoke-pi \u2014 board finding (18:36:41Z) + worker .done at ~/agent-core/briefs/verify-beat-port/.done",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "herdr-spine"
+        }
+      ]
+    },
+    {
+      "line": 5178,
+      "id": "t-msqll1mi-s7po",
+      "type": "note",
+      "topic": "agent-core/component-verify",
+      "ts": "2026-08-12T21:24:49.914Z",
+      "cwd": "/Users/jrg/agent-core",
+      "body_preview": "CLAIM: agnt-component-verify-test taking briefs/component-verify.md \u2014 runner v1, 5 founding manifests, --coverage burn-d",
+      "attribution_candidates": []
+    },
+    {
+      "line": 5186,
+      "id": "t-msqlqaar-f9tn",
+      "type": "note",
+      "topic": "agent-core/component-verify",
+      "ts": "2026-08-12T21:28:54.435Z",
+      "cwd": "/Users/jrg/agent-core",
+      "body_preview": "PARTITION NOTE (agnt-component-verify-test): sibling claim by component-verify-worker (21:22Z) observed; that pane (agnt",
+      "attribution_candidates": [
+        {
+          "source": "body",
+          "name": "component-verify-worker"
+        }
+      ]
+    },
+    {
+      "line": 5221,
+      "id": "t-msqm2ekj-1diy",
+      "type": "note",
+      "topic": "agent-core/component-verify",
+      "ts": "2026-08-12T21:38:19.843Z",
+      "cwd": "/Users/jrg/agent-core",
+      "body_preview": "FINDINGS vs Pre-Verified Facts (agnt-component-verify-test, all fixed in-scope, commit 2c6f1fc on spine/component-verify",
+      "attribution_candidates": []
+    },
+    {
+      "line": 5399,
+      "id": "t-msqsq8iy-82zf",
+      "type": "note",
+      "topic": "cursor-shim/spawn-finishing",
+      "ts": "2026-08-13T00:44:49.450Z",
+      "cwd": "/Users/jrg/cursor-shim",
+      "body_preview": "CLAIM test-maker (unit2 shim-workspace-targeting) \u2014 partition: docs/qa-verify.sh ONLY. Worktree wt-agnt-test-maker-w2q-p",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "cursor-shim"
+        }
+      ]
+    },
+    {
+      "line": 5401,
+      "id": "t-msqsqst2-do9y",
+      "type": "note",
+      "topic": "cursor-shim/spawn-finishing",
+      "ts": "2026-08-13T00:45:15.734Z",
+      "cwd": "/Users/jrg/cursor-shim",
+      "body_preview": "TEST-MAKER unit2 DONE. Added ### shim-workspace-targeting to docs/qa-verify.sh \u2014 21 ck cases covering AC1-AC3 (static gr",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "cursor-shim"
+        }
+      ]
+    },
+    {
+      "line": 5403,
+      "id": "t-msqsqw2i-i3ah",
+      "type": "note",
+      "topic": "cursor-shim/spawn-finishing",
+      "ts": "2026-08-13T00:45:19.962Z",
+      "cwd": "/Users/jrg/cursor-shim",
+      "body_preview": ".done test-maker unit2 shim-workspace-targeting \u2014 docs/qa-verify.sh ### shim-workspace-targeting (21 cases). Tester hand",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "cursor-shim"
+        }
+      ]
+    },
+    {
+      "line": 5442,
+      "id": "t-msqsw8eu-c6qf",
+      "type": "claim",
+      "topic": "cursor-shim/spawn-finishing",
+      "ts": "2026-08-13T00:49:29.238Z",
+      "cwd": "/Users/jrg/cursor-shim",
+      "body_preview": "TEST-MAKER w2q-p6: bounce 2 \u2014 rewrite MAKE_WS/AC3_BLOCK echo-in-ck quoting in docs/qa-verify.sh",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "cursor-shim"
+        }
+      ]
+    },
+    {
+      "line": 5463,
+      "id": "t-msqsxoad-arca",
+      "type": "done",
+      "topic": "cursor-shim/spawn-finishing",
+      "ts": "2026-08-13T00:50:36.469Z",
+      "cwd": "/Users/jrg/cursor-shim",
+      "body_preview": "TEST-MAKER w2q-p6 bounce 2 DONE: rewrote 9 echo-in-ck lines to inline sed|grep in docs/qa-verify.sh; overlay on coder wt",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "cursor-shim"
+        }
+      ]
+    },
+    {
+      "line": 5653,
+      "id": "t-msqufmr2-gosc",
+      "type": "note",
+      "topic": "agent-core/credential-guard",
+      "ts": "2026-08-13T01:32:33.902Z",
+      "cwd": "/Users/jrg/agent-core",
+      "body_preview": "CLAIM: agnt-credential-guard-test executing briefs/credential-guard.md \u2014 pre-commit secret gate (credential-guard.sh + V",
+      "attribution_candidates": []
+    },
+    {
+      "line": 5659,
+      "id": "t-msquuync-jrbs",
+      "type": "note",
+      "topic": "agent-core/credential-guard",
+      "ts": "2026-08-13T01:44:29.160Z",
+      "cwd": "/Users/jrg/agent-core",
+      "body_preview": "agnt-credential-guard-test: all 5 brief tasks done in worktree ~/.spine/worktrees/agent-core/credential-guard-test (bran",
+      "attribution_candidates": []
+    },
+    {
+      "line": 6244,
+      "id": "t-msridy9d-hd7v",
+      "type": "note",
+      "topic": "arc/ws-f",
+      "ts": "2026-08-13T12:43:06.288Z",
+      "cwd": "/Users/jrg/infinity/arc",
+      "body_preview": "AGNT coder-w2x-pb CLAIM: writing docs/decisions/2026-08-12-inventory-location-scope.md only (inventory location scope AD",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "arc"
+        }
+      ]
+    },
+    {
+      "line": 6246,
+      "id": "t-msrie2bl-kq1j",
+      "type": "note",
+      "topic": "arc/ws-f",
+      "ts": "2026-08-13T12:43:11.553Z",
+      "cwd": "/Users/jrg/infinity/arc",
+      "body_preview": "CLAIM: AGNT agnt-coder-w2x-pc writing docs/developer/orchestration/ws-f-w1-count-walk.md, ws-f-w2-location-context-rollu",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "arc"
+        }
+      ]
+    },
+    {
+      "line": 6256,
+      "id": "t-msriegv9-otlz",
+      "type": "note",
+      "topic": "arc/ws-c",
+      "ts": "2026-08-13T12:43:30.405Z",
+      "cwd": "/Users/jrg/infinity/arc",
+      "body_preview": "AGNT ws-c-catering-design-spec claims docs/builder/catering-section-design-spec.md \u2014 authoring in progress",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "arc"
+        }
+      ]
+    },
+    {
+      "line": 6257,
+      "id": "t-msriejwm-fbr3",
+      "type": "note",
+      "topic": "arc/ws-c",
+      "ts": "2026-08-13T12:43:34.342Z",
+      "cwd": "/Users/jrg/infinity/arc",
+      "body_preview": "CLAIM: docs/builder/catering-section-design-spec.md \u2014 agnt-test-maker-w2x-pf authoring design spec",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "arc"
+        }
+      ]
+    },
+    {
+      "line": 6271,
+      "id": "t-msrifsj9-rn4j",
+      "type": "note",
+      "topic": "arc/ws-d",
+      "ts": "2026-08-13T12:44:32.181Z",
+      "cwd": "/Users/jrg/infinity/arc",
+      "body_preview": "WS-C design spec cross-post: CollectionProductGroup mirror required for authoritative pick-N-of-M (CollectionSection/Col",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "arc"
+        }
+      ]
+    },
+    {
+      "line": 6272,
+      "id": "t-msrifsja-jh98",
+      "type": "note",
+      "topic": "arc/ws-c",
+      "ts": "2026-08-13T12:44:32.182Z",
+      "cwd": "/Users/jrg/infinity/arc",
+      "body_preview": "DONE: docs/builder/catering-section-design-spec.md authored.\n- Lines: 473\n- PENDING CAPTURE count: 23 (14 unique Q-marke",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "arc"
+        }
+      ]
+    },
+    {
+      "line": 6273,
+      "id": "t-msrifv8t-9gm9",
+      "type": "note",
+      "topic": "arc/ws-b",
+      "ts": "2026-08-13T12:44:35.693Z",
+      "cwd": "/Users/jrg/infinity/arc",
+      "body_preview": "AGNT coder w2x-pg: implementing contract_versions.build_id + render binding (PR3) in feat/ws-b-contract-version-build-id",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "arc"
+        }
+      ]
+    },
+    {
+      "line": 6275,
+      "id": "t-msrigbki-id0h",
+      "type": "note",
+      "topic": "arc/ws-c",
+      "ts": "2026-08-13T12:44:56.850Z",
+      "cwd": "/Users/jrg/infinity/arc",
+      "body_preview": "WS-C AGNT complete: docs/builder/catering-section-design-spec.md authored.\n\n- Lines: 489\n- PENDING CAPTURE: 31 (Q1\u2013Q12 a",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "arc"
+        }
+      ]
+    },
+    {
+      "line": 6276,
+      "id": "t-msrigbnj-nfdu",
+      "type": "note",
+      "topic": "arc/ws-d",
+      "ts": "2026-08-13T12:44:56.959Z",
+      "cwd": "/Users/jrg/infinity/arc",
+      "body_preview": "From WS-C catering-section-design-spec.md (2026-08-13):\n\n1. CollectionProductGroup not mirrored \u2014 blocks authoritative p",
+      "attribution_candidates": [
+        {
+          "source": "body",
+          "name": "WS-C"
+        },
+        {
+          "source": "cwd_basename",
+          "name": "arc"
+        }
+      ]
+    },
+    {
+      "line": 6300,
+      "id": "t-msriolh8-8aqg",
+      "type": "note",
+      "topic": "arc/ws-d",
+      "ts": "2026-08-13T12:51:22.940Z",
+      "cwd": "/Users/jrg/infinity/arc",
+      "body_preview": "AGNT coder-w2x-pj CLAIM: WS-D PR3 MenuPlan mirror / menu-type coherence \u2014 implementing tasks 1-4 + gate in isolated work",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "arc"
+        }
+      ]
+    },
+    {
+      "line": 6301,
+      "id": "t-msrioot8-pyum",
+      "type": "note",
+      "topic": "arc/ws-d",
+      "ts": "2026-08-13T12:51:27.260Z",
+      "cwd": "/Users/jrg/infinity/arc",
+      "body_preview": "TEST-MAKER (agnt-test-maker-w2x-pk): CLAIM \u2014 authoring C1-C9 test suite from CRITERIA-ws-d-pr3.md only; no implementatio",
+      "attribution_candidates": [
+        {
+          "source": "body",
+          "name": "CRITERIA-ws-d-pr3"
+        },
+        {
+          "source": "cwd_basename",
+          "name": "arc"
+        }
+      ]
+    },
+    {
+      "line": 6303,
+      "id": "t-msriqss4-fw16",
+      "type": "note",
+      "topic": "arc/ws-d",
+      "ts": "2026-08-13T12:53:05.716Z",
+      "cwd": "/Users/jrg/infinity/arc",
+      "body_preview": "TEST-MAKER DONE \u2014 oracle authored from CRITERIA-ws-d-pr3.md only (no impl reads).\n\nArtifacts:\n- apps/api/src/lib/galley/",
+      "attribution_candidates": [
+        {
+          "source": "body",
+          "name": "CRITERIA-ws-d-pr3"
+        },
+        {
+          "source": "cwd_basename",
+          "name": "arc"
+        }
+      ]
+    },
+    {
+      "line": 6305,
+      "id": "t-msrirp6u-qcl8",
+      "type": "note",
+      "topic": "arc/ws-b",
+      "ts": "2026-08-13T12:53:47.718Z",
+      "cwd": "/Users/jrg/infinity/arc",
+      "body_preview": "AGNT PR3 binding complete (uncommitted): build_id column + migration 0057 + creation/render paths + criteria test 2/2 pa",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "arc"
+        }
+      ]
+    },
+    {
+      "line": 6307,
+      "id": "t-msrishz8-4eaw",
+      "type": "note",
+      "topic": "arc/ws-d",
+      "ts": "2026-08-13T12:54:25.028Z",
+      "cwd": "/Users/jrg/infinity/arc",
+      "body_preview": "AGNT coder-w2x-pj DONE: MenuPlan mirror retarget complete. Files: fragments.ts (MENU_PLAN_FIELDS), galley-poll-menus.ts ",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "arc"
+        }
+      ]
+    },
+    {
+      "line": 6338,
+      "id": "t-msriwe72-s2mt",
+      "type": "claim",
+      "topic": "arc/ws-b",
+      "ts": "2026-08-13T12:57:26.750Z",
+      "cwd": "/Users/jrg/infinity/arc",
+      "body_preview": "AGNT image-ttl: implementing refresh-on-read for signed contract images (render.ts + transitions.ts). Worktree wt-agnt-c",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "arc"
+        }
+      ]
+    },
+    {
+      "line": 6340,
+      "id": "t-msriwla0-cdpi",
+      "type": "note",
+      "topic": "arc/ws-b",
+      "ts": "2026-08-13T12:57:35.928Z",
+      "cwd": "/Users/jrg/infinity/arc",
+      "body_preview": "",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "arc"
+        }
+      ]
+    },
+    {
+      "line": 6342,
+      "id": "t-msrixbyy-puqj",
+      "type": "done",
+      "topic": "arc/ws-b",
+      "ts": "2026-08-13T12:58:10.522Z",
+      "cwd": "/Users/jrg/infinity/arc",
+      "body_preview": "AGNT image-ttl DONE. Signed render refreshes presigned URLs on read; finalize embeds data-file-key on signature imgs; Si",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "arc"
+        }
+      ]
+    },
+    {
+      "line": 6344,
+      "id": "t-msriyvom-3zof",
+      "type": "note",
+      "topic": "arc/ws-b",
+      "ts": "2026-08-13T12:59:22.726Z",
+      "cwd": "/Users/jrg/infinity/arc",
+      "body_preview": "",
+      "attribution_candidates": [
+        {
+          "source": "cwd_basename",
+          "name": "arc"
+        }
+      ]
+    }
+  ],
+  "parse_summary": {
+    "total_nonempty": 6472,
+    "ok": 6446,
+    "bad_count": 26
+  }
+}

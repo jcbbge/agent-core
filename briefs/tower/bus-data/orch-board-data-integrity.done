@@ -1,0 +1,8 @@
+ORCH board-data-integrity DONE 2026-08-13T13:59:30Z
+branch: tower/board-write-path-hardening
+T1 backup+inventory: VERIFIED
+T2 recover-26: VERIFIED (45 recovery rows, 3 quarantine; bad lines remain in place)
+T3 attribute-46: VERIFIED (23 attributed / 23 unattributed)
+T4 compaction proposal: VERIFIED (artifact only; blocked on concierge yes) path=briefs/tower/bus-data/COMPACTION-PROPOSAL.md
+T5+T6 write-path: VERIFIED + committed on branch; bun test write-path.test.mjs 13/13 x2; live MCP reject + cli round-trip proved
+Land: CORD-gated

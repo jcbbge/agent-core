@@ -174,9 +174,22 @@ second scoping implementation. A raw `readAll(BOARD)`/`readAll(LEDGER)` or
 any direct read of `board.jsonl`/`ledger.jsonl` is a machine-plane privilege
 and must be declared as such at its call site.
 
-`board_post` now refuses scratch/temp cwds (server.mjs). Known hole: the
-documented pi fallback — appending a JSON line straight to `board.jsonl`
-(brief SKILL.md) — bypasses the MCP server, and with it this guard,
-entirely. There is no code chokepoint for that path; the brief template's
-wording (real repo cwd, namespaced topic) is the only control. This is
-written down, not closed.
+`board_post` refuses scratch/temp cwds (server.mjs) and rejects authored board
+rows without non-empty `from` (claim|finding|note). The pi fallback is
+`bun ~/.tower/cli.mjs post` (brief SKILL.md) — same schema, same guards.
+Hand-append to `board.jsonl` is banned in docs; there is still no kernel
+lock on the file itself (see Board row schema below).
+
+### Board row schema (2026-08-13)
+
+Two families coexist on `board.jsonl`; readers must tolerate both:
+
+| Family | Discriminator | Required fields | `from` |
+|---|---|---|---|
+| **Authored fleet mail** | `type` (claim \| finding \| note) | `id`, `ts`, `cwd`, `topic`, `body`, `from` | Required non-empty at write time (`board_post`, `cli.mjs post`) |
+| **Machine emission** | `kind` (e.g. lineage, bypass-audit) | `ts`, `kind`, `via` | Must not be invented; readers use `from ?? '?'` |
+
+Authored rows never carry `kind`; machine rows never carry authored `type`.
+Append-only JSONL, one object per line, newline-terminated (`tower-ledger.mjs`
+`append`). No file lock on append — concurrent writers may interleave lines;
+cursor locks exist only for read cursors, not writes.
