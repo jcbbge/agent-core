@@ -101,7 +101,13 @@ function readBytes(path) {
 // The absence is asserted rather than assumed: if one of these ever DOES
 // appear at the deployed path it is unmaintained staleness, and that is a
 // WARN worth seeing.
-const REPO_ONLY = new Set(['drift-check.mjs', 'DEPLOYMENT.md', 'README.md'])
+const REPO_ONLY = new Set([
+  'drift-check.mjs',
+  'DEPLOYMENT.md',
+  'README.md',
+  'write-path.test.mjs',
+  'write-path.criteria.md',
+])
 
 // For everything that IS deployed: .mjs files are load-bearing at the
 // deployed path — hooks and the server execute from there, so divergence is

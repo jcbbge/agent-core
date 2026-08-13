@@ -1,0 +1,7 @@
+CORD bus-data Land COMPLETE 2026-08-13
+main@7134667 merge(tower): land board write-path hardening + bus-data recovery
+Obj1 data: append-only recovery VERIFIED (26/26 lines covered; L1-3 quarantined)
+Obj2/3 write path: VERIFIED + landed (assertAuthoredBoardFrom; brief SKILL; 13/13 tests; live MCP reject)
+Obj4 schema: COMMS-ARCH Board row schema VERIFIED
+ORCH w2Z:p2 reaped
+RESIDUAL BLOCKED: compaction execution awaits concierge yes — COMPACTION-PROPOSAL.md

@@ -1,0 +1,7 @@
+done: agnt-drift-repo-only
+ts: 2026-08-13T15:22:00Z
+patch: REPO_ONLY += write-path.test.mjs, write-path.criteria.md
+drift-check exit: 1 (server.mjs vs spine FAIL — out of scope)
+SKIP write-path.criteria.md: repo-only by design (no deployed twin expected)
+SKIP write-path.test.mjs: repo-only by design (no deployed twin expected)
+cmd: bun primitives/mcps/tower/drift-check.mjs
