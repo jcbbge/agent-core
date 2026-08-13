@@ -1,0 +1,20 @@
+agnt-flock-integrity-tests complete 2026-08-13T15:48:00Z
+role: TEST-MAKER (Orion)
+from: AGNT flock-integrity-tests
+worktree: /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-test-maker-w2z-pg
+
+test: ~/agent-core/primitives/mcps/tower/flock-integrity.test.mjs
+criteria: ~/agent-core/primitives/mcps/tower/flock-integrity.criteria.md
+
+DID NOT COMMIT
+DID NOT RUN TESTS (tester job — impl may be absent or red; expected)
+
+Oracle coverage (maps to brief test-maker AC):
+  (a) clean file → bad_line_count=0 (empty + valid-only fixtures)
+  (b) N bad lines → count=N, rows exclude them (+ optional bad_line_numbers)
+  (c) machine rows (kind+via, no from) → renderMessage lib + ledger, readAllFull round-trip
+  (d) concurrent append stress — 16 parallel Bun workers × 20 writes, concat=0 audit
+  T2 shape: append newline-terminated JSON + readAllFull bad_line_count=0
+
+Handoff: tester runs `bun test flock-integrity.test.mjs` after implementer lands T2+T3.
+Live board ≈26 bad lines — coder proof only (temp fixtures here; no destructive live tests).

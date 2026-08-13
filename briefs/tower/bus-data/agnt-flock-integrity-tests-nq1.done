@@ -1,0 +1,23 @@
+agnt-flock-integrity-tests-nq1 complete 2026-08-13T17:05:00Z
+role: TEST-MAKER (Orion, nQ1 bounce)
+from: AGNT flock-integrity-tests
+worktree: /Users/jrg/.cursor/worktrees/agent-core/wt-orch-flock-integrity
+
+test: primitives/mcps/tower/flock-integrity.test.mjs
+criteria: primitives/mcps/tower/flock-integrity.criteria.md
+
+DID NOT COMMIT
+
+Changes (arbiter BAD TEST remediation):
+  - Count assertions now use readJsonlStats (stats sibling per plan T3 done-when);
+    readAllFull kept for rows[] backward-compat checks only.
+  - tower-ledger renderMessage import fixed to ../../hooks/tower-ledger.mjs
+    (integration tree relative, not absolute main checkout).
+  - Dropped unspec'd not.toContain('undefined') on renderMessage cases;
+    from-fallback /from (unknown|\?)/ retained per spec.
+  - criteria.md updated to document readJsonlStats API surface.
+
+Run (bounce verification): bun test primitives/mcps/tower/flock-integrity.test.mjs
+Result: 10 pass, 0 fail
+
+Handoff: tester re-runs same command; arbiter nQ2 if needed.
