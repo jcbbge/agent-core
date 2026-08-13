@@ -1,0 +1,10 @@
+unit2 shim-workspace-targeting — LANDED 2026-08-12 (CORD-gated, manual land)
+commit: 822cd83 feat(spawn): explicit --workspace targeting for make/worker/spine + control-plane split guard
+evidence:
+  - gate: bash docs/qa-verify.sh → 124 passed, 0 failed, on main post-commit
+  - AC1: make --workspace <id> → tab make-<slug> in target workspace (cursor-fleet)
+  - AC2: cursor-spine --workspace implies new tab in target; --workspace+--pane dies; worker inherits via exec
+  - AC3: WARN on same-tab split from 0-CONCIERGE/1-CORD without explicit targeting; 2-ORCH exempt (CORD ruling)
+  - verify beat: 2 oracle bounces (bad tests), implementation never wrong; nQ 2/3
+  - worktrees wt-agnt-{coder,test-maker}-w2q-p5/p6 removed, branches deleted, workers+ORCH reaped
+files: cursor-fleet, cursor-spine, rules/cursor-fleet.md, docs/qa-verify.sh

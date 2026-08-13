@@ -1,0 +1,14 @@
+sidebar-dashboard coder implementation complete 2026-08-12
+
+Changes:
+- config/spine.fragment.toml: agent_panel_sort=spaces, dashboard rows + inline token styling
+- config/agent-view.default.json: label needs-you
+- install.sh: scalar override spaces (was priority)
+- bin/spine-spawn: stamp_workspace_pwd at tab create + spawn
+- bin/handlers/15-restore-view: comment update
+
+Evidence:
+- install.sh: reload-config diagnostics []
+- agent.view.set: needs-you active=true source=plugin:herdr-spine
+- snapshot: workspace tokens pwd stamped (w2J, w2P, w29)
+- follow-up: ~/agent-core/briefs/shim-pwd-stamp/brief.md (cursor-fleet)

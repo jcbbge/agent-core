@@ -1,0 +1,6 @@
+unit=circadian-wake
+verdict=PASS
+qa=100/0
+wiring=cold-start-no-resume
+live=w2M:pN WAKE_SEEN=yes
+nq=1
