@@ -15,7 +15,7 @@
 // Used by the /tower command (dynamic context injection) and directly by the
 // developer from any terminal.
 
-import { inboxState, renderMessage, readAll, boardFor, normCwd, ODOMETER, emitPheromone, pheromoneField, pheromoneFieldFromRows, readAllFull, PHEROMONES, ledgerInboxCursor, deriveInboxStateFromCursor } from './lib.mjs'
+import { inboxState, renderMessage, readAll, boardFor, normCwd, BOARD, ODOMETER, emitPheromone, pheromoneField, pheromoneFieldFromRows, readAllFull, PHEROMONES, ledgerInboxCursor, deriveInboxStateFromCursor } from './lib.mjs'
 
 // ─── defensive JSONL field access (rows are append-only, partial rows happen) ─
 function preview(value, max = 100) {
@@ -156,7 +156,11 @@ if (cmd === 'status') {
     topic,
     body,
   }
-  appendFileSync(new URL('./board.jsonl', import.meta.url).pathname, JSON.stringify(row) + '\n')
+  // BOARD is homedir-anchored (tower-ledger.mjs:24), exactly as every read path is.
+  // Never resolve state relative to import.meta.url: this file is symlinked from
+  // ~/.tower/ into the canonical repo, so a file-relative path writes posts into the
+  // git working tree instead of the live bus — silently, with no error.
+  appendFileSync(BOARD, JSON.stringify(row) + '\n')
   console.log(`posted ${row.id} (${type}) @ ${topic}`)
 } else if (cmd === 'emit') {
   if (SCRATCH_CWD) {
