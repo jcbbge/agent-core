@@ -1,27 +1,23 @@
-# CORD [Tower] — scope fence after bus-data split (2026-08-13)
+# CORD [Tower] — scope fence (updated end of W5 land)
 
-## Not ours (CORD bus-data, workspace w2Z, topic `tower/bus-data`)
+## Not ours (CORD bus-data, w2Z, `tower/bus-data`)
 
-- Malformed `board.jsonl` rows and recovery
-- Rows missing `from` (including distinguishing legitimate machine shapes)
-- Writer path that produced corruption; verify/deploy writer patch
-- Row-shape schema ruling
-- Compaction proposal (awaiting concierge yes)
-- drift-check REPO_ONLY for `write-path.test.mjs` + spine `server.mjs` contested sync
+- Board data repair / writer / schema / compaction (concierge-gated)
+- Contested `server.mjs` vs spine `cc-hooks` drift FAIL (5657cf0f vs live canonical)
 
-**Hard fence:** do not touch `board.jsonl` for repair, do not modify the writer.
-If a data-integrity issue surfaces during W3–W5, post to `tower/bus-data` and move on.
+## Ours — CLOSED this resume
 
-## Ours (topic `tower/fully-operational`)
+| Item | Status | Land |
+|---|---|---|
+| W0 | CLOSED | prior + cab69eb / spine main b42132e |
+| W3 prove planes | UNIT GO | evidence under w3-prove-planes-evidence |
+| W3 plane fixes F1/F9/F4 | CLOSED | `f60cf8e` |
+| W4 retention Phase-1 | CLOSED | `a62e746` + live archive |
+| W5 remodel debris | CLOSED | `9b34836`; live.bak=0 |
 
-| Item | Status |
-|---|---|
-| W0 version control + cutover + drift gate | **CLOSED** (landed; live drift may FAIL on bus-data files — their fix) |
-| W3 prove every plane by exercise | **UNIT GO** (evidence verified); exercise-axis fully-op **NO-GO** until F1/F9/F4 |
-| W3 plane fixes (F1/F9/F4) | **IN FLIGHT** ORCH w2Y:p8 |
-| W4 retention / rotation | **IN FLIGHT** ORCH w2Y:p9 |
-| W5 remodel debris | Brief drafted; spawn after W4 gate |
+## Named residuals (not silent)
 
-Schema: bus-data ruled authored vs machine row kinds — consumers tolerate missing `from` on machine rows.
-
-Stopping rule: only when all ours CLOSED, or BLOCKED row naming concierge-owned dependency.
+- Drift: 1 FAIL spine contested → bus-data
+- Doorbell / some spine done→deliverable pairs: named GAP in W3 FINAL (not re-opened)
+- Phase-2 JSONL truncate: gated on concierge yes
+- agent-core unpushable (GH013) — operator
