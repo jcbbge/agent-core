@@ -229,3 +229,32 @@ an open item.**
 - Revert recipes: agent-core `git branch -f main 949238d`; the pre-W0 tower code is in the
   backup above and in `attic/`.
 - **No state file was ever mutated by the CORD.** All state changes were append-only.
+
+---
+
+## 11. STATUS AT FINAL HANDOFF (05:55Z — supersedes §8 items 1–3 above)
+
+Both ORCHs are `done`; only the CORD pane remains. Verified by me at handoff:
+
+- **THE CUTOVER IS COMPLETE — 19 of 19.** `~/.tower/cli.mjs`, `hooks/ask-bridge.mjs` and
+  `hooks/stop-verdict.mjs` are now symlinks. §8 item 1 is **DONE**; §3's "16 of 19" is
+  superseded.
+- **Bus healthy after the full cutover:** MCP `tower … ✔ Connected`;
+  `bun ~/.tower/cli.mjs status` exit 0; `board.jsonl` still append-only against the
+  04:42:55Z backup prefix.
+- **The real drift is GONE.** The `cli.mjs` deployed-vs-canonical FAIL has cleared —
+  the check now reports **22 files, 22 ok**.
+- **ONE FAIL REMAINS, AND IT IS THE KNOWN FALSE POSITIVE** (§8 item 2, unfixed):
+  `FAIL drift-check.mjs: missing at /Users/jrg/.tower/drift-check.mjs (ENOENT)`.
+  True exit code is **1**. Beware: `bun drift-check.mjs | tail` reports the exit of `tail`,
+  not the check — redirect to a file and read `$?`, or you will misread this as passing.
+
+**Therefore the ONLY thing standing between here and W0's acceptance signal is fixing that
+one false positive.** Classify repo-only files (`drift-check.mjs`, `DEPLOYMENT.md`,
+`README.md`) explicitly so they can never be a FAIL, then re-run to confirm exit 0.
+Everything else in §8 (items 4–7) still stands.
+
+- `orch-w0-canonical-source` independently found and committed the unpushable finding as
+  `cf8a887`. Commit line now: … `07aebc0` (this handoff) → `cf8a887`.
+- **Still uncommitted at handoff:** `primitives/mcps/tower/drift-check.mjs` may carry
+  in-progress edits. Check `git status` before trusting it.
