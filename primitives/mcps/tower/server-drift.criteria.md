@@ -12,10 +12,43 @@ TOWER-AUTO-CC CC4). Each assert maps to an acceptance criterion.
 
 ## SHA reconciliation (mission #3)
 
+**Superseded 2026-08-13 (T4c, agnt-w0-driftcheck):** the two rows below
+originally treated `~/herdr-spine/cc-hooks/server.mjs` as *the* canonical
+source for `~/.tower/server.mjs`. That is no longer true. Tower's code now
+lives git-tracked at `~/agent-core/primitives/mcps/tower/` (canonical),
+`~/.tower/` mirrors it (deployed — real files or symlinks), and
+`install_tower_auto()` in `~/herdr-spine/install.sh` was rewritten
+(agnt-w0-install-reconcile, same date) to prefer the agent-core canonical
+dir and treat `cc-hooks/` as a fresh-machine bootstrap fallback only —
+install.sh now also refuses to write through a symlinked deployed path
+("externally managed — not touching") instead of `cp`-clobbering it, which
+is the exact failure E1 proved had already happened once. Rows kept for
+history; do not re-enable them as written.
+
+| Assert name | Criterion | Status |
+|-------------|-----------|--------|
+| ~~`live server.mjs byte-identical to canonical`~~ | ~~`cmp -s` between `~/.tower/server.mjs` and `~/herdr-spine/cc-hooks/server.mjs`~~ | **WRONG canonical.** Replaced by drift-check.mjs, which compares `~/.tower/server.mjs` against `~/agent-core/primitives/mcps/tower/server.mjs` (canonical) and *separately* against `~/herdr-spine/cc-hooks/server.mjs` (fallback only) — see below. |
+| ~~`canonical server.mjs present for install.sh parity`~~ | ~~`~/herdr-spine/cc-hooks/server.mjs` exists (install.sh canonical source)~~ | **WRONG label.** `cc-hooks/server.mjs` is install.sh's fresh-machine bootstrap fallback, not the canonical source. The canonical source is `~/agent-core/primitives/mcps/tower/server.mjs`. |
+
+## Drift check (T4 — agnt-w0-driftcheck, 2026-08-13)
+
+`drift-check.mjs`, wired into this same directory alongside
+`server-drift.test.mjs` (invoked standalone; see its header for why it
+isn't folded into the `bun:test` file). No args, no network, no writes.
+
 | Assert name | Criterion |
 |-------------|-----------|
-| `live server.mjs byte-identical to canonical` | `cmp -s` between `~/.tower/server.mjs` and `~/herdr-spine/cc-hooks/server.mjs` |
-| `canonical server.mjs present for install.sh parity` | `~/herdr-spine/cc-hooks/server.mjs` exists (install.sh canonical source) |
+| `manifest discovery` | Every non-excluded file under the canonical dir (i.e. all of it except `attic/`, `.gitignore`, `board.jsonl`, `ledger.jsonl`) is checked — the manifest is discovered by walking canonical, not hand-maintained, so a new file added to the canonical set is covered automatically |
+| `deployed mirrors canonical (.mjs)` | Every `.mjs` file's deployed bytes (symlink-resolved) equal canonical bytes — **FAIL** on divergence or either side missing, since these are load-bearing at runtime |
+| `deployed mirrors canonical (.md)` | Same comparison for docs — **WARN** only, since nothing at runtime reads a deployed `.md` file (this is how the check found `README.md` never got deployed at all — a real gap, reported, not fixed here) |
+| `contested files vs spine fallback` | `server.mjs`, `hooks/stop-verdict.mjs`, `hooks/ask-bridge.mjs` are additionally compared against `~/herdr-spine/cc-hooks/<basename>` — **FAIL** on divergence, since a stale fallback would deploy wrong content on a fresh machine |
+| `orphan detection` | `~/agent-core/primitives/hooks/stop-verdict.mjs` (dead file from the reverted `3deb7e7` consolidation) is compared to canonical `hooks/stop-verdict.mjs` — **WARN** only, informational; nothing imports it |
+| `canonical push state` | Local `HEAD` vs `@{u}` in the canonical dir, read-only, no fetch — **WARN** if ahead, since an unpushed canonical home is a hazard if the working tree ever moves (see `E1-install-sh-clobber-proof.md`) |
+
+Run: `bun primitives/mcps/tower/drift-check.mjs` (env vars
+`TOWER_DRIFT_CANONICAL_DIR` / `TOWER_DRIFT_DEPLOYED_DIR` /
+`TOWER_DRIFT_SPINE_DIR` / `TOWER_DRIFT_ORPHAN_FILE` override the roots, for
+pointing it at a sandbox fixture instead of the real machine).
 
 ## Backup (mission #4)
 

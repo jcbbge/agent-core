@@ -242,3 +242,30 @@ bun ~/.tower/cli.mjs all      # Status across all projects
 
 - **Command:** `tower` — `/tower` invokes CLI and acts on results
 - **Rule:** `tower-orchestration` — Protocol for orchestrators and subagents
+
+## Drift detection (T4 — agnt-w0-driftcheck, 2026-08-13)
+
+Four questions, answered here so you don't have to ask them elsewhere:
+
+1. **Where do I edit Tower's code?** Here — this canonical directory. Never
+   `~/.tower/` directly, even when it looks like a real file instead of a
+   symlink (it can be either; see "Canonical vs. deployed" above).
+2. **Why?** Because `cp` follows a symlink and writes through to its
+   target. If `~/.tower/server.mjs` is a symlink into this directory and
+   something later `cp`s over it (a stale install script, a careless
+   backup routine), your edit silently lands *here*, in the git working
+   tree, as an unexplained dirty file — or worse, install.sh clobbers your
+   deployed-side edit instead, which is exactly what
+   `E1-install-sh-clobber-proof.md` caught happening on 2026-08-12.
+3. **What happens if I edit the deployed path instead?** It works until
+   the next `install.sh` run, `git checkout`, or branch operation touches
+   this directory — then your edit is either overwritten (real file,
+   diverged from the pre-fold base install.sh still recognizes) or was
+   never canonical to begin with (symlink — you edited agent-core through
+   the back door and didn't commit it). Either way, `drift-check.mjs`
+   below will name the file and both disagreeing locations the next time
+   it runs.
+4. **How do I run the drift check?**
+   `bun primitives/mcps/tower/drift-check.mjs` — no args, no network,
+   read-only, ~10-25ms. Exits non-zero only on `.mjs` divergence (docs
+   diverging is a WARN, not a FAIL — see `server-drift.criteria.md`).
