@@ -51,11 +51,11 @@ claiming files (mcp__tower__board_read).">
 - Progress with specific numbers at meaningful checkpoints: kind=progress.
 - A decision only the user can make: mcp__tower__ask_user, then poll
   mcp__tower__check_inbox while continuing other work.
-- Harnesses without the tower MCP (e.g. pi): append one JSON line to
-  ~/.tower/board.jsonl — {"id","ts","cwd","type":"finding|alert","from","topic","body"}.
-  `cwd` must be the agent's real repo cwd, never a scratch dir; `topic` must
-  be namespaced `<project-slug>/<topic>`. File append works everywhere; no
-  MCP required. (Verified in pi 2026-07-23.)
+- Harnesses without the tower MCP (e.g. pi): post via the Tower CLI —
+  `bun ~/.tower/cli.mjs post <claim|finding|note> <project>/<topic> "<body>" --from "<role>"`.
+  The CLI records `cwd` from your real repo cwd (never scratch/temp), requires
+  non-empty `from` for authored types, and defaults `from` to `cli:$USER` when
+  omitted. Do not hand-append JSON to `board.jsonl`.
 - On a Herdr host (self-report): call `/Users/jrg/herdr-spine/bin/spine-report
   task "<what I'm doing>"` at the start of each unit of work and
   `spine-report verdict "<result>"` when done, so the fleet sidebar shows

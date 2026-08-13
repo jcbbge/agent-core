@@ -27,7 +27,7 @@
 
 import { appendFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { LEDGER, BOARD, DELIVERABLES, id, append, inboxState, normCwd, boardFor, renderMessage, emitPheromone, pheromoneField } from './lib.mjs'
+import { LEDGER, BOARD, DELIVERABLES, id, append, inboxState, normCwd, boardFor, renderMessage, emitPheromone, pheromoneField, assertAuthoredBoardFrom } from './lib.mjs'
 
 const CWD = normCwd(process.cwd())
 
@@ -107,9 +107,9 @@ const TOOLS = [
         topic: { type: 'string', description: 'Thread key, e.g. "m2-sweep", "file-claims".' },
         body: { type: 'string', description: 'The claim/finding/note, concise and self-contained.' },
         type: { type: 'string', enum: ['claim', 'finding', 'note'], description: 'Default: note.' },
-        from: { type: 'string', description: 'Who is posting — your agent role/name.' },
+        from: { type: 'string', description: 'Who is posting — your agent role/name (required).' },
       },
-      required: ['topic', 'body'],
+      required: ['topic', 'body', 'from'],
     },
   },
   {
@@ -242,7 +242,9 @@ function callTool(name, args) {
       if (/^\/(private\/)?tmp\//.test(CWD) || CWD.includes('/scratchpad/')) {
         return `Refused: "${CWD}" is a scratch/temp path. Post from your real repo cwd.`
       }
-      const entry = { id: id(), ts: now, cwd: CWD, topic: args.topic, type: args.type ?? 'note', from: args.from, body: args.body }
+      const type = args.type ?? 'note'
+      assertAuthoredBoardFrom(type, args.from)
+      const entry = { id: id(), ts: now, cwd: CWD, topic: args.topic, type, from: String(args.from).trim(), body: args.body }
       append(BOARD, entry)
       return `Posted to board topic "${args.topic}" as ${entry.id}. Peers will see it on their next board_read.`
     }

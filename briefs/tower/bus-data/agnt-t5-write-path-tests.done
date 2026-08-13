@@ -1,0 +1,19 @@
+agnt-t5-write-path-tests complete 2026-08-13T13:54:00Z
+role: TEST-MAKER (Orion)
+from: AGNT write-path-tests
+worktree: /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-test-maker-w2z-p9
+
+test: ~/agent-core/primitives/mcps/tower/write-path.test.mjs
+criteria: ~/agent-core/primitives/mcps/tower/write-path.criteria.md
+
+DID NOT COMMIT
+DID NOT RUN TESTS (tester job — impl may be absent or red; expected)
+
+Oracle coverage (maps to brief test-maker AC):
+  - from-required rejection: board_post note/claim/finding without from + empty from → error mentions from, board line count unchanged
+  - cli default-from: post without --from → from === cli:$USER
+  - brief skill: no hand-append to board.jsonl; must teach bun cli.mjs post
+  - reader tolerance T6: lineage fixture without from → renderMessage (lib + ledger), boardFor rows, twr --board fixture
+  - append shape: append() + cli post → newline-terminated parseable JSON
+
+Handoff: tester runs `bun test write-path.test.mjs` after implementer lands patches (a)(b)(c).
