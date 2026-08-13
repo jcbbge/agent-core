@@ -1,0 +1,20 @@
+DONE orch-wave-rollup
+unit: agent-core/wave-rollup
+branch: feat/wave-rollup-skill
+verdict: pass
+
+paths:
+  primitives/skills/wave-rollup/SKILL.md
+  primitives/skills/wave-rollup/scripts/extract-ctrl.ts
+  briefs/wave-rollup/CARRY-FORWARD.md
+  briefs/wave-rollup/dogfood/2026-08-13-arc.md
+  briefs/wave-rollup/dogfood/2026-08-13-arc.html
+
+smoke: extract-ctrl c203706..origin/main → 164 / +15021 / −923 PASS
+seed: mutateAndEnqueue kept; approveMenuPlan kept; inventory_counts seed CORRECTED
+field: claim ph-msrwrmj3-pvqx ref=ph-msrwp54j-hgrm; heartbeats emitted; work-done pending after commit
+
+deviations:
+  - ORCH implemented mechanically (no AGNT spawn) per CORD spend constraint
+  - registry skill/ entry NOT added (outside partition; ~/.agent-core/registry) — sync note for CORD
+  - commits on tip = 37 (not exemplar "53") — git truth used
