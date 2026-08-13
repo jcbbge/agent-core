@@ -8,11 +8,11 @@ argument-hint: <optional — summary of what was done>
 allowed-tools: Bash Read Write Edit
 metadata:
   author: jrg
-  version: "5.0"
+  version: "5.1"
   tags: session, handoff, git, fleet, workflow
-  changelog: "5.0 — reshaped to the scaffolded infrastructure (herdr/spine fleet
-    hygiene, Tower closure, boot mirror, Made Well state) + operator retrospective
-    mandate (confidence + alleviation, 2026-08-12). 4.1 — gerund rename. 4.0 —
+  changelog: "5.1 — operator additions: full substrate teardown (every pane/tab/
+    workspace you stood up) + push your own landed work (2026-08-12 late). 5.0 —
+    infrastructure reshape + retrospective mandate. 4.1 — gerund rename. 4.0 —
     thin reconcile"
 ---
 
@@ -42,8 +42,18 @@ git worktree list | grep -c spine/worktrees          # leftover spine worktrees?
 - If the project carries `.madewell/`, confirm statem reflects reality (the unit's
   Land is recorded, no phantom in-flight cycles).
 
-An orphan pane, worktree, or branch is unfinished work: finish it now or hand it
-off explicitly in the `TODO:` line — never leave it implicit.
+Then **tear the substrate down to zero**: every herdr pane, tab, and workspace
+you created or were responsible for this session is closed before you are —
+worker panes, worker tabs, and the observability panes you stood up for your
+own oversight (your CTRL/TOWR splits included; their job ends with your
+session). Survivors are exactly two kinds: the operator's focused pane, and
+standing infrastructure owned by missions that are not yours (never close
+what another live mission is using). The test is ownership, not tidiness:
+if you made it, you unmake it.
+
+An orphan pane, tab, workspace, worktree, or branch is unfinished work:
+finish it now or hand it off explicitly in the `TODO:` line — never leave it
+implicit.
 
 ---
 
@@ -84,6 +94,13 @@ The `TODO:` line is the handoff — specific enough to cold-start next session
 - **Remote, no CI, trunk flow** → push; merge to main if that is the project's habit.
 - **Remote + CI + merge-to-main** (`.github/workflows/` exists) → push, PR, wait
   for CI, merge, verify main is green.
+
+**Push the work you are responsible for.** When a remote exists, your own
+commits leave this machine before the session ends — work that lives on one
+laptop is not landed, it is parked. Push only what you own: never force-push,
+never push another mission's unreviewed branches. If the push is refused (a
+protection rule, a required review, a secret in history), do not bypass it —
+report **BLOCKED** with the refusal verbatim and the named unblock path.
 
 If a gate requires human review you cannot satisfy, stop and report **BLOCKED**.
 

@@ -89,15 +89,22 @@ NEVER has to ask "what's the latest?".
   (Imagine→Plan→Make→Verify): explicit states, explicit logged transitions,
   every transition leaves a Tower trace WITHOUT being asked.
 
-## Reaping (operator rule, 2026-08-10)
+## Reaping (operator rule, 2026-08-10; amended 2026-08-12)
 
 An agent that is TRULY DONE — report delivered, done-conditions verified by
 its spawner — is SPAWNED DOWN: pane closed, process ended, empty tab closed.
 No trophy panes. The spawner reaps its own agents at collection; the
-coordinator reaps orchestrators after their final report lands. Exceptions:
-infrastructure panes meant to run forever (CTRL fleet, TOWR viewers, statem),
-and never the operator's focused pane. Durable state lives on disk and the
-board — never in a dead pane's scrollback.
+coordinator reaps orchestrators after their final report lands. The ONLY
+untouchable pane is the operator's focused pane. Durable state lives on
+disk and the board — never in a dead pane's scrollback.
+
+Observability panes (CTRL, TOWR, TSKS, statem) are furniture, not fleet
+(operator amendment, 2026-08-12): they live exactly as long as the session
+or mission that stood them up. Whoever spawned one tears it down at close —
+and an operator instruction to spin one down is executed immediately,
+without debate about "standing infrastructure." Only panes owned by a
+DIFFERENT live mission are off-limits, and then the rule is: never close
+what another live mission is using.
 
 ## Prefix renames + CTRL-pane UX (operator, 2026-08-10)
 
