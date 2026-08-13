@@ -1,0 +1,7 @@
+ORCH w5-remodel-debris DONE 2026-08-13
+VERDICT: GO
+REMOVE=7 KEEP=0 residual_live_bak=0 attic=11
+evidence=/Users/jrg/agent-core/briefs/tower/w5-debris-evidence/
+worker=agnt-coder-w2y-px (reaped)
+board=tower/w5-debris + tower/fully-operational
+report_to=CORD [Tower] w2Y:p1
