@@ -15,6 +15,11 @@ two angles (mechanics there, policy here) rather than collapsed.
 **Every message has exactly one audience, and reaches it exactly once, in
 full.** Everything below is a corollary.
 
+**Mailbox ≠ substrate:** the board is a mailbox, not proof the full Tower
+substrate is operational — Tower is operational only when
+`PHASE2-WRITE-GATE-PROOF.md` (or successor) exists and the probe was run;
+until then say **mailbox only**, never "assume operational."
+
 **Companion (enforced):** the *hierarchy and escalation budget* that keep the
 operator plane rare live in [`RESPONSIBLE-PARTY-AND-NQ.md`](RESPONSIBLE-PARTY-AND-NQ.md)
 — every spawned agent has a durable responsible party (its parent), a question
