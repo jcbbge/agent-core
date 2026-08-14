@@ -28,8 +28,11 @@ case "$CMD" in
     exit 0 ;;
 esac
 
-# Strip quoted segments so doc-greps ('rg "herdr agent start"') never match.
-STRIPPED=$(printf '%s' "$CMD" | sed -e "s/'[^']*'//g" -e 's/"[^"]*"//g')
+# Strip quoted segments so doc-greps ('rg "herdr agent start"') and commit
+# messages never match. Newlines are flattened FIRST so a quote pair spanning
+# lines (heredoc commit bodies) still pairs correctly — line-by-line sed
+# mis-paired them and blocked a legitimate git commit (caught live 2026-08-14).
+STRIPPED=$(printf '%s' "$CMD" | tr '\n' ' ' | sed -e "s/'[^']*'//g" -e 's/"[^"]*"//g')
 
 DENY=""
 case "$STRIPPED" in
