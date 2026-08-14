@@ -5,7 +5,9 @@ You decompose, dispatch, verify, reap. **You never implement.** No emojis.
 
 Branch: `feat/tower-write-gate` (already cut in `/Users/jrg/agent-core`).
 Board topic: `tower/write-gate`. Banner in every report: `===== ORCH WRITE GATE =====`.
-Fleet: you = fable. AGNT workers = claude/sonnet (`--profile coder`).
+Fleet: AGNT workers spawn under the **coder** profile. Model, provider, and harness
+resolve at spawn time via `profile-model` and your harness directive — this brief
+names roles and profiles only (brief law, 2026-08-14).
 
 ---
 
@@ -48,6 +50,7 @@ This unit makes finish-without-deposit **mechanically refused**, and proves it.
 bun ~/.tower/cli.mjs emit <scent> <topic> <payload_ref> [--ref id] [--evidence "text"] [--ttl N] [--from name]
 bun ~/.tower/cli.mjs field --topic <topic> [--json]
 bun ~/.tower/cli.mjs scan  --topic <topic> [--json]
+bun ~/.tower/cli.mjs board <topic>          # topic is POSITIONAL here, not a flag
 ```
 `emit` prints the new pheromone id on stdout, exits 2 with a message on validation failure.
 `--from` defaults to `$TOWER_FROM` then `cli:$USER`.
@@ -63,9 +66,11 @@ claim"). Code + live majority win.
 
 ### Fleet
 
-- Spawn: `python3 ~/herdr-spine/bin/spine-spawn worker --label <label> --brief <path> --kind claude --profile coder` (AGNT = sonnet via `coder.kind_models.claude`).
-- `spine-spawn verify-mark <brief> [--criteria <file>]` / `verify-status <brief>` record + check that test criteria were authored before implementation.
-- `--model fable` is a valid Claude CLI alias (verified live this session).
+- Spawn AGNT workers under the **coder** profile, using the spawn verb and flags
+  from your harness directive (`primitives/directives/<harness>.md`). Model
+  resolution is `profile-model`'s job, not this brief's.
+- `spine-spawn verify-mark <brief> [--criteria <file>]` / `verify-status <brief>`
+  record + check that test criteria were authored before implementation.
 
 ---
 
@@ -127,9 +132,9 @@ probe shows the TTL is the blocker, report it, do not fix it).
 
 Write each worker brief to `briefs/tower/substrate-harden/` before spawning.
 Each worker: CLAIM-first on `tower/write-gate`, findings to the board,
-`.done` file last. Reap when done.
+`.done` file last. Reap when done. All four run under the **coder** profile.
 
-### Slice A — `agnt-wg-ref-align` (sonnet, docs + test)
+### Slice A — `agnt-wg-ref-align` (docs + test)
 Files: `primitives/mcps/tower/COMMS-ARCH.md`, one new/extended test.
 1. Correct `COMMS-ARCH.md:79` and audit `:140`, `:181-182` so exactly one meaning
    survives: `work-done.ref` = the `work-available` id. `work-claimed.ref` is
@@ -142,7 +147,7 @@ Files: `primitives/mcps/tower/COMMS-ARCH.md`, one new/extended test.
 Done-when: `bun test` green; `grep -n "work-done" COMMS-ARCH.md` shows no
 claim-ref phrasing left.
 
-### Slice B1 — `agnt-wg-criteria` (sonnet, TEST-MAKER — must run BEFORE B2)
+### Slice B1 — `agnt-wg-criteria` (TEST-MAKER — must run BEFORE B2)
 Files: `primitives/mcps/tower/write-gate.criteria.md` + `write-gate.test.mjs`.
 Authored **from this brief only.** `hooks/write-gate.mjs` must not exist yet, and
 this worker must never read it. Header the test file with the oracle line from
@@ -163,14 +168,14 @@ write to the real `~/.tower/pheromones.jsonl` or `board.jsonl`.**
 Done-when: criteria file exists, tests exist and **fail** (no implementation yet),
 `spine-spawn verify-mark` recorded with `--criteria write-gate.criteria.md`.
 
-### Slice B2 — `agnt-wg-impl` (sonnet, IMPLEMENTER — different agent from B1)
+### Slice B2 — `agnt-wg-impl` (IMPLEMENTER — different agent from B1)
 File: `primitives/mcps/tower/hooks/write-gate.mjs` (+ the `~/.tower/hooks/` symlink).
 Implement R2/R3/R4 until B1's tests are green. **Do not edit the test file.** If a
 test looks wrong, post the disagreement to `tower/write-gate` and let ORCH arbitrate.
 Done-when: `bun test write-gate.test.mjs` fully green; hook is executable;
 `ls -l ~/.tower/hooks/write-gate.mjs` shows the symlink into the repo.
 
-### Slice C — `agnt-wg-probe` (sonnet, proof)
+### Slice C — `agnt-wg-probe` (proof)
 Runs only after A and B2 are green.
 Probe topic: **`tower/write-gate-probe`**. Real emits to the real pheromone file
 are fine on this topic (it is disposable); **no rewriting of existing history.**
@@ -211,7 +216,7 @@ tests yourself.
   `primitives/mcps/tower/COMMS-ARCH.md`, the ref-align test,
   and `briefs/tower/substrate-harden/*.md`.
 - `primitives/profiles/models.json` also carries an **unrelated uncommitted change
-  from a prior session** plus CORD's one-line `"fable": "fable"` addition. **Do not
+  from a prior session** plus CORD's one-line profile-option addition. **Do not
   commit that file.** Leave it dirty.
 - Commit format per `~/.claude/CLAUDE.md` (PHASE / DONE / TODO / BLOCKED,
   `Co-Authored-By:`). Do not push, do not merge to main — CORD reports branch state
