@@ -1,22 +1,24 @@
 #!/usr/bin/env bun
 /**
  * super-search — standalone port of the pi `smart_search` extension
- * (~/.pi/agent/extensions/smart-search.ts), extended with a KotaDB layer.
+ * (~/.pi/agent/extensions/smart-search.ts).
  * Same binaries, no pi ExtensionAPI / no daemon. Pure CLI: args in, md out.
  *
  * Routing:
  *   Layer 1 (colgrep)  — current project, semantic + hybrid.
  *   Layer 2 (coraline) — Rust/Zig/Python/Swift/Go/C repos in ~/source.
  *   Layer 3 (pickbrain)— past sessions, memory, context.
- *   Layer 4 (kotadb)   — code intelligence, cross-repo indexed search (:7001).
- *   Layer 5 (ripgrep)  — exact regex, fallback.
- *   Layer 6 (bigfile)  — in-file structural search on huge PHP/JS/TS/TSX files
+ *   Layer 4 (ripgrep)  — exact regex, fallback.
+ *   Layer 5 (bigfile)  — in-file structural search on huge PHP/JS/TS/TSX files
  *                        (10k+ lines). Auto-fires when `--file` is provided
  *                        AND the file is > 3000 lines AND supported extension.
  *
+ * (KotaDB layer retired 2026-08-06 — nothing listens on :7001 anymore; removed
+ * 2026-08-14 rather than left dialing a dead port.)
+ *
  * Usage:
  *   bun search.ts "<query>" [--pattern <re>] [--repo <name>] [--file <path>]
- *                           [--scope auto|project|source|exact|memory|kota|bigfile]
+ *                           [--scope auto|project|source|exact|memory|bigfile]
  *                           [--limit <n>]
  */
 import { execSync, spawnSync } from "child_process";
@@ -28,8 +30,7 @@ const COLGREP_BIN = "colgrep";
 const RG_BIN = "rg";
 const PICKBRAIN_BIN = "pickbrain";
 const CORALINE_BIN = "coraline";
-const KOTADB_URL = "http://localhost:7001"; // local code-intelligence server
-const BIGFILE_LIB = "/Users/jrg/agent-core/primitives/05_tools/bigfile/src/bigfile.ts";
+const BIGFILE_LIB = "/Users/jrg/agent-core/primitives/tools/bigfile/src/bigfile.ts";
 const BIGFILE_EXTS = new Set([".php", ".phtml", ".js", ".mjs", ".cjs", ".jsx", ".ts", ".tsx"]);
 const BIGFILE_MIN_LINES = 3000;
 
@@ -111,73 +112,6 @@ function coraline(query: string, repo: string, limit: number): string {
   if (result.status !== 0 || !result.stdout) return "";
   const lines = result.stdout.trim().split("\n");
   return lines.slice(0, limit * 3).join("\n");
-}
-
-// /search only filters by KotaDB's repositoryId (a UUID), not a repo name and
-// not a path. Map the current git repo root -> its repositoryId via repos.json
-// so the kota layer auto-scopes to the project you're standing in instead of
-// ranking across every indexed repo (which buries arc under old projects).
-function currentRepoId(): string | undefined {
-  try {
-    const top = execSync("git rev-parse --show-toplevel", {
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "ignore"],
-    }).trim();
-    const map = JSON.parse(readFileSync(`${import.meta.dir}/repos.json`, "utf8"));
-    return map[top];
-  } catch {
-    return undefined;
-  }
-}
-
-// KotaDB's indexer ignores .gitignore and only skips a hardcoded dir set
-// (node_modules/dist/…), so it indexes agent cruft like .claude/worktrees and
-// .graveyard. Drop those rows here so results are real source, not duplicates.
-const KOTA_NOISE = /^(\.claude\/|\.graveyard\/|node_modules\/|dist\/|build\/)/;
-
-// One /search call. KotaDB returns the FULL file content per row (~0.5 MB), so
-// the default 1 MB maxBuffer truncates after ~2 rows → bump it generously.
-function kotaFetch(term: string, scope: string | undefined, limit: number): any[] {
-  const url = new URL(`${KOTADB_URL}/search`);
-  url.searchParams.set("term", term);
-  url.searchParams.set("limit", String(limit));
-  if (scope) url.searchParams.set("repository", scope);
-  const result = spawnSync("curl", ["-s", "-m", "15", url.toString()], {
-    encoding: "utf8",
-    timeout: 20_000,
-    maxBuffer: 128 * 1024 * 1024,
-  });
-  if (result.status !== 0 || !result.stdout) return [];
-  try {
-    const body = JSON.parse(result.stdout) as { results?: any[] };
-    return Array.isArray(body?.results) ? body.results : [];
-  } catch {
-    return [];
-  }
-}
-
-function kotadb(term: string, repoId: string | undefined, limit: number): string {
-  // KotaDB code-intelligence server (HTTP on :7001, local mode, no auth),
-  // auto-scoped to the current repo. KotaDB's FTS ANDs every token, so a
-  // too-specific query (4+ words) often returns nothing even when each word is
-  // present. Graceful degradation: if the strict AND is empty, retry once with
-  // the tokens OR'd so the layer still surfaces the most relevant files.
-  const scope = repoId ?? currentRepoId();
-  let rows = kotaFetch(term, scope, limit * 3); // over-fetch for noise filtering
-  if (rows.length === 0) {
-    const toks = term.trim().split(/\s+/).filter(Boolean);
-    if (toks.length > 1) rows = kotaFetch(toks.join(" OR "), scope, limit * 3);
-  }
-  rows = rows.filter((r: any) => !KOTA_NOISE.test(r?.path ?? ""));
-  if (rows.length === 0) return "";
-  return rows
-    .slice(0, limit)
-    .map((r: any) => {
-      const path = r?.path ?? "?";
-      const snippet = (r?.snippet ?? "").toString().split("\n").slice(0, 4).join("\n").trim();
-      return `${path}${snippet ? `\n${snippet}` : ""}`;
-    })
-    .join("\n\n");
 }
 
 // bigfile — huge-file structural search (tree-sitter, PHP/JS/TS/TSX).
@@ -267,7 +201,7 @@ function parseArgs(argv: string[]) {
 async function main() {
   const { query, opts } = parseArgs(process.argv.slice(2));
   if (!query) {
-    console.error('usage: bun search.ts "<query>" [--pattern <re>] [--repo <name>] [--file <path>] [--scope auto|project|source|exact|memory|kota|bigfile] [--limit <n>]');
+    console.error('usage: bun search.ts "<query>" [--pattern <re>] [--repo <name>] [--file <path>] [--scope auto|project|source|exact|memory|bigfile] [--limit <n>]');
     process.exit(2);
   }
   const pattern = opts.pattern || undefined;
@@ -333,13 +267,6 @@ async function main() {
     if (pattern) cgArgs.push("-e", pattern);
     const out = colgrep(query, cgArgs);
     if (out) sections.push(`## colgrep (project)\n\n${out}`);
-  }
-
-  // kotadb — code intelligence. Runs for forced kota/project/source AND always
-  // in auto (auto-scoped to the current repo via repos.json).
-  if (scope === "kota" || scope === "project" || scope === "source" || isAuto) {
-    const out = kotadb(query, repo, limit);
-    if (out) sections.push(`## kotadb (code intelligence)\n\n${out}`);
   }
 
   // pickbrain — session memory. Forced via scope=memory; in auto ONLY on a

@@ -1,4 +1,0 @@
-{
-  "_comment": "Maps a git repo's toplevel path -> KotaDB repositoryId, so the kota layer auto-scopes to the project you're in. Add entries as you index repos: index_repository returns the repositoryId; `git rev-parse --show-toplevel` gives the key.",
-  "/Users/jrg/infinity/arc": "0e7ce6b1-e731-4423-ae71-229bdaafa209"
-}
