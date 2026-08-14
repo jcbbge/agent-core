@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Organism — a field guide</title>
+<style>
+/* Visual system: gc-minimal-zine-poster v0.3 (LiamGvchi), implemented in CSS.
+   3:5 aged paper · 70–90% negative space · one ultramarine accent at poster
+   scale · typewriter/old-serif notes, never headlines · riso grain · flat
+   scan light · secondary red subordinate, defects only. */
+:root {
+  --paper:#e9e2d3; --paper-deep:#e0d8c6; --ink:#2b2822; --ink-faint:#6b655a;
+  --ink-ghost:#a89f8d; --accent:#1f3fb8; --accent-2:#c8371f;
+  --serif:Georgia,'Times New Roman',serif;
+  --mono:'Courier New',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#b3ab9b;font-family:var(--mono);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;gap:4rem;padding:4rem 1rem}
+.page{position:relative;width:min(58vh,92vw,540px);aspect-ratio:3/5;
+  background:radial-gradient(ellipse at 50% 42%,var(--paper) 62%,var(--paper-deep) 100%);
+  overflow:hidden;box-shadow:0 1px 2px rgba(43,40,34,.16),0 0 0 1px rgba(43,40,34,.05)}
+.page::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;
+  opacity:.15;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E")}
+.page::after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;
+  box-shadow:inset 0 0 44px rgba(43,40,34,.10),inset 0 0 3px rgba(43,40,34,.07)}
+.folio{position:absolute;top:4.6%;left:7.5%;font-size:.53rem;letter-spacing:.24em;
+  color:var(--ink-faint);text-transform:uppercase;z-index:5}
+.datemark{position:absolute;font-size:.53rem;letter-spacing:.18em;color:var(--ink-faint);z-index:5}
+.plane-name{font-family:var(--serif);font-weight:400;font-size:1.45rem;letter-spacing:.05em}
+.note{font-size:.7rem;line-height:1.8;max-width:27ch}
+.micro{font-size:.54rem;line-height:2;letter-spacing:.05em;color:var(--ink-faint)}
+.ghost{color:var(--ink-ghost)} .acc{color:var(--accent)} .bad{color:var(--accent-2)}
+.cluster{position:absolute;z-index:5}
+/* small marks — the visual events */
+.pane-mark{width:34px;height:22px;border:1.5px solid var(--ink);position:relative}
+.pane-mark i{position:absolute;left:5px;top:5px;width:7px;height:2px;background:var(--accent)}
+.sq{display:inline-block;width:14px;height:14px;background:var(--accent)}
+.sq-o{display:inline-block;width:14px;height:14px;border:1.5px solid var(--ink);background:none}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%}
+.d-acc{background:var(--accent)} .d-ink{background:var(--ink)}
+.d-ghost{border:1px solid var(--ink-ghost);background:none}
+.d-bad{background:var(--accent-2)}
+.orbit{position:relative;width:150px;height:150px}
+.orbit .c{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+.orbit .o{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--ink-ghost)}
+table.matrix{border-collapse:collapse;font-size:.5rem;letter-spacing:.03em;color:var(--ink-faint)}
+table.matrix td,table.matrix th{padding:2.5px 7px;text-align:center;font-weight:400}
+table.matrix td:first-child{text-align:left;color:var(--ink)}
+table.matrix th{color:var(--ink-ghost);letter-spacing:.2em;font-size:.46rem}
+.m-full{color:var(--accent);font-size:.62rem}
+.m-part{color:var(--ink-ghost);font-size:.62rem}
+.m-miss{color:var(--accent-2);font-size:.58rem}
+@media print{body{background:none;padding:0;gap:0}
+  .page{width:100%;page-break-after:always;box-shadow:none}}
+</style>
+</head>
+<body>
+
+<!-- 01 · cover · single-specimen -->
+<section class="page">
+  <div class="cluster" style="top:40%;left:50%;transform:translate(-50%,-50%);text-align:center">
+    <span class="sq"></span>
+    <div style="height:26px"></div>
+    <div class="plane-name">the organism</div>
+    <div style="height:14px"></div>
+    <div class="micro">a field guide to the machine<br>one entity wearing many engines</div>
+  </div>
+  <div class="datemark" style="bottom:6%;right:8%">2026 · 08 · 14</div>
+</section>
+
+<!-- 02 · the sentence · type-led -->
+<section class="page type-led">
+  <div class="folio">01 · the whole thing</div>
+  <div class="cluster" style="top:26%;left:11%;right:11%">
+    <div class="note" style="max-width:none;font-size:.74rem;line-height:2.3">
+      agent-core is the <span class="acc">genome</span>.<br>
+      herdr is the body.<br>
+      the spine is its reflexes.<br>
+      tower is the environment<br>
+      <span class="ghost">— it senses and marks —</span><br>
+      the gates are its immune system.<br>
+      circadian is memory and sleep.<br>
+      made well is the habit of working.<br>
+      the harnesses are engines,<br>
+      <span class="ghost">interchangeable.</span>
+    </div>
+  </div>
+  <div class="datemark" style="bottom:6%;left:11%">the operator is the only<br>irreplaceable part.</div>
+</section>
+
+<!-- 03 · operator · nearly textless -->
+<section class="page">
+  <div class="folio">02 · operator</div>
+  <div class="cluster" style="top:30%;left:50%;transform:translateX(-50%)">
+    <span class="dot d-ink"></span>
+  </div>
+  <div class="datemark" style="bottom:8%;left:50%;transform:translateX(-50%);text-align:center">
+    names the work. accepts or rejects.<br>never the scheduler.
+  </div>
+</section>
+
+<!-- 04 · engines -->
+<section class="page">
+  <div class="folio">03 · engines</div>
+  <div class="cluster" style="top:36%;left:50%;transform:translate(-50%,-50%);text-align:center">
+    <span class="sq-o"></span>&nbsp;&nbsp;<span class="sq-o"></span>&nbsp;&nbsp;<span class="sq-o"></span>
+    <div style="height:12px"></div>
+    <div class="micro">claude&nbsp;&nbsp;·&nbsp;&nbsp;pi&nbsp;&nbsp;·&nbsp;&nbsp;cursor</div>
+  </div>
+  <div class="cluster" style="bottom:13%;left:12%">
+    <div class="note">context dies every window.<br>
+    nothing valuable may live<br>inside an engine —<br>
+    <span class="ghost">push it into the planes below.</span></div>
+  </div>
+</section>
+
+<!-- 05 · body · herdr -->
+<section class="page">
+  <div class="folio">04 · body — herdr</div>
+  <div class="cluster" style="top:37%;left:50%;transform:translate(-50%,-50%)">
+    <div class="pane-mark"><i></i></div>
+  </div>
+  <div class="cluster" style="bottom:12%;right:11%;text-align:right">
+    <div class="note" style="text-align:right">terminals that survive you.<br>
+    <span class="ghost">panes, workspaces, identity,<br>status read off the glass.</span></div>
+  </div>
+  <div class="datemark" style="bottom:5.5%;left:8%">tokens die on restart · names do not</div>
+</section>
+
+<!-- 06 · reflex arcs · diagonal-notes -->
+<section class="page diagonal-notes">
+  <div class="folio">05 · reflexes — the spine</div>
+  <div class="cluster" style="inset:0">
+    <div style="position:absolute;top:24%;left:13%" class="note">spawn <span class="ghost">— through the door,<br>never raw</span></div>
+    <div style="position:absolute;top:44%;left:38%" class="note">claim <span class="ghost">— advisory,<br>heartbeat or evaporate</span></div>
+    <div style="position:absolute;top:64%;left:58%" class="note">report <span class="ghost">— the sidebar<br>never lies</span></div>
+  </div>
+  <div class="datemark" style="bottom:6%;left:13%">17 verbs · 8 reflex handlers · discipline compiled into commands</div>
+</section>
+
+<!-- 07 · field · tower · dot-orbit -->
+<section class="page">
+  <div class="folio">06 · field — tower</div>
+  <div class="cluster" style="top:38%;left:50%;transform:translate(-50%,-50%)">
+    <div class="orbit">
+      <span class="c dot d-acc"></span>
+      <span class="o" style="top:8%;left:46%"></span>
+      <span class="o" style="top:34%;left:88%"></span>
+      <span class="o" style="top:78%;left:72%"></span>
+      <span class="o" style="top:66%;left:6%"></span>
+      <span class="o" style="top:22%;left:16%"></span>
+    </div>
+  </div>
+  <div class="cluster" style="bottom:12%;left:12%">
+    <div class="note">deposit, never deliver.<br>
+    <span class="ghost">the environment is<br>the message.</span></div>
+  </div>
+  <div class="datemark" style="bottom:6%;right:9%">status · fleet mail · operator mail<br>directives · pheromones</div>
+</section>
+
+<!-- 08 · gates · edge-counterweight -->
+<section class="page">
+  <div class="folio">07 · gates</div>
+  <div class="cluster" style="top:33%;right:14%;text-align:right">
+    <div class="plane-name" style="font-size:1.1rem">[ <span class="acc">refused</span> ]</div>
+    <div style="height:8px"></div>
+    <div class="micro">exit 2 · block:true · followup</div>
+  </div>
+  <div class="cluster" style="bottom:13%;left:12%">
+    <div class="note">the law that refuses<br>is the only law that holds.<br>
+    <span class="ghost">door · hook · doctrine —<br>doctrine is a bug.</span></div>
+  </div>
+</section>
+
+<!-- 09 · memory · lower-left-float -->
+<section class="page">
+  <div class="folio">08 · memory — circadian</div>
+  <div class="cluster" style="bottom:34%;left:13%">
+    <span style="display:inline-block;width:16px;height:16px;border-radius:50%;border:1.5px solid var(--ink)"></span>
+    <span class="dot d-bad" style="width:5px;height:5px;vertical-align:top;margin-left:4px"></span>
+    <div style="height:14px"></div>
+    <div class="note">wake · graze · sleep · rem.<br>
+    the constitution is unwritable<br>by experience.</div>
+    <div style="height:12px"></div>
+    <div class="micro bad">kill switch is on — a counting bug,<br>
+    not a failing mind. 905 “bad” =<br>905 unrecorded. the greeting render<br>is three file paths.</div>
+  </div>
+  <div class="datemark" style="top:5%;right:8%">427 atoms · motion is the metric</div>
+</section>
+
+<!-- 10 · genome · dual-panel -->
+<section class="page">
+  <div class="folio">09 · genome — agent-core</div>
+  <div class="cluster" style="top:34%;left:50%;transform:translateX(-50%);display:flex;gap:26px;align-items:flex-start">
+    <div style="text-align:center"><span class="sq" style="background:var(--ink)"></span>
+      <div class="micro">canonical</div></div>
+    <div style="text-align:center"><span class="sq-o"></span> <span class="sq-o"></span> <span class="sq-o"></span>
+      <div class="micro">composed ×3</div></div>
+  </div>
+  <div class="cluster" style="bottom:13%;left:12%">
+    <div class="note">two circulatory systems:<br>
+    the registry sees 49 primitives.<br>
+    <span class="ghost">the immune system, the tools,<br>
+    the tower — hand-wired, unseen.<br>
+    the mirror only reflects<br>the parts that stopped moving.</span></div>
+  </div>
+</section>
+
+<!-- 11 · method · made well -->
+<section class="page">
+  <div class="folio">10 · method — made well</div>
+  <div class="cluster" style="top:36%;left:50%;transform:translate(-50%,-50%);text-align:center">
+    <div class="note" style="max-width:none;letter-spacing:.14em">▰▰▱▱</div>
+    <div class="micro">discovery · commit · build · land</div>
+    <div style="height:14px"></div>
+    <div class="note" style="max-width:none;letter-spacing:.14em">▰▱▱▱</div>
+    <div class="micro">imagine · plan · make · verify</div>
+  </div>
+  <div class="datemark" style="bottom:8%;left:50%;transform:translateX(-50%);text-align:center">
+    two stop states only: done, or parked.<br>diagnosis is neither.
+  </div>
+</section>
+
+<!-- 12 · roles · diagonal ladder -->
+<section class="page diagonal-notes">
+  <div class="folio">11 · roles</div>
+  <div class="cluster" style="inset:0">
+    <div style="position:absolute;top:22%;left:14%" class="note">concierge <span class="ghost">— the desk</span></div>
+    <div style="position:absolute;top:36%;left:26%" class="note">cord <span class="ghost">— one per project</span></div>
+    <div style="position:absolute;top:50%;left:38%" class="note">orch <span class="ghost">— one per unit</span></div>
+    <div style="position:absolute;top:64%;left:50%" class="note">agnt · sagt <span class="ghost">— the hands</span></div>
+  </div>
+  <div class="datemark" style="bottom:6%;left:14%">one tier, one duty · ranks 1–4 speak only through the field</div>
+</section>
+
+<!-- 13 · instruments · archive microtext -->
+<section class="page">
+  <div class="folio">12 · instruments</div>
+  <div class="cluster" style="top:26%;left:14%">
+    <div class="micro" style="font-size:.58rem;line-height:2.3">
+      slim <span class="ghost">— output, compacted honestly</span><br>
+      latch <span class="ghost">— waiting without polling</span><br>
+      vein <span class="ghost">— claims settled by transcripts</span><br>
+      assay <span class="ghost">— does memory propagate</span> <span class="bad">· never built</span><br>
+      super-search <span class="ghost">— six layers, one router</span><br>
+      &nbsp;&nbsp;colgrep · coraline · pickbrain · rg<br>
+      &nbsp;&nbsp;kotadb <span class="bad">· dead, still dialed</span><br>
+      &nbsp;&nbsp;bigfile <span class="bad">· route broken, mcp fine</span><br>
+      composto <span class="ghost">— code as budgeted IR</span><br>
+      latch·gates <span class="ghost">— human doors held open</span>
+    </div>
+  </div>
+  <div class="datemark" style="bottom:6%;right:9%">truth law: exit codes propagate ·<br>truncation is always marked</div>
+</section>
+
+<!-- 14 · parity · the matrix -->
+<section class="page">
+  <div class="folio">13 · parity — one genome, three engines</div>
+  <div class="cluster" style="top:14%;left:50%;transform:translateX(-50%)">
+    <table class="matrix">
+      <tr><th></th><th>cc</th><th>pi</th><th>cur</th></tr>
+      <tr><td>wake</td><td class="m-full">●</td><td class="m-full">●</td><td class="m-full">●</td></tr>
+      <tr><td>graze</td><td class="m-full">●</td><td class="m-full">●</td><td class="m-miss">×</td></tr>
+      <tr><td>sleep</td><td class="m-full">●</td><td class="m-full">●</td><td class="m-miss">×</td></tr>
+      <tr><td>flight rec</td><td class="m-full">●</td><td class="m-full">●</td><td class="m-full">●</td></tr>
+      <tr><td>write-gate</td><td class="m-full">●</td><td class="m-full">●</td><td class="m-full">●</td></tr>
+      <tr><td>spawn-door</td><td class="m-full">●</td><td class="m-full">●</td><td class="m-full">●</td></tr>
+      <tr><td>grounding</td><td class="m-full">●</td><td class="m-full">●</td><td class="m-miss">×</td></tr>
+      <tr><td>slim</td><td class="m-full">●</td><td class="m-full">●</td><td class="m-full">●</td></tr>
+      <tr><td>stop-guard</td><td class="m-full">●</td><td class="m-part">○</td><td class="m-miss">×</td></tr>
+      <tr><td>$verdict / $task</td><td class="m-full">●</td><td class="m-full">●</td><td class="m-miss">×</td></tr>
+      <tr><td>ask-bridge</td><td class="m-full">●</td><td class="m-part">○</td><td class="m-miss">×</td></tr>
+      <tr><td>deposit remind</td><td class="m-full">●</td><td class="m-full">●</td><td class="m-miss">×</td></tr>
+      <tr><td>odometer</td><td class="m-full">●</td><td class="m-miss">×</td><td class="m-miss">×</td></tr>
+      <tr><td>prompt-inject</td><td class="m-full">●</td><td class="m-miss">×</td><td class="m-miss">×</td></tr>
+      <tr><td>enforce-brief</td><td class="m-part">○</td><td class="m-part">○</td><td class="m-part">○</td></tr>
+      <tr><td>pheromones</td><td class="m-full">●</td><td class="m-part">○</td><td class="m-full">●</td></tr>
+      <tr><td>skills</td><td class="m-part">42</td><td class="m-part">35</td><td class="m-part">54</td></tr>
+    </table>
+  </div>
+  <div class="datemark" style="bottom:6%;left:12%">● same semantics · ○ adapter/partial · <span class="bad">× absent</span></div>
+</section>
+
+<!-- 15 · gaps · the red page -->
+<section class="page">
+  <div class="folio">14 · open — p0</div>
+  <div class="cluster" style="top:24%;left:14%">
+    <div class="micro" style="font-size:.58rem;line-height:2.5">
+      <span class="bad">01</span> the mind’s kill switch — a counting bug<br>
+      <span class="bad">02</span> search layer six — a dead path, both copies<br>
+      <span class="bad">03</span> kotadb — dead, advertised, 810 mb<br>
+      <span class="bad">04</span> idle panes prompted twice — 17 vs 50<br>
+      <span class="bad">05</span> dead-letter — specified thrice, written never<br>
+      <span class="bad">06</span> brief gate — task &amp; workflow walk past it
+    </div>
+  </div>
+  <div class="cluster" style="bottom:13%;right:12%;text-align:right">
+    <div class="note" style="text-align:right"><span class="ghost">then: put the whole organism<br>in front of one mirror.</span></div>
+  </div>
+</section>
+
+<!-- 16 · colophon -->
+<section class="page">
+  <div class="cluster" style="bottom:12%;left:14%">
+    <div class="micro">
+      the organism — a field guide<br>
+      audit: ~/agent-core/AUDIT-2026-08-14-topology.md<br>
+      method: five read-only sweeps + live probes<br>
+      visual system: gc-minimal-zine-poster v0.3<br>
+      <br>
+      <span class="ghost">made, not vibed.</span>
+    </div>
+  </div>
+  <div class="datemark" style="top:6%;right:9%">2026 · 08 · 14</div>
+</section>
+
+</body>
+</html>
