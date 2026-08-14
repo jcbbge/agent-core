@@ -24,8 +24,10 @@ the singular plan that rolls it all into one framework with feature parity.
 
 # PART I — THE COMPLETE ONTOLOGY
 
-Eleven layers, bottom-up. Every named thing on the machine appears exactly
-once, in its layer.
+Thirteen layers, bottom-up. Every named thing on the machine appears exactly
+once, in its layer. (Rev 2, same day: added L11 DIGESTION — rumen, L12
+GATEWAY — strudel, the complete bin census, and the replacement lineage,
+after the operator caught their omission.)
 
 ## L0 · ENGINES — interchangeable inference
 
@@ -183,14 +185,67 @@ hard coder/test-maker bifurcation in separate worktrees) · profiles
 CONTRACT) · docs (inner-loop-verify, qa-verify.sh 71/71) · bolt-on/rip-out ·
 runtime state (.instr 693, .verify 215, .spawned.jsonl — DATA).
 
-## L11 · OPERATOR SURFACES + DEPLOY
+## L11 · DIGESTION — rumen (missed in rev 1; operator-flagged)
+
+**What it is:** "A digestive system that metabolizes any opinion-source into
+a self-pruning set of **fences, judges, signs, and a lexicon** — persona-
+free, stack-free, domain-free" (ENGINE-SPEC gen 9). Rumen is the
+project-convention sibling of ENFORCEMENT.md: where the enforcement ledger
+compiles HOUSE law into gates, rumen compiles a PROJECT's conventions into
+walls an agent physically cannot ignore — without hand-authoring rules. The
+Tower cabinet already recognizes it: `cli.mjs projects` treats a `.rumen/`
+dir as a project drawer, peer to `.madewell/`.
+
+| Piece | Where | Disposition |
+|---|---|---|
+| Engine + specs: README, ENGINE-SPEC.md (gen 9), PACK-CONTRACT.md, NOMENCLATURE.md, RISKS.md, ROADMAP.md | `~/rumen` | CORE → **rumen/** (its own package — it is a product tier, like method/) |
+| metabolism/ (metabolism.mjs, harness.mjs, fixtures.mjs) | `~/rumen/metabolism` | CORE → rumen/ |
+| runs/ (bolus digests 2026-06-17…, RERUN-PROTOCOL.md) | `~/rumen/runs` | DATA (run history) |
+| Live instance: `.rumen/` in Arc — packs (frontend/schema/testing.json), walls/registry.json, ledger.jsonl, history.jsonl, install-hooks.sh, lab/, AGENT.md, MANIFEST.md | `~/Infinity/arc/.rumen` | PROJECT |
+
+Unification note: rumen's fence thesis and the gates plane (L4) are the same
+law at two altitudes. P2 gains a sixth contract: the **Pack contract**
+(already drafted as PACK-CONTRACT.md) — how a digested convention becomes an
+enforceable wall through the same DOOR/HOOK machinery.
+
+## L12 · GATEWAY — strudel (missed in rev 1; operator-flagged)
+
+**What it is:** the collection-scaling thesis — "each primitive kind is a
+collection, and collections fail the same way at scale: the agent reverts to
+a familiar few. Don't register the collection into context; **index it and
+search it by intent**" (`search → prep → bake`). The runtime complement to
+the mirror: mirror manages what is DEPLOYED; gateway serves what is USED.
+
+| Piece | Where | Disposition |
+|---|---|---|
+| Strudel core (ARCHITECTURE.md, project-brief, docs/, bake_trace_analysis) | `~/strudel` | CORE → **gateway/** (P2 decides the mirror↔gateway relationship; until then it stays a live project) |
+| **Utensils — the rewritten-replacement family** (vendored TS wrappers): batch.ts, bigfile.ts, colgrep.ts, composto.ts, diff.ts, tldraw.ts, tree.ts, undo.ts, workspace.ts + `_lib/` | `~/.strudel/utensils/` | CORE → gateway/utensils — these are the "tool/MCP rewrites" class: each wraps or replaces a raw tool/MCP with a budgeted, agent-shaped surface |
+| utensils/kotadb.ts + `_retired/` | same | RETIRE (kotadb dead; retired drawer carries history) |
+| evals (`~/evals`) | | PROJECT (strudel's measurement companion) |
+
+## Replacement lineage (the "rewritten to replace X" ledger — explicit)
+
+| Replacement | Replaced | Where the old one went |
+|---|---|---|
+| slim (Zig, 6 verbs + guards ×3 harnesses) | rtk pipeline (corrupted cat/diff/find/grep, integrity-pinned hook) | uninstalled 2026-08-11 |
+| super-search (5-layer router skill) | pi `smart_search` extension | never installed as ext; router is the one door |
+| Tower (field/) | alembic MCP + dream-daemon + corvus/lyra/spectra | `_deprecated-alembic/` attic |
+| coraline+colgrep layers (in super-search) | KotaDB `:7001` cross-repo index | deleted 2026-08-14 (810MB) |
+| herdr (+ spine) | bb agentic IDE · tmux-era workflows | bb uninstalled 2026-08-11 |
+| pi + cursor-shim | opencode harness | dropped 2026-08-11 |
+| strudel utensils (bigfile.ts, colgrep.ts, composto.ts, tldraw.ts …) | raw MCP registrations of the same tools (per-kind: MCP → intent-searched utensil) | MCPs retained only where load-bearing (tower, bigfile) |
+| dead-letter + flocked append (tower-ledger) | hand-append + silent malformed rows | banned in docs, refused in code |
+| `~/.zshrc.secrets` runtime load | inline secrets in tracked config | scrubbed from history 2026-08-14 |
+
+## L13 · OPERATOR SURFACES + DEPLOY
 
 | Piece | Disposition |
 |---|---|
 | Ghostty terminal → herdr TUI (sidebar, Engine Shop topology: CTRL/TOWR/TSKS + CONCIERGE pane) | ADAPTER (Ghostty) / CORE layouts via spine-startup |
 | Notifications (doorbell rubric), window-title digest, greeting/inbox popups, statusline (circadian) | CORE (already counted in their layers) |
 | dotfiles: launchagents/ (com.tower.rotate, com.circadian.*, com.localllm.server + deprecated/), shell/.zshrc (+ `~/.zshrc.secrets` runtime-load pattern), UTILITIES.md, PORTS.md | CORE → deploy/ (the installer's raw material) |
-| Adjacent estates NOT part of the framework: `~/strudel` (+evals), `~/content`, `~/Infinity/arc`, `~/pi-spine`, `~/source/*` checkouts | PROJECT / ADAPTER |
+| **Complete bin census (rev 2 — every remaining binary accounted):** `agent` (cursor-agent alias wrapper) → bridges/ · `boot` (boot-card wrapper) → mirror/ · `dev` + dev.services (env snapshot) → instruments/misc · `sst` (speech-to-text wrapper) → instruments/misc · `mlx-serve` (LLM server launcher) → deploy/ · `future` = **Fut, the project-oriented multiplexer from the RuntimeAdapter research** → ADAPTER (candidate implementation #2 of the P2 RuntimeAdapter contract) · `tuna` (picker util) → rule at P5 · `amp`, `droid`, `headroom`, `omni`/`omnigent`, `uv`/`uvx`, `python3.11`, `cursor-agent`, `dev-browser` (homebrew, backs the dev-browser skill) → ADAPTER external products · `pi-update`, `hermes-python` broken symlinks → RETIRED (deleted 2026-08-14) · `get-safari-tabs`(+.scpt), `tabexport`, `tablist` + `~/icloud-tabs-inbox/` (DATA) → instruments/tabs · `zig-index` → rule at P5 · `alembic` → RETIRE (delete at P5) · `arc`, `constellation` → PROJECT | as listed |
+| Adjacent estates NOT part of the framework: `~/content`, `~/Infinity/arc`, `~/pi-spine`, `~/source/*` checkouts | PROJECT / ADAPTER |
 | Retired (never port): opencode, bb, SurrealDB:6000, alembic MCP + dream-daemon + corvus/lyra/spectra, KotaDB (deleted today), smart_search ext, substrate MCP, executor/anima/dev-brain/Manifold/UHP/Mesh-OS | RETIRE (already gone; listed so parity checklists never resurrect them) |
 
 ---
@@ -213,14 +268,22 @@ spine a whole ship mounts to; **marrow**). Layout:
   mind/         the memory ENGINE (never the mind data)        (from circadian/src)
   instruments/  slim · latch · vein · assay · bigfile · super-search · tabs
   method/       madewell template + lab + statem + fleet-task
+  rumen/        the digestion engine: conventions → fences      (from ~/rumen)
+  gateway/      strudel: primitives indexed + searched by intent, utensils  (from ~/strudel)
   bridges/      cursor/ (the shim, unchanged) · <future engines>/
   deploy/       installer · launchd plists · harness wiring writers · config blocks
 ```
 
 Four things NEVER enter the repo: the mind data (private git, no remote),
-`~/.tower` state, the registry instance, project `.madewell/` instances.
-Three things stay external behind seams: the engines, herdr, the cargo/brew
-tool row.
+`~/.tower` state, the registry instance, project `.madewell/`+`.rumen/`
+instances. Three things stay external behind seams: the engines, the
+multiplexer (herdr today; Fut/`future` is the standing candidate for
+RuntimeAdapter implementation #2), and the cargo/brew tool row.
+
+The three self-similar tiers, named so the design stays coherent: the
+**mirror** knows what is deployed; the **gateway** serves what is used; the
+**rumen** digests what must be enforced. One estate, three verbs — see,
+reach, hold.
 
 ## The five invariants of the rollup (non-negotiable)
 
@@ -246,17 +309,20 @@ tool row.
 inventoried (this document).
 
 **P1 — the umbrella (1 sitting).** Create the repo; adopt `agent-core`,
-`herdr-spine`, `circadian`, `cursor-shim` as submodules beside the existing
-`cli` one. Write `bootstrap.sh`: fresh clone → submodules → build zig tools
-→ `deploy/install` (idempotent; today's installers composed) → `status`
-green. Zero file moves; one clone now holds the entire organism.
-*Acceptance:* bootstrap on a scratch $HOME passes boot-card.
+`herdr-spine`, `circadian`, `cursor-shim`, `rumen`, `strudel` as submodules
+beside the existing `cli` one. Write `bootstrap.sh`: fresh clone →
+submodules → build zig tools → `deploy/install` (idempotent; today's
+installers composed) → `status` green. Zero file moves; one clone now holds
+the entire organism. *Acceptance:* bootstrap on a scratch $HOME passes
+boot-card.
 
-**P2 — the contracts (the real design work).** Freeze five seams as
+**P2 — the contracts (the real design work).** Freeze six seams as
 versioned documents + VERIFY manifests in `kernel/contracts/`:
 - **RuntimeAdapter** (substrate↔body): spawn / address / send / read /
   wait-for-status / lifecycle-events / tokens — herdr is implementation #1;
-  your own stigmergy research already specified this seam.
+  Fut (`~/.local/bin/future`, already installed) is the standing candidate
+  for implementation #2, which is what keeps the contract honest; your own
+  stigmergy research already specified this seam.
 - **Trace schema v1** (field): the four scents + board/ledger row families —
   COMMS-ARCH is 90% of it; freezing means consumers cite a version.
 - **Gate surface** (gates↔engines): per-harness bind mechanics + refusal
@@ -265,7 +331,11 @@ versioned documents + VERIFY manifests in `kernel/contracts/`:
   mirror renders the ledger instead of humans maintaining it.
 - **Organ API** (mind): wake/graze/sleep/rem as the only writers; provenance
   gate as the only door in.
-*Acceptance:* component-verify runs all five manifests green.
+- **Pack contract** (rumen↔gates): how a digested convention becomes an
+  enforceable wall through the same DOOR/HOOK machinery — PACK-CONTRACT.md
+  is the draft; freezing it also settles the mirror↔gateway↔rumen
+  relationship (see, reach, hold).
+*Acceptance:* component-verify runs all six manifests green.
 
 **P3 — physical consolidation, leaf-first, mirror-gated.** Order chosen so
 each move's dependents are already inside: instruments → gates → field →
@@ -283,10 +353,12 @@ the sign-off instrument. Nothing ships while a row is unchecked.
 **P5 — curation debt (folded into P3, listed so it cannot vanish).**
 Triage the 53 unregistered skills (register / attic / delete). Adopt the
 grounding-hook bodies into gates/ (today they live in harness trees).
-Delete `~/bin/alembic`; rule on `zig-index`. Compile the DOCTRINE queue:
+Delete `~/bin/alembic`; rule on `zig-index` and `tuna`; move
+`utensils/kotadb.ts` into strudel's `_retired/`. Compile the DOCTRINE queue:
 brief-lint (provider/model names), epistemics SOURCES check, statem-gated
 reaping. Decide SubagentStop. Normalize `Infinity` path casing at the one
-remaining site (cursor-shim markers).
+remaining site (cursor-shim markers). (Done already, rev 2: broken
+`pi-update` + `hermes-python` symlinks deleted.)
 
 **P6 — productization.** The Made Well SPEC is the product skeleton: one
 `install.sh`, one entrypoint, the MADEWELL.md promise as the framework's
