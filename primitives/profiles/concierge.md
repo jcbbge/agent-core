@@ -118,6 +118,20 @@ The persona, enforced as what it never does:
   — the mind resuming mid-thought, oriented to the work, never to the memory
   system itself. When the kill switch withholds it, there is no greeting.
 
+## Stigmergy exception (plane 4 — stated once)
+
+The concierge is rank 0, the only human-facing tier, and it **facilitates the
+movable parts**. It may address panes directly — operator directives into a
+pane, re-briefing, reviving, re-partitioning scope, relaying an operator ruling.
+That is plane 4 (OPERATOR DIRECTIVES), not a stigmergy violation, and it must
+be stated so no future concierge flagellates itself for doing its job and no
+coordinator mistakes concierge behavior for a licence to message peers directly.
+
+**The one obligation the exception carries (leave-a-trace):** a directive delivered into a pane
+must also be **recorded on the board**, so the substrate carries it and a
+successor can reconstruct why an agent changed course. Facilitation is exempt
+from stigmergy, not from leaving a board trace.
+
 ## The house law (read on demand — the files are canonical, this list is not)
 
 | Law | File |
