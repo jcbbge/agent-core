@@ -117,3 +117,59 @@ tower_escalate, injection scoping + nQ, human-answer path),
 `~/herdr-spine/bin/handlers/40-tower-bridge` (bridge-race fix: never mint a
 question from a live screen scrape). Grammar (`tower-ledger.mjs`) is unchanged —
 all new fields are additive.
+
+---
+
+## 6. Field expression of nQ
+
+The field expression of nQ (alongside the ledger plane in §2) closes the gap
+between inbox semantics and the stigmergic trace. The ledger plane (§2) owns
+question birth, escalation rows, and derived routing.
+The stigmergic field (COMMS-ARCH plane 5) must express the same semantics in
+the trace so escalation is **observable in the environment**, not only in the
+inbox plane. The two planes agree by construction; they are not two copies that
+drift.
+
+**Vocabulary (preserved verbatim from constellation):**
+`constellation-zg/src/core/orbit.zig:9` — *"nQ = the number of unresolved
+questions a star holds. A star must reach nQ=0 before emitting its
+deliverable."* Escalation always travels **one link up** a routing table
+(`orbit.zig:16-22 answeringStar`); the human is reached **only** through the
+top tier (Markarian/Concierge).
+
+### `need-help` on the field
+
+When an agent cannot proceed, it emits `need-help` instead of silence or
+push-and-wait. Required semantics:
+
+| Field | Meaning |
+|---|---|
+| `nq` | Remaining escalation budget: `(initial_nq ?? 3) − count(escalation rows for this question)`. Mirrors `effectiveNq(q)` on the ledger. |
+| `route` | Derivation hint resolving **one link up the lineage** — the responsible party at the next tier. Never a hard address; never fanned across panes. |
+| `ref` | Binds to the ledger question id. The field row and the ledger row are one truth: `ref` = `q.id` from the open `kind:"question"` row. |
+
+### Field ↔ ledger binding
+
+- Birth: agent opens a ledger question (`tower_ask` / equivalent) **and**
+  emits `need-help` with `ref` = that question's id, `nq` = initial budget,
+  `route` = parent derivation hint.
+- Escalation: append a ledger `kind:"escalation"` row **and** emit a new
+  `need-help` pheromone (append-only; never mutate in place) with decremented
+  `nq` and `route` re-derived one link up — consistent with `effectiveTo` /
+  `effectiveNq` being derived from the latest row.
+- Answer: ledger `kind:"answer"` closes the question; the agent clears its local
+  open-question set before emitting `work-done`.
+
+### THE LOAD-BEARING INVARIANT: nQ=0 before deliverable
+
+An actor must reach **nQ=0** — no unresolved questions it owns — before emitting
+`work-done` or any deliverable. Field check: if open questions remain, refuse
+`work-done` and either continue independent work or emit `need-help` naming what
+is blocked. This is the rule that makes the whole protocol mean something —
+without it, an agent can declare victory over an open question.
+
+### One surface (no regression)
+
+One question → exactly one surface. No storm. Route derivation must yield
+precisely the responsible party; never fan `need-help` across a repo's panes.
+The operator is reached only when the budget is spent, and only through rank 0.

@@ -58,6 +58,102 @@ the question; questions surface to one party, not every pane).
    rule survives: each plane keeps exactly one audience discipline; the
    field's audience is whoever the route derives to at read time.
 
+### Plane 5 — stigmergic coordination (mandatory scope)
+
+**Applies to ranks 1–4** — Coordinator → Orchestrator → Agent/Subagent.
+Those tiers coordinate **through the environment**, never by talking directly
+to each other. Rank 0 (Concierge) is the explicit exception (see below).
+
+- **Deposit, never deliver.** A pheromone has **no addressee**. An agent
+  changes the environment and stops; it does not hand instructions to a named
+  peer.
+- **The substrate resolves audience at READ time.** The `route` field is a
+  *derivation hint* (`to_pane` > `to_role` > lineage > topic-scope),
+  explicitly *not* an address — "the field's audience is whoever the route
+  derives to at read time." **The `--to-pane`/`--to-role` trap:** these flags
+  *look* like addressing; using them as addresses reintroduces direct
+  agent-to-agent messaging with extra steps.
+- **The pull loop (mandatory).** Emit `work-available` (with mandatory
+  evidence); **read the field before ever going idle**; claim with
+  `work-claimed` `ref`-ing the exact id; heartbeat the claim every ~20s;
+  `work-done` `ref`-ing the claim; `need-help` instead of silence. Failure
+  recovery is emergent from decay — no supervisor.
+- **Two acceptable stopping states, and only two:** every done-condition met,
+  or a posted blocked/`need-help` naming what is needed and who owns it,
+  *after* proceeding with everything not dependent on it. "Reported and
+  awaited instruction" is not a stopping state.
+- **Decay is a coordination primitive, not cleanup.** TTLs per D5:
+  `work-available` 15–60 min, `work-claimed` 30s + heartbeat, `work-done`
+  24h, `need-help` nQ-bounded; read-time evaporation over an append-only log
+  that never shrinks.
+- **Idempotence by id** is what makes a non-addressed medium safe for
+  concurrent readers: dedupe by id, ack by id, act at most once. Two agents
+  may read the same `work-available`; only one claim binds.
+- **Claim TTL requires reliable heartbeat.** A `work-claimed` row without
+  heartbeat evaporates at 30s and the work returns to the field — this is how
+  a dead agent is handled **with no supervisor**. Prior incident (2026-08-13):
+  a CORD work-claim evaporated mid-dispatch because heartbeat was not
+  maintained; the work vanished from the field while the agent still believed
+  it owned the unit. Heartbeat is load-bearing for claim survival, not optional
+  polish.
+- **Stalled fleet means wrong brief, not missing scheduler.** When every agent
+  parks after reporting, the cause is briefs that teach push-and-wait ("post
+  findings and wait for instruction"). There is no scheduler by design; the
+  pull loop *is* the scheduler. Do not bolt supervisor/heartbeat daemons onto
+  a stigmergic system to fix a documentation bug.
+- **Two complementary mechanisms — brief BOTH:**
+  - **`spine-claim`** (herdr tokens) covers *resource ownership*. From
+    `herdr-spine/docs/pheromones.md` §Contest semantics — read HONESTLY:
+    advisory, not a lock: "**Not a mutex.**" "Good enough for cooperative
+    fleets … races are rare and, worst case, self-resolve at the next
+    heartbeat/contest cycle." Advisory, last-writer-wins — wins on liveness,
+    vanishes when expired, no audit.
+  - **Tower field** covers *work distribution*: durable, auditable,
+    append-only, read-time evaporation. Tokens have liveness without
+    durability; the field has durability without liveness.
+
+#### Concierge exception (rank 0)
+
+The concierge exception: rank 0 facilitates the movable parts. The Concierge
+may address panes directly —
+operator directives into a pane, re-briefing, reviving, re-partitioning
+scope, relaying an operator ruling. That is plane 4 (OPERATOR DIRECTIVES), not
+a stigmergy violation, and it must be stated so no future concierge flagellates
+itself for doing its job and no coordinator mistakes concierge behavior for a
+licence to message peers directly.
+
+**Leave-a-trace obligation:** a directive delivered into a pane must also be
+**recorded on the board**, so the substrate carries it and a successor can
+reconstruct why an agent changed course. Facilitation is exempt from stigmergy,
+not from leaving a trace.
+
+#### nQ on the field
+
+Authority: [`RESPONSIBLE-PARTY-AND-NQ.md`](RESPONSIBLE-PARTY-AND-NQ.md). The
+field must carry nQ semantics observable in the trace, not only in the ledger
+inbox.
+
+- **`need-help` carries `nq` and a derived responsible party.** `nq` =
+  remaining budget (default 3, minus escalation count). The target is expressed
+  as a **route derivation hint resolving one link up the lineage** — never a
+  hard address, so the field's no-addressee law survives intact.
+- **`ref` binds field to ledger.** A `need-help` pheromone references the
+  ledger question id, so the two planes are one truth rather than two copies
+  that drift.
+- **Escalation becomes a trace event.** Emitting escalation decrements `nq` and
+  re-derives the route one link up — appended, never mutated in place,
+  consistent with `effectiveTo`/`effectiveNq` being derived from the latest
+  row.
+- **THE LOAD-BEARING INVARIANT: nQ=0 before deliverable.** An actor must not
+  emit `work-done` while it holds unresolved questions. Before `work-done` or
+  any deliverable: refuse (hold the claim, continue independent work) or emit
+  `need-help` with open questions named. Without this rule, an agent can
+  declare victory over an open question.
+- **One question → exactly one surface. No storm.** Route derivation must yield
+  precisely the responsible party; never fan `need-help` across a repo's panes.
+- **The operator is reached only when the budget is spent**, and only through
+  rank 0.
+
 ## Hard invariants
 
 - **Addressing is explicit.** Ledger rows carry `to`. Rows without `to` are

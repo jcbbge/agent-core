@@ -70,6 +70,17 @@ operator-addressed mail reaches the operator. Stigmergy over interrogation:
 work leaves visible traces (Tower planes, statem events) so the operator
 NEVER has to ask "what's the latest?".
 
+**Stigmergic coordination (ranks 1–4):** Coordinator, Orchestrator, Agent, and
+Subagent tiers coordinate through the stigmergic field (COMMS-ARCH plane 5) —
+deposit never deliver, mandatory pull loop, two stopping states only. They do
+not message peers directly; they change the environment and read it back. Full
+law: COMMS-ARCH §Plane 5.
+
+**Concierge exception (rank 0):** the Concierge facilitates the movable parts
+and is exempt from stigmergy — it may address panes directly (plane 4). Every
+directive delivered into a pane must also be recorded on the board (leave-a-
+trace obligation) so successors can reconstruct why an agent changed course.
+
 ## Observability spec (operator answers, 2026-08-10)
 
 - **Live state in the chrome**: orchestrator TAB TITLES carry real-time
