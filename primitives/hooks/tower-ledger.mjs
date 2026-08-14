@@ -28,6 +28,9 @@ export const PHEROMONES = process.env.TOWER_PHEROMONES_PATH || join(TOWER, 'pher
 export const DELIVERABLES = join(TOWER, 'deliverables')
 export const ODOMETER = join(TOWER, 'odometer.jsonl')
 export const FLIGHT = join(TOWER, 'flight')
+// COMMS-ARCH.md §Alarm rationalization: malformed questions (rejected at write
+// or discovered on read) land here, never in openQuestions.
+export const DEAD_LETTER = join(TOWER, 'dead-letter.jsonl')
 
 export const SCENT_TTL_DEFAULTS = {
   'work-available': 1800,
@@ -128,6 +131,105 @@ export function append(file, obj) {
   } else {
     withAppendLockfile(file, () => appendFileSync(file, line))
   }
+}
+
+// ─── dead-letter sink (COMMS-ARCH §Alarm rationalization) ───────────────────
+// Malformed questions are rejected at emit and skipped on read; either way the
+// row is preserved here with a reason, so nothing vanishes silently. A row with
+// only id/ts/cwd/kind is malformed, NOT legacy — it never inherits the operator
+// fallback and never enters openQuestions.
+
+/** Resolve the sink path. The env override exists for tests; law names ~/.tower/dead-letter.jsonl. */
+export function deadLetterPath() {
+  return process.env.TOWER_DEAD_LETTER_PATH || DEAD_LETTER
+}
+
+/**
+ * Validate a question row at emit or read. Returns a reason string when the row
+ * is malformed, or null when it is well-formed (or is not a question at all).
+ */
+export function questionRejectReason(row) {
+  if (!row || typeof row !== 'object') return 'question row is not an object'
+  if (row.kind !== 'question') return null
+  const m = row.message
+  if (m == null) return 'question has no message field'
+  if (typeof m !== 'string') return `question message is not a string (got ${typeof m})`
+  if (!m.trim()) return 'question message is empty or whitespace-only'
+  return null
+}
+
+// path -> { ids: Set<string>, size, mtimeMs } — keeps read-side dead-lettering
+// idempotent without rewriting the append-only sink.
+const _dlSeen = new Map()
+
+function dlSeenIds(path) {
+  let state = _dlSeen.get(path)
+  if (!state) {
+    state = { ids: new Set(), size: -1, mtimeMs: -1 }
+    _dlSeen.set(path, state)
+  }
+  if (!existsSync(path)) return state.ids
+  let st
+  try {
+    st = statSync(path)
+  } catch {
+    return state.ids
+  }
+  if (st.size !== state.size || st.mtimeMs !== state.mtimeMs) {
+    for (const r of readAllFull(path)) if (r?.id) state.ids.add(r.id)
+    state.size = st.size
+    state.mtimeMs = st.mtimeMs
+  }
+  return state.ids
+}
+
+/** Append a rejected row to the dead-letter sink (flocked). Always writes. */
+export function deadLetter(row, reason) {
+  const base = row && typeof row === 'object' ? row : { row }
+  const entry = { ...base, reason: String(reason), dead_lettered_at: new Date().toISOString() }
+  const path = deadLetterPath()
+  append(path, entry)
+  if (entry.id) dlSeenIds(path).add(entry.id)
+  return entry
+}
+
+/**
+ * Dead-letter a row at most once per id. Returns the appended entry, or null
+ * when this id is already in the sink (read side re-walks the same rows forever).
+ */
+export function deadLetterOnce(row, reason) {
+  const path = deadLetterPath()
+  const rid = row && typeof row === 'object' ? row.id : undefined
+  if (rid && dlSeenIds(path).has(rid)) return null
+  return deadLetter(row, reason)
+}
+
+/** Rows currently in the dead-letter sink. */
+export function readDeadLetters() {
+  return readAllFull(deadLetterPath())
+}
+
+/**
+ * Read-side question gate: malformed question rows are dead-lettered (once) and
+ * excluded; well-formed unanswered questions are returned. A sink write must
+ * never break an inbox read, so failures here are swallowed.
+ */
+export function openQuestionRows(rows, answeredIds) {
+  const open = []
+  for (const r of rows ?? []) {
+    if (r?.kind !== 'question') continue
+    const reason = questionRejectReason(r)
+    if (reason) {
+      try {
+        deadLetterOnce(r, `read-side: ${reason}`)
+      } catch {
+        /* sink unavailable — the row still never reaches openQuestions */
+      }
+      continue
+    }
+    if (!answeredIds.has(r.id)) open.push(r)
+  }
+  return open
 }
 
 /** Authored fleet-mail rows on board.jsonl — require non-empty from at write time. */
@@ -416,7 +518,7 @@ function inboxStateFromFull(cwd) {
       ((r.kind === 'alert' && (r.to === undefined || r.to === 'operator')) ||
         (r.kind === 'deliverable' && r.to === 'operator'))
   )
-  const openQuestions = rows.filter((r) => r.kind === 'question' && !answeredIds.has(r.id))
+  const openQuestions = openQuestionRows(rows, answeredIds)
   const progress = rows.filter((r) => r.kind === 'progress')
   return { unrelayed, openQuestions, answers, progress, all: rows }
 }
@@ -433,7 +535,7 @@ function deriveInboxState(cursor, cwd) {
       ((r.kind === 'alert' && (r.to === undefined || r.to === 'operator')) ||
         (r.kind === 'deliverable' && r.to === 'operator'))
   )
-  const openQuestions = rows.filter((r) => r.kind === 'question' && !answeredIds.has(r.id))
+  const openQuestions = openQuestionRows(rows, answeredIds)
   const progress = rows.filter((r) => r.kind === 'progress')
   return { unrelayed, openQuestions, answers, progress, all: rows }
 }

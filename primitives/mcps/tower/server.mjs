@@ -22,12 +22,15 @@
 //   ledger.jsonl — messages, questions, answers, acks
 //   board.jsonl  — blackboard entries
 //   deliverables/ — kind=deliverable messages also written as files
+//   dead-letter.jsonl — questions rejected at emit or skipped on read (with a
+//                   reason); nothing malformed vanishes, nothing malformed
+//                   reaches openQuestions
 // Scoping: every entry records the server's cwd (the session's project dir);
 // hooks filter by their own cwd so sessions only guard their own messages.
 
 import { appendFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { LEDGER, BOARD, DELIVERABLES, id, append, inboxState, normCwd, boardFor, renderMessage, emitPheromone, pheromoneField, assertAuthoredBoardFrom } from './lib.mjs'
+import { LEDGER, BOARD, DELIVERABLES, id, append, inboxState, normCwd, boardFor, renderMessage, emitPheromone, pheromoneField, assertAuthoredBoardFrom, questionRejectReason, deadLetter, deadLetterPath } from './lib.mjs'
 
 const CWD = normCwd(process.cwd())
 
@@ -207,6 +210,16 @@ function callTool(name, args) {
     }
     case 'ask_user': {
       const entry = { id: id(), ts: now, cwd: CWD, kind: 'question', from: args.from, message: args.question, options: args.options }
+      // COMMS-ARCH §Alarm rationalization — validate at emit. A question with no
+      // real message can never be answered, so it must never reach the ledger;
+      // the rejected row is preserved in the dead-letter sink instead.
+      const reason = questionRejectReason(entry)
+      if (reason) {
+        deadLetter(entry, `emit-side ask_user: ${reason}`)
+        throw new Error(
+          `Refused ask_user: ${reason}. Nothing was written to the ledger; the rejected row was recorded in ${deadLetterPath()}. Re-send with the question text verbatim.`
+        )
+      }
       append(LEDGER, entry)
       return `Question ${entry.id} is open. The orchestrator will surface it; poll check_inbox({ question_id: "${entry.id}" }) for the answer. Continue other work while you wait if you can.`
     }

@@ -4,7 +4,14 @@
 
 import { mkdirSync } from 'node:fs'
 export * from '../../hooks/tower-ledger.mjs'
-import { TOWER, DELIVERABLES, FLIGHT, normCwd, _test } from '../../hooks/tower-ledger.mjs'
+import {
+  TOWER,
+  DELIVERABLES,
+  FLIGHT,
+  normCwd,
+  openQuestionRows,
+  _test,
+} from '../../hooks/tower-ledger.mjs'
 
 mkdirSync(DELIVERABLES, { recursive: true })
 mkdirSync(FLIGHT, { recursive: true })
@@ -46,7 +53,7 @@ export function deriveInboxStateFromCursor(cursor, cwd) {
       ((r.kind === 'alert' && (r.to === undefined || r.to === 'operator')) ||
         (r.kind === 'deliverable' && r.to === 'operator'))
   )
-  const openQuestions = rows.filter((r) => r.kind === 'question' && !answeredIds.has(r.id))
+  const openQuestions = openQuestionRows(rows, answeredIds)
   const progress = rows.filter((r) => r.kind === 'progress')
   return { unrelayed, openQuestions, answers, progress, all: rows }
 }
