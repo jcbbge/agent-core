@@ -6,6 +6,7 @@ import {
   existsSync,
   readFileSync,
   appendFileSync,
+  mkdirSync,
   statSync,
 } from 'node:fs'
 import { join } from 'node:path'
@@ -16,31 +17,29 @@ const TOWER_DIR = import.meta.dir
 const LIVE_SERVER = join(TOWER_DIR, 'server.mjs')
 const CANONICAL_SERVER = join(process.env.HOME, 'herdr-spine/cc-hooks/server.mjs')
 const INSTALL_SH = join(process.env.HOME, 'herdr-spine/install.sh')
-const BACKUP_PATH = join(TOWER_DIR, 'server.mjs.bak-20260812')
-const BOARD_PATH = join(TOWER_DIR, 'board.jsonl')
-const LEDGER_PATH = join(TOWER_DIR, 'ledger.jsonl')
+// Pre-edit backup, atticized 2026-08-12 by agnt-w0-attic — the artifact still
+// exists, it just no longer sits beside the file it backs up.
+const BACKUP_PATH = join(TOWER_DIR, 'attic', 'server.mjs.bak-20260812')
 const CLEAR_INBOX =
   'Tower inbox is clear — nothing unrelayed, no open questions.'
 
-function readBoardRows() {
-  if (!existsSync(BOARD_PATH)) return []
-  return readFileSync(BOARD_PATH, 'utf8')
-    .split('\n')
-    .filter(Boolean)
-    .map((line) => {
-      try {
-        return JSON.parse(line)
-      } catch {
-        return null
-      }
-    })
-    .filter(Boolean)
+/**
+ * Disposable HOME. Tower state paths are homedir-anchored in tower-ledger.mjs
+ * (TOWER = homedir()/.tower, no env override), so a scratch $HOME is the only
+ * way to exercise the real server against real JSONL without writing a byte of
+ * live ~/.tower state.
+ */
+function makeScratchHome(tag) {
+  const home = realpathSync(mkdtempSync(join(tmpdir(), `tower-sdrift-${tag}-`)))
+  mkdirSync(join(home, '.tower'), { recursive: true })
+  return home
 }
 
 /** Minimal newline-delimited JSON-RPC 2.0 client — no warm-pipe wait (WS6 lesson). */
-async function withMcp(cwd, fn) {
+async function withMcp(cwd, fn, env = {}) {
   const proc = Bun.spawn(['bun', LIVE_SERVER], {
     cwd,
+    env: { ...process.env, ...env },
     stdin: 'pipe',
     stdout: 'pipe',
     stderr: 'pipe',
@@ -90,6 +89,8 @@ async function withMcp(cwd, fn) {
     ])
   }
 }
+
+const callText = (result) => String(result?.content?.[0]?.text ?? result?.content ?? '')
 
 describe('install.sh drift guard (AC: drift resolved)', () => {
   test('install.sh emits no drift warning', async () => {
@@ -149,7 +150,7 @@ describe('SHA reconciliation (AC: merge keeps fixes, canonical gains relay_inbox
 })
 
 describe('backup on disk (AC: pre-edit backup)', () => {
-  test('server.mjs.bak-20260812 exists', () => {
+  test('server.mjs.bak-20260812 exists in attic', () => {
     expect(existsSync(BACKUP_PATH)).toBe(true)
     expect(statSync(BACKUP_PATH).isFile()).toBe(true)
   })
@@ -196,46 +197,54 @@ describe('relay_inbox behavior (AC: CC4 — fixes preserved)', () => {
   test('relay_inbox empty inbox message', async () => {
     // realpath: macOS tmpdir is /var/folders (symlink to /private/var) and the
     // server's cwd resolves through it — inboxState matches cwd by string.
-    const scratch = realpathSync(mkdtempSync(join(tmpdir(), 'tower-sdrift-empty-')))
+    const home = makeScratchHome('empty')
     try {
-      await withMcp(scratch, async (rpc) => {
-        const result = await rpc('tools/call', { name: 'relay_inbox', arguments: {} })
-        const text = result?.content?.[0]?.text ?? result?.content ?? String(result)
-        expect(String(text)).toContain(CLEAR_INBOX)
-      })
+      await withMcp(
+        home,
+        async (rpc) => {
+          const result = await rpc('tools/call', { name: 'relay_inbox', arguments: {} })
+          expect(callText(result)).toContain(CLEAR_INBOX)
+        },
+        { HOME: home }
+      )
     } finally {
-      rmSync(scratch, { recursive: true, force: true })
+      rmSync(home, { recursive: true, force: true })
     }
   }, 15_000)
 
   test('relay_inbox render+ack in one call', async () => {
-    const scratch = realpathSync(mkdtempSync(join(tmpdir(), 'tower-sdrift-ack-')))
+    const home = makeScratchHome('ack')
+    const ledgerPath = join(home, '.tower', 'ledger.jsonl')
     const seedId = `t-sdrift-${Date.now().toString(36)}`
     const seedBody = `server-drift oracle seed ${seedId}`
-    const beforeSize = existsSync(LEDGER_PATH) ? statSync(LEDGER_PATH).size : 0
+    const beforeSize = existsSync(ledgerPath) ? statSync(ledgerPath).size : 0
 
     const seedRow = {
       id: seedId,
       ts: new Date().toISOString(),
-      cwd: scratch,
+      cwd: home,
       kind: 'deliverable',
       to: 'operator',
       message: seedBody,
       from: 'server-drift-test',
     }
-    appendFileSync(LEDGER_PATH, JSON.stringify(seedRow) + '\n')
+    appendFileSync(ledgerPath, JSON.stringify(seedRow) + '\n')
 
     try {
-      await withMcp(scratch, async (rpc) => {
-        const result = await rpc('tools/call', { name: 'relay_inbox', arguments: {} })
-        const text = result?.content?.[0]?.text ?? ''
-        expect(text).toContain(seedId)
-        expect(text).toContain(seedBody)
-      })
+      await withMcp(
+        home,
+        async (rpc) => {
+          const result = await rpc('tools/call', { name: 'relay_inbox', arguments: {} })
+          const text = callText(result)
+          expect(text).toContain(seedId)
+          expect(text).toContain(seedBody)
+        },
+        { HOME: home }
+      )
 
       // byte offset from statSync must slice a Buffer — string slice uses
       // UTF-16 units and drifts on any multi-byte content upstream
-      const tail = readFileSync(LEDGER_PATH).subarray(beforeSize).toString('utf8')
+      const tail = readFileSync(ledgerPath).subarray(beforeSize).toString('utf8')
       const newRows = tail
         .split('\n')
         .filter(Boolean)
@@ -245,19 +254,59 @@ describe('relay_inbox behavior (AC: CC4 — fixes preserved)', () => {
       )
       expect(ackForSeed.length).toBe(1)
     } finally {
-      rmSync(scratch, { recursive: true, force: true })
+      rmSync(home, { recursive: true, force: true })
     }
   }, 20_000)
 })
 
-describe('board findings (AC: findings to tower/server-drift)', () => {
-  test('tower/server-drift topic has finding', () => {
-    const rows = readBoardRows().filter((r) => r.topic === 'tower/server-drift')
-    expect(rows.length).toBeGreaterThan(0)
-    const hasBody = rows.some((r) => {
-      const body = r.body ?? r.message ?? r.title ?? ''
-      return String(body).trim().length > 0
-    })
-    expect(hasBody).toBe(true)
-  })
+// Rewritten 2026-08-14. The former test read the live board and asserted that
+// rows tagged topic "tower/server-drift" existed — a one-time process artifact
+// of the w0 workstream, not a behavior of the code, and doomed by rotation
+// (archived rows leave the active board). It also pointed at
+// <tower dir>/board.jsonl, a gitignored test artifact that no longer exists, so
+// it could never pass. What it MEANT to guarantee — a finding posted to a topic
+// is retrievable on that topic — is asserted here against the real server in an
+// isolated $HOME, with no dependence on live state.
+describe('board findings (AC: a finding reaches the topic it was posted to)', () => {
+  test('board_post finding → board_read <topic> returns it', async () => {
+    const home = makeScratchHome('board')
+    const boardPath = join(home, '.tower', 'board.jsonl')
+    const body = `server-drift oracle finding ${Date.now().toString(36)}`
+    try {
+      await withMcp(
+        home,
+        async (rpc) => {
+          const posted = await rpc('tools/call', {
+            name: 'board_post',
+            arguments: {
+              topic: 'tower/server-drift',
+              type: 'finding',
+              from: 'AGNT server-drift-test',
+              body,
+            },
+          })
+          expect(callText(posted)).toContain('Posted to board topic')
+
+          const read = await rpc('tools/call', {
+            name: 'board_read',
+            arguments: { topic: 'tower/server-drift' },
+          })
+          const text = callText(read)
+          expect(text).toContain('tower/server-drift')
+          expect(text).toContain(body)
+        },
+        { HOME: home }
+      )
+
+      const rows = readFileSync(boardPath, 'utf8')
+        .split('\n')
+        .filter(Boolean)
+        .map((l) => JSON.parse(l))
+      const findings = rows.filter((r) => r.topic === 'tower/server-drift')
+      expect(findings.length).toBeGreaterThan(0)
+      expect(findings.some((r) => String(r.body ?? '').includes(body))).toBe(true)
+    } finally {
+      rmSync(home, { recursive: true, force: true })
+    }
+  }, 20_000)
 })

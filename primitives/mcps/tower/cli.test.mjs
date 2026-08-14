@@ -163,21 +163,16 @@ describe('ledger inbox cursor batch (live state)', () => {
   })
 })
 
-describe('all/projects red-on-old (backup cli)', () => {
-  test('backup all times out — reproduces pre-fix hang', async () => {
-    const proc = Bun.spawn(['bun', `${import.meta.dir}/cli.mjs.bak-20260812T165125Z`, 'all'], {
-      cwd: '/Users/jrg/agent-core',
-      stdout: 'pipe',
-      stderr: 'pipe',
-    })
-    const raced = await Promise.race([
-      proc.exited.then((code) => ({ kind: 'exit', code })),
-      new Promise((resolve) => setTimeout(() => resolve({ kind: 'timeout' }), 2000)),
-    ])
-    if (raced.kind === 'timeout') proc.kill()
-    expect(raced.kind).toBe('timeout')
-  }, 5000)
-})
+// Removed 2026-08-14: `all/projects red-on-old (backup cli)` — it spawned
+// cli.mjs.bak-20260812T165125Z from this directory to witness the pre-fix hang.
+// That backup now lives in attic/ (agnt-w0-attic) where it cannot even load
+// (`import './lib.mjs'` fails), and the hang was a property of the OLD cli +
+// OLD lib pair: run the atticized cli against today's lib.mjs and it returns in
+// ~20ms, because the cursor-batched inboxState removed the O(cwds × ledger)
+// re-read. Reconstructing a two-artifact archaeological harness proves only
+// that a fixed 2026-08-12 bug once existed. The anti-regression signal — `all`
+// and `projects` return promptly today — is asserted live in the
+// 'inbox subprocess (live state)' loop above (both subcommands, 5s budget).
 
 // Oracle: F9 CLI `board <topic>` — authored from plan/brief only, not from cli.mjs fix.
 describe('board topic filter (AC: F9 CLI board <topic>)', () => {

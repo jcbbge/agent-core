@@ -322,13 +322,11 @@ function applyJsonlPlan(plan, paths, opts, ledger) {
     false
   )
 
-  if (cfgCursorStore(plan.store) && ledger?.writeStoreArchiveCursor) {
-    ledger.writeStoreArchiveCursor(cfgCursorStore(plan.store), {
-      archivePath: plan.archivePath,
-      archivedByteEnd: plan.archivedByteEnd,
-      resetOffset: phase === 2,
-    })
-  }
+  writeStoreArchiveCursor(paths, cfgCursorStore(plan.store), {
+    archivePath: plan.archivePath,
+    archivedByteEnd: plan.archivedByteEnd,
+    resetOffset: phase === 2,
+  })
 
   if (phase === 2) {
     const tail = readFileSync(plan.activePath).subarray(plan.archivedByteEnd)
@@ -340,6 +338,89 @@ function applyJsonlPlan(plan, paths, opts, ledger) {
 
 function cfgCursorStore(store) {
   return STORE_CONFIG[store]?.cursorStore ?? null
+}
+
+// Cursor sidecars, mirroring tower-ledger.mjs (CURSORS/<file>, lock <name>.lock).
+// Written HERE, from paths.cursors, on purpose: tower-ledger anchors CURSORS at
+// homedir()/.tower and honours no env override, so delegating this write would
+// stamp the LIVE ~/.tower/cursors even when rotating a --tower-home fixture.
+const CURSOR_SIDECAR = {
+  board: {
+    file: 'board.scope.cursor.json',
+    lock: 'board.scope',
+    empty: () => ({ offset: 0, size: 0, mtimeMs: 0, byCwd: {} }),
+  },
+  ledger: {
+    file: 'ledger.inbox.cursor.json',
+    lock: 'ledger.inbox',
+    empty: () => ({
+      offset: 0,
+      size: 0,
+      mtimeMs: 0,
+      acked: [],
+      answeredIds: [],
+      byCwd: {},
+      allRows: [],
+    }),
+  },
+}
+
+/** Best-effort cursor lock, same protocol as tower-ledger.mjs withCursorLock. */
+function withCursorSidecarLock(cursorsDir, lockName, fn) {
+  mkdirSync(cursorsDir, { recursive: true })
+  const lockPath = join(cursorsDir, `${lockName}.lock`)
+  for (let i = 0; i < 100; i++) {
+    try {
+      writeFileSync(lockPath, String(process.pid), { flag: 'wx' })
+      try {
+        return fn()
+      } finally {
+        try {
+          unlinkSync(lockPath)
+        } catch {
+          /* stale lock */
+        }
+      }
+    } catch {
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 2)
+    }
+  }
+  return fn()
+}
+
+/**
+ * Stamp archive provenance on the store's cursor sidecar so readers can read
+ * across archive + active. Phase-1 is additive (offsets still describe the
+ * untouched active file); Phase-2 truncated the head off it, so every offset
+ * and every accumulated row in the sidecar now describes bytes that moved to
+ * the archive — reset the accumulators to their empty shape and let the next
+ * reader re-ingest the shortened file from zero.
+ */
+function writeStoreArchiveCursor(paths, cursorStore, { archivePath, archivedByteEnd, resetOffset }) {
+  const spec = cursorStore ? CURSOR_SIDECAR[cursorStore] : null
+  if (!spec) return null
+  const cursorPath = join(paths.cursors, spec.file)
+  return withCursorSidecarLock(paths.cursors, spec.lock, () => {
+    let base = spec.empty()
+    if (!resetOffset && existsSync(cursorPath)) {
+      try {
+        const existing = JSON.parse(readFileSync(cursorPath, 'utf-8'))
+        if (existing && typeof existing === 'object' && !Array.isArray(existing)) {
+          base = { ...base, ...existing }
+        }
+      } catch {
+        /* unreadable sidecar → rebuild from empty, never throw mid-rotate */
+      }
+    }
+    const cursor = {
+      ...base,
+      archivePath,
+      archivedByteEnd,
+      archivedAt: new Date().toISOString(),
+    }
+    writeFileSync(cursorPath, JSON.stringify(cursor))
+    return cursorPath
+  })
 }
 
 function utcMonthFromMtime(mtimeMs) {

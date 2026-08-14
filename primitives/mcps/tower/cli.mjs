@@ -140,12 +140,15 @@ if (cmd === 'status') {
   const rows = boardFor(cwd, topic ? { topic } : undefined)
   if (rows.length === 0) console.log('Board empty for this project.')
   for (const r of rows) console.log(`[${r.ts ?? '?'}] (${r.type ?? r.kind ?? '?'}) ${r.from ?? '?'} @ ${r.topic ?? '?'}: ${rowPreview(r)}`)
+  // Diagnostic, not a board row — stderr keeps `board [topic]` stdout a pure
+  // listing (every stdout line is a row), so `board <topic> | ...` stays clean.
+  // `status` (a human report, not a data channel) still prints it on stdout.
   const integrity = readJsonlStats(BOARD)
   if (integrity.bad_line_count > 0) {
     const maxBad = integrity.bad_line_numbers.length ? Math.max(...integrity.bad_line_numbers) : '?'
-    console.log(`integrity: ${integrity.bad_line_count} unparseable line(s) on board (max bad line ${maxBad})`)
+    console.error(`integrity: ${integrity.bad_line_count} unparseable line(s) on board (max bad line ${maxBad})`)
   } else {
-    console.log('integrity: 0 unparseable lines on board')
+    console.error('integrity: 0 unparseable lines on board')
   }
 } else if (cmd === 'post') {
   // Fleet write path for harnesses without the Tower MCP (pi panes, plain
