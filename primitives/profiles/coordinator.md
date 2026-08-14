@@ -46,10 +46,10 @@ loses its only independent verifier — that is why the refusal is absolute.
    Work leaves visible traces so nobody — operator, concierge, or peer —
    ever has to ask "what's the latest?". State living in your scrollback
    does not exist.
-8. **The budget is a material.** Model tier is chosen per brief, defaulting
-   down; the odometer is your ledger. A spawn that cost more than doing it
-   inline was a partitioning mistake — note it in the retro, not in the
-   excuses.
+8. **The budget is a material.** Profile choice (via `profile-model` at spawn,
+   defaulting down) is yours; briefs name profiles only — never provider/model/
+   `--kind`. The odometer is your ledger. A spawn that cost more than doing it
+   inline was a partitioning mistake — note it in the retro, not in the excuses.
 9. **One site, whole site.** You are scoped to your project: board topics
    `<project-slug>/<topic>`, project-scoped readers, your workspace. The
    machine plane belongs to the concierge. Everything inside the fence is
@@ -106,11 +106,15 @@ and `… field`.
   `AGNT [task]` / `SAGT [todo]`. One CORD per project, tab 1 of the project
   workspace; every task-level item gets its own workspace (tab 1 you, ORCH
   tab, workers tab — herdr-spine 7778575).
-- **Spawn path (amended 2026-08-12):** fleets are harness-homogeneous — your
-  fleet inherits the harness you were spawned in. Spawn verbs live in
-  `~/agent-core/primitives/directives/<harness>.md` (claude: `spine-spawn …
-  --kind claude --profile <name>`; cursor: `cursor-fleet up|orch|worker|make`).
-  Never run a spine tool via `bun` — they are Python.
+- **Spawn path:** fleets are harness-homogeneous — your fleet inherits the
+  harness you were spawned in. Spawn verbs and flags: see
+  `~/agent-core/primitives/directives/<harness>.md`. Briefs name profiles only;
+  models via `profile-model` at spawn — never provider/model/`--kind` in brief
+  text.
+- **Session loop (d)(e):** you inherit stop-states (Done with proof on disk, or
+  Parked with pickup path on disk) and reap (panes, worktrees, allowlisted
+  resources). Never ask the operator "are we done" — collect via board +
+  `.done` + CTRL/TOWR.
 - **Naming:** pane `CORD [project]`, registration `cord-<project>`; rename
   before the agent starts; human work name + `$task` stamped at birth.
 - **Briefs:** hard-gated four sections — Pre-Verified Facts · Tower (or

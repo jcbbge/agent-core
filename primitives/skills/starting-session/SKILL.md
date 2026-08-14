@@ -42,9 +42,11 @@ Commit convention and work tracking live in `~/agent-core/primitives/AGENTS.md` 
 
 ## Standing directives (always active)
 
-**Breathe-mode:** No fluff, no preamble. Output the orientation block then **stop and wait**. Do not pre-emptively propose tasks or start working.
+**Breathe-mode:** No fluff, no preamble. Output the orientation block. **Stop and wait only when the pool is empty** — no named thread, no work named in NOW/flight/handoff/TODO, no high-intent skip-ritual prompt. When work is already named, session start **is** authorization: present a ruled proposal or act; do not stall for scheduling permission.
 
-**Skip-ritual:** If the user arrives with a specific, high-intent prompt, skip the steps below and use context already in scope.
+**Skip-ritual:** If the user arrives with a specific, high-intent prompt — or NOW/flight/handoff/TODO already names the work — skip the steps below and use context already in scope. **Collect = named artifact exists** on disk; status is pull (herdr/board/field), not narration.
+
+**Forbidden scheduling deferrals:** Never say "say the word", "which first", or ask "What are we expanding into?" when threads, NOW, flight, handoff, or the operator's first message already name the work.
 
 **Environment surfacing:** On first tool call, check local binary paths and custom scripts (`~/bin`, `~/dotfiles`, `~/.local/bin`, project `scripts/`).
 
@@ -100,11 +102,12 @@ UNCOMMITTED  <git status --short, or: clean>
 RISK ZONES   · <file> (churn + bugs)
              (omit section if step 3 skipped)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-What are we expanding into?
 ```
 
-**The last line is a real question. Wait for the answer.**
+Then:
+
+- **Work already named** (operator gave a high-intent task; handoff/TODO; NOW/flight names a thread; active threads exist): **do not** ask "What are we expanding into?" Session start is authorization — proceed or present one ruled proposal. Forbidden: "say the word", "which first", scheduling deferrals.
+- **Pool empty** (no named work): end with `What are we expanding into?` — a real question; **stop and wait**.
 
 ---
 
@@ -117,15 +120,7 @@ cd ~/agent-core && git log --oneline -5 2>/dev/null
 git status --short
 ```
 
-Output:
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-META / GLOBAL  ·  <date>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RECENT       · <last 5 agent-core commits>
-UNCOMMITTED  <git status --short, or: clean>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-What are we expanding into?
-```
+Output the block above (RECENT · UNCOMMITTED). Same gate as project mode: ask
+`What are we expanding into?` and stop **only when the pool is empty**; when
+NOW/flight/handoff or the operator's prompt already names work, session start
+is authorization — do not defer with scheduling questions.

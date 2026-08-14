@@ -30,7 +30,17 @@ steps in order; skip only steps that genuinely do not apply.
 
 ## Step 1 — Strike the fleet (herdr / herdr-spine)
 
-Only if you spawned agents this session. Done = gone (control-flow.md §Reaping):
+Only if you spawned agents this session. Done = gone (control-flow.md §Reaping).
+**Diagnosis ≠ Land:** do not run this step — and do not `herdr workspace close`
+or mission-level `tower close` — until the **outer** committed item is **Landed**
+or **Parked on disk with a pickup brief** (`briefs/…` or equivalent durable
+path). A sub-phase `.done`, a worker report, or a ground-phase diagnosis is
+**not** authorization to close a mission workspace. Refuse and keep the substrate
+up until Land/Park.
+
+When Land or Park is on disk, reap-as-law applies (control-flow.md §Reaping):
+take a resource → return it at Done/Park. Leftovers mean the unit did not
+finish — label them in a report, do not leave them running.
 
 ```bash
 herdr pane list --workspace "$HERDR_WORKSPACE_ID"   # panes you spawned still alive?
@@ -39,21 +49,26 @@ git worktree list | grep -c spine/worktrees          # leftover spine worktrees?
 
 - Collect stragglers via board + `.done` + status plane — never re-prompt idle panes.
 - Reap verified-done panes; remove merged worktrees; delete merged `spine/*` branches.
+- Return Arc Docker images your unit built via the Arc allowlist only (`arc-*`,
+  `jcbbge/arc-demo`; see `~/Infinity/arc/AGENTS.md` invariant 8). **`docker
+  system prune -a` is banned** — other projects share OrbStack.
+- Tear down Neon numeric allowlist resources your unit provisioned, per the
+  project pickup brief.
 - If the project carries `.madewell/`, confirm statem reflects reality (the unit's
   Land is recorded, no phantom in-flight cycles).
 
-Then **tear the substrate down to zero**: every herdr pane, tab, and workspace
-you created or were responsible for this session is closed before you are —
-worker panes, worker tabs, and the observability panes you stood up for your
-own oversight (your CTRL/TOWR splits included; their job ends with your
-session). Survivors are exactly two kinds: the operator's focused pane, and
-standing infrastructure owned by missions that are not yours (never close
-what another live mission is using). The test is ownership, not tidiness:
-if you made it, you unmake it.
+Then **tear the substrate down to zero** (only after Land/Park on the outer item):
+every herdr pane, tab, and workspace you created or were responsible for this
+session is closed before you are — worker panes, worker tabs, and the
+observability panes you stood up for your own oversight (your CTRL/TOWR splits
+included; their job ends with your session). Survivors are exactly two kinds:
+the operator's focused pane, and standing infrastructure owned by missions that
+are not yours (never close what another live mission is using). The test is
+ownership, not tidiness: if you made it, you unmake it.
 
-An orphan pane, tab, workspace, worktree, or branch is unfinished work:
-finish it now or hand it off explicitly in the `TODO:` line — never leave it
-implicit.
+An orphan pane, tab, workspace, worktree, branch, allowlisted image, or Neon
+resource is unfinished work: finish it now or hand it off explicitly in the
+`TODO:` line — never leave it implicit.
 
 ---
 

@@ -5,6 +5,8 @@
   `~/.cursor/skills-cursor/` (CLI-managed copies, not symlinks — `herdr`,
   `super-search`, `navigating-big-files`, `slim`, `latch`, `vein`, `assay`) ·
   fleet spawn = `~/cursor-shim/cursor-fleet` / `~/cursor-shim/cursor-spine`
-  (not `spine-spawn --kind cursor`; shim profiles + `profile-model` defaults) ·
+  (not `spine-spawn --kind cursor`) · briefs name profiles only
+  (`coordinator`, `orchestrator`, `coder`, …); models via `profile-model` at
+  spawn — never provider/model/`--kind` in brief text ·
   `cursor-fleet make` enforces the Verify beat (bifurcated test/impl worktrees,
   arbiter, nQ≤3) · repo rule `.cursor/rules/cursor-fleet.md`

@@ -94,11 +94,15 @@ and `… field`.
 - **Seat:** rank 2 — CORD → **you** → `AGNT [task]` / `SAGT [todo]`. You live
   in your unit's workspace: tab 1 CORD, your ORCH tab, a workers tab (grid,
   `--no-focus`) — herdr-spine 7778575.
-- **Spawn path (amended 2026-08-12):** fleets are harness-homogeneous — your
-  AGNTs/SAGTs inherit the harness you were spawned in. Spawn verbs live in
-  `~/agent-core/primitives/directives/<harness>.md` (claude: `spine-spawn …
-  --kind claude --profile <name>`; cursor: `cursor-fleet worker|make …`).
-  Never run a spine tool via `bun` — they are Python.
+- **Spawn path:** fleets are harness-homogeneous — your AGNTs/SAGTs inherit the
+  harness you were spawned in. Spawn verbs and flags: see
+  `~/agent-core/primitives/directives/<harness>.md`. Briefs name profiles only;
+  models via `profile-model` at spawn — never provider/model/`--kind` in brief
+  text.
+- **Session loop (d)(e):** you inherit stop-states (Done with proof on disk, or
+  Parked with pickup path on disk) and reap (panes, worktrees, allowlisted
+  resources). Never ask the operator "are we done" — collect via board +
+  `.done` + CTRL/TOWR.
 - **Naming:** pane `ORCH [feature/bug/chore]`, registration `orch-…`;
   workers `AGNT [task]` / `SAGT [todo]`; rename before the agent starts.
 - **Briefs:** hard-gated four sections — Pre-Verified Facts · Tower (or

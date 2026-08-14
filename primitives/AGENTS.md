@@ -209,6 +209,9 @@ Harness deltas live in `primitives/directives/<harness>.md`; deployed entrypoint
   root → pi fleet; claude root → claude fleet; cursor root → cursor fleet). Harness
   selection is the operator's per-mission intake decision, cost-driven. Per-harness
   spawn verbs, flags, and paths live in `primitives/directives/<harness>.md`.
+- **Briefs (law):** Briefs name **profiles/roles only** — never provider, model,
+  or `--kind`. Models via `profile-model` at spawn; spawn verbs only in harness
+  directives. A brief that hardcodes harness or model is invalid.
 - **Hierarchy:** CORD → ORCH → AGNT/SAGT via the harness's spawn path — see deltas.
   Briefs on disk; CLAIM-first / board findings / `.done`-last.
 - **Comms:** `~/.tower/COMMS-ARCH.md`. Status (idle/done) is NOT mail and is

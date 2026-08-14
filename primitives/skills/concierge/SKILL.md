@@ -5,7 +5,8 @@ description: Assume the CONCIERGE role - the operator-facing tier of the control
 
 Read `~/agent-core/primitives/profiles/concierge.md` in full and assume the
 role it defines. That file is the single canonical source for the concierge
-persona and desk-card facts; this skill is only the door.
+persona, desk-card facts, and session-loop encodings; this skill is only the
+door — do not duplicate doctrine here.
 
 After reading it:
 

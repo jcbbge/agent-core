@@ -146,23 +146,21 @@ claiming files (mcp__tower__board_read).">
 test tails, deviations with reasons>
 ```
 
-## Step 4 — Model tier (tokenomics — decide per brief, default DOWN)
+## Step 4 — Profile choice (never provider/model/`--kind` in briefs)
 
-Every spawn carries a `model` choice; choosing nothing means the most
-expensive tier. Decide deliberately:
+Briefs name **profiles/roles only** (`coordinator`, `orchestrator`, `coder`,
+`scout`, …). **Never** put a provider, model name, or `--kind` in a brief —
+those belong in harness directives and `profile-model`, not in spawn text.
 
-- **haiku** — mechanical, spec-complete transforms: the brief states exactly
-  what to change and how to verify; no judgment beyond following instructions
-  (renames, pattern sweeps with explicit rules, format conversions).
-- **sonnet** — standard execution with local judgment: implement-to-spec,
-  test writing against an exemplar, focused searches.
-- **top tier (omit model)** — genuine judgment: design decisions, security
-  reasoning, ambiguous debugging, anything where a wrong call is expensive.
+- **Spawn verbs:** `~/agent-core/primitives/directives/<harness>.md` for this
+  session's root harness.
+- **Model selection:** via `profile-model` at spawn time; the brief states the
+  **profile** only.
+- **Tokenomics:** default profile down; if the task is mechanical, say so in
+  the task spec — do not name a model tier in the brief.
 
-If the brief is good enough for haiku and you are reaching for a bigger
-model, ask whether the brief is actually underspecified — fix the brief, not
-the bill. State the chosen tier at the top of the brief. Check
-`bun ~/.claude/tower/cli.mjs burn` when calibrating.
+A brief that hardcodes opus/fable/sonnet/claude-as-kind or `--kind` is
+invalid — rewrite to profile + harness directive.
 
 ## Step 5 — Partition check (multi-agent fan-outs)
 
