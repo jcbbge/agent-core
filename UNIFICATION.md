@@ -254,12 +254,15 @@ the mirror: mirror manages what is DEPLOYED; gateway serves what is USED.
 
 ## The shape
 
-One umbrella framework, working name yours to give (house-style candidates:
-**loom** — the operator at the loom, every thread visible; **keel** — the
-spine a whole ship mounts to; **marrow**). Layout:
+One umbrella framework, named by the operator 2026-08-14: **Tup** — the
+uncastrated ram chosen as breeding stock to lead and sire the entire flock;
+the tupping season is when the flock is made. Built on herdr (the herder),
+the name completes the estate's oldest metaphor natively: herdr herds the
+flock, Tup sires it, and a spawn wave is a tupping season. (Prior
+candidates loom/keel/marrow/deck retired.) Layout:
 
 ```
-<name>/
+tup/
   kernel/       law · rules · profiles · directives · skills   (from agent-core/primitives)
   mirror/       registry + sync + status + component-verify    (from agent-core/cli — already a submodule)
   substrate/    RuntimeAdapter + reflexes                      (from herdr-spine)
@@ -303,7 +306,7 @@ system runs on. Working register (nouns chosen to collide with nothing):
 
 | Framework thing | Hardware word | Why it's exact |
 |---|---|---|
-| The unified framework | **the deck** | the operator's machine; engines jack in |
+| The unified framework | **Tup** (identity) / **the deck** (hardware register) | the ram that sires the flock; the machine engines jack into |
 | Engines (claude/pi/cursor) | **seated processors** | swappable silicon in a socket — never "cartridges"; you don't call the CPU a cartridge |
 | RuntimeAdapter (herdr today, Fut candidate) | **the socket** | one spec, many chips |
 | Tower | **the bus** | signal traces on the board — pheromones ARE traces |
@@ -322,12 +325,14 @@ keeps its exact rubric.md meaning. Work seats as cartridges into Made
 Well's console; engines seat as processors into the deck's socket. Two
 plug-relationships, two altitudes, zero shared nouns.
 
-(This also sharpens the name question: **deck** joins loom/keel/marrow as a
-candidate, with the cyberdeck lineage in its favor.)
+(Name RESOLVED same day: **Tup**. The flock register is the identity —
+herdr herds, Tup sires, a spawn wave is a tupping season — and the hardware
+register above remains the working map for the plug-relationships. Both
+registers keep Made Well's console/cartridge/jump-pack untouched.)
 
 ## The five invariants of the rollup (non-negotiable)
 
-1. **The mirror is the gate.** `agent-core status` (→ `<name> status`) must
+1. **The mirror is the gate.** `agent-core status` (→ `tup status`) must
    read 0 stale / 0 missing after EVERY move. A move that blinds the mirror
    is reverted, not patched around.
 2. **Green on main, pushed, at every step** (standing order 2026-08-14).
