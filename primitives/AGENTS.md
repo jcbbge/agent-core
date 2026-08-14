@@ -113,8 +113,11 @@ with its enforcer named or its DOCTRINE label explicit.
 `/reload` hot-reloads. Installed: `circadian-mind.ts` (memory hooks),
 `herdr-agent-state.ts` + `herdr-task-report.ts` (herdr-managed sidebar
 state), `tower-auto.ts` (ambient Tower posting), `tower-lifecycle.ts`
-(flight-recorder / stop-verdict / deposit-reminder port), `rtk-rewrite.ts`
-(shim → `~/agent-core/primitives/hooks/rtk-rewrite.ts`). Removed 2026-08-02:
+(flight-recorder / stop-verdict / deposit-reminder port), `slim-rewrite.ts` +
+`grounding-hook.ts` (shims → `~/agent-core/primitives/hooks/`),
+`write-gate.ts` + `spawn-door.ts` (2026-08-14 enforcement adapters, shims →
+`primitives/hooks/write-gate-pi.ts` / `spawn-door-pi.ts` — see
+`primitives/rules/ENFORCEMENT.md`). Removed 2026-08-02:
 `strudel/` (parity with CC — both harnesses reach the stack via super-search
 + CLIs; strudel itself untouched at `~/strudel`). Not installed: subagent,
 smart-search, propose-extension, peer-session — spawn agents via the herdr

@@ -44,6 +44,8 @@ esac
 [ -z "$DENY" ] && exit 0
 
 # Emit deny in BOTH harness schemas; each harness reads its own key.
+# Cursor schema verified against cursor.com/docs/agent/hooks (2026-08-14):
+# {"permission":"deny","user_message":...,"agent_message":...}.
 jq -n --arg reason "$DENY" '{
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
@@ -51,6 +53,7 @@ jq -n --arg reason "$DENY" '{
     "permissionDecisionReason": $reason
   },
   "permission": "deny",
+  "user_message": $reason,
   "agent_message": $reason
 }'
 exit 0

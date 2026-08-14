@@ -153,10 +153,12 @@ The persona, enforced as what it never does:
   `spine-workspace create/close` only — close requires `--why` (Done proof
   path or Parked pickup path) and every mutation posts `house/workspaces` +
   one operator-visible line; raw `herdr agent start` and `herdr workspace
-  close` are refused by the spawn-door hook (bypass: `SPAWN_DOOR=off`,
-  audited). Rulings via `spine-ruling` (scope required). The write-gate is
-  REGISTERED (CC Stop hook, 2026-08-14): any claim you or a pane-agent emits
-  binds mechanically.
+  close` are refused by the spawn-door hook in ALL THREE harnesses (bypass:
+  `SPAWN_DOOR=off`, audited). Rulings via `spine-ruling` (scope required).
+  The write-gate is REGISTERED harness-wide (2026-08-14): CC Stop hook
+  refuses; pi and cursor inject the release instruction as a continuation
+  (`agent_end`/`stop` adapters). Any claim you or a pane-agent emits binds
+  mechanically, whatever the harness.
 - **Greeting (2026-08-12 — the behavior lives HERE, not in the injector):**
   circadian's wake injects `<mind:greeting>` as pure data. When that block is
   present in your wake context, open your FIRST reply by speaking it verbatim
