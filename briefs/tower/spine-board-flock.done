@@ -1,0 +1,38 @@
+ORCH spine-board-flock DONE
+
+## Verdict
+PASS — flock LOCK_EX on both herdr-spine bare board_append sites; Verify green.
+
+## Commit
+- SHA: 25c1ef0fe1a1783cfed2bdb35fbaac209baa4053
+- Branch: fix/spine-board-flock (worktree wt-agnt-coder-w2y-p1q)
+- Not merged to main; not pushed (CORD gates)
+
+## Diff summary
+- bin/handlers/_spine_common.py: +import fcntl; fcntl.flock(fh.fileno(), LOCK_EX) before write in board_append
+- bin/spine-claim: same pattern in embedded PY board_append
+- bin/handlers/tests/test_board_append_flock.py: new oracle (single-write + 4×40 concurrent, real fcntl, no mocks)
+
+## rg proof (committed tree)
+```
+bin/handlers/_spine_common.py:340:    with open(TOWER_BOARD_PATH, "a") as fh:
+bin/handlers/_spine_common.py:341:        fcntl.flock(fh.fileno(), fcntl.LOCK_EX)
+bin/spine-claim:100:    with open(path, "a") as fh:
+bin/spine-claim:101:        fcntl.flock(fh.fileno(), fcntl.LOCK_EX)
+```
+
+## Smoke
+SPINE_BOARD_PATH=temp → SMOKE_OK note ORCH-spine-board-flock (newline + parseable JSON)
+
+## Tester
+python3 bin/handlers/tests/test_board_append_flock.py → exit 0, all 3 passed; live board.jsonl mtime unchanged
+
+## Field
+- WA: ph-mss83uru-k4zr
+- work-done: (see emit after this marker)
+- nQ used: 1 (test-maker rebrief — single-write post-import env would hit live board)
+
+## Deviations
+- Did not factor spine-claim onto _spine_common (ORCH fork: different signatures).
+- spine-claim helper not unit-tested (optional C.5); covered by rg + coder smoke.
+- --no-finish; CORD owns merge to main.
