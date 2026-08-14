@@ -1,0 +1,35 @@
+# spine bridge grep evidence — AGNT w3-aux 2026-08-13
+
+## 10-notify → board (blocked alert, recent)
+
+board.jsonl:6280
+{"id": "spine-af38c43c-c509-490b-8c3a-fd2d5bd54645", "ts": "2026-08-13T12:46:19Z", "cwd": "/Users/jrg/herdr-spine", "type": "alert", "from": "spine-daemon", "topic": "herdr-spine", "body": "claude blocked on CONCIERGE (concierge): PR #239 reverses standing architectural law..."}
+
+Handler source: /Users/jrg/herdr-spine/bin/handlers/10-notify
+  sc.board_append("alert", f"{agent} blocked on {name} ({wsname}): {board_body}", ...)
+
+## 10-notify → board (done finding, recent)
+
+board.jsonl:6410
+{"id": "spine-024533ac-5b77-4312-ba91-0d7acb69f187", "ts": "2026-08-13T13:36:24Z", "cwd": "/Users/jrg/herdr-spine", "type": "finding", "from": "spine-daemon", "topic": "herdr-spine", "body": "cursor done on ORCH tower w0 closeout (tower): GO: W0 landed cab69eb drift0..."}
+
+Handler source:
+  sc.board_append("finding", f"{agent} done on {name} ({wsname}): {board_body}", ...)
+
+## 40-tower-bridge → ledger (blocked → question, recent)
+
+ledger.jsonl:2623
+{"id":"t-msqybioo-hp6n","ts":"2026-08-13T03:21:20.472Z","cwd":"/Users/jrg/infinity/arc","kind":"question","to":"operator","from":"claude@CONCIERGE","message":"Which wave should I open next?"}
+
+Correlates with board alert spine-69941b20 (same blocked episode, 2026-08-13T03:21:19Z).
+
+## 40-tower-bridge → ledger (working/idle drain → answer, recent)
+
+ledger.jsonl:2624
+{"id":"t-msqyda1c-6y6w","ts":"2026-08-13T03:22:42.576Z","cwd":"/Users/jrg/infinity/arc","kind":"answer","ref":"t-msqybioo-hp6n","message":"(resolved in pane)","from":"claude@CONCIERGE"}
+
+## 40-tower-bridge → ledger (done+$verdict → deliverable pattern)
+
+ledger.jsonl has kind:"deliverable" rows; spine-bridge writes deliverable file per §7 when pane done carries $verdict.
+Recent non-MCP example not isolated in this grep pass — MCP send_to_user deliverable t-msrktbyd-yezv is Tower-server path, not spine handler.
+Board done finding spine-024533ac shows 10-notify path fired; ledger deliverable from 40-tower-bridge for same event not confirmed in tail grep (GAP: may require live pane done+$verdict to re-prove file+ledger pair).

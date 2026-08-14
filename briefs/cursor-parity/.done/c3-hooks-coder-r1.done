@@ -1,0 +1,10 @@
+c3-hooks coder r1 (arbiter BAD IMPLEMENTATION fixes) 2026-08-12T17:26Z
+cli HEAD: e244263
+fixes:
+  - hooks_json.zig: canonicalizeJson before isManagedInSync compare (formatting drift ok)
+  - status.zig: script_state != .ok or !json_in_sync (script stale no longer masked)
+evidence:
+  - virgin: rm -rf .zig-cache zig-out && zig build && zig build test → exit 0
+  - smoke: jq-edit unmarked sessionStart → hook/slim-guard cursor ✓
+  - smoke: append slim-guard.sh → ✗ stale; live restored via scoped sync hook/slim-guard --harness cursor
+board: agent-core/cursor-parity finding → orch-c3-parity

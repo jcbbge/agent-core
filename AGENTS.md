@@ -1,17 +1,20 @@
-# agent-core — Agent Context
+# agent-core — Repository Guide
 **For:** AI agents working in this repository  
-**Last updated:** 2026-04-14  
-**Read this before touching anything.**
+**Last updated:** 2026-08-11
+
+Stack, control-flow, comms, and harness runtime doctrine live in the canonical file — read **`~/agent-core/primitives/AGENTS.md`**. This document covers only the repo layout and the Zig CLI.
 
 ---
 
 ## What This Repository Is
 
-`agent-core` is a Zig 0.15.2 CLI tool and primitive store. It solves one problem: jrg authors agent primitives (skills, rules, hooks, commands, directives, subagents) once in a canonical location and syncs them to wherever each harness expects them.
+`agent-core` is a Zig CLI and a primitive store. jrg authors agent primitives (skills, rules, hooks, commands, directives, subagents) once under `primitives/` and uses the CLI to diff and deploy them to harness config dirs.
 
-Three harnesses are supported: **pi.dev**, **opencode**, **claude-code**.
+Three harnesses are registered: **pi**, **claude-code**, and **cursor** (added 2026-08-12). (opencode was dropped 2026-08-11.) A fourth, non-harness pseudo-target, **machine**, covers machine-wide estate with no config-dir profile of its own (tool binaries, git hooks) — see the check-only verbs below.
 
-The binary is at `~/agent-core/cli/zig-out/bin/agent-core`, symlinked globally to `/opt/homebrew/bin/agent-core`.
+The binary is at `~/agent-core/cli/zig-out/bin/agent-core`, symlinked to `/opt/homebrew/bin/agent-core`.
+
+Two git repos: `~/agent-core/` (store + research) and `~/agent-core/cli/` (Zig source, submodule).
 
 ---
 
@@ -19,7 +22,7 @@ The binary is at `~/agent-core/cli/zig-out/bin/agent-core`, symlinked globally t
 
 ```
 ~/agent-core/
-  cli/                  ← Zig source (the CLI tool)
+  cli/                  ← Zig source (build here)
     src/
       main.zig          ← arg parsing, command dispatch
       registry.zig      ← registry parser, HarnessProfile, resolveDeployPath
@@ -29,31 +32,42 @@ The binary is at `~/agent-core/cli/zig-out/bin/agent-core`, symlinked globally t
       checksum.zig      ← SHA-256 utilities
     build.zig
   primitives/           ← canonical source files (the store)
-    skills/             ← SKILL.md files (directory format from M1, flat for pi)
-    rules/              ← .md rule files
-    hooks/              ← .sh hook scripts
+    skills/             ← skill sources (flat .md or <name>/SKILL.md)
+    rules/              ← .md rule files (store-only; read on demand)
+    hooks/              ← hook scripts (claude-code deploy targets)
     commands/           ← slash command .md files
     subagents/          ← subagent definition .md files
     directives/         ← directive .md files
-    meta/               ← integration profile template
-  templates/
-    WORK.md             ← template for new project task boards
-  research/             ← 15 research documents (do not modify without reason)
-  WORK.md               ← THIS project's task board (update at session end)
-  AGENTS.md             ← this file
+    plugins/            ← pi TypeScript extensions (not agent-core synced)
+    tools/              ← standalone CLI tools (e.g. slim, bigfile)
+    AGENTS.md           ← canonical global agent context (doctrine)
+  research/             ← research documents (do not modify without reason)
+  AGENTS.md             ← this file (repo/CLI guide only)
   PRIMER.md             ← human-readable primer for jrg
 
 ~/.agent-core/
-  registry              ← THE MANIFEST (plain text, edit to add primitives)
+  registry              ← THE MANIFEST (plain text; not in this repo)
 ```
 
 ---
 
-## The CLI — Commands and Flags
+## Build
+
+Requires **Zig 0.16.0** (`zig version` to verify).
+
+```bash
+cd ~/agent-core/cli && zig build
+```
+
+Rebuild after any CLI source change before testing.
+
+---
+
+## CLI — Commands and Flags
 
 ```bash
 agent-core status                        # diff source vs deployed, all primitives
-agent-core status --harness <name>       # filter to one harness
+agent-core status --harness <name>       # filter to one harness (pi | claude-code | cursor | machine)
 agent-core sync                          # sync all stale primitives
 agent-core sync <id>                     # sync one primitive (e.g. skill/debug-hypothesis)
 agent-core sync --harness <name>         # sync all for one harness
@@ -61,30 +75,28 @@ agent-core sync --dry-run                # preview without writing
 agent-core --registry <path>             # override registry file location
 ```
 
-**Build:** `cd ~/agent-core/cli && zig build`  
-**After any source change:** rebuild before testing.
+**Standing order:** do not run `agent-core sync` without coordinator clearance while the registry is being stabilized.
 
 ---
 
-## Registry Format — How It Works
+## Registry
 
-`~/.agent-core/registry` is a plain text file. Two block types:
+Manifest file: `~/.agent-core/registry` (plain text, edit to add primitives). Two block types:
 
-**Harness profile** — defines paths and strategies per harness:
+**Harness profile** — paths and strategies per harness:
+
 ```
 harness <name>
-  agents      <path>          # agents file (AGENTS.md equivalent)
-  skills      <dir>           # skills directory
-  skill_format flat|directory # flat=<name>.md, directory=<name>/SKILL.md
-  prompts     <dir>           # slash commands (pi)
-  commands    <dir>           # slash commands (opencode)
-  hooks       <dir>           # hooks directory
-  rules       <dir>           # rules directory → auto-sets rule_strategy=copy_file
+  skills      <dir>
+  skill_format flat|directory   # flat=<name>.md, directory=<name>/SKILL.md
+  prompts     <dir>             # pi slash commands
+  hooks       <dir>             # claude-code shell hooks
   rule_strategy copy_file|inline_agents|unsupported
 end
 ```
 
 **Primitive** — maps a source file to deployment targets:
+
 ```
 primitive <type/name>
   source <path>
@@ -99,99 +111,55 @@ Primitive type is the prefix before `/`: `skill/`, `rule/`, `hook/`, `command/`,
 
 ## Deployment Strategies
 
-Three strategies, auto-selected or explicit:
-
 | Strategy | When | What it does |
 |----------|------|-------------|
-| `copy_file` | harness has `rules` dir, or any non-rule primitive with a target dir | Copies source file to resolved destination |
-| `inline_agents` | `rule_strategy inline_agents` in harness profile | Injects/updates delimited section in the harness agents file |
-| `unsupported` | no rules mapping exists | Skips with message |
+| `copy_file` | harness has a target dir for the primitive type | Copies source to resolved destination |
+| `inline_agents` | `rule_strategy inline_agents` in harness profile | Injects/updates delimited section in harness agents file |
+| `unsupported` | no deploy mapping | Skips with message |
+| `link` (check-only) | registry line `link <harness> <path>` | Verifies path is a symlink to the source; never writes |
+| `check` (check-only) | registry line `check <harness> <path>[#<needle>]` | Verifies path mentions needle (default: source); never writes |
+| `binary` (check-only) | registry line `binary <harness> <path>` | Verifies path is executable, no older than source; never writes |
 
-**Inline section delimiters:**
+The three check-only verbs (added 2026-08-14) exist for VISIBILITY, not ownership — they report state for estate installed by other tools (Tower's installer, the harnesses, `zig build`) that agent-core must never plant symlinks over (operator ruling, 2026-08-12). `machine` is a pseudo-harness for machine-wide estate with no harness profile of its own (tool binaries, git hooks); every such registry line carries its path explicitly since there is no profile to resolve against. `agent-core status --harness machine` filters to it.
+
+**Inline section delimiters** (when `inline_agents` is active):
+
 ```
-<!-- agent-core: rule/commit-convention -->
+<!-- agent-core: rule/<name> -->
 [content]
-<!-- /agent-core: rule/commit-convention -->
+<!-- /agent-core: rule/<name> -->
 ```
 
 Existing sections are replaced in-place. New sections are appended. Content outside delimiters is never touched.
 
----
-
-## Harness Path Conventions (Verified)
-
-| | pi | opencode | claude-code |
-|--|----|---------|----|
-| **Skills** | `~/.pi/agent/skills/<name>.md` (flat) | `~/.config/opencode/skills/<name>/SKILL.md` | `~/.claude/skills/<name>/SKILL.md` |
-| **Rules** | injected into AGENTS.md | injected into AGENTS.md | `~/.claude/rules/<name>.md` |
-| **Hooks** | TypeScript extension (manual) | TypeScript plugin (manual) | `~/.claude/hooks/<name>.sh` |
-| **Commands** | `~/.pi/agent/prompts/<name>.md` | `~/.config/opencode/commands/<name>.md` | — |
-| **Agents file** | `~/.pi/agent/AGENTS.md` | `~/.config/opencode/AGENTS.md` | `~/.claude/AGENTS.md` |
-
-**Do not guess paths.** These were verified against actual harness source code and official docs. If adding a new harness, read its docs or source before writing a profile.
+Current registry: rules are **store-only** — no `inline_agents` deploy. The composed entrypoints (`~/.claude/CLAUDE.md`, `~/.pi/agent/AGENTS.md`, `~/AGENTS.md`) are generated copies of `primitives/AGENTS.md` (banner + harness delta appended), not symlinks — a 2026-08-12 ruling retired the pi symlink specifically because inline rule injection through a symlink would corrupt the canonical source.
 
 ---
 
-## Key Design Decisions
+## Harness Deploy Targets (from live registry)
 
-1. **Local-first, no server.** Everything is files. No database, no daemon, no network. If git + filesystem work, agent-core works.
+| | pi | claude-code | cursor |
+|--|----|----|----|
+| **Skills** | `~/.pi/agent/skills/<name>/SKILL.md` (directory) | `~/.claude/skills/<name>/SKILL.md` (directory) | `~/.cursor/skills-cursor/<name>/SKILL.md` (directory) |
+| **Prompts/Commands** | `~/.pi/agent/prompts/<name>.md` | — | `~/.cursor/commands/<name>.md` |
+| **Hooks** | TypeScript extensions in `~/.pi/agent/extensions/` (manual; not agent-core synced) | `~/.claude/hooks/<name>.sh` | `~/.cursor/hooks/<name>.sh` + wiring check against `~/.cursor/hooks.json` |
+| **Agents/subagents** | — | `~/.claude/agents/` | `~/.cursor/agents/` |
+| **Rules** | store-only (`primitives/rules/`; read on demand) | store-only | store-only |
 
-2. **Visibility over automation.** `status` shows what's stale. `sync` fixes it. No magic auto-propagation that could corrupt files.
-
-3. **Concept-to-mechanism.** A primitive type has different mechanisms per harness. The profile captures both path AND strategy, not just path.
-
-4. **Registry is the source of truth.** The filesystem under `primitives/` is the store. The registry is the manifest. They are separate. Files can exist in the store without being registered.
-
-5. **Rules in pi/opencode are inline.** Neither harness has a native rules directory. Rules are injected as delimited sections into AGENTS.md. This is the verified mechanism for both.
-
-6. **CLAUDE.md is Anthropic-only.** Every harness has its own directive filename. The harness profile `directives` field captures this. Do not assume CLAUDE.md works everywhere.
-
-7. **skill_format matters.** Pi uses flat `.md` files. Opencode and claude-code use `<name>/SKILL.md` subdirectories. The profile captures this. agent-core handles the structure automatically.
+Cursor registered 2026-08-12 (added `--harness cursor`; full parity ruling extended most existing skills to `deploy cursor`). Do not guess paths. Read `~/.agent-core/registry` or run `agent-core status` before adding deploy targets.
 
 ---
 
-## Memory Allocation — Important
+## CLI Source — Memory Allocation
 
-All allocations inside `status.zig`, `sync.zig`, and `inline.zig` use `reg.allocator()` (the registry's arena allocator) not the GPA passed into the function. The GPA allocator parameter is unused (`_`). This is intentional — it prevents leaks by tying all intermediate allocations to the registry's lifetime. Do not change this pattern without understanding the consequence.
-
----
-
-## Current State (2026-04-14)
-
-- **32 primitives tracked.** All in sync. `agent-core status` exits clean.
-- **~27 skills in store but not registered.** They exist in `primitives/skills/` but have no registry entry yet. Do not deploy them without jrg's decision on which harnesses they belong to.
-- **Two git repos:** `~/agent-core/` (store + research) and `~/agent-core/cli/` (Zig source). Both on `main`, both clean.
+Allocations inside `status.zig`, `sync.zig`, and `inline.zig` use `reg.allocator()` (the registry arena), not the GPA passed into the function. The GPA parameter is intentionally unused (`_`). Do not change this without understanding the leak implications.
 
 ---
 
-## Session Protocol for This Repo
+## Out of Scope
 
-**Start:** Run `agent-core status` to see current sync state. Read `WORK.md` for active tasks.
-
-**Before modifying CLI source:** Understand what you're changing. The four source files (`registry.zig`, `status.zig`, `sync.zig`, `inline.zig`) are tightly coupled. A change to `HarnessProfile` in registry.zig will require updates in all three other files.
-
-**After modifying CLI source:** `cd ~/agent-core/cli && zig build`. Fix all errors before testing. The compiler is strict — treat warnings as errors.
-
-**Before modifying the registry:** `agent-core status --dry-run` first. Understand what will change.
-
-**At session end:** Update `WORK.md`, commit with the standard format:
-```
-<type>(agent-core): <summary>
-
-PHASE: <phase>
-DONE: <what was completed>
-TODO: <what remains>
-BLOCKED: <or omit>
-
-Co-Authored-By: Claude Opus 4 <noreply@anthropic.com>
-```
-
----
-
-## What Is NOT in Scope for agent-core
-
-- **Constellation** — separate project at `~/constellation-zg/`. agent-core is designed to upgrade when Constellation ships (WORK.md → Nebula), but do not add Constellation-specific code here.
-- **Arc** — separate project at `~/Infinity/arc/`. agent-core serves Arc but is not part of it.
-- **TUI / interactive mode** — not planned for v1. Deferred.
-- **Plugin/extension adapters** — TypeScript hooks for pi/opencode are out of scope. agent-core handles file primitives only.
-- **Remote registries / marketplace** — v2+. Not now.
+- **Constellation** — separate project at `~/constellation-zg/`
+- **Arc** — separate project at `~/Infinity/arc/`
+- **Pi TypeScript plugins** — live under `primitives/plugins/` but deploy via dotfiles/extensions, not `agent-core sync`
+- **TUI / interactive mode** — not planned for v1
+- **Remote registries / marketplace** — v2+

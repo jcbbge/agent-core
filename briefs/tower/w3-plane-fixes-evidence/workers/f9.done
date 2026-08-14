@@ -1,0 +1,25 @@
+HEAD: 1c8353dbc99925e2152f7664b7a16ab029814440
+
+test: cd /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-coder-w2y-pf/primitives/mcps/tower && bun test cli.test.mjs
+
+tail:
+(pass) board topic filter (live state) > board with topic filters output vs unfiltered [93.14ms]
+(fail) all/projects red-on-old (backup cli) > backup all times out — reproduces pre-fix hang [5.25ms]
+
+1 tests failed:
+(fail) all/projects red-on-old (backup cli) > backup all times out — reproduces pre-fix hang [5.25ms]
+
+ 26 pass
+ 1 fail
+ 70 expect() calls
+Ran 27 tests across 1 file. [6.20s]
+
+live check (worktree CLI, cwd /Users/jrg/agent-core):
+  board (no topic): 53 lines
+  board tower/w3-plane-fixes: 5 lines
+
+diff summary:
+- cli.mjs: board branch reads process.argv[3] as optional topic; passes { topic } to boardFor when non-empty; usage comment updated
+- cli.test.mjs: added "board topic filter (live state)" test spawning worktree CLI, asserts filtered < unfiltered and topic appears in lines
+
+deviations: 1 pre-existing failure in backup-cli timeout test (outside partition; not touched)

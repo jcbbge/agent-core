@@ -1,0 +1,20 @@
+agnt-c3-subagents-testmaker complete 2026-08-12T16:56Z
+
+Artifact: cli/test/integration/c3_subagents_acceptance.sh
+Fixture: cli/test/fixtures/agents-foo.md
+
+Criterion coverage (6 IDs):
+- T-C3-AG-RESOLVE (claude-code + cursor resolve cases)
+- T-C3-AG-NO-PI
+- T-C3-AG-STATUS-OK
+- T-C3-AG-STATUS-MISSING
+- T-C3-AG-IDENTITY
+- T-C3-AG-LIVE-COUNT (skipped unless AGENT_CORE_LIVE=1)
+
+Oracle: bash cli/test/integration/c3_subagents_acceptance.sh (from cli/ after zig build)
+Tests not run (test-maker role). Hand off to tester.
+
+Provenance:
+- date -u: 2026-08-12T16:56:08Z
+- pwd -P: /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-test-maker-w2b-pd
+- worktree branch: wt-agnt-test-maker-w2b-pd

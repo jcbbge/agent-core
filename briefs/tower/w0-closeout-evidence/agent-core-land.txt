@@ -1,0 +1,9 @@
+agent-core land
+branch: tower/w0-version-control (main checkout never retargeted away)
+pre: 34011ee
+merged: 1722f56 (tower/w0-canonical-source tip)
+post HEAD: cab69eb4fcb3d837da9e03cce5161a593e6503f4
+oneline: cab69eb merge(tower): land 1722f56 repo-only drift-check fix into W0
+merge-base --is-ancestor 1722f56 HEAD; EXIT=0
+ANCESTOR_EXIT:0
+touched production file in merge: primitives/mcps/tower/drift-check.mjs only

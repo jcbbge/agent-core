@@ -1,0 +1,11 @@
+decisions-w3 @ 2026-08-11T22:30-0500
+brief: briefs/decisions/llm-assay.md
+
+chat: FIXED (serve.py + plist restart; model=local alias; compact /models JSON)
+chat pipe-test: curl exit 0, HTTP 200, real assistant content
+
+golden: regenerated -> briefs/fringe/assay-labels/golden-report.md (exit 5)
+SHAPED floors: UNKNOWN — NEW cause: assay llm.zig Writer.fromArrayList WriteFailed on Zig 0.16
+decoy-FP: 0/25 (unchanged)
+
+recall proposals: in golden-report.md Agent diagnosis section

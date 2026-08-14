@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+# profile-model — resolve / set the active pi model for a control-flow profile.
+# Values are pi cursor-provider slugs (cursor/<id>[@ctx][:suffix]); see PROFILES.md.
+# Usage:
+#   profile-model get <profile|profile:option>
+#   profile-model set <profile> <option-key>
+#   profile-model list
+set -euo pipefail
+
+DIR="$(cd "$(dirname "$(python3 -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$0")")" && pwd)"
+MODELS="$DIR/models.json"
+SELECTION="$DIR/selection.json"
+
+die() { echo "profile-model: $*" >&2; exit 2; }
+
+need_jq() {
+  command -v jq >/dev/null || die "jq required"
+}
+
+ensure_selection() {
+  if [[ ! -f "$SELECTION" ]]; then
+    cat >"$SELECTION" <<'EOF'
+{
+  "concierge": "grok",
+  "coordinator": "open",
+  "orchestrator": "grok",
+  "coder": "composer",
+  "researcher": "fast"
+}
+EOF
+  fi
+}
+
+resolve() {
+  local spec="$1"
+  local profile option
+  if [[ "$spec" == *:* ]]; then
+    profile="${spec%%:*}"
+    option="${spec#*:}"
+  else
+    profile="$spec"
+    option=""
+  fi
+
+  jq -e --arg p "$profile" 'has($p)' "$MODELS" >/dev/null \
+    || die "unknown profile: $profile (known: $(jq -r 'keys|join(", ")' "$MODELS"))"
+
+  if [[ -z "$option" ]]; then
+    ensure_selection
+    option="$(jq -r --arg p "$profile" '.[$p] // empty' "$SELECTION")"
+    if [[ -z "$option" || "$option" == "null" ]]; then
+      option="$(jq -r --arg p "$profile" '.[$p].default' "$MODELS")"
+    fi
+  fi
+
+  jq -e --arg p "$profile" --arg o "$option" '.[$p].options|has($o)' "$MODELS" >/dev/null \
+    || die "unknown option '$option' for $profile (options: $(jq -r --arg p "$profile" '.[$p].options|keys|join(", ")' "$MODELS"))"
+
+  jq -r --arg p "$profile" --arg o "$option" '.[$p].options[$o]' "$MODELS"
+}
+
+cmd_set() {
+  local profile="$1" option="$2"
+  jq -e --arg p "$profile" 'has($p)' "$MODELS" >/dev/null || die "unknown profile: $profile"
+  jq -e --arg p "$profile" --arg o "$option" '.[$p].options|has($o)' "$MODELS" >/dev/null \
+    || die "unknown option '$option' for $profile"
+  ensure_selection
+  local tmp
+  tmp="$(mktemp)"
+  jq --arg p "$profile" --arg o "$option" '.[$p]=$o' "$SELECTION" >"$tmp"
+  mv "$tmp" "$SELECTION"
+  echo "$(resolve "$profile")"
+}
+
+cmd_list() {
+  ensure_selection
+  jq -n --slurpfile m "$MODELS" --slurpfile s "$SELECTION" '
+    $m[0] as $models | $s[0] as $sel |
+    $models | to_entries | map({
+      profile: .key,
+      role: .value.role,
+      default: .value.default,
+      active: ($sel[.key] // .value.default),
+      model: .value.options[($sel[.key] // .value.default)],
+      options: .value.options
+    })
+  '
+}
+
+need_jq
+[[ -f "$MODELS" ]] || die "missing $MODELS"
+
+case "${1:-}" in
+  get)
+    [[ $# -eq 2 ]] || die "usage: profile-model get <profile[:option]>"
+    resolve "$2"
+    ;;
+  set)
+    [[ $# -eq 3 ]] || die "usage: profile-model set <profile> <option>"
+    cmd_set "$2" "$3"
+    ;;
+  list)
+    cmd_list
+    ;;
+  *)
+    die "usage: profile-model {get|set|list} ..."
+    ;;
+esac

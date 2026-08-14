@@ -1,0 +1,11 @@
+# Running tests from this directory writes state relative to cwd (e.g. ledger.jsonl).
+# Real Tower state lives at ~/.tower/, never here — anything matching these names
+# in this directory is a test artifact, not tracked code.
+ledger.jsonl
+board.jsonl
+odometer.jsonl
+pheromones.jsonl
+*.jsonl
+flight/
+deliverables/
+cursors/

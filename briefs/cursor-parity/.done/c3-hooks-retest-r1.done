@@ -1,0 +1,12 @@
+agnt-c3-hooks-retest-tester complete 2026-08-12T17:25Z
+
+Verdict: pass
+Evidence: ~/agent-core/briefs/cursor-parity/c3-hooks-retest-r1-results.md
+
+Pass/fail:
+- zig build: PASS (exit 0)
+- c3_hooks_acceptance.sh run 1: PASS (exit 0; 7 passed, 0 failed)
+- c3_hooks_acceptance.sh run 2: PASS (exit 0; 7 passed, 0 failed)
+- Q → arbiter: none
+
+Code/tests touched: none

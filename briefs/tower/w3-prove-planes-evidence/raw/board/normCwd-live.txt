@@ -1,0 +1,3 @@
+/Users/jrg/agent-core -> /Users/jrg/agent-core
+/Users/jrg/.spine/worktrees/agent-core/w0-closeout-driftcheck -> /Users/jrg/agent-core
+/Users/jrg/Infinity/arc -> /Users/jrg/infinity/arc

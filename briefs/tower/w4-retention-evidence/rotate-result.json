@@ -1,0 +1,156 @@
+{
+  "opts": {
+    "store": "deliverables",
+    "dryRun": false,
+    "phase": 1,
+    "apply": true,
+    "evidenceDir": "briefs/tower/w4-retention-evidence",
+    "olderThanDays": null,
+    "towerHome": "/Users/jrg/.tower"
+  },
+  "results": [
+    {
+      "action": "archive-dir",
+      "store": "deliverables",
+      "phase": 1,
+      "activePath": "/Users/jrg/.tower/deliverables",
+      "moves": [
+        {
+          "src": "/Users/jrg/.tower/deliverables/t-mqd43ire-jyvg-foley-r2-a-layered-synthesis-report.md",
+          "name": "t-mqd43ire-jyvg-foley-r2-a-layered-synthesis-report.md",
+          "mtime": 1781400893883.4216,
+          "size": 5984,
+          "month": "2026-06",
+          "archiveDir": "/Users/jrg/.tower/archive/deliverables/2026-06"
+        },
+        {
+          "src": "/Users/jrg/.tower/deliverables/t-mqczlt94-ae1t-foley-lane-a-zero-dep-report.md",
+          "name": "t-mqczlt94-ae1t-foley-lane-a-zero-dep-report.md",
+          "mtime": 1781393349208.615,
+          "size": 5669,
+          "month": "2026-06",
+          "archiveDir": "/Users/jrg/.tower/archive/deliverables/2026-06"
+        },
+        {
+          "src": "/Users/jrg/.tower/deliverables/t-mqd5pkf4-md7q-foley-r3-r2d2-chiptune-r2-d2-voice-repor.md",
+          "name": "t-mqd5pkf4-md7q-foley-r3-r2d2-chiptune-r2-d2-voice-repor.md",
+          "mtime": 1781403602081.2078,
+          "size": 6370,
+          "month": "2026-06",
+          "archiveDir": "/Users/jrg/.tower/archive/deliverables/2026-06"
+        },
+        {
+          "src": "/Users/jrg/.tower/deliverables/t-mqd4eq8e-bnl5-foley-r2-b-sample-hybrid-report.md",
+          "name": "t-mqd4eq8e-bnl5-foley-r2-b-sample-hybrid-report.md",
+          "mtime": 1781401416783.7183,
+          "size": 8235,
+          "month": "2026-06",
+          "archiveDir": "/Users/jrg/.tower/archive/deliverables/2026-06"
+        },
+        {
+          "src": "/Users/jrg/.tower/deliverables/t-mqd6lmu0-91a4-foley-r3-events-contract-group-report.md",
+          "name": "t-mqd6lmu0-91a4-foley-r3-events-contract-group-report.md",
+          "mtime": 1781405098201.5754,
+          "size": 5704,
+          "month": "2026-06",
+          "archiveDir": "/Users/jrg/.tower/archive/deliverables/2026-06"
+        },
+        {
+          "src": "/Users/jrg/.tower/deliverables/t-mqczgjpe-i3wf-foley-lane-d-wildcard-report.md",
+          "name": "t-mqczgjpe-i3wf-foley-lane-d-wildcard-report.md",
+          "mtime": 1781393103555.3242,
+          "size": 6592,
+          "month": "2026-06",
+          "archiveDir": "/Users/jrg/.tower/archive/deliverables/2026-06"
+        },
+        {
+          "src": "/Users/jrg/.tower/deliverables/t-mq9xssuc-y5kg-optimistic-writes-design-through-the-dat.md",
+          "name": "t-mq9xssuc-y5kg-optimistic-writes-design-through-the-dat.md",
+          "mtime": 1781208917512.2852,
+          "size": 3652,
+          "month": "2026-06",
+          "archiveDir": "/Users/jrg/.tower/archive/deliverables/2026-06"
+        },
+        {
+          "src": "/Users/jrg/.tower/deliverables/t-mqczgtk4-6nvb-foley-lane-b-minimal-1-dep-report.md",
+          "name": "t-mqczgtk4-6nvb-foley-lane-b-minimal-1-dep-report.md",
+          "mtime": 1781393116325.5112,
+          "size": 6343,
+          "month": "2026-06",
+          "archiveDir": "/Users/jrg/.tower/archive/deliverables/2026-06"
+        },
+        {
+          "src": "/Users/jrg/.tower/deliverables/t-mqd5ofvq-4ggp-foley-r3-walle-warm-wall-e-voice-report.md",
+          "name": "t-mqd5ofvq-4ggp-foley-r3-walle-warm-wall-e-voice-report.md",
+          "mtime": 1781403549543.7397,
+          "size": 5504,
+          "month": "2026-06",
+          "archiveDir": "/Users/jrg/.tower/archive/deliverables/2026-06"
+        },
+        {
+          "src": "/Users/jrg/.tower/deliverables/t-mqd97rrj-x48n-foley-ii-tone-js-build-report.md",
+          "name": "t-mqd97rrj-x48n-foley-ii-tone-js-build-report.md",
+          "mtime": 1781409490258.5789,
+          "size": 5001,
+          "month": "2026-06",
+          "archiveDir": "/Users/jrg/.tower/archive/deliverables/2026-06"
+        },
+        {
+          "src": "/Users/jrg/.tower/deliverables/t-mqd45umt-t1bq-foley-r2-c-palette-graft-report.md",
+          "name": "t-mqd45umt-t1bq-foley-r2-c-palette-graft-report.md",
+          "mtime": 1781401002581.7776,
+          "size": 5781,
+          "month": "2026-06",
+          "archiveDir": "/Users/jrg/.tower/archive/deliverables/2026-06"
+        },
+        {
+          "src": "/Users/jrg/.tower/deliverables/t-mqd5qcam-acol-foley-r3-animalese-warbly-animalese-voic.md",
+          "name": "t-mqd5qcam-acol-foley-r3-animalese-warbly-animalese-voic.md",
+          "mtime": 1781403638207.483,
+          "size": 5553,
+          "month": "2026-06",
+          "archiveDir": "/Users/jrg/.tower/archive/deliverables/2026-06"
+        },
+        {
+          "src": "/Users/jrg/.tower/deliverables/t-mqczgkib-ct5b-foley-lane-c-tone-js-report.md",
+          "name": "t-mqczgkib-ct5b-foley-lane-c-tone-js-report.md",
+          "mtime": 1781393104596.0183,
+          "size": 6583,
+          "month": "2026-06",
+          "archiveDir": "/Users/jrg/.tower/archive/deliverables/2026-06"
+        },
+        {
+          "src": "/Users/jrg/.tower/deliverables/t-mqczecxk-ey2y-foley-lane-e-ui-control-forward-report.md",
+          "name": "t-mqczecxk-ey2y-foley-lane-e-ui-control-forward-report.md",
+          "mtime": 1781393001465.751,
+          "size": 6330,
+          "month": "2026-06",
+          "archiveDir": "/Users/jrg/.tower/archive/deliverables/2026-06"
+        },
+        {
+          "src": "/Users/jrg/.tower/deliverables/t-mqd6k3is-36h7-foley-r3-events-shell-group-report.md",
+          "name": "t-mqd6k3is-36h7-foley-r3-events-shell-group-report.md",
+          "mtime": 1781405026517.48,
+          "size": 5051,
+          "month": "2026-06",
+          "archiveDir": "/Users/jrg/.tower/archive/deliverables/2026-06"
+        },
+        {
+          "src": "/Users/jrg/.tower/deliverables/t-mqd6kal4-8xd8-foley-r3-events-build-group-report.md",
+          "name": "t-mqd6kal4-8xd8-foley-r3-events-build-group-report.md",
+          "mtime": 1781405035673.7893,
+          "size": 4852,
+          "month": "2026-06",
+          "archiveDir": "/Users/jrg/.tower/archive/deliverables/2026-06"
+        }
+      ],
+      "archiveDirs": [
+        "/Users/jrg/.tower/archive/deliverables/2026-06"
+      ],
+      "triggers": [
+        "16 files older than 60d"
+      ],
+      "applied": true
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+Pheromone field @ /Users/jrg/agent-core
+  open: 2 · claimed: 0 · done: 1 · evaporated: 0 · help: 0
+  [2026-08-13T13:51:03.961Z] work-available AGNT w3-surfaces → /Users/jrg/agent-core/briefs/tower/w3-prove-planes-evidence/raw/surfaces/surfaces-probe-marker (1773s remaining)
+  [2026-08-13T13:51:08.021Z] work-available AGNT w3-surfaces → /Users/jrg/agent-core/briefs/tower/w3-prove-planes-evidence/raw/surfaces/surfaces-probe-marker (1778s remaining)

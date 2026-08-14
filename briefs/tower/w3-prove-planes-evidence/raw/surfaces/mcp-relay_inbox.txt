@@ -1,0 +1,3 @@
+CallMcpTool relay_inbox { from: AGNT w3-surfaces }
+Result: Rendered 2 open questions verbatim (t-msrktev3-k02o, t-msrktfcb-8uxu); no deliverables to ack
+exit: pass

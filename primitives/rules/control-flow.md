@@ -12,6 +12,27 @@ OPERATOR (Josh)
                     └── SUBAGENT(S)   — async items: deferred or not immediately needed
 ```
 
+## Tier duties + one-off assists (operator refinement, 2026-08-11)
+
+The purpose of the whole hierarchy is CONTEXT WINDOW MANAGEMENT: every
+agent focused and head-down on the specific task at hand, nothing else.
+
+- CONCIERGE facilitates and ROUTES work to workspace coordinators — it does
+  not manage projects. One herdr WORKSPACE per project, its CORD in tab 1.
+- Any tier may spawn one-off assist subagents at any time (research, a
+  verification pass, a measurement) instead of bloating its own context —
+  the assist is briefed, does its unit, reports, and is reaped.
+- Cache geometry (proem doctrine, 2026-08-11; rationale amended same day
+  after the proem probe): a prompt is a cache key with a shape. Briefs and
+  spawn prompts carry a byte-identical shared prefix across siblings;
+  per-agent specifics (names, ids, paths) go at the TAIL. One brief file
+  per fanout when workers share a mission; volatility never goes in the
+  prefix. WHY (measured): the pi gateway's cache does NOT reward
+  engineered cross-spawn prefixes (probe verdict DOES-NOT-PAY, 0192af0) —
+  the law stands for CONTEXT BUDGET and legibility, and because
+  Anthropic-side prompt caching in Claude Code does reward stable
+  prefixes. Do not cite gateway cache as the justification.
+
 ## Naming convention (herdr pane names — MANDATORY)
 
 | Prefix | Role | Scope |
@@ -49,6 +70,17 @@ operator-addressed mail reaches the operator. Stigmergy over interrogation:
 work leaves visible traces (Tower planes, statem events) so the operator
 NEVER has to ask "what's the latest?".
 
+**Stigmergic coordination (ranks 1–4):** Coordinator, Orchestrator, Agent, and
+Subagent tiers coordinate through the stigmergic field (COMMS-ARCH plane 5) —
+deposit never deliver, mandatory pull loop, two stopping states only. They do
+not message peers directly; they change the environment and read it back. Full
+law: COMMS-ARCH §Plane 5.
+
+**Concierge exception (rank 0):** the Concierge facilitates the movable parts
+and is exempt from stigmergy — it may address panes directly (plane 4). Every
+directive delivered into a pane must also be recorded on the board (leave-a-
+trace obligation) so successors can reconstruct why an agent changed course.
+
 ## Observability spec (operator answers, 2026-08-10)
 
 - **Live state in the chrome**: orchestrator TAB TITLES carry real-time
@@ -68,15 +100,48 @@ NEVER has to ask "what's the latest?".
   (Imagine→Plan→Make→Verify): explicit states, explicit logged transitions,
   every transition leaves a Tower trace WITHOUT being asked.
 
-## Reaping (operator rule, 2026-08-10)
+## Reaping (operator rule, 2026-08-10; amended 2026-08-12; session loop 2026-08-14)
 
 An agent that is TRULY DONE — report delivered, done-conditions verified by
 its spawner — is SPAWNED DOWN: pane closed, process ended, empty tab closed.
 No trophy panes. The spawner reaps its own agents at collection; the
-coordinator reaps orchestrators after their final report lands. Exceptions:
-infrastructure panes meant to run forever (CTRL fleet, TOWR viewers, statem),
-and never the operator's focused pane. Durable state lives on disk and the
-board — never in a dead pane's scrollback.
+coordinator reaps orchestrators after their final report lands. The ONLY
+untouchable pane is the operator's focused pane. Durable state lives on
+disk and the board — never in a dead pane's scrollback.
+
+**Diagnosis ≠ Land (session loop stop states, 2026-08-14).** Two stop states
+only: **Done** (proof on disk) or **Parked** (pickup path on disk). Diagnosis
+is neither — a ground-phase finding, worker report, or sub-phase `.done` marker
+does **not** authorize reaping a mission workspace. Refuse `herdr workspace
+close`, mission-level `tower close`, and substrate teardown until the **outer**
+committed item is **Landed** or **Parked on disk with a pickup brief**
+(`briefs/…` or equivalent durable path). Leaving the workspace up through
+diagnosis is mandatory, not optional tidiness.
+
+**Reap-as-law (session loop, 2026-08-14).** Take a resource → return it at
+Done/Park. Leftovers mean the unit did not finish; labeling them is not reaping.
+At Land or Park, return every resource your thread took:
+
+| Resource | Return at Done/Park |
+|---|---|
+| herdr panes, tabs, workspaces you spawned | closed/reaped |
+| git worktrees / spine branches | removed when merged or named in pickup brief |
+| Arc Docker images your unit built | Arc allowlist only (`arc-*`, `jcbbge/arc-demo`); see `~/Infinity/arc/AGENTS.md` invariant 8 |
+| Neon numeric allowlist resources your unit provisioned | torn down per project pickup brief |
+
+`docker system prune -a` is **banned** machine-wide (Arc invariant 8 — other
+projects share OrbStack). Use project-scoped allowlists only; never nuke the
+shared stack.
+
+Observability panes (CTRL, TOWR, TSKS, statem) are furniture, not fleet
+(operator amendment, 2026-08-12): they live exactly as long as the session
+or mission that stood them up. Whoever spawned one tears it down at close —
+and an operator instruction to spin one down is executed immediately,
+without debate about "standing infrastructure." Only panes owned by a
+DIFFERENT live mission are off-limits, and then the rule is: never close
+what another live mission is using. **Exception:** observability teardown
+still waits for Land/Park on the outer item — diagnosis does not authorize
+closing a mission workspace even to strike your own CTRL/TOWR splits.
 
 ## Prefix renames + CTRL-pane UX (operator, 2026-08-10)
 

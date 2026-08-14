@@ -1,0 +1,3 @@
+AGNT w4-rotate-fix-impl done 2026-08-13T15:45Z
+defer line: [pheromones] pheromones rotation deferred per POLICY
+files: primitives/mcps/tower/rotate.mjs

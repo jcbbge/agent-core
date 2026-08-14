@@ -1,0 +1,3 @@
+CallMcpTool pheromone_emit { scent: work-available, topic: tower/w3-probe-surfaces, from: AGNT w3-surfaces, payload_ref: .../surfaces-probe-marker, evidence: .../mcp-pheromone-emit.txt }
+Result: Emitted ph-msrktfqt-y2zn
+exit: pass

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arc wave — 2026-08-13</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #f5f6f8; --bg-alt: #e9ebef;
+  --ink: #1e2028; --muted: #555b6e; --faint: #9098ab;
+  --accent: #4a6fa5; --rule: #d0d4dc;
+  --stage-bg: #1e2028; --slide-bg: var(--bg-primary);
+  --code-bg: rgba(30,32,40,.06);
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'Nunito Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --title-size: 88px; --h2-size: 56px; --body-size: 26px; --code-size: 20px; --kicker-size: 15px;
+  --slide-padding: 100px; --content-gap: 28px; --measure: 980px;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); --duration-normal: 0.55s;
+}
+/* ===========================================
+   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   Include this ENTIRE file in every presentation.
+   Slides are authored at 1920×1080 and scaled as a whole.
+   =========================================== */
+
+/* 1. Lock the browser viewport */
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+
+/* 2. Full-window deck viewport */
+.deck-viewport {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+
+/* 3. Fixed 16:9 design canvas.
+   JavaScript sets transform: translate(...) scale(...). */
+.deck-stage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+
+/* 4. Slides stack inside the fixed stage.
+   Content must be laid out at 1920×1080, not reflowed per device. */
+.slide {
+    position: absolute;
+    inset: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+
+.slide.active,
+.slide.visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 1;
+}
+
+/* 5. Keep media inside authored slide bounds */
+img,
+video,
+canvas,
+svg {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* 6. Presentation chrome stays outside the slide design system */
+.deck-controls {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+
+/* 7. Print one fixed-size slide per page */
+@media print {
+    html,
+    body {
+        width: 1920px;
+        height: auto;
+        overflow: visible;
+        background: #fff;
+    }
+
+    .deck-viewport {
+        position: static;
+        overflow: visible;
+        background: #fff;
+    }
+
+    .deck-stage {
+        position: static;
+        width: auto;
+        height: auto;
+        transform: none !important;
+        background: none;
+    }
+
+    .slide {
+        position: relative;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        width: 1920px;
+        height: 1080px;
+        break-after: page;
+        page-break-after: always;
+    }
+
+    .slide:last-child {
+        break-after: auto;
+        page-break-after: auto;
+    }
+
+    .deck-controls {
+        display: none !important;
+    }
+}
+
+/* 8. Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+}
+
+* { box-sizing: border-box; }
+.slide-inner {
+  position: absolute; inset: 0; padding: var(--slide-padding);
+  display: flex; flex-direction: column; gap: var(--content-gap);
+  color: var(--ink); font-family: var(--font-body); font-size: var(--body-size); line-height: 1.45;
+}
+.kicker {
+  font-family: var(--font-mono); font-size: var(--kicker-size); letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--accent); display: flex; align-items: center; gap: 18px;
+}
+.kicker::after { content: ""; height: 1px; flex: 1; background: var(--rule); }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: var(--title-size); line-height: 1.05; letter-spacing: -0.03em; max-width: 16ch; }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: var(--h2-size); line-height: 1.1; letter-spacing: -0.02em; }
+.lede { color: var(--muted); max-width: var(--measure); font-size: 28px; }
+.stat-row { display: flex; gap: 28px; margin-top: 12px; }
+.stat {
+  background: var(--bg-alt); border: 1px solid var(--rule); padding: 22px 28px; min-width: 200px;
+  transition: transform var(--duration-normal) var(--ease-out-expo);
+}
+.stat:hover { transform: translateY(-4px); }
+.stat b { display: block; font-family: var(--font-display); font-size: 48px; font-weight: 800; }
+.stat span { font-family: var(--font-mono); font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+table { border-collapse: collapse; width: 100%; max-width: 1400px; font-size: 22px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--font-mono); font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+td.num { font-family: var(--font-mono); white-space: nowrap; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 1600px; }
+.card {
+  background: var(--bg-alt); border-left: 3px solid var(--accent); padding: 24px 28px;
+  animation: rise 0.7s var(--ease-out-expo) both;
+}
+.card h3 { font-family: var(--font-display); font-size: 32px; margin-bottom: 10px; }
+.card p { color: var(--muted); font-size: 22px; }
+.label { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.gap { color: #8a3b2b; }
+.foot { margin-top: auto; font-family: var(--font-mono); font-size: 14px; color: var(--faint); }
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+.slide.active .card { animation-delay: 0.05s; }
+.deck-controls button {
+  background: rgba(245,246,248,.92); border: 1px solid var(--rule); color: var(--ink);
+  font-family: var(--font-mono); font-size: 13px; padding: 8px 14px; margin: 0 4px; cursor: pointer;
+}
+.progress {
+  position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); z-index: 1001;
+  transition: width 0.35s var(--ease-out-expo);
+}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="deck-viewport">
+  <div class="deck-stage" id="stage">
+
+    <section class="slide active" data-i="0">
+      <div class="slide-inner">
+        <div class="kicker">Arc · daily wave</div>
+        <h1>Foundations under three product areas</h1>
+        <p class="lede">Catering, portal identity, and multi-location inventory — plus the merge-tag spine between builds and documents. Almost nothing finished as a user-facing surface. Substrate on purpose.</p>
+        <div class="stat-row">
+          <div class="stat"><b>37</b><span>commits</span></div>
+          <div class="stat"><b>164</b><span>files</span></div>
+          <div class="stat"><b>+15,021</b><span>insertions</span></div>
+          <div class="stat"><b>7</b><span>migrations</span></div>
+        </div>
+        <div class="foot">CTRL from git c203706..origin/main · extract-ctrl smoke PASS ±0</div>
+      </div>
+    </section>
+
+    <section class="slide" data-i="1">
+      <div class="slide-inner">
+        <div class="kicker">CTRL · churn by area</div>
+        <h2>Where the day went</h2>
+        <table>
+          <thead><tr><th>Area</th><th>Files</th><th>+</th><th>−</th></tr></thead>
+          <tbody>
+            <tr><td>apps/api</td><td class="num">64</td><td class="num">7571</td><td class="num">231</td></tr>
+            <tr><td>apps/web</td><td class="num">53</td><td class="num">4308</td><td class="num">523</td></tr>
+            <tr><td>docs</td><td class="num">17</td><td class="num">1010</td><td class="num">125</td></tr>
+            <tr><td>packages/db</td><td class="num">15</td><td class="num">346</td><td class="num">28</td></tr>
+            <tr><td>packages/contracts</td><td class="num">5</td><td class="num">264</td><td class="num">4</td></tr>
+          </tbody>
+        </table>
+        <p class="lede" style="margin-top:12px">Six of the ten highest-churn product files are tests. Verify was the bulk — not an afterthought.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-i="2">
+      <div class="slide-inner">
+        <div class="kicker">Schema · you own it</div>
+        <h2>Seven migrations, two that bite</h2>
+        <table>
+          <thead><tr><th>#</th><th>What</th></tr></thead>
+          <tbody>
+            <tr><td class="num">0058–59</td><td>Galley Menu → MenuPlan; nested event/group/item mirrors</td></tr>
+            <tr><td class="num">0060+63</td><td><b>Second identity realm</b> + signature binding — highest consequence</td></tr>
+            <tr><td class="num">0061</td><td>par, sort_order, unit labels, <b>inventory_counts</b> ledger</td></tr>
+            <tr><td class="num">0062</td><td>allocation quantity integer → numeric(12,4) on live rows</td></tr>
+            <tr><td class="num">0064</td><td>Walk tokens → scoped sessions (R-8)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide" data-i="3">
+      <div class="slide-inner">
+        <div class="kicker">Units · product names</div>
+        <h2>Four foundations</h2>
+        <div class="grid2">
+          <div class="card"><div class="label">Documents ↔ builds</div><h3>Merge-tag registry</h3><p>One enumerable whitelist. Mirror-faithful deal.* / contact.* paths. Image URL refresh on read.</p></div>
+          <div class="card"><div class="label">Catering</div><h3>Galley data plane</h3><p>MenuPlan nested mirror + write-arrow substrate. Approve allowlisted, gate shut.</p></div>
+          <div class="card"><div class="label">Ops</div><h3>Multi-location inventory</h3><p>Par, decimal qty, counts ledger, walk capture end-to-end. Restock drafts still open.</p></div>
+          <div class="card"><div class="label">Portal</div><h3>Client auth</h3><p>Accounts, deal-scoped access, requireClientAuth, signature identity. View-as refuses server-side.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i="4">
+      <div class="slide-inner">
+        <div class="kicker">Verify · honest gaps</div>
+        <h2>What we can and cannot claim</h2>
+        <div class="grid2">
+          <div class="card"><div class="label">Present</div><h3>29 new test files</h3><p>Integration oracles dominate churn: walk, counts, client-auth, merge-tags, Galley write-arrow, sign-identity.</p></div>
+          <div class="card"><div class="label gap">Gap</div><h3>No reproduced green</div><p>This rollup does not attach CI runs. No claimed pass. test-maker ≠ implementer attribution absent from git alone.</p></div>
+          <div class="card"><div class="label">Ruled</div><h3>R-8 walk session</div><p>Token exchanged for scoped session — recorded in ADR. Approve semantics still unruled.</p></div>
+          <div class="card"><div class="label gap">Human</div><h3>Still on you</div><p>Galley browser unknowns; Google OAuth client held.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-i="5">
+      <div class="slide-inner">
+        <div class="kicker">Carry-forward · already built</div>
+        <h2>Do not rebuild these</h2>
+        <table>
+          <thead><tr><th>Exists</th><th>Missing</th><th>Wire</th></tr></thead>
+          <tbody>
+            <tr><td>mutateAndEnqueue :55</td><td>any production caller</td><td>a caller, not a build</td></tr>
+            <tr><td>approveMenuPlanEvent allowlist</td><td>UI + semantics</td><td>ruling, then wire</td></tr>
+            <tr><td>inventory_counts + walk UI</td><td>restock = count − par drafts</td><td>ordering surface</td></tr>
+          </tbody>
+        </table>
+        <p class="lede">Seed correction: the counts ledger is <b>not</b> missing — it landed in 0061. Prior briefing was wrong.</p>
+        <div class="foot">Ledger: briefs/wave-rollup/CARRY-FORWARD.md</div>
+      </div>
+    </section>
+
+    <section class="slide" data-i="6">
+      <div class="slide-inner">
+        <div class="kicker">Close</div>
+        <h1>Lens depth on demand</h1>
+        <p class="lede">Ask for one migration line-by-line, one unit's full diff, the four-arrow picture, or the next-wave plan given what is standing. Markdown twin: dogfood/2026-08-13-arc.md</p>
+        <div class="stat-row">
+          <div class="stat"><b>−923</b><span>deletions</span></div>
+          <div class="stat"><b>±0</b><span>shortstat smoke</span></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+<div class="deck-controls">
+  <button type="button" id="prev">Prev</button>
+  <button type="button" id="next">Next</button>
+  <span id="idx" style="font-family:IBM Plex Mono,monospace;font-size:13px;color:#9098ab;margin-left:8px"></span>
+</div>
+<script>
+(function () {
+  const stage = document.getElementById('stage');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let i = 0;
+  function fit() {
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const s = Math.min(vw / 1920, vh / 1080);
+    const x = (vw - 1920 * s) / 2, y = (vh - 1080 * s) / 2;
+    stage.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + s + ')';
+  }
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((el, k) => el.classList.toggle('active', k === i));
+    document.getElementById('idx').textContent = (i + 1) + ' / ' + slides.length;
+    document.getElementById('progress').style.width = ((i + 1) / slides.length * 100) + '%';
+  }
+  document.getElementById('prev').onclick = () => show(i - 1);
+  document.getElementById('next').onclick = () => show(i + 1);
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); show(i + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); show(i - 1); }
+  });
+  window.addEventListener('resize', fit);
+  fit(); show(0);
+})();
+</script>
+</body>
+</html>

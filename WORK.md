@@ -1,20 +1,18 @@
 # WORK — agent-core
-Updated: 2026-06-28
+Updated: 2026-08-14
 Phase: Implement
 
 ---
 
 ## PROJECT
-Status: v0.1 working — status, sync, harness profiles, inline strategy all functional
-Next milestone: v0.2 — primitive coverage complete, test suite passing, contractor bootstrap shipped
+Status: three harnesses (pi, claude-code, cursor) at full parity; registry gained check-only verbs (link/check/binary) + machine pseudo-harness 2026-08-14; `agent-core status` = 249 ok/1 stale/0 missing. Full narrative state: `AUDIT-2026-08-14-topology.md`.
+Next milestone: close the P1/P2 backlog in that audit doc (frankenstein-root fixes + parity debt). The three ACTIVE items below sat untouched ~7 weeks and were triaged this pass (2026-08-14, AGNT [doc-truth]) rather than left silently stale.
 
 ---
 
 ## ACTIVE
 
-- [ ] contractor bootstrap kit for Arc — collection + setup.sh [arc/onboarding]
-- [ ] Run /tabs to process 341 iCloud tabs into atomic primitives [agent-core/tabs]
-- [ ] create GitHub repo for agent-core [agent-core/infra]
+<!-- nothing currently active — see BACKLOG; pick up from AUDIT-2026-08-14-topology.md P1/P2 -->
 
 ---
 
@@ -26,7 +24,9 @@ Next milestone: v0.2 — primitive coverage complete, test suite passing, contra
 
 ## BACKLOG
 
-- [ ] register ported M1 skills in registry — 35 in store, only handful registered [agent-core/registry]
+- [ ] Run /tabs to process remaining iCloud tabs into atomic primitives — 182 of 341 still in `~/icloud-tabs-inbox/pending/` (verified 2026-08-14) [agent-core/tabs]
+- [ ] contractor bootstrap kit for Arc — collection + setup.sh; Arc now has `.madewell/guides/BOOTSTRAP.md` (Made Well meta-layer) which may already cover this — verify overlap before restarting the task [arc/onboarding]
+- [ ] register ported M1 skills in registry — audit still open, count has moved a lot since 06-28 (see TAXONOMY.md) [agent-core/registry]
 - [ ] agent-core add command — scaffolding so adding primitives doesn't require hand-editing registry [agent-core/cli]
 - [ ] test suite — map every CLI touchpoint, build full test coverage [agent-core/cli]
 - [ ] harness scoping conventions — add scope_model field to profiles (stretch goal) [agent-core/registry]
@@ -34,6 +34,8 @@ Next milestone: v0.2 — primitive coverage complete, test suite passing, contra
 ---
 
 ## DONE
+
+- [x] create GitHub repo for agent-core — `git@github.com:jcbbge/agent-core.git` (verified live 2026-08-14; closing stale ACTIVE item, exact ship date not re-derived)
 
 - [x] Unified atelier v2.0 skill — merged tufte-deck-setup + editorial-magazine + frontend-slides — 2026-06-08
 - [x] Zig 0.15.2 CLI scaffold — agent-core status + sync commands — 2026-04-14

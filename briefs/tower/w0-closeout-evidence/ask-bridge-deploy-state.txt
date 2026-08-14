@@ -1,0 +1,6 @@
+ask-bridge deployed path (not re-exercised this unit — closed at 1722f56)
+lrwxr-xr-x@ 1 jrg  staff  64 Aug 13 00:36 /Users/jrg/.tower/hooks/ask-bridge.mjs -> /Users/jrg/agent-core/primitives/mcps/tower/hooks/ask-bridge.mjs
+lrwxr-xr-x@ 1 jrg  staff  51 Aug 13 00:06 /Users/jrg/.tower/lib.mjs -> /Users/jrg/agent-core/primitives/mcps/tower/lib.mjs
+readlink:
+/Users/jrg/agent-core/primitives/mcps/tower/hooks/ask-bridge.mjs
+/Users/jrg/agent-core/primitives/mcps/tower/lib.mjs

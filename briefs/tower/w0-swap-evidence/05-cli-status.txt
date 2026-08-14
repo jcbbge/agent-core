@@ -1,0 +1,6 @@
+Tower @ /Users/jrg/.spine/worktrees/agent-core/w0-swap
+  unrelayed: 0 · open questions: 0 · progress beacons (all time): 106
+  · [pi:tower-auto] done: Reply with exactly OK
+  · [pi:tower-auto] done: STATUS KICK (CONCIERGE, 2026-08-12 ~20:15 UTC): your mission is STALLED — C3/D/E have been ope
+  · [pi:tower-auto] done: STATUS KICK (CONCIERGE, 2026-08-12 ~20:15 UTC): your mission is STALLED — C3/D/E have been ope
+  burn today: 20 spawn(s) · 100k subagent tokens (cli.mjs burn for detail)

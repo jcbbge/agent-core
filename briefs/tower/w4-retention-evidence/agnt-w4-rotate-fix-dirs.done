@@ -1,0 +1,26 @@
+AGNT w4-rotate-fix-dirs done 2026-08-13T15:48Z
+
+YYYY-MM derivation: utcMonthFromMtime(mtimeMs) = new Date(mtimeMs).toISOString().slice(0, 7) — per-file UTC month from mtime, not rotate-run month.
+
+Phase-1 unlink: applyDirPlan unlinks each source from active immediately after sha256 copy verify (both phase 1 and 2 for dir stores).
+
+Tests: bun test primitives/mcps/tower/rotate.test.mjs → 16 pass / 0 fail (was 14/14; +2 dir layout tests, strengthened mtime bucket assertion + active removal).
+
+Disposable proof: /tmp/tower-rotate-dir-proof-20260813T154816Z
+
+BEFORE:
+  flight/june.md (mtime 2025-06-10)
+  flight/july.md (mtime 2025-07-10)
+
+DRY-RUN archive paths:
+  .../archive/flight/2025-06, .../archive/flight/2025-07
+
+AFTER apply:
+  flight/ empty (sources removed)
+  archive/flight/2025-06/june.md
+  archive/flight/2025-07/july.md
+  archive/manifest.jsonl (2 bucket rows)
+
+files touched:
+  primitives/mcps/tower/rotate.mjs
+  primitives/mcps/tower/rotate.test.mjs

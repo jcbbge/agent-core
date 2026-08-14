@@ -1,0 +1,44 @@
+# pheromone probe — AGNT w3-aux 2026-08-13
+# topic: tower/w3-probe-phero
+
+## MCP pheromone_emit (work-available)
+
+Response: Emitted pheromone ph-msrktby6-if3n (work-available) on topic "tower/w3-prove-planes-evidence/AUX.md"
+
+## CLI emit (work-claimed)
+
+$ bun ~/.tower/cli.mjs emit work-claimed tower/w3-probe-phero --from "AGNT w3-aux" --evidence "/Users/jrg/agent-core/briefs/tower/w3-prove-planes-evidence/raw/aux/phero-emit.txt" --ref "PLACEHOLDER"
+ph-msrktc4o-lwwz
+EXIT:0
+
+## CLI emit (work-done)
+
+$ bun ~/.tower/cli.mjs emit work-done tower/w3-probe-phero --from "AGNT w3-aux" --evidence "/Users/jrg/agent-core/briefs/tower/w3-prove-planes-evidence/raw/aux/phero-emit.txt" --ref "ph-msrktby6-if3n" --payload-ref "/Users/jrg/agent-core/briefs/tower/w3-prove-planes-evidence/AUX.md"
+ph-msrkteq6-7ymi
+EXIT:0
+
+## MCP pheromone_field
+
+{
+  "open": [{"id":"ph-msrktby6-if3n","scent":"work-available","from":"AGNT w3-aux","topic":"tower/w3-probe-phero"}],
+  "claimed": [],
+  "done": [],
+  "evaporated": [],
+  "help": []
+}
+
+## CLI field
+
+$ bun ~/.tower/cli.mjs field tower/w3-probe-phero
+Pheromone field @ /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-coder-w2y-p7
+  open: 2 · claimed: 0 · done: 0 · evaporated: 0 · help: 0
+  [2026-08-13T13:51:03.102Z] work-available AGNT w3-aux → .../AUX.md (1796s remaining)
+EXIT:0
+
+## pheromones.jsonl tail (ids emitted this session)
+
+{"id":"ph-msrktby6-if3n","ts":"2026-08-13T13:51:03.102Z","cwd":"/Users/jrg/agent-core","topic":"tower/w3-probe-phero","from":"AGNT w3-aux","scent":"work-available",...}
+{"id":"ph-msrktc4o-lwwz","ts":"2026-08-13T13:51:03.336Z","cwd":"/Users/jrg/.cursor/worktrees/agent-core/wt-agnt-coder-w2y-p7","topic":"tower/w3-probe-phero","from":"AGNT w3-aux","scent":"work-claimed","ref":"PLACEHOLDER",...}
+{"id":"ph-msrkteq6-7ymi","ts":"2026-08-13T13:51:06.702Z","cwd":"/Users/jrg/.cursor/worktrees/agent-core/wt-agnt-coder-w2y-p7","topic":"tower/w3-probe-phero","from":"AGNT w3-aux","scent":"work-done","ref":"ph-msrktby6-if3n",...}
+
+Ids: ph-msrktby6-if3n · ph-msrktc4o-lwwz · ph-msrkteq6-7ymi

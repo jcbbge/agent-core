@@ -1,0 +1,73 @@
+{
+  "probe_from": "AGNT w3-ledger-probe",
+  "session_ts": "2026-08-13T13:50:55Z",
+  "steps": [
+    {
+      "tool": "check_inbox",
+      "args": {"from": "AGNT w3-ledger-probe"},
+      "return": {"answers": [], "still_unanswered": [], "unrelayed_count": 0}
+    },
+    {
+      "tool": "ask_user",
+      "args": {
+        "from": "AGNT w3-ledger-probe",
+        "question": "W3-PROBE: synthetic closed-loop test — what is 2+2? (answer: four)"
+      },
+      "return": "Question t-msrkt6ci-siuh is open."
+    },
+    {
+      "tool": "check_inbox",
+      "args": {"from": "AGNT w3-ledger-probe", "question_id": "t-msrkt6ci-siuh"},
+      "return": {
+        "answers": [],
+        "still_unanswered": [{"id": "t-msrkt6ci-siuh", "from": "AGNT w3-ledger-probe"}],
+        "unrelayed_count": 0
+      }
+    },
+    {
+      "tool": "reply",
+      "args": {"question_id": "t-msrkt6ci-siuh", "answer": "four"},
+      "return": "Answer recorded for t-msrkt6ci-siuh."
+    },
+    {
+      "tool": "check_inbox",
+      "args": {"from": "AGNT w3-ledger-probe", "question_id": "t-msrkt6ci-siuh"},
+      "return": {
+        "answers": [{"question_id": "t-msrkt6ci-siuh", "answer": "four", "ts": "2026-08-13T13:51:00.510Z"}],
+        "still_unanswered": [],
+        "unrelayed_count": 0
+      }
+    },
+    {
+      "tool": "ask_user",
+      "args": {
+        "from": "AGNT w3-ledger-probe",
+        "question": "W3-PROBE relay_inbox path: color of sky? (answer: blue)"
+      },
+      "return": "Question t-msrktfcb-8uxu is open."
+    },
+    {
+      "tool": "relay_inbox",
+      "args": {
+        "answers": [{"question_id": "t-msrktfcb-8uxu", "answer": "blue"}],
+        "from": "AGNT w3-ledger-probe"
+      },
+      "return_excerpt": "Rendered alert t-msrkthqq-7ecz; recorded answer for t-msrktfcb-8uxu"
+    },
+    {
+      "tool": "check_inbox",
+      "args": {"from": "AGNT w3-ledger-probe", "question_id": "t-msrktfcb-8uxu"},
+      "return": {
+        "answers": [{"question_id": "t-msrktfcb-8uxu", "answer": "blue", "ts": "2026-08-13T13:51:14.092Z"}],
+        "still_unanswered": [],
+        "unrelayed_count": 0
+      }
+    }
+  ],
+  "ledger_rows": [
+    {"id": "t-msrkt6ci-siuh", "kind": "question", "from": "AGNT w3-ledger-probe"},
+    {"id": "t-msrkt9y6-yohi", "kind": "answer", "ref": "t-msrkt6ci-siuh", "from": null},
+    {"id": "t-msrktfcb-8uxu", "kind": "question", "from": "AGNT w3-ledger-probe"},
+    {"id": "t-msrktknq-07dk", "kind": "ack", "ids": ["t-msrkthqq-7ecz"]}
+  ]
+}

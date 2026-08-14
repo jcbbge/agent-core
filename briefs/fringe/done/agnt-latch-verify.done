@@ -1,0 +1,16 @@
+agnt-latch-verify complete 2026-08-11T20:31Z
+
+Evidence: ~/agent-core/briefs/fringe/latch-vein/acceptance-evidence.md
+Script: ~/agent-core/primitives/tools/latch/test/acceptance-matrix.sh
+
+Pass/fail:
+- zig build + zig build test: PASS (exit 0)
+- exit matrix usage→2: PASS
+- exit matrix timeout→3: PASS
+- exit matrix vanished→4: PASS (closed pane at wait start)
+- exit matrix event→0: PASS (file touch, board post, pane done, hold stamp)
+- differential herdr vs latch: PASS (both exit 0 on sequential sleep flips)
+- wakeup latency <1s: PASS (file touch 207ms; board 517ms)
+- latch hold gate-zero-demo: PASS (504ms)
+
+Note for orch-latch: closing a pane during active wait returned exit 3 (timeout), not 4 — only pre-closed pane at wait start returned 4.

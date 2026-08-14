@@ -1,0 +1,17 @@
+[component]
+id = "tool/vein"
+kind = "binary"
+what = "session transcript-corpus miner — reproduces the session-mining studies in seconds"
+contract = [
+  "a scan over the pass-3 corpus reproduces pass3-commands.csv byte-identically",
+  "schema drift is refused loudly (exit 4), never silently mis-parsed",
+]
+
+# Oracles run from this component dir (manifest location).
+[[oracle]]
+run = "cd test/acceptance && out=$(mktemp) && vein scan --sessions pass3-paths.txt --out \"$out\" >/dev/null && diff -q \"$out\" pass3-commands.csv"
+[[oracle]]
+run = "cd test/acceptance && out=$(mktemp) && vein scan --sessions drift-sessions.txt --out \"$out\" >/dev/null 2>&1; [ $? -eq 4 ]"
+
+[suite]
+run = "zig build test && cd test/acceptance && out=$(mktemp) && vein scan --sessions pass3-paths.txt --out \"$out\" >/dev/null && diff -q \"$out\" pass3-commands.csv"

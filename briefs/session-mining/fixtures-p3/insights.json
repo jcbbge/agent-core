@@ -1,0 +1,441 @@
+{
+  "calls": 988,
+  "direct_filter_potential": [
+    {
+      "calls": 18,
+      "cap200_bytes": 26343,
+      "cap200_savings_pct": 0.0,
+      "command": "herdr pane",
+      "dedupe_savings_pct": 7.3,
+      "deduped_bytes": 24433,
+      "raw_bytes": 26343
+    },
+    {
+      "calls": 5,
+      "cap200_bytes": 22870,
+      "cap200_savings_pct": 0.0,
+      "command": "tail",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 22870,
+      "raw_bytes": 22870
+    },
+    {
+      "calls": 5,
+      "cap200_bytes": 19448,
+      "cap200_savings_pct": 0.0,
+      "command": "sed",
+      "dedupe_savings_pct": 3.4,
+      "deduped_bytes": 18778,
+      "raw_bytes": 19448
+    },
+    {
+      "calls": 3,
+      "cap200_bytes": 7550,
+      "cap200_savings_pct": 0.0,
+      "command": "cat",
+      "dedupe_savings_pct": 0.9,
+      "deduped_bytes": 7484,
+      "raw_bytes": 7550
+    },
+    {
+      "calls": 1,
+      "cap200_bytes": 3171,
+      "cap200_savings_pct": 0.0,
+      "command": "herdr 2>&1",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 3171,
+      "raw_bytes": 3171
+    },
+    {
+      "calls": 4,
+      "cap200_bytes": 1064,
+      "cap200_savings_pct": 0.0,
+      "command": "herdr agent",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 1064,
+      "raw_bytes": 1064
+    },
+    {
+      "calls": 6,
+      "cap200_bytes": 794,
+      "cap200_savings_pct": 0.0,
+      "command": "grep",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 794,
+      "raw_bytes": 794
+    },
+    {
+      "calls": 1,
+      "cap200_bytes": 633,
+      "cap200_savings_pct": 0.0,
+      "command": "head",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 633,
+      "raw_bytes": 633
+    },
+    {
+      "calls": 7,
+      "cap200_bytes": 386,
+      "cap200_savings_pct": 0.0,
+      "command": "wc",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 386,
+      "raw_bytes": 386
+    },
+    {
+      "calls": 5,
+      "cap200_bytes": 379,
+      "cap200_savings_pct": 0.0,
+      "command": "ls",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 379,
+      "raw_bytes": 379
+    },
+    {
+      "calls": 1,
+      "cap200_bytes": 320,
+      "cap200_savings_pct": 0.0,
+      "command": "herdr notification",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 320,
+      "raw_bytes": 320
+    },
+    {
+      "calls": 1,
+      "cap200_bytes": 82,
+      "cap200_savings_pct": 0.0,
+      "command": "spine-claim",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 82,
+      "raw_bytes": 82
+    },
+    {
+      "calls": 2,
+      "cap200_bytes": 65,
+      "cap200_savings_pct": 0.0,
+      "command": "find",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 65,
+      "raw_bytes": 65
+    },
+    {
+      "calls": 1,
+      "cap200_bytes": 31,
+      "cap200_savings_pct": 0.0,
+      "command": "spine-report",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 31,
+      "raw_bytes": 31
+    },
+    {
+      "calls": 1,
+      "cap200_bytes": 31,
+      "cap200_savings_pct": 0.0,
+      "command": "echo",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 31,
+      "raw_bytes": 31
+    },
+    {
+      "calls": 2,
+      "cap200_bytes": 14,
+      "cap200_savings_pct": 0.0,
+      "command": "git push",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 14,
+      "raw_bytes": 14
+    }
+  ],
+  "eligible_bytes": 83181,
+  "eligible_calls": 63,
+  "exact_retry_excess_calls": 7,
+  "exact_retry_loops": 3,
+  "failure_categories": [
+    {
+      "category": "generic-error",
+      "errors": 61,
+      "top_verbs": [
+        [
+          "herdr agent",
+          12
+        ],
+        [
+          "sleep",
+          10
+        ],
+        [
+          "cd",
+          9
+        ],
+        [
+          "grep",
+          6
+        ],
+        [
+          "herdr pane",
+          6
+        ],
+        [
+          "cat",
+          5
+        ],
+        [
+          "echo",
+          3
+        ],
+        [
+          "ls",
+          2
+        ]
+      ]
+    },
+    {
+      "category": "no-such-file",
+      "errors": 14,
+      "top_verbs": [
+        [
+          "herdr pane",
+          4
+        ],
+        [
+          "echo",
+          2
+        ],
+        [
+          "cd",
+          2
+        ],
+        [
+          "ls",
+          2
+        ],
+        [
+          "sleep",
+          2
+        ],
+        [
+          "git status",
+          1
+        ],
+        [
+          "cat",
+          1
+        ]
+      ]
+    },
+    {
+      "category": "syntax-error",
+      "errors": 5,
+      "top_verbs": [
+        [
+          "export",
+          2
+        ],
+        [
+          "cd",
+          2
+        ],
+        [
+          "echo",
+          1
+        ]
+      ]
+    },
+    {
+      "category": "timeout",
+      "errors": 5,
+      "top_verbs": [
+        [
+          "dev-browser",
+          1
+        ],
+        [
+          "uuid",
+          1
+        ],
+        [
+          "bun [script]",
+          1
+        ],
+        [
+          "bun run",
+          1
+        ],
+        [
+          "cd",
+          1
+        ]
+      ]
+    }
+  ],
+  "hook_commands_cc": [
+    {
+      "calls": 53,
+      "command": "afplay",
+      "duration_ms": 111276,
+      "slow_over_1s": 53
+    },
+    {
+      "calls": 50,
+      "command": "Tower:",
+      "duration_ms": 46332,
+      "slow_over_1s": 10
+    },
+    {
+      "calls": 53,
+      "command": "sh",
+      "duration_ms": 1581,
+      "slow_over_1s": 0
+    },
+    {
+      "calls": 27,
+      "command": "stop-verdict.mjs",
+      "duration_ms": 1047,
+      "slow_over_1s": 0
+    },
+    {
+      "calls": 27,
+      "command": "ask-bridge.mjs",
+      "duration_ms": 963,
+      "slow_over_1s": 0
+    },
+    {
+      "calls": 53,
+      "command": "[",
+      "duration_ms": 762,
+      "slow_over_1s": 0
+    }
+  ],
+  "hook_metrics_cc": {
+    "duration_ms": 161961,
+    "error_items": 3,
+    "events": 266,
+    "prevented": 0,
+    "slow_over_1s": 63
+  },
+  "leading_cd": {
+    "bytes": 335898,
+    "calls": 299,
+    "top_downstream": [
+      {
+        "bytes": 100396,
+        "calls": 48,
+        "command": "echo"
+      },
+      {
+        "bytes": 39559,
+        "calls": 9,
+        "command": "git diff"
+      },
+      {
+        "bytes": 19807,
+        "calls": 13,
+        "command": "sed"
+      },
+      {
+        "bytes": 16542,
+        "calls": 24,
+        "command": "python3"
+      },
+      {
+        "bytes": 16207,
+        "calls": 6,
+        "command": "timeout"
+      },
+      {
+        "bytes": 15515,
+        "calls": 23,
+        "command": "grep"
+      },
+      {
+        "bytes": 13053,
+        "calls": 27,
+        "command": "git add"
+      },
+      {
+        "bytes": 12573,
+        "calls": 19,
+        "command": "q.sh"
+      },
+      {
+        "bytes": 10913,
+        "calls": 4,
+        "command": "command"
+      },
+      {
+        "bytes": 8441,
+        "calls": 1,
+        "command": "rev-list"
+      },
+      {
+        "bytes": 8388,
+        "calls": 12,
+        "command": "bun test"
+      },
+      {
+        "bytes": 6838,
+        "calls": 6,
+        "command": "export"
+      },
+      {
+        "bytes": 5942,
+        "calls": 5,
+        "command": "for"
+      },
+      {
+        "bytes": 5455,
+        "calls": 4,
+        "command": "touch"
+      },
+      {
+        "bytes": 5083,
+        "calls": 4,
+        "command": "cat"
+      },
+      {
+        "bytes": 4681,
+        "calls": 5,
+        "command": "git commit"
+      },
+      {
+        "bytes": 4446,
+        "calls": 7,
+        "command": "ls"
+      },
+      {
+        "bytes": 4221,
+        "calls": 4,
+        "command": "herdr"
+      },
+      {
+        "bytes": 3680,
+        "calls": 3,
+        "command": "git log"
+      },
+      {
+        "bytes": 3206,
+        "calls": 5,
+        "command": "sleep"
+      }
+    ]
+  },
+  "max_result_bytes": 24854,
+  "median_result_bytes": 403,
+  "near_retry_families": 10,
+  "output_bytes": 1049463,
+  "refused_calls": 925,
+  "results_over_50kb": 0,
+  "slim_v1_calls": 51,
+  "slim_v1_eligible_bytes": 765,
+  "slim_v1_eligible_calls": 12,
+  "zero_shell_sessions": {
+    "cc": {
+      "1": 0,
+      "2": 0
+    },
+    "pi": {
+      "1": 4,
+      "2": 0
+    }
+  }
+}

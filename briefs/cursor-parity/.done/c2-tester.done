@@ -1,0 +1,12 @@
+agnt-c2-tester complete 2026-08-12T16:41Z
+
+Verdict: fail
+Evidence: ~/agent-core/briefs/cursor-parity/c2-tester-results.md
+
+Pass/fail:
+- zig build: PASS (exit 0)
+- c2_acceptance.sh (coder worktree): FAIL (exit 1; 8 passed, 1 failed)
+- c2_acceptance.sh (test-maker worktree): registry-fixture tests PASS; repo-content failures expected and not counted
+- Q → arbiter: T-C2-CANONICAL-POINTER (Run 1 raw output in evidence file)
+
+Code/tests touched: none

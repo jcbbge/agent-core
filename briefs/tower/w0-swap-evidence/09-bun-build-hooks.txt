@@ -1,0 +1,60 @@
+=== ask-bridge ===
+Bundled 1 module in 1ms
+
+  null  7.34 KB  (entry point)
+
+exit: 0
+=== deposit-reminder ===
+Bundled 1 module in 1ms
+
+  null  0.60 KB  (entry point)
+
+exit: 0
+=== enforce-brief ===
+Bundled 1 module in 1ms
+
+  null  1.72 KB  (entry point)
+
+exit: 0
+=== flight-recorder ===
+Bundled 3 modules in 2ms
+
+  null  8.43 KB  (entry point)
+
+exit: 0
+=== odometer-stop ===
+Bundled 3 modules in 2ms
+
+  null  2.68 KB  (entry point)
+
+exit: 0
+=== odometer ===
+Bundled 3 modules in 2ms
+
+  null  2.37 KB  (entry point)
+
+exit: 0
+=== prompt-inject ===
+Bundled 3 modules in 2ms
+
+  null  8.27 KB  (entry point)
+
+exit: 0
+=== session-start ===
+Bundled 3 modules in 1ms
+
+  null  9.0 KB  (entry point)
+
+exit: 0
+=== stop-guard ===
+Bundled 3 modules in 1ms
+
+  null  8.62 KB  (entry point)
+
+exit: 0
+=== stop-verdict ===
+Bundled 1 module in 1ms
+
+  null  3.61 KB  (entry point)
+
+exit: 0

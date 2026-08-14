@@ -1,0 +1,4 @@
+=== VERB: field ===
+Pheromone field @ /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-coder-w2y-p6
+  open: 0 · claimed: 0 · done: 0 · evaporated: 0 · help: 0
+exit:0

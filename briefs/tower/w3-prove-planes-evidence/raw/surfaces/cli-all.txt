@@ -1,0 +1,7 @@
+=== VERB: all ===
+/Users/jrg/agent-core: 0 unrelayed, 1 open questions
+: 3 unrelayed, 1 open questions
+/var/folders/fc/v5cb_rpj1vdg60sx65sdrrjr0000gn/T/tower-sdrift-ack-X4Os5Q: 1 unrelayed, 0 open questions
+/var/folders/fc/v5cb_rpj1vdg60sx65sdrrjr0000gn/T/tower-sdrift-ack-XuQvKl: 1 unrelayed, 0 open questions
+/var/folders/fc/v5cb_rpj1vdg60sx65sdrrjr0000gn/T/tower-sdrift-ack-gVZSVp: 1 unrelayed, 0 open questions
+exit:0

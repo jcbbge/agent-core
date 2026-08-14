@@ -1,0 +1,10 @@
+cli.test.mjs:
+(pass) board topic filter (AC: F9 CLI board <topic>) > board <topic> output is narrower than project-wide when multiple topics exist (AC: F9 filter) [137.78ms]
+(pass) board topic filter (AC: F9 CLI board <topic>) > board without topic is project-wide listing, not topic-filtered (AC: omitted topic) [99.57ms]
+(pass) board topic filter (AC: F9 CLI board <topic>) > board with empty topic argv matches project-wide listing (AC: empty topic) [97.81ms]
+
+ 3 pass
+ 26 filtered out
+ 0 fail
+ 31 expect() calls
+Ran 3 tests across 1 file. [350.00ms]

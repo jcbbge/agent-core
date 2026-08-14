@@ -1,0 +1,280 @@
+{
+  "batch": 2,
+  "eligible_filter_potential": [
+    {
+      "calls": 13,
+      "cap200_bytes": 24326,
+      "cap200_savings_pct": 0.0,
+      "command": "herdr pane",
+      "dedupe_savings_pct": 7.9,
+      "deduped_bytes": 22416,
+      "raw_bytes": 24326
+    },
+    {
+      "calls": 5,
+      "cap200_bytes": 22870,
+      "cap200_savings_pct": 0.0,
+      "command": "tail",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 22870,
+      "raw_bytes": 22870
+    },
+    {
+      "calls": 3,
+      "cap200_bytes": 12429,
+      "cap200_savings_pct": 0.0,
+      "command": "sed",
+      "dedupe_savings_pct": 5.4,
+      "deduped_bytes": 11759,
+      "raw_bytes": 12429
+    },
+    {
+      "calls": 3,
+      "cap200_bytes": 7550,
+      "cap200_savings_pct": 0.0,
+      "command": "cat",
+      "dedupe_savings_pct": 0.9,
+      "deduped_bytes": 7484,
+      "raw_bytes": 7550
+    },
+    {
+      "calls": 2,
+      "cap200_bytes": 597,
+      "cap200_savings_pct": 0.0,
+      "command": "herdr agent",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 597,
+      "raw_bytes": 597
+    },
+    {
+      "calls": 3,
+      "cap200_bytes": 291,
+      "cap200_savings_pct": 0.0,
+      "command": "ls",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 291,
+      "raw_bytes": 291
+    },
+    {
+      "calls": 1,
+      "cap200_bytes": 82,
+      "cap200_savings_pct": 0.0,
+      "command": "spine-claim",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 82,
+      "raw_bytes": 82
+    },
+    {
+      "calls": 2,
+      "cap200_bytes": 65,
+      "cap200_savings_pct": 0.0,
+      "command": "find",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 65,
+      "raw_bytes": 65
+    },
+    {
+      "calls": 1,
+      "cap200_bytes": 54,
+      "cap200_savings_pct": 0.0,
+      "command": "grep",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 54,
+      "raw_bytes": 54
+    },
+    {
+      "calls": 1,
+      "cap200_bytes": 31,
+      "cap200_savings_pct": 0.0,
+      "command": "spine-report",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 31,
+      "raw_bytes": 31
+    },
+    {
+      "calls": 1,
+      "cap200_bytes": 31,
+      "cap200_savings_pct": 0.0,
+      "command": "echo",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 31,
+      "raw_bytes": 31
+    },
+    {
+      "calls": 2,
+      "cap200_bytes": 14,
+      "cap200_savings_pct": 0.0,
+      "command": "git push",
+      "dedupe_savings_pct": 0.0,
+      "deduped_bytes": 14,
+      "raw_bytes": 14
+    }
+  ],
+  "failure_categories": [
+    {
+      "category": "generic-error",
+      "errors": 52,
+      "sessions": 8,
+      "top_verbs": [
+        [
+          "herdr agent",
+          10
+        ],
+        [
+          "cd",
+          9
+        ],
+        [
+          "sleep",
+          9
+        ],
+        [
+          "herdr pane",
+          6
+        ],
+        [
+          "grep",
+          5
+        ],
+        [
+          "cat",
+          4
+        ],
+        [
+          "echo",
+          2
+        ],
+        [
+          "databases",
+          1
+        ],
+        [
+          "ls",
+          1
+        ],
+        [
+          "+%s%3N)",
+          1
+        ]
+      ]
+    },
+    {
+      "category": "no-such-file",
+      "errors": 8,
+      "sessions": 6,
+      "top_verbs": [
+        [
+          "ls",
+          2
+        ],
+        [
+          "sleep",
+          2
+        ],
+        [
+          "git status",
+          1
+        ],
+        [
+          "cat",
+          1
+        ],
+        [
+          "cd",
+          1
+        ],
+        [
+          "echo",
+          1
+        ]
+      ]
+    },
+    {
+      "category": "timeout",
+      "errors": 5,
+      "sessions": 2,
+      "top_verbs": [
+        [
+          "dev-browser",
+          1
+        ],
+        [
+          "uuid",
+          1
+        ],
+        [
+          "bun [script]",
+          1
+        ],
+        [
+          "bun run",
+          1
+        ],
+        [
+          "cd",
+          1
+        ]
+      ]
+    },
+    {
+      "category": "syntax-error",
+      "errors": 2,
+      "sessions": 2,
+      "top_verbs": [
+        [
+          "cd",
+          1
+        ],
+        [
+          "echo",
+          1
+        ]
+      ]
+    }
+  ],
+  "hook_commands_cc": [
+    {
+      "calls": 45,
+      "command": "afplay",
+      "duration_ms": 94609,
+      "slow_over_1s": 45
+    },
+    {
+      "calls": 43,
+      "command": "Tower:",
+      "duration_ms": 45116,
+      "slow_over_1s": 10
+    },
+    {
+      "calls": 45,
+      "command": "sh",
+      "duration_ms": 1272,
+      "slow_over_1s": 0
+    },
+    {
+      "calls": 19,
+      "command": "stop-verdict.mjs",
+      "duration_ms": 682,
+      "slow_over_1s": 0
+    },
+    {
+      "calls": 19,
+      "command": "ask-bridge.mjs",
+      "duration_ms": 631,
+      "slow_over_1s": 0
+    },
+    {
+      "calls": 45,
+      "command": "[",
+      "duration_ms": 574,
+      "slow_over_1s": 0
+    }
+  ],
+  "hook_metrics_cc": {
+    "duration_ms": 142884,
+    "error_items": 2,
+    "events": 218,
+    "prevented": 0,
+    "slow_over_1s": 55
+  }
+}

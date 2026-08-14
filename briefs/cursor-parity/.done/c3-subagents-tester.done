@@ -1,0 +1,14 @@
+agnt-c3-subagents-tester complete 2026-08-12T17:03Z
+
+Verdict: fail
+Evidence: ~/agent-core/briefs/cursor-parity/c3-subagents-tester-results.md
+
+Pass/fail:
+- zig build: PASS (exit 0)
+- c3_subagents_acceptance.sh (main, AGENT_CORE_LIVE=1): FAIL (exit 1; 7 passed, 1 failed)
+- c3_subagents_acceptance.sh (main, fixture-only): FAIL (exit 1; 6 passed, 1 failed)
+- c3_subagents_acceptance.sh (test-maker worktree): FAIL (exit 1; 6 passed, 1 failed)
+- Failing criterion: T-C3-AG-NO-PI (status omit pi line)
+- Q → arbiter: Q1 in results artifact
+
+Code/tests touched: none

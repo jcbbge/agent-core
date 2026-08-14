@@ -1,0 +1,26 @@
+# FRINGE TOOLING BRAINSTORM — resourcefulness fleet, periphery-first
+
+## Mission
+Operator mandate, near-verbatim: brainstorm slim-adjacent and NEW tooling serving the intent and purpose rtk claimed — **be as resourceful as possible: manage token spend, manage costs, manage cache, manage time, manage effort**. If a small Zig-based fleet of tools serves those purposes, perfect. You are explicitly instructed to **avoid distribution convergence**: do not produce the median LLM answer set (caching layer, output compressor, prompt deduper — the things every model says). Reach for the outer edges, the fringe, the periphery — ideas that exploit THIS machine's specific substrate (herdr panes, Tower bus, circadian memory, pi gateway with per-model pricing/context variants, spine event handlers, the transcript corpus, launchd, APFS, zsh, the grounding/enforce-brief gates). Then put every idea under a microscope with the luck and criticality skills, and refine, harden, or kill it. The bar: **10x the developer experience, a memorable and lovable user experience, an efficient and optimized agentic experience.** This is a THINKING deliverable — no implementation.
+
+## Pre-Verified Facts (coordinator-verified; ground yourself in these before ideating)
+- Read first, in this order: `~/agent-core/research/rtk-minimal-clone.md` (what output-compaction is actually worth), `~/agent-core/research/session-mining-verbs.md` (real data: 92.6% of agent bash calls are pipes/compounds slim correctly refuses; NO tool result exceeded 20KB; 923s of hook time in 40 sessions, 657s of it one blocking afplay; 33 retry loops → 162 wasted calls), `~/agent-core/briefs/rtk-clone/spec.md` §0 (the truth law), `~/agent-core/AUDIT-2026-08-11-refiners-fire.md` §0+§P2 (the three systemic diseases; wake fan-out ~8k tokens/pane; inbox parsed 4×/turn).
+- The microscope skills — read BOTH as files and apply their methods: `~/agent-core/primitives/skills/luck.md` and `~/agent-core/primitives/skills/criticality.md` (operate at the edge of chaos — signal neither vanishing nor exploding).
+- Existing Zig footprint: `~/agent-core/cli/` (the agent-core sync CLI) and `~/agent-core/primitives/tools/slim/` (6-verb compactor, ~1,450 LOC, truth-law invariants). Zig 0.16.0 installed. Sub-10ms cold starts proven viable.
+- Cost surfaces on this machine that pure output-compaction does NOT touch (from the data): per-pane wake payloads, hook process spawns (3 per Bash call), polling loops, duplicate context re-reads across workers, model selection (the gateway exposes cheap/fast variants — composer-2.5:fast, kimi — and context variants @272k/@300k/@1m priced differently), cache locality of prompts (stable prefixes cache; churning briefs don't).
+- Tower posting: `cd /Users/jrg/agent-core && bun ~/.tower/cli.mjs post <claim|finding|note> agent-core/fringe-tooling "<body>" --from agnt-fringe`.
+
+## File partition — write ONLY
+- Deliverable: `~/agent-core/research/fringe-tooling-brainstorm.md`
+- Scratch: `/private/tmp/claude-501/-Users-jrg/de008bc7-28c8-4fb1-b78f-8f99be78c736/scratchpad/fringe/`
+Read-only everywhere else. No implementation, no commits.
+
+## Tasks
+1. **Ground** (read the five docs + two skills above). Done when your deliverable opens with a 10-line "what the data already killed" section (so you don't re-propose corpses like generic output compression).
+2. **Diverge wide**: 12-18 ideas minimum, each tagged with which resource it manages (tokens/cost/cache/time/effort) and a one-line "why this is periphery, not median" justification. At least 4 ideas must exploit substrate no generic tool could (herdr events, Tower ledger, transcript corpus, gateway model-variant arbitrage, circadian). Kill-on-sight list: anything that is "a cache for LLM responses", "compress the output", "dedupe prompts" unless given a genuinely non-median twist. Done when the idea list exists with tags.
+3. **Microscope**: run EVERY idea through luck (positioning for accidents: what would this make findable/catchable that currently evaporates?) and criticality (does it keep the system at the productive edge — neither starving signal nor flooding context?). Refine or kill; killed ideas keep one-line tombstones. Done when each surviving idea carries a luck-note, a criticality-note, and a hardened v2 description.
+4. **Score + rank** survivors against the operator's rubric: 10x DX / memorable+lovable UX / efficient+optimized agentic experience — 1-5 each with one sentence of justification per score, no vibes. Done when a ranked table exists.
+5. **Top 5 proposals**, fully drawn: what it is, the fringe insight it rides, Zig-fit (or honest better-fit language), rough LOC + hours, what it composes with (slim/herdr/Tower/circadian), the measurable win, and the single riskiest assumption to test first. Done when all 5 are complete enough to argue about.
+
+## Report back with
+Final message: the "already killed" list, the ranked survivor table, and the top-5 condensed (name + fringe insight + measurable win + riskiest assumption each). The operator and coordinator review together and pick next steps — propose nothing as decided. Board: claim, a finding after task 2 (idea count + wildest one-liner), final `DONE FRINGE:`. LAST action: `touch ~/agent-core/briefs/fringe/brainstorm.done`.

@@ -1,0 +1,20 @@
+agnt-statem-twr-residuals-tests-nq1 complete 2026-08-14T00:28:00Z
+role: TEST-MAKER (Orion, nQ1 bounce)
+from: AGNT statem-twr-tests-nq1
+worktree: /Users/jrg/.cursor/worktrees/agent-core/wt-orch-bus-data-residuals
+
+test: primitives/tools/statem/statem-twr-residuals.test.mjs
+criteria: primitives/tools/statem/statem-twr-residuals.criteria.md
+
+DID NOT COMMIT
+
+Changes (BAD TEST remediation — clipped-body asserts):
+  - Replaced toContain('OUTER discovery→commit') with /OUTER disc/ (twr clips long lines to terminal width).
+  - Replaced toContain('oracle non-statem finding') with /oracle non-statem/.
+  - Added oracle topic slug anchor (ORACLE_TOPIC) — statem@ not rendered in twr output.
+  - criteria.md AC:c row updated to document clipped-safe anchors.
+
+Run: cd /Users/jrg/.cursor/worktrees/agent-core/wt-orch-bus-data-residuals && bun test primitives/tools/statem/statem-twr-residuals.test.mjs
+Result: 8 pass, 0 fail
+
+Handoff: tester re-runs same command; ORCH Verify can proceed.

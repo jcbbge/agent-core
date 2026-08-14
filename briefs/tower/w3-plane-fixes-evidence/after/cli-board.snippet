@@ -1,0 +1,6 @@
+} else if (cmd === 'board') {
+  const topic = process.argv[3]?.trim() || undefined
+  const rows = boardFor(cwd, topic ? { topic } : {})
+  if (rows.length === 0) console.log('Board empty for this project.')
+  for (const r of rows) console.log(`[${r.ts ?? '?'}] (${r.type ?? '?'}) ${r.from ?? '?'} @ ${r.topic ?? '?'}: ${rowPreview(r)}`)
+} else if (cmd === 'post') {

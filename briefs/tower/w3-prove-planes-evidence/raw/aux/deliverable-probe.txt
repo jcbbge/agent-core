@@ -1,0 +1,38 @@
+# deliverable probe — AGNT w3-aux 2026-08-13
+
+## MCP send_to_user (kind=deliverable)
+
+Tool: tower send_to_user
+from: AGNT w3-aux
+title: w3-aux-deliverable-probe
+
+Response:
+Delivered to Tower as t-msrktbyd-yezv (deliverable). Saved verbatim to /Users/jrg/.tower/deliverables/t-msrktbyd-yezv-w3-aux-deliverable-probe.md. The orchestrator cannot end its turn until this is relayed to the user verbatim.
+
+EXIT: implicit 0 (MCP success)
+
+## Ledger row
+
+/Users/jrg/.tower/ledger.jsonl:2681
+{"id":"t-msrktbyd-yezv","ts":"2026-08-13T13:51:03.109Z","cwd":"/Users/jrg/agent-core","kind":"deliverable","title":"w3-aux-deliverable-probe","from":"AGNT w3-aux","message":"W3 aux probe deliverable — evidence-only, safe to archive.\n\nTimestamp: 2026-08-13T13:50:00Z\nPartition: AGNT w3-aux\nTopic: tower/w3-probe-phero"}
+
+## Read-back (cat deliverable file)
+
+$ cat /Users/jrg/.tower/deliverables/t-msrktbyd-yezv-w3-aux-deliverable-probe.md
+# w3-aux-deliverable-probe
+
+from: AGNT w3-aux · 2026-08-13T13:51:03.109Z · /Users/jrg/agent-core
+
+W3 aux probe deliverable — evidence-only, safe to archive.
+
+Timestamp: 2026-08-13T13:50:00Z
+Partition: AGNT w3-aux
+Topic: tower/w3-probe-phero
+
+EXIT:0
+
+## Write path (source, not edited)
+
+/Users/jrg/agent-core/primitives/mcps/tower/server.mjs send_to_user handler:
+- append ledger row (kind=deliverable)
+- writeFileSync join(DELIVERABLES, `${entry.id}-${slug}.md`)

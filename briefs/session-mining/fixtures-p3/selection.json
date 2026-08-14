@@ -1,0 +1,194 @@
+{
+  "cc": {
+    "1": [
+      {
+        "file_bytes": 593257,
+        "mtime": 1786405997.2743013,
+        "mtime_utc": "2026-08-10T23:53:17.274301+00:00",
+        "path": "/Users/jrg/.claude/projects/-Users-jrg-future/97502dbf-00c7-46e2-977a-2c0cf1955ca5.jsonl",
+        "project_key": "-Users-jrg-future",
+        "real_project": true,
+        "session_id": "97502dbf-00c7-46e2-977a-2c0cf1955ca5"
+      },
+      {
+        "file_bytes": 1105497,
+        "mtime": 1786404699.0561244,
+        "mtime_utc": "2026-08-10T23:31:39.056124+00:00",
+        "path": "/Users/jrg/.claude/projects/-Users-jrg-agent-core/198bba2b-d472-4b26-b754-4a7e8d90b83a.jsonl",
+        "project_key": "-Users-jrg-agent-core",
+        "real_project": true,
+        "session_id": "198bba2b-d472-4b26-b754-4a7e8d90b83a"
+      },
+      {
+        "file_bytes": 844780,
+        "mtime": 1786402896.0520065,
+        "mtime_utc": "2026-08-10T23:01:36.052006+00:00",
+        "path": "/Users/jrg/.claude/projects/-Users-jrg--herdr-worktrees-future-c004-ux/01bffc6b-48ae-4662-bdb1-5928fa6baaba.jsonl",
+        "project_key": "-Users-jrg--herdr-worktrees-future-c004-ux",
+        "real_project": true,
+        "session_id": "01bffc6b-48ae-4662-bdb1-5928fa6baaba"
+      },
+      {
+        "file_bytes": 991287,
+        "mtime": 1786400863.9674273,
+        "mtime_utc": "2026-08-10T22:27:43.967427+00:00",
+        "path": "/Users/jrg/.claude/projects/-Users-jrg-herdr-spine/0a34b40a-c79b-43f2-a247-264e4c00a2d9.jsonl",
+        "project_key": "-Users-jrg-herdr-spine",
+        "real_project": true,
+        "session_id": "0a34b40a-c79b-43f2-a247-264e4c00a2d9"
+      },
+      {
+        "file_bytes": 473665,
+        "mtime": 1786387345.8608656,
+        "mtime_utc": "2026-08-10T18:42:25.860866+00:00",
+        "path": "/Users/jrg/.claude/projects/-Users-jrg--herdr-worktrees-future-c003-fractal-chrome/e842b684-8e27-48ac-aaf2-eb5778c52265.jsonl",
+        "project_key": "-Users-jrg--herdr-worktrees-future-c003-fractal-chrome",
+        "real_project": true,
+        "session_id": "e842b684-8e27-48ac-aaf2-eb5778c52265"
+      }
+    ],
+    "2": [
+      {
+        "file_bytes": 1297672,
+        "mtime": 1786171315.7334802,
+        "mtime_utc": "2026-08-08T06:41:55.733480+00:00",
+        "path": "/Users/jrg/.claude/projects/-Users-jrg-infinity-bento/9e16cb9c-2c76-4b5b-b590-27f4e91c3e2f.jsonl",
+        "project_key": "-Users-jrg-infinity-bento",
+        "real_project": true,
+        "session_id": "9e16cb9c-2c76-4b5b-b590-27f4e91c3e2f"
+      },
+      {
+        "file_bytes": 3002183,
+        "mtime": 1786057544.6199558,
+        "mtime_utc": "2026-08-06T23:05:44.619956+00:00",
+        "path": "/Users/jrg/.claude/projects/-Users-jrg-cairn/62444b33-0b33-40c1-b75a-5b3c649ae201.jsonl",
+        "project_key": "-Users-jrg-cairn",
+        "real_project": true,
+        "session_id": "62444b33-0b33-40c1-b75a-5b3c649ae201"
+      },
+      {
+        "file_bytes": 1412784,
+        "mtime": 1785984002.3333063,
+        "mtime_utc": "2026-08-06T02:40:02.333306+00:00",
+        "path": "/Users/jrg/.claude/projects/-Users-jrg--bb-personal-workspaces-env-2nmkxay7tz/58a01afd-a784-478c-b159-9a5fcd9db99a.jsonl",
+        "project_key": "-Users-jrg--bb-personal-workspaces-env-2nmkxay7tz",
+        "real_project": true,
+        "session_id": "58a01afd-a784-478c-b159-9a5fcd9db99a"
+      },
+      {
+        "file_bytes": 865730,
+        "mtime": 1785967534.9626992,
+        "mtime_utc": "2026-08-05T22:05:34.962699+00:00",
+        "path": "/Users/jrg/.claude/projects/-Users-jrg-constellation/02a708ae-ce64-415f-af7b-f13cc991e084.jsonl",
+        "project_key": "-Users-jrg-constellation",
+        "real_project": true,
+        "session_id": "02a708ae-ce64-415f-af7b-f13cc991e084"
+      },
+      {
+        "file_bytes": 3166902,
+        "mtime": 1785208372.457,
+        "mtime_utc": "2026-07-28T03:12:52.457000+00:00",
+        "path": "/Users/jrg/.claude/projects/-Users-jrg-circadian/d0ccaa44-040a-4a07-9b32-6d8a0f975a4c.jsonl",
+        "project_key": "-Users-jrg-circadian",
+        "real_project": true,
+        "session_id": "d0ccaa44-040a-4a07-9b32-6d8a0f975a4c"
+      }
+    ]
+  },
+  "pi": {
+    "1": [
+      {
+        "file_bytes": 1508507,
+        "mtime": 1786474341.5060139,
+        "mtime_utc": "2026-08-11T18:52:21.506014+00:00",
+        "path": "/Users/jrg/.pi/agent/sessions/--Users-jrg-agent-core--/2026-08-11T18-32-09-386Z_019ff218-a5aa-7e53-af73-2fd5d91f14fc.jsonl",
+        "project_key": "--Users-jrg-agent-core--",
+        "real_project": true,
+        "session_id": "2026-08-11T18-32-09-386Z_019ff218-a5aa-7e53-af73-2fd5d91f14fc"
+      },
+      {
+        "file_bytes": 243658,
+        "mtime": 1786473661.0950894,
+        "mtime_utc": "2026-08-11T18:41:01.095089+00:00",
+        "path": "/Users/jrg/.pi/agent/sessions/--Users-jrg-infinity-arc-worktree-ws-e-w4-c8-polish--/2026-08-11T18-16-15-952Z_019ff20a-1950-7ca4-9993-3ad229fe0b7b.jsonl",
+        "project_key": "--Users-jrg-infinity-arc-worktree-ws-e-w4-c8-polish--",
+        "real_project": true,
+        "session_id": "2026-08-11T18-16-15-952Z_019ff20a-1950-7ca4-9993-3ad229fe0b7b"
+      },
+      {
+        "file_bytes": 1083314,
+        "mtime": 1786473093.5350688,
+        "mtime_utc": "2026-08-11T18:31:33.535069+00:00",
+        "path": "/Users/jrg/.pi/agent/sessions/--Users-jrg-infinity-arc-worktree-ws-e-t17-closeout--/2026-08-11T16-42-19-947Z_019ff1b4-19ab-7e65-bef9-e2494908bd6e.jsonl",
+        "project_key": "--Users-jrg-infinity-arc-worktree-ws-e-t17-closeout--",
+        "real_project": true,
+        "session_id": "2026-08-11T16-42-19-947Z_019ff1b4-19ab-7e65-bef9-e2494908bd6e"
+      },
+      {
+        "file_bytes": 729437,
+        "mtime": 1786472909.8342943,
+        "mtime_utc": "2026-08-11T18:28:29.834294+00:00",
+        "path": "/Users/jrg/.pi/agent/sessions/--Users-jrg-infinity-arc--/2026-08-11T15-22-57-325Z_019ff16b-6dad-749b-9c74-3dfafe688ccb.jsonl",
+        "project_key": "--Users-jrg-infinity-arc--",
+        "real_project": true,
+        "session_id": "2026-08-11T15-22-57-325Z_019ff16b-6dad-749b-9c74-3dfafe688ccb"
+      },
+      {
+        "file_bytes": 276412,
+        "mtime": 1786399183.131733,
+        "mtime_utc": "2026-08-10T21:59:43.131733+00:00",
+        "path": "/Users/jrg/.pi/agent/sessions/--Users-jrg-circadian--/2026-08-10T21-07-11-404Z_019fed80-39ac-76e9-85d3-df877fca989a.jsonl",
+        "project_key": "--Users-jrg-circadian--",
+        "real_project": true,
+        "session_id": "2026-08-10T21-07-11-404Z_019fed80-39ac-76e9-85d3-df877fca989a"
+      }
+    ],
+    "2": [
+      {
+        "file_bytes": 239814,
+        "mtime": 1786256160.1600316,
+        "mtime_utc": "2026-08-09T06:16:00.160032+00:00",
+        "path": "/Users/jrg/.pi/agent/sessions/--Users-jrg-future--/2026-08-09T06-02-20-881Z_019fe51d-7551-758e-9a4f-bee908af6175.jsonl",
+        "project_key": "--Users-jrg-future--",
+        "real_project": true,
+        "session_id": "2026-08-09T06-02-20-881Z_019fe51d-7551-758e-9a4f-bee908af6175"
+      },
+      {
+        "file_bytes": 291804,
+        "mtime": 1786216184.3779845,
+        "mtime_utc": "2026-08-08T19:09:44.377985+00:00",
+        "path": "/Users/jrg/.pi/agent/sessions/--Users-jrg-fut--/2026-08-08T19-06-34-111Z_019fe2c5-12ff-7d03-9f2b-aea6d7696416.jsonl",
+        "project_key": "--Users-jrg-fut--",
+        "real_project": true,
+        "session_id": "2026-08-08T19-06-34-111Z_019fe2c5-12ff-7d03-9f2b-aea6d7696416"
+      },
+      {
+        "file_bytes": 565428,
+        "mtime": 1785917791.0222979,
+        "mtime_utc": "2026-08-05T08:16:31.022298+00:00",
+        "path": "/Users/jrg/.pi/agent/sessions/--Users-jrg-constellation--/2026-08-05T06-26-17-975Z_019fd099-f2f7-7926-af32-55289c8c80ca.jsonl",
+        "project_key": "--Users-jrg-constellation--",
+        "real_project": true,
+        "session_id": "2026-08-05T06-26-17-975Z_019fd099-f2f7-7926-af32-55289c8c80ca"
+      },
+      {
+        "file_bytes": 2190554,
+        "mtime": 1785780753.0269217,
+        "mtime_utc": "2026-08-03T18:12:33.026922+00:00",
+        "path": "/Users/jrg/.pi/agent/sessions/--Users-jrg-auto-research-directives--/2026-07-31T05-06-19-234Z_019fb690-ede2-7e57-ac07-f9686994f37f.jsonl",
+        "project_key": "--Users-jrg-auto-research-directives--",
+        "real_project": true,
+        "session_id": "2026-07-31T05-06-19-234Z_019fb690-ede2-7e57-ac07-f9686994f37f"
+      },
+      {
+        "file_bytes": 595197,
+        "mtime": 1785708716.5316641,
+        "mtime_utc": "2026-08-02T22:11:56.531664+00:00",
+        "path": "/Users/jrg/.pi/agent/sessions/--Users-jrg-herdr-spine--/2026-07-30T18-42-05-161Z_019fb455-6ce9-7aed-8190-f1e1ebd167c3.jsonl",
+        "project_key": "--Users-jrg-herdr-spine--",
+        "real_project": true,
+        "session_id": "2026-07-30T18-42-05-161Z_019fb455-6ce9-7aed-8190-f1e1ebd167c3"
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "delText": "Delivered to Tower as t-msroj4at-0ona (deliverable). Saved verbatim to /Users/jrg/.tower/deliverables/t-msroj4at-0ona-w3-plane-fixes-f1-live-probe.md. The orchestrator cannot end its turn until this is relayed to the user verbatim.",
+  "probeId": "t-msroj4at-0ona",
+  "probeTo": "operator",
+  "progressInUnrelayed": false,
+  "refuseThrew": true,
+  "refuseText": "{\"code\":-32000,\"message\":\"Refused mark_relayed: id(s) not currently unrelayed: t-not-a-real-unrelayed-id. Use relay_inbox after verbatim display, or pass only ids from inboxState.unrelayed.\"}",
+  "ackText": "Acknowledged 1 message(s). Guard cleared for: t-msroj4at-0ona.",
+  "probeStillUnrelayed": false,
+  "cleanup": [
+    "Acknowledged 3 message(s). Guard cleared for: t-msro2cs7-rqxl, t-msro2dn3-dmlu, t-msro2f1l-7i5e."
+  ],
+  "unrelayedCount": 0
+}

@@ -1,0 +1,22 @@
+worktree_head: 1c8353dbc99925e2152f7664b7a16ab029814440 (dirty)
+
+test_command: cd /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-coder-w2y-pb/primitives/mcps/tower && bun test plane-fixes.test.mjs
+
+test_tail:
+(pass) F1 — send_to_user to:operator default > deliverable mints to:operator and enters unrelayed
+(pass) F1 — send_to_user to:operator default > alert mints to:operator and enters unrelayed
+(pass) F1 — send_to_user to:operator default > progress omits operator to and stays out of unrelayed
+(pass) F4 — mark_relayed refuses non-unrelayed ids > arbitrary id refused — no ack row appended
+(pass) F4 — mark_relayed refuses non-unrelayed ids > mixed valid+invalid ids refused whole call — no ack
+5 pass / 0 fail / 17 expect() calls
+
+probe_ids: TEST-ONLY (dynamic t-* ids minted per run; probe strings plane-f1-* / plane-f4-*)
+
+progress_non_unrelayed: confirmed — progress rows omit `to`, excluded from inboxState.unrelayed
+
+files:
+- server.mjs: F1 to:operator default on deliverable/alert; optional `to` schema; F4 mark_relayed guard
+- plane-fixes.test.mjs: new, 5 real MCP tests
+- COMMS-ARCH.md: migration item 4 F1 closeout note
+
+deviations: none

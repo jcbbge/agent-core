@@ -1,0 +1,5 @@
+AGNT w4-rotate-fix-tests DONE
+artifact: primitives/mcps/tower/rotate.test.mjs (Fail A only)
+fix: Phase-2 --dry-run test expects refusal without TOWER_ROTATE_PHASE2_OK (POLICY §4)
+2026-08-13T15:45:00Z
+bun test primitives/mcps/tower/rotate.test.mjs: 14 pass / 0 fail

@@ -1,0 +1,4 @@
+AGNT flock-integrity (coder) — 2026-08-13
+Unit: T2 flock append + T3 tolerate-and-count
+Proof: briefs/tower/bus-data/FLOCK-INTEGRITY-PROOF.md
+Status: implementer complete; tester + arbiter pending

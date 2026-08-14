@@ -1,0 +1,3 @@
+CallMcpTool pheromone_field { topic: tower/w3-probe-surfaces }
+Result: JSON with open=[2 work-available rows from AGNT w3-surfaces], claimed/done/evaporated/help empty
+exit: pass

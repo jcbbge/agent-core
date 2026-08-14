@@ -1,0 +1,25 @@
+[component]
+id = "tool/boot-card"
+kind = "binary"
+what = "the session-start yes/no checklist — deep-audit card (boot) plus per-leg [boot] stamps in every harness's boundary adapter"
+contract = [
+  "the card's exit code mirrors its check results — 0 only when every line is ✓, 1 whenever any ✗ is printed",
+  "the claude-code adapter's injected output carries the [boot] per-leg stamp",
+  "the pi adapter's injected message carries the [boot] per-leg stamp",
+  "the cursor adapter's additional_context carries the [boot] per-leg stamp",
+  "the deep audit is side-effect-free — circadian scoreboard row count unchanged across a full card run",
+]
+
+[[oracle]]
+run = "test/acceptance.sh exit-mirror"
+[[oracle]]
+run = "test/acceptance.sh stamp-cc"
+[[oracle]]
+run = "test/acceptance.sh stamp-pi"
+[[oracle]]
+run = "test/acceptance.sh stamp-cursor"
+[[oracle]]
+run = "test/acceptance.sh probe-clean"
+
+[suite]
+run = "test/acceptance.sh all"

@@ -1,0 +1,93 @@
+commit ca542e5acc3b2f7e8e5e522262cba5d56563fdbb
+Author: jrg <developer@infinityhospitality.net>
+Date:   Tue Aug 11 10:00:14 2026 -0700
+
+    feat(arc/admin): order source + reorder link on catalog items (STG-646) (#216)
+    
+    The restock pass had no way to answer "where do we reorder this from?" — two
+    Arc-owned nullable columns on catalog_items carry it, free text rather than a
+    vendor FK because the supplier of a consumable is not the HubSpot vendor object.
+    Says where an item is reordered FROM, never where it is stored (WS-F's scope).
+    
+    PHASE: Implement
+    DONE: migration 0055 (applied to the shared session DB), drizzle+zod contracts, create/update routes, catalog_items triple DDL + LOCAL_SCHEMA_VERSION 6, editor fields over a shared searchable combobox, real-Neon integration test incl. the grouping query, Data-Flow Conformance block, openapi.json re-emitted
+    TODO: browser-verify on main, C4 vocabulary, TanStack due-diligence + vendored Solid 2 adapter, admin-catalog table migration (group-by-order-source view), C8 polish, card-deck comps, backlog+graveyard hygiene
+    BLOCKED: —
+    
+    Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+commit 6d7a2fdadd70703a73fbe812d1cb85122b6e6676
+Author: jrg <developer@infinityhospitality.net>
+Date:   Tue Aug 11 11:40:27 2026 -0500
+
+    fix(arc/admin): bump nav-card icons 16px → 24px (T17 human QA #3)
+    
+    T17 human-QA item #3: admin/dev nav-card icons were undersized at 16px
+    inside 96px cards. Bumped all 10 icon components to 24px (the nav-card
+    tier per icons/README.md). T17 human QA now complete: 4 pass, this fix,
+    1 finding routed to discovery (STG-650).
+    
+    Co-authored-by: Cursor <cursoragent@cursor.com>
+
+commit 1ce3b209f62c4d3fddb4f1777c3d47a31c548db4
+Author: jrg <developer@infinityhospitality.net>
+Date:   Tue Aug 4 22:02:59 2026 -0500
+
+    session(arc/orchestration): walkthrough + seven spawn packages shipped; fleet ready to launch
+    
+    PHASE: Plan
+    DONE: 4-agent corpus fidelity sweep, full walkthrough with Josh (E/A/B/C/D walked; F/G added), 7 briefs finalized+merged (#214), pre-flight complete (#215: graveyard, branch prune, worktree cleanup, teardown), TanStack/table cloned+indexed, launch directive pinned in memory
+    TODO: NEW SESSION: read docs/developer/orchestration/ws-00-overview.md and launch per its order — provision session Neon branch, herdr tab per stream, spawn E first (STG-646 migration leads shared DB), then A/B/C/D/F/G parallel
+    BLOCKED: Josh prereqs per ws-00 (Google OAuth client, Galley Chrome capture session, vendor agenda, openapi-drift-gate verdict)
+    
+    Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+
+commit a74f7e8256a7cc9a47fd186d5579f3f7cfc08032
+Author: jrg <developer@infinityhospitality.net>
+Date:   Tue Aug 4 17:01:22 2026 -0700
+
+    chore(arc/docs): graveyard T17 QA session docs + recovery plan; tick ws-00 pre-flight (#215)
+    
+    PHASE: Plan
+    DONE: 9 QA-branch docs preserved in .graveyard/docs/orchestration; RECOVERY-MASTER interred; ws-00 pre-flight checklist updated
+    TODO: launch session — provision Neon branch, herdr tabs per stream, spawn E first then A/B/C/D/F/G per ws-00
+    BLOCKED: —
+    
+    Co-authored-by: Claude Fable 5 <noreply@anthropic.com>
+
+commit 7ee032dc35454f23c18dfc599d9d8a00e94673bd
+Author: jrg <developer@infinityhospitality.net>
+Date:   Tue Aug 4 16:55:57 2026 -0700
+
+    docs(arc/orchestration): seven workstream spawn packages (walkthrough-finalized) (#214)
+    
+    * docs(arc/orchestration): DRAFT ws-00/A/B spawn packages — pre-walkthrough, not final
+    
+    PHASE: Plan
+    DONE: corpus fidelity sweep (4 agents) synthesized; draft overview + WS-A/WS-B briefs
+    TODO: walkthrough with Josh per stream; WS-C draft written but unstaged pending review; WS-D/WS-E unwritten; finalize all after walkthrough
+    BLOCKED: —
+    
+    Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+    
+    * docs(arc/orchestration): DRAFT ws-C galley-ui-parity brief
+    
+    PHASE: Plan
+    DONE: WS-C draft
+    TODO: walkthrough with Josh; finalize
+    BLOCKED: —
+    
+    Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+    
+    * docs(arc/orchestration): finalize seven workstream spawn packages post-walkthrough
+    
+    PHASE: Plan
+    DONE: walkthrough with Josh complete; A/B/C briefs finalized with FINAL DECISIONS blocks; D/E/F/G briefs written; ws-00 overview rewritten for 7-stream roster + prereqs + launch order
+    TODO: PR + merge; graveyard catalog-qa session branch + RECOVERY doc; provision session Neon branch; spawn herdr tabs per stream (E first); kill wV:p1 echo pane
+    BLOCKED: —
+    
+    Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+    
+    ---------
+    
+    Co-authored-by: Claude Fable 5 <noreply@anthropic.com>

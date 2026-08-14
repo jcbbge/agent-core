@@ -1,0 +1,20 @@
+agnt-statem-twr-residuals-tests complete 2026-08-14T00:12:00Z
+role: TEST-MAKER (Orion)
+from: AGNT statem-twr-residuals-tests
+worktree: /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-test-maker-w2z-pr
+
+test: ~/agent-core/primitives/tools/statem/statem-twr-residuals.test.mjs
+criteria: ~/agent-core/primitives/tools/statem/statem-twr-residuals.criteria.md
+
+DID NOT COMMIT
+DID NOT RUN TESTS (tester job — impl may be absent or red; expected)
+
+Oracle coverage (maps to brief test-maker AC):
+  (a) T1 flocked statem: temp board + --once transition → parseable finding rows (statem@/topic statem), zero concat/unparseable, no double-stringify, --board override isolated from live board
+  (b) T2 twr integrity: fixture with N bad lines → twr --once surfaces exact bad_line_count matching readJsonlStats; all-good → 0; damaged fixture does not throw
+  (c) good lines render: TRANSITIONS + FINDINGS sections show statem and non-statem rows amid bad lines; row counts agree with readJsonlStats
+
+Handoff: tester runs `bun test statem-twr-residuals.test.mjs` after implementer lands T1+T2.
+Live board ≈26 bad lines — coder proof only (temp fixtures here; no destructive live tests).
+
+Tower: CLAIM ph-mss6xnca-p9ex posted t-mss71fwa-2bzu on tower/bus-data.

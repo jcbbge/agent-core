@@ -1,0 +1,4 @@
+AGNT write-path (coder) — 2026-08-13
+Unit: T5+T6 board write-path hardening
+Proof: briefs/tower/bus-data/WRITE-PATH-PROOF.md
+Status: implementer complete; tester + arbiter pending

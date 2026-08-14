@@ -1,0 +1,20 @@
+        null,
+        2
+      )
+    }
+    case 'mark_relayed': {
+      // Prefer relay_inbox (renders verbatim then acks) over blind mark_relayed.
+      const state = inboxState(CWD)
+      const unrelayedIds = new Set(state.unrelayed.map((m) => m.id))
+      const ids = Array.isArray(args.ids) ? args.ids.map(String) : []
+      const invalid = ids.filter((i) => !unrelayedIds.has(i))
+      if (invalid.length > 0) {
+        throw new Error(
+          `Refused mark_relayed: id(s) not currently unrelayed: ${invalid.join(', ')}. ` +
+            'Use relay_inbox after verbatim display, or pass only ids from inboxState.unrelayed.'
+        )
+      }
+      append(LEDGER, { id: id(), ts: now, cwd: CWD, kind: 'ack', ids })
+      return `Acknowledged ${ids.length} message(s). Guard cleared for: ${ids.join(', ')}.`
+    }
+    case 'board_post': {

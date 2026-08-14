@@ -1,0 +1,20 @@
+role: TEST-MAKER (AGNT f9 oracle)
+worktree: /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-test-maker-w2y-pg
+head: 1c8353dbc99925e2152f7664b7a16ab029814440
+partition: primitives/mcps/tower/cli.test.mjs only (no cli.mjs edits)
+
+test_artifact: primitives/mcps/tower/cli.test.mjs
+  describe: board topic filter (AC: F9 CLI board <topic>)
+  tests:
+    - board <topic> output narrower than project-wide when multiple topics exist (AC: F9 filter)
+    - board without topic matches project-wide boardFor row count (AC: omitted topic)
+    - board with empty topic argv matches project-wide listing (AC: empty topic)
+
+test_command: cd /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-test-maker-w2y-pg/primitives/mcps/tower && bun test cli.test.mjs
+test_run: NOT RUN — test-maker handoff; tester executes after implementer lands cli.mjs fix
+
+expected_red_before_fix: board with/without topic both 53 lines (byte-identical per ORCH BEFORE proof)
+expected_green_after_fix: filtered line count == boardFor(agent-core, { topic: tower/w3-plane-fixes }).length < project-wide
+
+cli.mjs_diff: none (implementer partition)
+cli.test.mjs_diff: +describe board topic filter — 3 real spawn tests, no mocks

@@ -1,0 +1,10 @@
+SAGT residual-scan-r2 complete 2026-08-13T19:38:00-05:00
+
+Artifacts:
+- /Users/jrg/agent-core/briefs/tower/bus-data/RESIDUAL-APPEND-SCAN.md
+
+Findings:
+- In-fence bare BOARD bypass: primitives/tools/statem/statem.ts:97 (1 hit)
+- Compliant flocked BOARD writers: cli.mjs:181, server.mjs:263, tower-ledger.mjs append()
+- Out-of-fence (known WAs, no new emits): cursor-spine:177-178,403-404 (ph-mss6xokq-2ui4); herdr-spine _spine_common.py:339-340, spine-claim:99-100 (ph-mss6xokt-8xif)
+- New WA ids: none

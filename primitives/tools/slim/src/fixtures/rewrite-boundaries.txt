@@ -1,0 +1,38 @@
+ls
+  -> [0] rtk ls
+ls -la /tmp
+  -> [0] rtk ls -la /tmp
+/bin/ls -la /tmp
+  -> [1] <no rewrite>
+ps aux
+  -> [0] rtk ps aux
+wc -l file
+  -> [0] rtk wc -l file
+wc
+  -> [0] rtk wc
+df -h
+  -> [0] rtk df -h
+git -C /tmp status
+  -> [0] rtk git -C /tmp status
+git log -5
+  -> [0] rtk git log -5
+git status --porcelain
+  -> [0] rtk git status --porcelain
+git log --format=%H -1
+  -> [0] rtk git log --format=%H -1
+ls | wc -l
+  -> [0] rtk ls | wc -l
+ps aux && df -h
+  -> [0] rtk ps aux && rtk df -h
+RTK_DISABLED=1 ls
+  -> [1] <no rewrite>
+sudo ls -la
+  -> [0] sudo rtk ls -la
+FOO=1 wc -l file
+  -> [0] FOO=1 rtk wc -l file
+sed -n '1,2p' file
+  -> [1] <no rewrite>
+unknown-command --flag
+  -> [1] <no rewrite>
+cat <<'X'
+  -> [1] <no rewrite>

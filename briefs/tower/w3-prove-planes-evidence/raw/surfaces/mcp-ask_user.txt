@@ -1,0 +1,3 @@
+CallMcpTool ask_user { from: AGNT w3-surfaces, question: "W3-SURFACE-PROBE: reply with exactly SURFACE-OK..." }
+Result: Question t-msrktev3-k02o is open.
+exit: pass

@@ -1,0 +1,15 @@
+agnt-c3-subagents-retest-r1-testmaker complete 2026-08-12T17:12Z
+
+Arbiter: BAD TEST on T-C3-AG-NO-PI (status sub-check only)
+
+Artifact: cli/test/integration/c3_subagents_acceptance.sh
+Change: second sub-check relaxed — pass if pi line absent or carries
+(no mapping for this type); fail only on resolved pi deploy (✓/✗/?).
+First sub-check (sync no-mapping) unchanged.
+
+Tests not run (test-maker role). Fix applied, hand to tester.
+
+Provenance:
+- date -u: 2026-08-12T17:12:00Z
+- pwd -P: /Users/jrg/agent-core/cli
+- git rev-parse HEAD: 6746114d1d8175ec72020f35bb1c3713959a579c

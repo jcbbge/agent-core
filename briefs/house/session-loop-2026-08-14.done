@@ -1,0 +1,4 @@
+DONE 2026-08-14T18:28Z
+UNIT: house/session-loop
+GATE: CORD verified encodings 1-7 on disk; sync 214 ok / 0 stale; AGNTs reaped; ORCH report on board.
+SYNC: agent-core sync skill/{starting-session,ending-session,concierge,brief}; agent-core sync directive/core

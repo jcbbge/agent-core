@@ -1,14 +1,14 @@
 # Global Agent Context
-**Updated:** 2026-08-10
+**Updated:** 2026-08-12
 
-Loaded by every harness — claude, pi, prime, cursor. CANONICAL FILE:
-`~/agent-core/primitives/AGENTS.md` (git-tracked). Wiring per harness:
-`~/.pi/agent/AGENTS.md` and `~/.claude/CLAUDE.md` are symlinks to it;
-prime's own global (`~/.prime/agent/AGENTS.md`) opens by directing every
-session to read this file; cursor-agent reads `AGENTS.md`/`CLAUDE.md` from
-the working directory (verified in its bundle), so project AGENTS.md files
-point here. Edit the canonical only. PROVIDER/MODEL-AGNOSTIC by contract:
-no provider names outside the Harness deltas section; capabilities are
+Loaded by every harness — claude, pi, prime, cursor. CANONICAL CORE:
+`~/agent-core/primitives/AGENTS.md` (git-tracked). Deployed entrypoints are
+composed at sync time (`~/.claude/CLAUDE.md`, `~/.pi/agent/AGENTS.md`,
+`~/AGENTS.md`); prime's own global (`~/.prime/agent/AGENTS.md`) opens by
+directing every session to read this file.
+Edit the canonical core and per-harness deltas in `primitives/directives/`,
+not deployed entrypoints. PROVIDER/MODEL-AGNOSTIC by contract:
+no provider names outside per-harness delta files; capabilities are
 described by path and CLI, never by model. FACTUAL reference (what exists, how to
 reach it). Tool-preference doctrine lives in skills and agent definitions —
 this file is also injected into eval-harness arms, and preference language
@@ -22,9 +22,12 @@ here contaminates control arms.
 | Tower | active | MCP `mcp__tower__*` (CC) · `~/.tower/cli.mjs` + `board.jsonl` (everywhere) — see below |
 | Coraline | active | CLI `coraline` (33 languages) — no MCP registration |
 | Composto | active | CLI `composto` — IR compression; TS/JS/Python/Go/Rust, NOT Swift/Zig |
-| rtk | active | CLI token-saver proxy (`~/.local/bin/rtk`) — CC: PreToolUse hook rewrites Bash commands · pi: `rtk-rewrite` extension (same rewrite on `tool_call`) |
-| Bigfile | active | pi: via super-search `--file` · CC: `mcp__bigfile__*` |
-| bb | active (manual) | CLI `bb` / `bb-app` (global install, no npx); web UI `:38886`; doc `~/agent-core/primitives/skills/bb/program.md` — see below |
+| slim | active (2026-08-11) | 6-verb output compactor (`~/.local/bin/slim`; source `~/agent-core/primitives/tools/slim/`, Zig) — compacts ls/ps/wc/df/git status/git log only; truth law: child exit codes propagate, unparseable output passes raw, truncation always marked. CC: PreToolUse `slim-guard.sh` · pi: `slim-rewrite` extension · cursor: preToolUse `slim-guard-cursor.sh` (`~/.cursor/hooks.json`). Pipes/compounds/machine-format flags never rewritten |
+| latch | active (2026-08-11) | blocking wait/hold primitive (`~/.local/bin/latch`; source `primitives/tools/latch/`, Zig) — wait on pane state/files/board/gates with distinct exit codes; replaces polling loops |
+| vein | active (2026-08-11) | transcript-corpus miner (`~/.local/bin/vein`; source `primitives/tools/vein/`, Zig) — reproduces the session-mining studies in seconds; the acceptance instrument for tooling decisions |
+| assay | active (2026-08-11) | memory-propagation instrument (source `primitives/tools/assay/`, Zig) — cohort tool, proposes only; golden set = 5 hand-labeled sessions, decoy-FP 0/25 is the standing honesty metric |
+| cursor-shim | active (2026-08-11, operator-sanctioned reversal of the same-day CLI retirement) | `~/cursor-shim/` — self-contained, rip-out-able bridge running `cursor-agent` tiers inside herdr+Tower topology; spawn via `cursor-fleet` / `cursor-spine` ONLY (spine-spawn still refuses cursor kinds and points there); enforces the Made Well Verify beat (bifurcated test/impl worktrees, arbiter, nQ≤3). Docs: `~/cursor-shim/docs/inner-loop-verify.md`; rules: `~/cursor-shim/rules/cursor-fleet.md`; proof: `docs/qa-verify.sh` (71/71). Delete the dir = integration gone |
+| Bigfile | active | pi: via super-search `--file` · CC: `mcp__bigfile__*` · cursor: MCP `bigfile` (`~/.cursor/mcp.json` → `bun run primitives/tools/bigfile/src/server.ts`) |
 
 ## Tower — the message bus (orchestration convention)
 
@@ -51,45 +54,21 @@ is the bus (how their output reaches the user).
   `agent_status` flips to `working`.
 - Full protocol: `~/agent-core/primitives/rules/tower-orchestration.md`.
 
-## bb — agentic IDE (WWWWW+H)
-
-- **What:** multi-provider agentic IDE (desktop/web/CLI/HTTP API) that runs
-  coding-agent providers (Claude Code, Codex, pi, Cursor, opencode, omp) as
-  watchable, redirectable **threads**, plus a Node SDK (`BBSdk`) for
-  programmatic thread control.
-- **Why:** fills the gap between the terminal substrate (owns panes, not
-  thread-level agent control) and Tower (relays messages, doesn't drive a
-  provider): a surface
-  where an agent can start/inspect/redirect a thread on itself or a sibling
-  provider via SDK/CLI, with the user able to watch the same thread in the
-  UI.
-- **When:** delegating a subtask to a different provider than the one
-  currently driving; needing programmatic thread control rather than pane
-  control or message relay. Not a substrate or Tower replacement — composes
-  with both.
-- **Where:** manual per-session (not launchd, not system-tier as of
-  2026-08-05). Normal path: open `/Applications/bb.app` (Spotlight/Dock,
-  no terminal). Headless path: `bb-app` (installed globally, no npx) —
-  don't run both at once. `bb <cmd>` talks to whichever is up. Web UI
-  `:38886`, host daemon `:38887`, data `~/.bb/`.
-- **Who:** this agent is operator + toolsmith (starts/stops it, drives it,
-  extends it); the user holds the UI seat.
-- **How:** `bb <status|provider|thread|skill|guide>` (global install, no
-  npx). Full doc, gotchas, and provider list:
-  `~/agent-core/primitives/skills/bb/program.md`.
-
 ## Search — one canonical router
 
-Every harness: `bun ~/.claude/skills/super-search/search.ts "<query>"
-[--pattern] [--repo] [--file] [--scope] [--limit]` (CC: also the
-`super-search` skill wrapper).
+Every harness: `bun ~/agent-core/primitives/skills/super-search/search.ts
+"<query>" [--pattern] [--repo] [--file] [--scope] [--limit]` (CC + cursor:
+also the `super-search` skill wrapper).
+Canonical home: `~/agent-core/primitives/skills/super-search/` —
+`~/.claude/skills/super-search` and `~/.cursor/skills-cursor/super-search`
+symlink to it.
 Layers: colgrep (project) · coraline (`~/source`) · pickbrain (memory) ·
 ripgrep (exact) · bigfile (>3k-line files).
 Extend this skill — never build a second router.
 
 Layers are also callable individually: `grep` (ripgrep); `colgrep`,
 `coraline`, `pickbrain`, `composto` CLIs; CC additionally has
-`mcp__bigfile__*` MCP tools.
+`mcp__bigfile__*` MCP tools; cursor has the `bigfile` MCP server.
 
 ## Bigfile — huge-file navigation
 
@@ -107,7 +86,7 @@ lines, grep caps 200 hits; no verb returns the file body. Symbol refs accept
 
 | Need | Endpoint | Reference |
 |---|---|---|
-| Local LLM (embeddings, chat, light reasoning) | `http://127.0.0.1:10240/v1` (OpenAI-compatible; Qwen3-4B / Qwen3-30B-A3B / Qwen3-Embedding-4B) | `~/dotfiles/launchagents/LOCALLLM.md` |
+| Local LLM (embeddings, chat, light reasoning) | `http://127.0.0.1:10240/v1` (OpenAI-compatible) | `~/dotfiles/launchagents/com.localllm.server.plist` |
 
 Index `~/dotfiles/UTILITIES.md` · ports `~/dotfiles/PORTS.md`.
 Project-specific services are NOT cross-project.
@@ -121,14 +100,24 @@ in this file (Work tracking), not in the rule store. Project rules surface
 per harness (CC: `.claude/rules` + `@`-imports; pi: `~/.pi/agent/rules/`).
 Read on demand — not auto-inlined here.
 
+**Enforcement law (2026-08-14):** every law names its enforcer — DOOR
+(sanctioned tool's only path), HOOK (mechanical refusal), or the honest
+DOCTRINE label (unenforced; a compilation bug, not a rule to remember
+harder). Ledger + doors (`spine-workspace`, `spine-ruling`, `spawn-door.sh`,
+write-gate registration): `primitives/rules/ENFORCEMENT.md`. A new law lands
+with its enforcer named or its DOCTRINE label explicit.
+
 ## Pi extensions (pi only)
 
 `~/.pi/agent/extensions/*.ts`, each `export default function(pi)`, jiti-loaded,
 `/reload` hot-reloads. Installed: `circadian-mind.ts` (memory hooks),
 `herdr-agent-state.ts` + `herdr-task-report.ts` (herdr-managed sidebar
 state), `tower-auto.ts` (ambient Tower posting), `tower-lifecycle.ts`
-(flight-recorder / stop-verdict / deposit-reminder port), `rtk-rewrite.ts`
-(shim → `~/agent-core/primitives/hooks/rtk-rewrite.ts`). Removed 2026-08-02:
+(flight-recorder / stop-verdict / deposit-reminder port), `slim-rewrite.ts` +
+`grounding-hook.ts` (shims → `~/agent-core/primitives/hooks/`),
+`write-gate.ts` + `spawn-door.ts` (2026-08-14 enforcement adapters, shims →
+`primitives/hooks/write-gate-pi.ts` / `spawn-door-pi.ts` — see
+`primitives/rules/ENFORCEMENT.md`). Removed 2026-08-02:
 `strudel/` (parity with CC — both harnesses reach the stack via super-search
 + CLIs; strudel itself untouched at `~/strudel`). Not installed: subagent,
 smart-search, propose-extension, peer-session — spawn agents via the herdr
@@ -143,6 +132,19 @@ skill (invoke on demand).
 - Underspecified task → ask BEFORE work, not caveats after.
   "I don't know" is a complete answer.
 - Commits carrying external values get a SOURCES: line.
+
+## Write discipline (law, 2026-08-12)
+
+The grounding guard (PreToolUse on Edit/Write — CC `grounding-hook.mjs`,
+pi `grounding-hook.ts`) blocks a second consecutive write to the same file
+with no evidence loaded between. Work WITH its contract, never bounce off it:
+
+- **One write per file per thought.** Consecutive edits to one file are
+  composed into a SINGLE Edit/Write call before firing — never a queue of
+  small edits to the same target.
+- Genuinely need a second write to the same file? **Read it first, by
+  contract** — the read comes before the attempt, not after the refusal.
+  If the door says push, do not pull first.
 
 ## Control flow (operator law, 2026-08-10)
 
@@ -187,6 +189,9 @@ never `git add -A`.
 
 ## Retired — never reference
 
+opencode harness (2026-08-11; dropped from agent-core registry,
+`~/.config/opencode/` targets dead) · bb agentic IDE (2026-08-11;
+uninstalled — app, CLIs, `~/.bb` data all removed) ·
 SurrealDB `:6000` + `com.surrealdb.*` (2026-08-02; data archived `~/surreal/`,
 plists `~/dotfiles/launchagents/deprecated/`) · alembic MCP + dream-daemon +
 corvus/lyra/spectra agents (`_deprecated-alembic/`) · KotaDB `:7001` +
@@ -198,13 +203,35 @@ lifecycle" (never registered) · coraline MCP registration (CLI only) ·
 executor `:8788`, anima `:3098`, dev-brain `:3097`, SurrealDB `:8002`,
 Manifold / UHP / Mesh-OS.
 
-## Harness deltas (the only section that differs in application)
+## Harness deltas
 
-- **Claude Code:** `TodoWrite` for 3+ step tasks · MCP names
-  `mcp__<server>__<tool>`
-- **pi:** `/reload` hot-reload · skills under `~/.pi/agent/skills/`
+Harness deltas live in `primitives/directives/<harness>.md`; deployed entrypoints are composed — edit sources, not deployed files.
+
 - **prime:** pi-based RLM runtime; harness-specific doc at
   `~/.prime/agent/AGENTS.md` (which defers to this file for machine-wide
   context)
-- **cursor:** cursor-agent; reads working-directory `AGENTS.md`/`CLAUDE.md`
-  only — no verified global path; skills under `~/.cursor/skills/`
+
+## Fleet spawn + comms (law, 2026-08-11; amended 2026-08-12)
+
+- **Spawn (agnostic core):** Provider/model/harness/platform/vendor-agnostic by design —
+  nothing in the canonical core expresses a harness preference. Fleets are
+  harness-homogeneous: the root spawn's harness defines every downstream agent (pi
+  root → pi fleet; claude root → claude fleet; cursor root → cursor fleet). Harness
+  selection is the operator's per-mission intake decision, cost-driven. Per-harness
+  spawn verbs, flags, and paths live in `primitives/directives/<harness>.md`.
+- **Briefs (law):** Briefs name **profiles/roles only** — never provider, model,
+  or `--kind`. Models via `profile-model` at spawn; spawn verbs only in harness
+  directives. A brief that hardcodes harness or model is invalid.
+- **Hierarchy:** CORD → ORCH → AGNT/SAGT via the harness's spawn path — see deltas.
+  Briefs on disk; CLAIM-first / board findings / `.done`-last.
+- **Comms:** `~/.tower/COMMS-ARCH.md`. Status (idle/done) is NOT mail and is
+  NOT a summons. Fleet mail = Tower board (`<project>/<topic>`). Operator
+  mail only when `to:"operator"`. Collect via board + `.done` + CTRL/TOWR —
+  **never** re-prompt idle panes for status.
+- **Wake:** Circadian injects memory as pure data (`<mind:greeting>` block
+  included when fitness allows); it carries NO behavioral mandate and no
+  role-suppression machinery (removed 2026-08-12, circadian a2a01a7 — law 1,
+  `primitives/rules/session-lifecycle.md`). Speaking the greeting is the
+  concierge profile's job; fleet profiles (CORD/ORCH) carry the no-greeting
+  norm. Brief overrides everything at wake.
+- **Contrived smoke briefs:** `~/agent-core/briefs/fleet-smoke/`

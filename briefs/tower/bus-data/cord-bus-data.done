@@ -1,0 +1,7 @@
+CORD bus-data COMPLETE (post-ruling) 2026-08-13
+Land: merge tower/flock-integrity → main (flock + integrity count)
+Compaction: DEFERRED per CONCIERGE-RULING-compaction.md (NO as default)
+Attribution: 46/46 append-only (23/23)
+Schema: multi-kind; co-sign ask to CORD tower (verify-gate-bypass naming)
+Visible integrity: cli board → "integrity: 26 unparseable line(s) on board (max bad line 2577)"
+Tests: flock-integrity 10/10 on main post-merge

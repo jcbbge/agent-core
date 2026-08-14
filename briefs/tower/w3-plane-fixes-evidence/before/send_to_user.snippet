@@ -1,0 +1,16 @@
+    case 'send_to_user': {
+      const kind = args.kind ?? 'progress'
+      const entry = { id: id(), ts: now, cwd: CWD, kind, title: args.title, from: args.from, message: args.message }
+      append(LEDGER, entry)
+      let fileNote = ''
+      if (kind === 'deliverable') {
+        const slug = (args.title ?? 'deliverable').toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)
+        const path = join(DELIVERABLES, `${entry.id}-${slug}.md`)
+        appendFileSync(path, `# ${args.title ?? 'Deliverable'}\n\nfrom: ${args.from ?? 'unknown'} · ${now} · ${CWD}\n\n${args.message}\n`)
+        fileNote = ` Saved verbatim to ${path}.`
+      }
+      const guard =
+        kind === 'progress'
+          ? 'Ambient: visible in /tower and prompt-time summaries.'
+          : 'The orchestrator cannot end its turn until this is relayed to the user verbatim.'
+      return `Delivered to Tower as ${entry.id} (${kind}).${fileNote} ${guard}`

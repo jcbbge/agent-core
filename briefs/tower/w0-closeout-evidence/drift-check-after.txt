@@ -1,0 +1,36 @@
+Tower drift check
+  canonical: /Users/jrg/agent-core/primitives/mcps/tower
+  deployed:  /Users/jrg/.tower
+  spine src: /Users/jrg/herdr-spine/cc-hooks (checked for 3 contested file(s))
+
+OK   COMMS-ARCH.md
+SKIP DEPLOYMENT.md: repo-only by design (no deployed twin expected)
+SKIP README.md: repo-only by design (no deployed twin expected)
+OK   RESPONSIBLE-PARTY-AND-NQ.md
+OK   cli.mjs
+OK   cli.test.mjs
+SKIP drift-check.mjs: repo-only by design (no deployed twin expected)
+OK   hooks/ask-bridge.mjs
+OK   hooks/ask-bridge.mjs (vs spine fallback)
+OK   hooks/deposit-reminder.mjs
+OK   hooks/enforce-brief.mjs
+OK   hooks/flight-recorder.mjs
+OK   hooks/odometer-stop.mjs
+OK   hooks/odometer.mjs
+OK   hooks/prompt-inject.mjs
+OK   hooks/session-start.mjs
+OK   hooks/stop-guard.mjs
+OK   hooks/stop-verdict.mjs
+OK   hooks/stop-verdict.mjs (vs spine fallback)
+OK   lib.mjs
+OK   server-drift.criteria.md
+OK   server-drift.qa.md
+OK   server-drift.test.mjs
+OK   server.mjs
+OK   server.mjs (vs spine fallback)
+WARN stale orphan diverges from canonical (f4130f71 vs 68dfa062) — dead file from a reverted consolidation (3deb7e7), still git-tracked, nothing imports it
+WARN canonical home has no upstream configured — skipped (no network call made)
+
+22 manifest file(s), 22 ok, 3 repo-only, 0 FAIL, 2 warn
+runtime: 18.2ms
+EXIT_CODE=0

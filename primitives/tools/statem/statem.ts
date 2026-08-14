@@ -4,9 +4,10 @@
 // Every transition = one board row (~/.tower/board.jsonl, type "finding",
 // topic "statem") + optional herdr tab-title glyphs. stdout is the trace.
 // Brief: ~/agent-core/briefs/agnt-statem-core.md
-import { readFileSync, writeFileSync, appendFileSync, existsSync, realpathSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, realpathSync } from "node:fs";
 import { join, basename } from "node:path";
 import { homedir } from "node:os";
+import { append } from "/Users/jrg/.tower/lib.mjs";
 
 // ── States (the enums ARE the spec; source: future/.madewell/guides/STATE-SHAPE.md) ──
 const OUTER = ["discovery", "commit", "build", "land"]; // outer stage
@@ -94,7 +95,7 @@ function appendBoard(body) {
     topic: "statem",
     body,
   };
-  appendFileSync(BOARD, JSON.stringify(row) + "\n");
+  append(BOARD, row);
 }
 
 const glyphs = (v, en) => "▰".repeat(en.indexOf(v) + 1).padEnd(4, "▱"); // unknown -> ▱▱▱▱

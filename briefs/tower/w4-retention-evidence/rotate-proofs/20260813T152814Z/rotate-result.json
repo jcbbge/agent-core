@@ -1,0 +1,45 @@
+{
+  "opts": {
+    "store": "board",
+    "dryRun": false,
+    "phase": 1,
+    "apply": true,
+    "evidenceDir": "/Users/jrg/.cursor/worktrees/w4-retention/wt-agnt-coder-w2y-pn/briefs/tower/w4-retention-evidence/rotate-proofs/20260813T152814Z",
+    "olderThanDays": null,
+    "towerHome": "/Users/jrg/.cursor/worktrees/w4-retention/wt-agnt-coder-w2y-pn/briefs/tower/w4-retention-evidence/rotate-proofs/20260813T152814Z/tower-copy"
+  },
+  "results": [
+    {
+      "action": "archive-jsonl",
+      "store": "board",
+      "phase": 1,
+      "activePath": "/Users/jrg/.cursor/worktrees/w4-retention/wt-agnt-coder-w2y-pn/briefs/tower/w4-retention-evidence/rotate-proofs/20260813T152814Z/tower-copy/board.jsonl",
+      "archivePath": "/Users/jrg/.cursor/worktrees/w4-retention/wt-agnt-coder-w2y-pn/briefs/tower/w4-retention-evidence/rotate-proofs/20260813T152814Z/tower-copy/archive/board/board-20260813T152830Z.jsonl",
+      "archiveRel": "archive/board/board-20260813T152830Z.jsonl",
+      "archivedByteEnd": 79997,
+      "archivedLineCount": 125,
+      "activeSizeBefore": 5182932,
+      "activeSizeAfter": 5182932,
+      "prefixSha256": "1e7a06f0a4db4a0ed8f5284b6f8c7cb8a5b45feaf812a7720fe8128c020d45ff",
+      "triggers": [
+        "lines 8125 > 8000"
+      ],
+      "manifestRow": {
+        "id": "rot-msroantj",
+        "ts": "2026-08-13T15:28:30.487Z",
+        "store": "board",
+        "phase": 1,
+        "archivePath": "/Users/jrg/.cursor/worktrees/w4-retention/wt-agnt-coder-w2y-pn/briefs/tower/w4-retention-evidence/rotate-proofs/20260813T152814Z/tower-copy/archive/board/board-20260813T152830Z.jsonl",
+        "archivedByteEnd": 79997,
+        "archivedLineCount": 125,
+        "activePath": "/Users/jrg/.cursor/worktrees/w4-retention/wt-agnt-coder-w2y-pn/briefs/tower/w4-retention-evidence/rotate-proofs/20260813T152814Z/tower-copy/board.jsonl",
+        "activeSizeBefore": 5182932,
+        "activeSizeAfter": 5182932,
+        "sha256": "1e7a06f0a4db4a0ed8f5284b6f8c7cb8a5b45feaf812a7720fe8128c020d45ff",
+        "dryRun": false,
+        "operator": "rotate.mjs"
+      },
+      "applied": true
+    }
+  ]
+}

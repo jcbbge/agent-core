@@ -1,0 +1,3 @@
+#!/usr/bin/env bun
+// Shim: canonical body at ~/agent-core/primitives/hooks/stop-verdict.mjs
+import '/Users/jrg/agent-core/primitives/hooks/stop-verdict.mjs'

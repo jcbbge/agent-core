@@ -153,8 +153,20 @@ herdr agent start agnt-wire-oauth --kind claude --pane <id>   # NAME lowercase-k
 herdr agent prompt <id> "Review the current diff; report only actionable findings." --wait --until working --timeout 30000
 ```
 
+**pi kind — the blessed fleet path.** Gateway models are addressed as
+`cursor/<id>[@ctx][:thinking|:fast]` via `--model` (the `cursor` provider
+is pi config, nothing more), thinking level via `--thinking` (they do not
+stack in one ID):
+
+```bash
+herdr pi                                  # daily entry (~/bin/herdr wrapper)
+herdr pi coder                            # profile / profile:option via profile-model
+spine-spawn worker --kind pi --profile coder …    # fleet path
+herdr agent start <name> --kind pi --pane <id> -- --model 'cursor/grok-4.5:high'
+```
+
 `agent start` waits for interactive readiness; launch by plain executable
-kind (`pi`, `claude`, `codex`, `opencode`, …) so its TUI opens. The pane must
+kind (`pi`, `claude`, `codex`, …) so its TUI opens. The pane must
 already sit at an interactive shell prompt (`agent_pane_busy` — retry
 briefly), and NAME must be session-unique (`agent_name_taken`). A
 freshly-split pane whose shell hasn't finished sourcing its profile yet can
@@ -178,15 +190,17 @@ herdr pane read <id> --source visible --lines 6 | grep -q "Pasted text" \
   && herdr pane send-keys <id> Enter && sleep 2 && herdr pane get <id>
 ```
 
-**Prefer the wrapper:** `~/herdr-spine/bin/spine-spawn <orch|worker|fanout|prompt>`
-bakes in topology, rename, readiness, verified submit (doc: spawn.md).
-Modes: `orch` (task tab + orchestrator), `worker` (sibling pane), `fanout`
-(dedicated `<task>-workers` tab, gridded, **hard-capped at 4 briefs/call**),
-`prompt` (verified follow-up); `-- --model sonnet` passthrough works here
-too. **The gap:** `spine-spawn` passes one role string to both `pane rename`
-and `agent start`, and `fanout` derives roles as `<task>-wN` — no prefix, no
-display-agent, so it does NOT satisfy the stamping mandate alone. Follow
-every `fanout`/`worker` call with, per worker:
+**Prefer the wrapper:** `~/bin/spine-spawn <orch|worker|fanout|prompt>`
+(= `python3 ~/herdr-spine/bin/spine-spawn` — **never `bun`**, bun parses the
+Python file as JS and dies). Bakes topology, rename, readiness, verified
+submit, control-flow stamps (doc: spawn.md). Modes: `orch` (task tab +
+orchestrator), `worker` (sibling pane; registration prefixes `cord-`/`orch-`/
+`agnt-`/`sagt-` set role tokens), `fanout` (dedicated `<task>-workers` tab,
+gridded, **hard-capped at 4 briefs/call**), `prompt` (verified follow-up).
+**Comms law:** idle/done after a board DONE + `.done` is success — collect on
+Tower/CTRL, never re-prompt for status (`~/.tower/COMMS-ARCH.md`).
+**The gap:** `fanout` still derives roles as `<task>-wN` — no prefix. Follow
+every `fanout` call with, per worker:
 
 ```bash
 herdr pane rename <id> "AGNT <headline>" && herdr pane report-metadata <id> \

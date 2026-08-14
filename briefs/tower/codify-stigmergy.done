@@ -1,0 +1,41 @@
+ORCH orch-codify-stigmergy DONE 2026-08-14
+
+## Commits (agent-core branch docs/codify-stigmergy-nq — not merged)
+- b20f63a docs(tower): codify stigmergy + nQ on COMMS-ARCH, RP, control-flow
+- 0b141c0 docs(profiles): standing pull-loop + concierge stigmergy exception
+- fc66fdf docs(brief): scope pull-loop to ranks 1–4 + nQ=0 before deliverable
+
+## Commits (cursor-shim main)
+- 6e41889 docs(fleet): five planes + pull loop; drop four-plane push framing
+
+## Per-file summary
+- COMMS-ARCH.md — plane 5: ranks 1–4 mandatory stigmergy, pull loop, two stopping states, decay/heartbeat, contest cite, stalled=wrong brief, concierge exception, nQ on field + nQ=0 before deliverable
+- RESPONSIBLE-PARTY-AND-NQ.md — §6 Field expression of nQ; orbit.zig vocabulary preserved; load-bearing nQ=0 invariant
+- control-flow.md — Communications: ranks 1–4 stigmergic + concierge leave-a-trace
+- profiles/{coordinator,orchestrator,coder,researcher}.md — pull loop + two stopping states
+- profiles/concierge.md — plane 4 exception once + board trace
+- brief/SKILL.md — scope ranks 1–4, anti push-and-wait, nQ fields, nQ=0
+- cursor-shim/rules/cursor-fleet.md — Five planes + pull loop; Four planes removed as standing law
+
+## Loop usability finding (mandatory)
+AWKWARD. claim TTL 30s requires a reliable heartbeat every ~20s. Observed twice this unit:
+1. Prior CORD claim evaporated without ORCH spawn (heartbeat shell died) — named in unit brief.
+2. ORCH heartbeat pid 38696 died mid-fanout; claims dropped to open until heartbeat restarted (pid 70446).
+Doctrine now names "Claim TTL requires reliable heartbeat" in COMMS-ARCH. Proposed fix: raise work-claimed TTL to 90–120s OR provide a first-class `pheromone_heartbeat` / latch-integrated claim holder so agents need not keep a background shell alive; alternatively emit claim with ttl_s override when long critical sections are expected. Decay-as-coordination stays — the fix is reliability of the heartbeat carrier, not removing evaporation.
+
+## Pheromone shape to tower/bus-data
+Posted by AGNT doctrine-law: t-mss73e8n-13sb — additive need-help fields `nq` + `ref` (ledger question id). Writer unchanged (bus-data owns).
+
+## Field ids
+- Parent WA: ph-mss6xd1d-uyml (unit) + ph-mss6xrer-9mzu (orch brief)
+- ORCH claims: ph-mss6yf9v-ku8l / ph-mss6yft6-ym0n (initial); heartbeats thereafter
+- Child WAs: ph-mss6zy2n-0wu7, ph-mss6zy8t-55xs, ph-mss6zytm-ko8f
+- AGNT dones: ph-mss73t84-2kxv (doctrine), ph-mss72vv7-7q2i (profiles), ph-mss739bm-dlvb (skills)
+
+## Deviations
+1. CURSOR_VERIFY_GATE=off for AGNT coder spawns — docs-only shared branch; worktree bifurcation would split prose. Criteria authored via verify-mark first; bypass audited.
+2. cursor-shim commit landed on cursor-shim main (not agent-core branch) — separate repo.
+3. Did not merge to agent-core main — CORD gates.
+
+## Verification (ORCH-run rg)
+PASS: profiles all four have pull loop / two stopping; COMMS-ARCH nQ=0 before deliverable; RESPONSIBLE-PARTY §6 field expression; cursor-fleet Five planes; no Four planes standing law.

@@ -1,0 +1,125 @@
+{
+  "categories": {
+    "generic-error": 61,
+    "no-such-file": 14,
+    "syntax-error": 5,
+    "timeout": 5
+  },
+  "consistent_across_sessions": [],
+  "errors": 85,
+  "focus": {
+    "command-not-found": {
+      "commands": [],
+      "errors": 0,
+      "sessions": 0
+    },
+    "connection": {
+      "commands": [],
+      "errors": 0,
+      "sessions": 0
+    },
+    "no-such-file": {
+      "commands": [
+        {
+          "command": "herdr pane",
+          "errors": 4,
+          "sessions": 1
+        },
+        {
+          "command": "echo",
+          "errors": 2,
+          "sessions": 2
+        },
+        {
+          "command": "cd",
+          "errors": 2,
+          "sessions": 2
+        },
+        {
+          "command": "ls",
+          "errors": 2,
+          "sessions": 2
+        },
+        {
+          "command": "sleep",
+          "errors": 2,
+          "sessions": 2
+        },
+        {
+          "command": "git status",
+          "errors": 1,
+          "sessions": 1
+        },
+        {
+          "command": "cat",
+          "errors": 1,
+          "sessions": 1
+        }
+      ],
+      "errors": 14,
+      "sessions": 9
+    },
+    "permission-denied": {
+      "commands": [],
+      "errors": 0,
+      "sessions": 0
+    },
+    "syntax-error": {
+      "commands": [
+        {
+          "command": "cd",
+          "errors": 2,
+          "sessions": 2
+        },
+        {
+          "command": "export",
+          "errors": 2,
+          "sessions": 1
+        },
+        {
+          "command": "echo",
+          "errors": 1,
+          "sessions": 1
+        }
+      ],
+      "errors": 5,
+      "sessions": 4
+    },
+    "timeout": {
+      "commands": [
+        {
+          "command": "dev-browser",
+          "errors": 1,
+          "sessions": 1
+        },
+        {
+          "command": "uuid",
+          "errors": 1,
+          "sessions": 1
+        },
+        {
+          "command": "bun [script]",
+          "errors": 1,
+          "sessions": 1
+        },
+        {
+          "command": "bun run",
+          "errors": 1,
+          "sessions": 1
+        },
+        {
+          "command": "cd",
+          "errors": 1,
+          "sessions": 1
+        }
+      ],
+      "errors": 5,
+      "sessions": 2
+    },
+    "unknown-option": {
+      "commands": [],
+      "errors": 0,
+      "sessions": 0
+    }
+  }
+}

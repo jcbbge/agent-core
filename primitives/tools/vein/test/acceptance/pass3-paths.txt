@@ -1,0 +1,21 @@
+# Pass-3 transcript paths from ~/agent-core/briefs/session-mining/fixtures-p3/selection.json
+/Users/jrg/.claude/projects/-Users-jrg-future/97502dbf-00c7-46e2-977a-2c0cf1955ca5.jsonl
+/Users/jrg/.claude/projects/-Users-jrg-agent-core/198bba2b-d472-4b26-b754-4a7e8d90b83a.jsonl
+/Users/jrg/.claude/projects/-Users-jrg--herdr-worktrees-future-c004-ux/01bffc6b-48ae-4662-bdb1-5928fa6baaba.jsonl
+/Users/jrg/.claude/projects/-Users-jrg-herdr-spine/0a34b40a-c79b-43f2-a247-264e4c00a2d9.jsonl
+/Users/jrg/.claude/projects/-Users-jrg--herdr-worktrees-future-c003-fractal-chrome/e842b684-8e27-48ac-aaf2-eb5778c52265.jsonl
+/Users/jrg/.claude/projects/-Users-jrg-infinity-bento/9e16cb9c-2c76-4b5b-b590-27f4e91c3e2f.jsonl
+/Users/jrg/.claude/projects/-Users-jrg-cairn/62444b33-0b33-40c1-b75a-5b3c649ae201.jsonl
+/Users/jrg/.claude/projects/-Users-jrg--bb-personal-workspaces-env-2nmkxay7tz/58a01afd-a784-478c-b159-9a5fcd9db99a.jsonl
+/Users/jrg/.claude/projects/-Users-jrg-constellation/02a708ae-ce64-415f-af7b-f13cc991e084.jsonl
+/Users/jrg/.claude/projects/-Users-jrg-circadian/d0ccaa44-040a-4a07-9b32-6d8a0f975a4c.jsonl
+/Users/jrg/.pi/agent/sessions/--Users-jrg-agent-core--/2026-08-11T18-32-09-386Z_019ff218-a5aa-7e53-af73-2fd5d91f14fc.jsonl
+/Users/jrg/.pi/agent/sessions/--Users-jrg-infinity-arc-worktree-ws-e-w4-c8-polish--/2026-08-11T18-16-15-952Z_019ff20a-1950-7ca4-9993-3ad229fe0b7b.jsonl
+/Users/jrg/.pi/agent/sessions/--Users-jrg-infinity-arc-worktree-ws-e-t17-closeout--/2026-08-11T16-42-19-947Z_019ff1b4-19ab-7e65-bef9-e2494908bd6e.jsonl
+/Users/jrg/.pi/agent/sessions/--Users-jrg-infinity-arc--/2026-08-11T15-22-57-325Z_019ff16b-6dad-749b-9c74-3dfafe688ccb.jsonl
+/Users/jrg/.pi/agent/sessions/--Users-jrg-circadian--/2026-08-10T21-07-11-404Z_019fed80-39ac-76e9-85d3-df877fca989a.jsonl
+/Users/jrg/.pi/agent/sessions/--Users-jrg-future--/2026-08-09T06-02-20-881Z_019fe51d-7551-758e-9a4f-bee908af6175.jsonl
+/Users/jrg/.pi/agent/sessions/--Users-jrg-fut--/2026-08-08T19-06-34-111Z_019fe2c5-12ff-7d03-9f2b-aea6d7696416.jsonl
+/Users/jrg/.pi/agent/sessions/--Users-jrg-constellation--/2026-08-05T06-26-17-975Z_019fd099-f2f7-7926-af32-55289c8c80ca.jsonl
+/Users/jrg/.pi/agent/sessions/--Users-jrg-auto-research-directives--/2026-07-31T05-06-19-234Z_019fb690-ede2-7e57-ac07-f9686994f37f.jsonl
+/Users/jrg/.pi/agent/sessions/--Users-jrg-herdr-spine--/2026-07-30T18-42-05-161Z_019fb455-6ce9-7aed-8190-f1e1ebd167c3.jsonl

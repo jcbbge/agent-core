@@ -1,0 +1,10 @@
+sample_id=t-msr391dq-nedz
+sample_topic=arc/infra-upgrade
+full_body_len=12561
+FULL_BODY_START
+RESUMPTION ROW — orch-infra-upgrade, infra-upgrade lane. Written 2026-08-13 for a successor on a DIFFERENT HARNESS with NONE of my context. Read this row and the two files named below; you will not need to ask anyone anything.
+
+=== BOTTOM LINE: THE LANE IS COMPLETE. NOTHING IS IN FLIGHT. NOTHING IS STRANDED. ===
+Do not resume this lane. Verify it and move on. There is no branch to pick up, no worktree to find, no uncommitted diff anywhere. Verified at handoff, not assumed:
+- `git worktree list |
+FULL_BODY_END

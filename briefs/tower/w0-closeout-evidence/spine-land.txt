@@ -1,0 +1,9 @@
+herdr-spine main land
+command: git -C ~/herdr-spine checkout main && git merge --ff-only b42132e
+result: Fast-forward 1872986..b42132e
+git log main -1 --oneline:
+b42132e fix(tower-auto): stop cc-hooks competing for ownership of Tower's deployed code
+git merge-base --is-ancestor b42132e main; EXIT=0
+ANCESTOR_EXIT:0
+main=b42132e463e17a62942625fda0835ab5c11e9ad1
+pushed: NO (per brief)

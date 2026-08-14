@@ -1,0 +1,32 @@
+# ORCH: stage A1/A2/A4 outputs separately or amend this list after their .done
+# Usage: xargs git add < briefs/wave2/a3-reorg-stage.txt
+# (skip comment lines)
+
+AGENTS.md
+primitives/10_plugins/alembic-telemetry.ts
+primitives/10_plugins/alembic/index.ts
+primitives/10_plugins/alembic/package.json
+primitives/10_plugins/composto.ts
+primitives/10_plugins/peer-session.ts
+primitives/10_plugins/perplexity-search.ts
+primitives/10_plugins/perplexity/index.ts
+primitives/10_plugins/perplexity/package.json
+primitives/10_plugins/propose-extension.ts
+primitives/10_plugins/rtk-rewrite.ts
+primitives/10_plugins/smart-search.ts
+primitives/10_plugins/subagent/agents.ts
+primitives/10_plugins/subagent/index.ts
+primitives/10_plugins/voice-report/index.ts
+primitives/hooks/rtk-guard.sh
+primitives/hooks/rtk-rewrite.sh
+primitives/hooks/rtk-rewrite.ts
+primitives/plugins/peer-session.ts
+primitives/plugins/alembic-boot
+primitives/plugins/alembic-ingest
+primitives/plugins/alembic-telemetry.ts
+primitives/plugins/alembic
+primitives/plugins/perplexity-search.ts
+primitives/plugins/perplexity
+primitives/plugins/subagent
+primitives/skills/aesthethic-interface-protocol/skill.md
+primitives/skills/aesthethic-interface-protocol.md

@@ -1,0 +1,31 @@
+=== VERB: burn ===
+2026-08-04: 10 spawn(s) · 55k subagent tokens
+2026-08-06: 14 spawn(s) · 71k subagent tokens
+2026-08-09: 16 spawn(s) · 208k subagent tokens
+2026-08-10: 21 spawn(s) · 304k subagent tokens
+2026-08-11: 10 spawn(s) · 66k subagent tokens
+2026-08-12: 18 spawn(s) · 185k subagent tokens
+2026-08-13: 30 spawn(s) · 175k subagent tokens
+
+today by spawn:
+  03:49:58 Agent/Explore [sonnet] "Repo grounding: portal client auth" - 0k tok, 0 tools, 0s
+  03:51:17 SubagentStop [claude-sonnet-5] "?" - 6k tok, 0 tools, 0s
+  03:51:24 SubagentStop [claude-sonnet-5] "?" - 8k tok, 0 tools, 0s
+  03:52:53 SubagentStop [claude-sonnet-5] "?" - 10k tok, 0 tools, 0s
+  03:52:55 SubagentStop [claude-sonnet-5] "?" - 9k tok, 0 tools, 0s
+  03:53:04 SubagentStop [claude-opus-5] "?" - 20k tok, 0 tools, 0s
+  03:53:07 SubagentStop [claude-sonnet-5] "?" - 10k tok, 0 tools, 0s
+  03:53:10 SubagentStop [claude-sonnet-5] "?" - 8k tok, 0 tools, 0s
+  03:54:22 SubagentStop [claude-sonnet-5] "?" - 16k tok, 0 tools, 0s
+  03:54:53 SubagentStop [claude-opus-5] "?" - 12k tok, 0 tools, 0s
+  05:22:51 Agent/general-purpose "Axis 1 sending audit" - 0k tok, 0 tools, 0s
+  05:23:13 Agent/general-purpose "Axis 2 receiving audit" - 0k tok, 0 tools, 0s
+  05:23:35 Agent/general-purpose "Axis 3 ingest audit" - 0k tok, 0 tools, 0s
+  05:23:52 Agent/general-purpose "Axis 4 reading audit" - 0k tok, 0 tools, 0s
+  05:24:10 Agent/general-purpose "Grounding corpus sweep" - 0k tok, 0 tools, 0s
+  05:26:57 SubagentStop [claude-sonnet-5] "?" - 11k tok, 0 tools, 0s
+  05:27:21 SubagentStop [claude-sonnet-5] "?" - 7k tok, 0 tools, 0s
+  05:27:34 SubagentStop [claude-sonnet-5] "?" - 18k tok, 0 tools, 0s
+  05:27:55 SubagentStop [claude-sonnet-5] "?" - 16k tok, 0 tools, 0s
+  05:28:11 SubagentStop [claude-sonnet-5] "?" - 22k tok, 0 tools, 0s
+exit:0

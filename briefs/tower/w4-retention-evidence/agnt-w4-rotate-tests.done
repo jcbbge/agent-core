@@ -1,0 +1,6 @@
+AGNT w4-rotate-tests DONE
+artifact: primitives/mcps/tower/rotate.test.mjs
+criteria: primitives/hooks/tower-rotate.criteria.md
+oracle-from: POLICY.md + agnt-w4-rotate brief only
+tester: run bun test rotate.test.mjs (test-maker did not run)
+2026-08-13T15:28:09Z
