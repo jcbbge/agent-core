@@ -285,6 +285,46 @@ The three self-similar tiers, named so the design stays coherent: the
 **rumen** digests what must be enforced. One estate, three verbs — see,
 reach, hold.
 
+## The metaphor (rev 3 — ruled to protect Made Well's nouns)
+
+The amalgamation framing is the operator's: twins in the womb, one absorbed
+by the other — P2's contracts are the absorption mechanism (two spawn doors
+become one organ; two multiplexers become two implementations of one
+socket).
+
+**The console/cartridge language is NOT promoted to framework level**,
+because Made Well already owns those nouns with precise meanings that must
+not dilute: *console* = the Made Well kernel; *cartridge* = a domain pack
+that seats via the Rubric's nine pins; *jump pack* = the cartridge's own
+verification protocol (rubric.md). Agents are none of these things.
+
+The framework gets the metaphor one altitude DOWN — the hardware the game
+system runs on. Working register (nouns chosen to collide with nothing):
+
+| Framework thing | Hardware word | Why it's exact |
+|---|---|---|
+| The unified framework | **the deck** | the operator's machine; engines jack in |
+| Engines (claude/pi/cursor) | **seated processors** | swappable silicon in a socket — never "cartridges"; you don't call the CPU a cartridge |
+| RuntimeAdapter (herdr today, Fut candidate) | **the socket** | one spec, many chips |
+| Tower | **the bus** | signal traces on the board — pheromones ARE traces |
+| Gates + rumen packs | **the lockout chip** | 10NES: the console that physically refuses unauthorized inserts — fences, not signs; rumen mints the per-project keys the lockout checks |
+| Circadian mind | **the battery save** | the only thing that survives power-off; context death is the power cycle |
+| Mirror + boot-card | **POST** | power-on self-test; a blank cell is a NO |
+| Gateway (strudel) | **the library index** | you don't load every game into RAM; you look it up by intent |
+| Bridges (cursor-shim) | **the adapter** | third-party hardware made to seat cleanly, removable without a trace |
+| Deploy | **firmware** | flashed by the installer, versioned |
+| Instruments | **the diagnostics kit** | vein/assay/latch/slim: what the technician plugs in |
+| Operator | **the player** | the only irreplaceable part |
+
+Made Well then nests inside untouched, one altitude UP: it is *what the
+deck runs* — the game system whose console/cartridge/jump-pack vocabulary
+keeps its exact rubric.md meaning. Work seats as cartridges into Made
+Well's console; engines seat as processors into the deck's socket. Two
+plug-relationships, two altitudes, zero shared nouns.
+
+(This also sharpens the name question: **deck** joins loom/keel/marrow as a
+candidate, with the cyberdeck lineage in its favor.)
+
 ## The five invariants of the rollup (non-negotiable)
 
 1. **The mirror is the gate.** `agent-core status` (→ `<name> status`) must
