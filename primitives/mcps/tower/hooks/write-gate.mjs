@@ -156,7 +156,7 @@ try {
     const payloadRef = claim.payload_ref ?? '<artifact-path>'
     lines.push(
       `outstanding claim ref=${claim.ref} topic=${claim.topic}: run ` +
-        `\`bun ~/.tower/cli.mjs emit work-done ${claim.topic} ${payloadRef} --ref ${claim.ref}\` to release it.`
+        `\`bun ~/.tower/cli.mjs emit work-done ${claim.topic} ${payloadRef} --ref ${claim.ref} --evidence "released by write-gate"\` to release it.`
     )
   }
   mkdirSync(dirname(statePath), { recursive: true })

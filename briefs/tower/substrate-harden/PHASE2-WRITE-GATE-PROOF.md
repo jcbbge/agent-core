@@ -153,3 +153,39 @@ then repeat the five commands in Section 3 above, substituting fresh `A`/`C`
 ids as printed. `TOWER_PHEROMONES_PATH` and `TOWER_BOARD_PATH` are left at
 their defaults; the probe topic `tower/write-gate-probe` is disposable and
 safe to re-run against the real pheromone/board files.
+
+## 6. Amendment (2026-08-14, CORD reopen) — suggested command made runnable
+
+CORD verified that the refusal stderr's suggested `emit work-done` command
+failed on paste: `emitPheromone` (`primitives/hooks/tower-ledger.mjs:161`)
+requires non-empty `evidence`, and the suggestion omitted `--evidence`.
+Fixed in `hooks/write-gate.mjs` (the suggestion now carries
+`--evidence "released by write-gate"`); oracle test 10 extended to assert
+`--evidence "<non-empty>"` in the stderr (no existing assertion weakened).
+`bun test write-gate.test.mjs` → **12 pass / 0 fail, 25 expect() calls**.
+
+Live re-probe under a fresh identity (`TOWER_FROM=orch-amend-probe`; a fresh
+identity is required because the Section 3 identity's `need-help` row was
+still live on this topic and correctly releases its claims):
+
+```
+$ A4=$(bun ~/.tower/cli.mjs emit work-available tower/write-gate-probe briefs/tower/substrate-harden/agnt-wg-probe.md --evidence "write-gate amend probe")
+A4=ph-mstapg3r-rfxw
+$ C4=$(bun ~/.tower/cli.mjs emit work-claimed tower/write-gate-probe amend --ref "$A4" --evidence "write-gate amend claim")
+C4=ph-mstapg5b-4ue6
+
+$ echo '{"cwd":"/Users/jrg/agent-core","session_id":"probe-amend","stop_hook_active":false}' | bun ~/.tower/hooks/write-gate.mjs; echo "exit=$?"
+[Tower write-gate] outstanding claim ref=ph-mstapg3r-rfxw topic=tower/write-gate-probe: run `bun ~/.tower/cli.mjs emit work-done tower/write-gate-probe amend --ref ph-mstapg3r-rfxw --evidence "released by write-gate"` to release it.
+exit=2
+```
+
+The suggested command, pasted verbatim, now succeeds and releases the claim:
+
+```
+$ bun ~/.tower/cli.mjs emit work-done tower/write-gate-probe amend --ref ph-mstapg3r-rfxw --evidence "released by write-gate"
+ph-mstapltk-unww
+exit=0
+
+$ echo '{"cwd":"/Users/jrg/agent-core","session_id":"probe-amend","stop_hook_active":false}' | bun ~/.tower/hooks/write-gate.mjs; echo "exit=$?"
+exit=0
+```

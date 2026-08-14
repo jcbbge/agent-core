@@ -340,6 +340,9 @@ describe('Tower write gate', () => {
       expect(result.stderr).toContain(TOPIC)
       expect(result.stderr).toContain(ref)
       expect(result.stderr).toContain('cli.mjs emit work-done')
+      // The suggested command must be RUNNABLE: emitPheromone requires
+      // non-empty evidence, so the command must carry --evidence "<value>".
+      expect(result.stderr).toMatch(/--evidence "[^"]+"/)
     })
   })
 
