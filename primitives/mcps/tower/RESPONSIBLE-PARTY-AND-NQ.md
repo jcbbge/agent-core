@@ -63,12 +63,18 @@ the asker's responsible party (its parent), *not* the operator.
   **No question reaches the human until the 3-turn budget is exhausted.**
 
 Effective routing (derived, append-only):
+- **Well-formed first.** A question without a non-empty trimmed `message` is
+  malformed — dead-letter it (`~/.tower/dead-letter.jsonl`); do **not**
+  compute `effectiveTo` toward the operator. Content-free rows
+  (`id`/`ts`/`cwd`/`kind` only) caused the 2026-08-13 doorbell storm when
+  the legacy fallback applied blindly (COMMS-ARCH §Alarm rationalization).
 - `effectiveTo(q)` = `to` of the latest `escalation` row referencing `q.id`,
-  else `q.to`, else (legacy, no `to`) `operator`.
+  else `q.to`, else (legacy well-formed, no `to`) `operator`.
 - `effectiveNq(q)` = `(q.nq ?? 0) − count(escalation rows for q.id)`.
-- A question surfaces to a pane iff `effectiveTo === thatPane`, or
-  (`effectiveTo === "operator"` and the pane is a top-of-tree/coordinator
-  surface). One question → exactly one surface. No storm.
+- A question surfaces to a pane iff it is well-formed **and**
+  (`effectiveTo === thatPane`, or (`effectiveTo === "operator"` and the pane
+  is a top-of-tree/coordinator surface)). One question → exactly one surface.
+  No storm.
 
 ---
 

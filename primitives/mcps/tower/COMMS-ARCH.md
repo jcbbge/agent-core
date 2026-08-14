@@ -157,10 +157,12 @@ inbox.
 ## Hard invariants
 
 - **Addressing is explicit.** Ledger rows carry `to`. Rows without `to` are
-  legacy: kind `question` defaults to operator-visible (a blocked agent is
-  always worth surfacing) and kind `alert` stays operator-visible (a
-  mis-routed alarm is worse than a noisy one); everything else defaults to
-  fleet mail, NOT operator mail.
+  legacy: kind `question` defaults to operator-visible **only when
+  well-formed** (non-empty `message`; see Alarm rationalization below) and
+  kind `alert` stays operator-visible (a mis-routed alarm is worse than a
+  noisy one); everything else defaults to fleet mail, NOT operator mail.
+  Content-free `question` rows (`id`/`ts`/`cwd`/`kind` only) are **malformed**,
+  not legacy — they must never inherit the operator fallback.
 - **No fabrication.** No component invents mail from status transitions.
   (40-tower-bridge on_done fabrication: OFF by default as of 2026-08-10;
   flag file ~/.tower/bridge-fabricate-done re-enables for headless fleets.)
@@ -235,6 +237,11 @@ inbox.
 A toast is a SUMMONS, and summonses are rare. "Status is not mail" extends
 to: **status is not a toast.**
 
+**Night orders (standing split of ring / tray / delete):**
+[`briefs/manifest-and-alarms/A1-NIGHT-ORDERS.md`](../../../briefs/manifest-and-alarms/A1-NIGHT-ORDERS.md)
+— jidoka: the machine is the counterparty; the operator is the exception
+handler. When a class is ambiguous, default to tray, not doorbell.
+
 - Notify ONLY for: (1) TASK COMPLETION — an ORCH finishing its unit of work
   (cycle landed / gate verdict / final report posted); (2) a genuine
   operator summons (blocked question addressed to the operator); (3) an
@@ -248,6 +255,25 @@ to: **status is not a toast.**
 - If the display duration is configurable, it must be long enough to read;
   if not, the content must survive in the Tower inbox so a missed flash
   costs nothing.
+
+## Alarm rationalization (2026-08-14)
+
+Process-control discipline (EEMUA): a plant fails dark operation not from
+missing sensors but from alarm floods that train the operator to ignore
+alarms. **Every signal names the consumer action it demands, or it is
+deleted.**
+
+- **Validate at emit.** `ask_user` / ledger `append` of `kind:"question"`
+  requires a non-empty trimmed `message`. Malformed emits are rejected
+  loudly and never persisted.
+- **Malformed ≠ legacy-valid.** A row with only `id`/`ts`/`cwd`/`kind` (no
+  `message`) is malformed. It does **not** receive the legacy
+  `to`-absent → operator fallback used by well-formed questions.
+- **Dead-letter, never doorbell.** Malformed questions (discovered on read
+  or rejected at write) go to `~/.tower/dead-letter.jsonl`, never into
+  `openQuestions` that block turn-end or ring the operator.
+- **Watch:** alarms answered vs ignored. Working when every doorbell
+  produces an action and no alarm class is ignored twice.
 
 ## Project isolation (operator, 2026-08-10)
 
