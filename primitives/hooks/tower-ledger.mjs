@@ -21,7 +21,11 @@ import { join, dirname } from 'node:path'
 import { homedir } from 'node:os'
 import { execFileSync } from 'node:child_process'
 
-export const TOWER = join(homedir(), '.tower')
+// TOWER_HOME is honored so test fixtures never touch live state (2026-08-14:
+// a rotate parity test was silently reading LIVE ~/.tower/cursors — masked
+// for a day by stale lock files whose spin-fallback disabled the cursor path).
+// Production leaves the env unset; homedir()/.tower is unchanged.
+export const TOWER = process.env.TOWER_HOME || join(homedir(), '.tower')
 export const LEDGER = join(TOWER, 'ledger.jsonl')
 export const BOARD = join(TOWER, 'board.jsonl')
 export const PHEROMONES = process.env.TOWER_PHEROMONES_PATH || join(TOWER, 'pheromones.jsonl')

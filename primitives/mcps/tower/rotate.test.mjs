@@ -400,15 +400,43 @@ describe('ledger read-across + active unchanged (AC: task 2 — archivePath/arch
     expect(existsSync(cursor.archivePath.replace(/^~/, process.env.HOME ?? ''))).toBe(true)
   }, 120_000)
 
+  // inboxState is read via a FRESH SUBPROCESS per read, not withTowerEnv:
+  // ES module caching bakes tower-ledger's path constants at the suite's
+  // first import, so per-test TOWER_HOME changes were silently ignored and
+  // this test read LIVE ~/.tower state (masked for a day by stale cursor
+  // lock files whose spin-fallback disabled the cursor path). A subprocess
+  // evaluates the module with the right env at process start.
+  const inboxStateSubprocess = async (towerHome, { noCursor = false } = {}) => {
+    const proc = Bun.spawn(
+      [
+        'bun',
+        '-e',
+        `const lib = await import(${JSON.stringify(join(import.meta.dir, 'lib.mjs'))});` +
+          `console.log(JSON.stringify(lib.inboxState(${JSON.stringify(AGENT_CORE)})))`,
+      ],
+      {
+        env: {
+          ...process.env,
+          TOWER_HOME: towerHome,
+          ...(noCursor ? { TOWER_LEDGER_NO_CURSOR: '1' } : {}),
+        },
+        stdout: 'pipe',
+        stderr: 'pipe',
+      },
+    )
+    const out = await new Response(proc.stdout).text()
+    const code = await proc.exited
+    expect(code).toBe(0)
+    return out.trim()
+  }
+
   test('ledger Phase-1 leaves ledger.jsonl bytes unchanged; inboxState parity', async () => {
     towerHome = makeTowerHome()
     seedEligibleLedger(towerHome)
     const ledgerPath = join(towerHome, 'ledger.jsonl')
     const before = readFileSync(ledgerPath)
 
-    const baseline = await withTowerEnv(towerHome, { noCursor: true }, async (lib) =>
-      lib.inboxState(AGENT_CORE),
-    )
+    const baseline = await inboxStateSubprocess(towerHome, { noCursor: true })
 
     const { code } = await runRotate(
       ['--store', 'ledger', '--phase', '1', '--apply'],
@@ -417,8 +445,8 @@ describe('ledger read-across + active unchanged (AC: task 2 — archivePath/arch
     expect(code).toBe(0)
     expect(readFileSync(ledgerPath).equals(before)).toBe(true)
 
-    const after = await withTowerEnv(towerHome, {}, async (lib) => lib.inboxState(AGENT_CORE))
-    expect(JSON.stringify(after)).toBe(JSON.stringify(baseline))
+    const after = await inboxStateSubprocess(towerHome, {})
+    expect(after).toBe(baseline)
   }, 120_000)
 })
 
