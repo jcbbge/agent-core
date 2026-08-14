@@ -275,8 +275,8 @@ and must be declared as such at its call site.
 `board_post` refuses scratch/temp cwds (server.mjs) and rejects authored board
 rows without non-empty `from` (claim|finding|note). The pi fallback is
 `bun ~/.tower/cli.mjs post` (brief SKILL.md) — same schema, same guards.
-Hand-append to `board.jsonl` is banned in docs; there is still no kernel
-lock on the file itself (see Board row schema below).
+Hand-append to `board.jsonl` is banned in docs; sanctioned writes use
+flocked `append()` in `tower-ledger.mjs` (see Board row schema below).
 
 ### Board row schema (2026-08-13)
 
@@ -285,12 +285,14 @@ Two families coexist on `board.jsonl`; readers must tolerate both:
 | Family | Discriminator | Required fields | `from` |
 |---|---|---|---|
 | **Authored fleet mail** | `type` (claim \| finding \| note) | `id`, `ts`, `cwd`, `topic`, `body`, `from` | Required non-empty at write time (`board_post`, `cli.mjs post`) |
-| **Machine emission** | `kind` (e.g. lineage, bypass-audit) | `ts`, `kind`, `via` | Must not be invented; readers use `from ?? '?'` |
+| **Machine emission** | `kind` (e.g. lineage, verify-gate-bypass, bypass-audit) | `ts`, `kind`, `via` | Must not be invented; readers use `from ?? '?'` |
 
 Authored rows never carry `kind`; machine rows never carry authored `type`.
 Append-only JSONL, one object per line, newline-terminated (`tower-ledger.mjs`
-`append`). No file lock on append — concurrent writers may interleave lines;
-cursor locks exist only for read cursors, not writes.
+`append`). Exclusive lock on the write path: `append()` uses `flock(2) LOCK_EX`
+on the append fd (per-file lockfile fallback if FFI unavailable). Hand-append
+and direct `appendFileSync` bypass that lock and remain banned for production
+writers. Cursor locks (`*.cursor`) exist only for read cursors, not writes.
 
 ### JSONL consumer integrity (2026-08-13)
 

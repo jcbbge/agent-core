@@ -4,12 +4,12 @@
 // Writes NOTHING. Scoping comes from ~/.tower/lib.mjs (boardFor / normCwd) —
 // the one canonical implementation, including git-worktree collapse.
 import { readFileSync } from 'node:fs'
-import { boardFor, readAll, normCwd, BOARD } from '/Users/jrg/.tower/lib.mjs'
+import { boardFor, readAll, normCwd, BOARD, readJsonlStats } from '/Users/jrg/.tower/lib.mjs'
 
 const argv = process.argv.slice(2)
 const root = argv[0]
 if (!root || root.startsWith('--')) {
-  console.error('usage: bun twr.ts <project-root> [--board <path>] [--interval <ms>] [--limit <n>]')
+  console.error('usage: bun twr.ts <project-root> [--board <path>] [--interval <ms>] [--limit <n>] [--once]')
   process.exit(1)
 }
 const opt = (name: string, dflt: string) => {
@@ -17,6 +17,7 @@ const opt = (name: string, dflt: string) => {
   return i > 0 && argv[i + 1] ? argv[i + 1] : dflt
 }
 const boardPath = opt('--board', BOARD)
+const ONCE = argv.includes('--once')
 const interval = Number(opt('--interval', '2000'))
 const limit = Number(opt('--limit', '0')) // 0 = per-section defaults
 const LIM = { transitions: limit || 10, findings: limit || 5, questions: limit || 5 }
@@ -65,6 +66,13 @@ function render(rows: any[]) {
     (r) => `${hhmm(r.ts)}  ${r.from ?? '?'} · ${r.topic ?? '?'} · ${oneline(r.body)}`)
   section('OPEN QUESTIONS', openQuestions(rows).slice(-LIM.questions),
     (r) => `${hhmm(r.ts)}  ${r.from ?? '?'} · ${oneline(r.body)}`)
+  const integrity = readJsonlStats(boardPath)
+  if (integrity.bad_line_count > 0) {
+    const maxBad = integrity.bad_line_numbers.length ? Math.max(...integrity.bad_line_numbers) : '?'
+    lines.push(DIM + `integrity: ${integrity.bad_line_count} unparseable line(s) on board (max bad line ${maxBad})` + RESET)
+  } else {
+    lines.push(DIM + 'integrity: 0 unparseable lines on board' + RESET)
+  }
   process.stdout.write('\x1b[2J\x1b[H' + lines.join('\n') + '\n')
 }
 
@@ -88,4 +96,5 @@ const tick = () => {
   render(scoped())
 }
 tick()
+if (ONCE) process.exit(0)
 setInterval(tick, interval)

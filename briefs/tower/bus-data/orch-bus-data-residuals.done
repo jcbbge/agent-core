@@ -1,0 +1,45 @@
+# ORCH bus-data-residuals — DONE
+
+**Unit:** close unlocked writers + integrity surfaces (T1–T4)
+**Branch/worktree:** `tower/bus-data-residuals` @ `/Users/jrg/.cursor/worktrees/agent-core/wt-orch-bus-data-residuals`
+**Status:** Verify GO — uncommitted on branch for CORD Land (no ORCH commit)
+**Date:** 2026-08-13
+
+## Verdicts
+
+| Task | Verdict | Evidence |
+|------|---------|----------|
+| T1 statem→flocked append | GO | `statem.ts:98 append(BOARD,row)`; no `appendFileSync`; smoke in STATEM-TWR-RESIDUALS-PROOF.md |
+| T2 twr bad_line_count | GO | live `twr --once` → integrity:26 (max 2577); matches readJsonlStats |
+| T3 COMMS-ARCH factual | GO (nQ1 bounce) | Plane 5 intact (320 lines); flock LOCK_EX language; `verify-gate-bypass` named; finding to CORD tower for co-sign |
+| T4 residual scan | GO (coder after 3 SAGT fails) | RESIDUAL-APPEND-SCAN.md; in-fence residual=statem only (fixed on branch); no new WAs |
+
+## Tests (ORCH ran)
+
+- `statem-twr-residuals.test.mjs` **8/8** (nQ1 BAD TEST fixed — clipped body assert)
+- `flock-integrity.test.mjs` + `jsonl-integrity.test.mjs` **25 pass / 1 skip / 0 fail**
+
+## Diff summary (branch)
+
+- `primitives/tools/statem/statem.ts` — flocked `append()`
+- `primitives/tools/statem/twr.ts` — `readJsonlStats` footer + `--once`
+- `primitives/mcps/tower/COMMS-ARCH.md` — flock truth + verify-gate-bypass (Plane 5 preserved)
+- `primitives/tools/statem/statem-twr-residuals.{test.mjs,criteria.md}` — oracle
+- briefs proofs + `.done` markers under `briefs/tower/bus-data/`
+
+## Field work-done
+
+- `ph-mss7zlt3-tiq4` ref `ph-mss6xmo5-71z2` (statem)
+- `ph-mss7zlt3-3mpq` ref `ph-mss6xnca-p9ex` (twr)
+- `ph-mss7zlt3-1nyl` ref `ph-mss6xnwh-wkn4` (COMMS-ARCH)
+
+## Deviations
+
+1. First COMMS make worktree predated Plane 5 land — wiped stigmergy section; rejected; nQ1 bounce on orch wt.
+2. Oracle 1/8 fail = BAD TEST (twr line clip); test-maker nQ1 → 8/8.
+3. SAGT residual-scan self-reaped 3× without artifacts; completed via coder + VERIFY_GATE=off (briefs-only).
+4. No commit on branch — CORD Lands.
+
+## Land request
+
+Merge `tower/bus-data-residuals` → `main` from orch worktree (or cherry-pick the 3 production files + tests + briefs). Deployed `~/.tower/COMMS-ARCH.md` is symlink to primitives — Lands with main.

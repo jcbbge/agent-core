@@ -1,0 +1,18 @@
+agnt-statem-twr-test-bounce complete 2026-08-14T01:45:00Z
+role: TEST-MAKER (Orion, nQ bounce)
+from: AGNT statem-twr-test-bounce
+worktree: /Users/jrg/.cursor/worktrees/agent-core/wt-orch-bus-data-residuals
+
+test: primitives/tools/statem/statem-twr-residuals.test.mjs
+criteria: primitives/tools/statem/statem-twr-residuals.criteria.md
+
+DID NOT COMMIT
+
+Root cause: extractIntegrityCount loose /integrity[^\n]*?(\d+)/ matched ANSI SGR digits ([2m dim, [32m color) before the footer count — not a fixture bad-line mismatch (readJsonlStats and twr both report 3 for the 3-line bad fixture).
+
+Fix: strip ANSI escapes; anchor on integrity: N unparseable footer format.
+
+Run: cd /Users/jrg/.cursor/worktrees/agent-core/wt-orch-bus-data-residuals && bun test primitives/tools/statem/statem-twr-residuals.test.mjs
+Result: 8 pass, 0 fail (30/30 consecutive green)
+
+Handoff: tester re-runs same command.

@@ -1,0 +1,7 @@
+AGNT statem-twr-residuals (coder) — 2026-08-13
+Unit: T1 flocked statem append + T2 twr bad_line_count surface
+Proof: briefs/tower/bus-data/STATEM-TWR-RESIDUALS-PROOF.md
+Changed: primitives/tools/statem/statem.ts, primitives/tools/statem/twr.ts
+T1: appendFileSync removed; append(BOARD, row) via ~/.tower/lib.mjs; temp-board smoke 1 parseable line
+T2: twr footer integrity line; --once added; live count 26 (max bad line 2577) matches readJsonlStats
+Status: implementer complete; tester + arbiter pending
