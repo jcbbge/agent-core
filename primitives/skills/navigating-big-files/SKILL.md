@@ -116,7 +116,7 @@ Never paste a whole large peek back as `oldText` — keep it as small as uniquen
 
 - File is small (< ~1500 lines) → just `Read` it.
 - File isn't a supported language (add coverage before using).
-- You need cross-file symbol resolution → that's `kotadb` / `coraline`, not `bigfile`.
+- You need cross-file symbol resolution → that's `coraline` (via super-search), not `bigfile`. (kotadb was retired 2026-08-14.)
 - You need to modify → `Edit` / `Write`, using coordinates from `bigfile`.
 
 ## Anti-patterns — DO NOT do these

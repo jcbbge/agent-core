@@ -1,3 +1,17 @@
+# Debugging-Async Notes (research doc, not a skill)
+
+**Provenance:** this was `primitives/skills/debugging-async.md` — its body was
+always a "Primitive 3 — Skills" research writeup (an explainer about what
+skills *are*, not a debugging playbook), masquerading as the registered
+`skill/debugging-async` primitive. Moved here 2026-08-14 (AGNT [doc-truth]
+Unit 5); the registered skill primitive and its deployed copies
+(`~/.claude/skills/debugging-async/`, `~/.pi/agent/skills/debugging-async/`,
+`~/.cursor/skills-cursor/debugging-async/`) were removed in the same pass.
+If async-debugging guidance is wanted as an actual skill, author fresh
+content under that name — don't resurrect this file's body as one.
+
+---
+
 # Primitive 3 — Skills
 
 > *On-demand expertise modules: reusable knowledge that loads only when it matters.*

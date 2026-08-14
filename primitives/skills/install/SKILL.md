@@ -1,6 +1,6 @@
 ---
 name: install
-description: Register a new tool into the global dev stack — installs it, wires it into CLAUDE.md, all harnesses (opencode, pi.dev, claude code), new-machine setup, port registry, and dev portal. Use when the user says "install", "register", "add to my stack", or "wire up" a new tool.
+description: Register a new tool into the global dev stack — installs it, wires it into CLAUDE.md, all harnesses (pi.dev, claude code, cursor), new-machine setup, port registry, and dev portal. Use when the user says "install", "register", "add to my stack", or "wire up" a new tool.
 argument-hint: <tool name or URL>
 disable-model-invocation: true
 allowed-tools: Bash Read Write Edit Glob Grep WebFetch
@@ -106,26 +106,13 @@ Create `/Users/jrg/.claude/skills/<toolname>/SKILL.md` if the tool warrants its 
 
 Skip if the tool is a background service or daemon with no interactive command use.
 
-### OpenCode slash command
-Create `/Users/jrg/.config/opencode/commands/<toolname>.md` and the dotfiles copy at `/Users/jrg/dotfiles/harnesses/opencode/commands/<toolname>.md`.
-
-Use the `!` shell output syntax to run the tool and inject results:
-```
----
-description: <what this command does>
----
-!`/opt/homebrew/bin/<tool> $ARGUMENTS`
-```
-
-Or write a richer instructional prompt if needed.
-
-### OpenCode plugin (if warranted)
-If the tool should be callable as a tool during agent execution (not just a slash command), create `/Users/jrg/.config/opencode/plugins/<toolname>.ts` and the dotfiles copy. Match the pattern of `/Users/jrg/.config/opencode/plugins/composto.ts`. Add to the `plugin` array in `/Users/jrg/.config/opencode/opencode.json`.
-
-Only create a plugin if a slash command alone is insufficient.
-
 ### pi.dev extension
 Create `/Users/jrg/.pi/agent/extensions/<toolname>.ts`. Match the exact pattern of `/Users/jrg/.pi/agent/extensions/composto.ts` — same imports, same `pi.registerTool` shape, same error handling.
+
+### Cursor skill
+Create `/Users/jrg/.cursor/skills-cursor/<toolname>/SKILL.md` if the tool warrants its own skill in Cursor. Cursor is a registered harness (since 2026-08-12) reached via `~/agent-core/primitives/directives/cursor.md` + the `agent-core` registry — add the primitive there rather than hand-copying.
+
+(opencode was dropped as a harness 2026-08-11 — do not create opencode integrations for new tools.)
 
 ---
 
@@ -145,7 +132,7 @@ Confirm each of the following explicitly:
 1. `which <tool>` → returns a path
 2. `<tool> --version` → exits 0
 3. `dev status` → service appears (if port-based)
-4. `~/.config/opencode/commands/<toolname>.md` exists
-5. `~/.pi/agent/extensions/<toolname>.ts` exists
-6. `~/.claude/skills/<toolname>/SKILL.md` exists (if created)
+4. `~/.pi/agent/extensions/<toolname>.ts` exists
+5. `~/.claude/skills/<toolname>/SKILL.md` exists (if created)
+6. `~/.cursor/skills-cursor/<toolname>/SKILL.md` exists (if created)
 7. `~/.claude/CLAUDE.md` contains the new section

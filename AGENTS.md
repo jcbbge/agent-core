@@ -10,7 +10,7 @@ Stack, control-flow, comms, and harness runtime doctrine live in the canonical f
 
 `agent-core` is a Zig CLI and a primitive store. jrg authors agent primitives (skills, rules, hooks, commands, directives, subagents) once under `primitives/` and uses the CLI to diff and deploy them to harness config dirs.
 
-Two harnesses are registered: **pi** and **claude-code**. (opencode was dropped 2026-08-11.)
+Three harnesses are registered: **pi**, **claude-code**, and **cursor** (added 2026-08-12). (opencode was dropped 2026-08-11.) A fourth, non-harness pseudo-target, **machine**, covers machine-wide estate with no config-dir profile of its own (tool binaries, git hooks) — see the check-only verbs below.
 
 The binary is at `~/agent-core/cli/zig-out/bin/agent-core`, symlinked to `/opt/homebrew/bin/agent-core`.
 
@@ -67,7 +67,7 @@ Rebuild after any CLI source change before testing.
 
 ```bash
 agent-core status                        # diff source vs deployed, all primitives
-agent-core status --harness <name>       # filter to one harness (pi | claude-code)
+agent-core status --harness <name>       # filter to one harness (pi | claude-code | cursor | machine)
 agent-core sync                          # sync all stale primitives
 agent-core sync <id>                     # sync one primitive (e.g. skill/debug-hypothesis)
 agent-core sync --harness <name>         # sync all for one harness
@@ -116,6 +116,11 @@ Primitive type is the prefix before `/`: `skill/`, `rule/`, `hook/`, `command/`,
 | `copy_file` | harness has a target dir for the primitive type | Copies source to resolved destination |
 | `inline_agents` | `rule_strategy inline_agents` in harness profile | Injects/updates delimited section in harness agents file |
 | `unsupported` | no deploy mapping | Skips with message |
+| `link` (check-only) | registry line `link <harness> <path>` | Verifies path is a symlink to the source; never writes |
+| `check` (check-only) | registry line `check <harness> <path>[#<needle>]` | Verifies path mentions needle (default: source); never writes |
+| `binary` (check-only) | registry line `binary <harness> <path>` | Verifies path is executable, no older than source; never writes |
+
+The three check-only verbs (added 2026-08-14) exist for VISIBILITY, not ownership — they report state for estate installed by other tools (Tower's installer, the harnesses, `zig build`) that agent-core must never plant symlinks over (operator ruling, 2026-08-12). `machine` is a pseudo-harness for machine-wide estate with no harness profile of its own (tool binaries, git hooks); every such registry line carries its path explicitly since there is no profile to resolve against. `agent-core status --harness machine` filters to it.
 
 **Inline section delimiters** (when `inline_agents` is active):
 
@@ -127,20 +132,21 @@ Primitive type is the prefix before `/`: `skill/`, `rule/`, `hook/`, `command/`,
 
 Existing sections are replaced in-place. New sections are appended. Content outside delimiters is never touched.
 
-Current registry (2026-08-11): rules are **store-only** — no `inline_agents` deploy. Pi's `~/.pi/agent/AGENTS.md` is a symlink to `primitives/AGENTS.md`; inline rule injection through that symlink is banned.
+Current registry: rules are **store-only** — no `inline_agents` deploy. The composed entrypoints (`~/.claude/CLAUDE.md`, `~/.pi/agent/AGENTS.md`, `~/AGENTS.md`) are generated copies of `primitives/AGENTS.md` (banner + harness delta appended), not symlinks — a 2026-08-12 ruling retired the pi symlink specifically because inline rule injection through a symlink would corrupt the canonical source.
 
 ---
 
 ## Harness Deploy Targets (from live registry)
 
-| | pi | claude-code |
-|--|----|----|
-| **Skills** | `~/.pi/agent/skills/<name>/SKILL.md` (directory) | `~/.claude/skills/<name>/SKILL.md` (directory) |
-| **Prompts** | `~/.pi/agent/prompts/<name>.md` | — |
-| **Hooks** | TypeScript extensions in `~/.pi/agent/extensions/` (manual; not agent-core synced) | `~/.claude/hooks/<name>.sh` |
-| **Rules** | store-only (`primitives/rules/`; read on demand) | store-only |
+| | pi | claude-code | cursor |
+|--|----|----|----|
+| **Skills** | `~/.pi/agent/skills/<name>/SKILL.md` (directory) | `~/.claude/skills/<name>/SKILL.md` (directory) | `~/.cursor/skills-cursor/<name>/SKILL.md` (directory) |
+| **Prompts/Commands** | `~/.pi/agent/prompts/<name>.md` | — | `~/.cursor/commands/<name>.md` |
+| **Hooks** | TypeScript extensions in `~/.pi/agent/extensions/` (manual; not agent-core synced) | `~/.claude/hooks/<name>.sh` | `~/.cursor/hooks/<name>.sh` + wiring check against `~/.cursor/hooks.json` |
+| **Agents/subagents** | — | `~/.claude/agents/` | `~/.cursor/agents/` |
+| **Rules** | store-only (`primitives/rules/`; read on demand) | store-only | store-only |
 
-Do not guess paths. Read `~/.agent-core/registry` or run `agent-core status` before adding deploy targets.
+Cursor registered 2026-08-12 (added `--harness cursor`; full parity ruling extended most existing skills to `deploy cursor`). Do not guess paths. Read `~/.agent-core/registry` or run `agent-core status` before adding deploy targets.
 
 ---
 

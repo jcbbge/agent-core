@@ -11,6 +11,8 @@
 //   bun ~/.tower/cli.mjs field [--topic t] [--json]
 //   bun ~/.tower/cli.mjs scan [--topic t] [--json]
 //   bun ~/.tower/cli.mjs burn     — fleet token burn (today, by session)
+//   bun ~/.tower/cli.mjs all      — status + inbox + board combined
+//   bun ~/.tower/cli.mjs projects — every project drawer with pending inbox
 //
 // Used by the /tower command (dynamic context injection) and directly by the
 // developer from any terminal.

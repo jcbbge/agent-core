@@ -11,7 +11,10 @@ Tool **implementations** living in the canonical pantry.
 - `_deprecated/` — extension-variant duplicates (kotadb / colgrep / bigfile /
   composto / tldraw as pi `registerTool` extensions) that were never
   installed, plus orphaned experiments (openrouter-research, install).
-  The live pi surface for those tools is super-search + CLIs; the live CC
+  kotadb itself was fully retired from super-search 2026-08-14 (now an
+  honest 5-layer router: colgrep, coraline, pickbrain, ripgrep, bigfile) —
+  this dir is git-history-only for it, not a pending integration. The live
+  pi surface for the other tools is super-search + CLIs; the live CC
   surface is MCP. Kept for git history only — do not resurrect without
   deleting one of the two packagings first.
 
