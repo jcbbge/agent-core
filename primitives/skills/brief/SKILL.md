@@ -71,6 +71,64 @@ claiming files (mcp__tower__board_read).">
   communicates *what* an agent is doing to a human glancing at the sidebar;
   `spine-claim` communicates *which resources* are owned to peer agents and
   the orchestrator — use both together.
+- **MANDATORY — brief the STIGMERGIC FIELD, or the agent will park.** This
+  system is stigmergic by design (`~/.tower/COMMS-ARCH.md` plane 5, and plane
+  1: *"Pull-based: anyone who cares reads it"*). A brief that only says "post
+  findings to board topic X" teaches push-and-wait, and an agent taught that
+  **stops the moment it has reported** — waiting for a scheduler that does not
+  exist. Measured 2026-08-13: 19 pheromone rows against 6,400 board rows, and
+  a whole fleet of twelve parked simultaneously because every brief omitted
+  this. `spine-claim` covers *resource ownership*; this is different — it is
+  how *work itself* moves.
+  **Scope (ranks 1–4 only).** Stigmergic coordination is MANDATORY for
+  Coordinator → Orchestrator → Agent/Subagent (ranks 1–4). Those tiers
+  coordinate **through the environment**, never by talking directly to each
+  other. The **Concierge (rank 0) is the explicit exception** — it may
+  address panes directly to facilitate the movable parts; that is plane 4
+  (OPERATOR DIRECTIVES), not a stigmergy violation. A directive delivered
+  into a pane must also be **recorded on the board** so the substrate carries
+  it. See `~/.tower/COMMS-ARCH.md` plane 5 and
+  `~/.tower/RESPONSIBLE-PARTY-AND-NQ.md`.
+  **Never teach push-and-wait for ranks 1–4.** Do not instruct workers to
+  "post findings and wait," "route questions to the concierge," or treat
+  board posts as a stopping state. Fleet mail (board CLAIMs/findings) is
+  plane 2; the pull loop (plane 5) is how work moves. Brief both when needed,
+  but the pull loop is the standing behavior — not "report and await
+  instruction."
+  Every brief for ranks 1–4 must carry the pull loop:
+  - **Emit** work others could take: `work-available` with topic, payload ref,
+    and **mandatory evidence** (an emit without evidence is not an emit).
+  - **Read the field before ever going idle.** Open work you can take, you
+    claim (`work-claimed`, `ref`-ing the exact pheromone id) and do.
+  - **`work-done`** `ref`-ing what you claimed; **`need-help`** instead of
+    going quiet.
+  - **`need-help` carries nQ semantics** (`~/.tower/RESPONSIBLE-PARTY-AND-NQ.md`):
+    include `nq` (remaining escalation budget, default 3 minus escalation
+    count); express the target as a **route derivation hint resolving one
+    link up the lineage** — never a hard address; `ref` the ledger question id
+    so the field and inbox planes stay one truth. One question → exactly one
+    surface. No storm.
+  - **nQ=0 before deliverable.** An actor must not emit `work-done` while it
+    holds unresolved questions — *"nQ = the number of unresolved questions a
+    star holds. A star must reach nQ=0 before emitting its deliverable."*
+    (`orbit.zig:9`). Post `need-help` (or close the question via the ledger)
+    first.
+  - **Heartbeat your claims** — an unheartbeated `work-claimed` evaporates by
+    design so the work returns to the field. That is the mechanism that
+    protects the fleet from a dead agent, and it only works if agents actually
+    heartbeat. **Claim TTL is 30s** — heartbeat at roughly ttl/3 (~every 10–20s)
+    or the claim evaporates mid-task (2026-08-13: CORD work-available
+    evaporated mid-dispatch without reliable heartbeat).
+  - TTLs per D5: `work-available` 15–60 min, `work-claimed` 30s + heartbeat,
+    `work-done` 24h, `need-help` nQ-bounded; read-time evaporation over an
+    append-only log. Dedupe by id, ack by id, act at most once.
+  - Verbs: MCP `pheromone_emit` / `pheromone_field`, or
+    `bun ~/.tower/cli.mjs emit <scent> <topic> <payload_ref> [--ref id]
+    [--to-role r] [--evidence path] [--ttl N]` and `… field`.
+  - State the two acceptable stopping conditions explicitly: **every
+    done-condition met**, or **a posted BLOCKED/`need-help` naming what is
+    needed and who owns it, after proceeding with everything that does not
+    depend on it.** "Reported and awaited instruction" is not a stopping state.
 
 ## Tasks
 1. <precise action> — done when: <exact, testable condition>
