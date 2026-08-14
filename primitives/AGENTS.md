@@ -100,6 +100,13 @@ in this file (Work tracking), not in the rule store. Project rules surface
 per harness (CC: `.claude/rules` + `@`-imports; pi: `~/.pi/agent/rules/`).
 Read on demand — not auto-inlined here.
 
+**Enforcement law (2026-08-14):** every law names its enforcer — DOOR
+(sanctioned tool's only path), HOOK (mechanical refusal), or the honest
+DOCTRINE label (unenforced; a compilation bug, not a rule to remember
+harder). Ledger + doors (`spine-workspace`, `spine-ruling`, `spawn-door.sh`,
+write-gate registration): `primitives/rules/ENFORCEMENT.md`. A new law lands
+with its enforcer named or its DOCTRINE label explicit.
+
 ## Pi extensions (pi only)
 
 `~/.pi/agent/extensions/*.ts`, each `export default function(pi)`, jiti-loaded,
