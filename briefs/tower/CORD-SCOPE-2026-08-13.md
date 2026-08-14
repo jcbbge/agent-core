@@ -1,4 +1,4 @@
-# CORD [Tower] — scope fence (2026-08-13 night resume)
+# CORD [Tower] — scope fence (2026-08-14 unpark)
 
 ## Comms law
 
@@ -10,25 +10,26 @@ Two stopping states only. Stalled fleet = wrong brief, not missing scheduler.
 | Item | Land |
 |---|---|
 | W0–W5 fully-op CORD scope | prior lands; drift 0 FAIL |
-| Spine twin | herdr-spine `077044b` |
+| Spine twin (cc-hooks/server.mjs) | herdr-spine `077044b`; re-verified 6047ced3 three-way |
 | W2 consumer surface | `406a59d` |
 | Wave-rollup skill + dogfood | `d82cce0` |
 | Codify stigmergy + nQ doctrine | `94c2d0d` (+ cursor-shim `6e41889`) |
 | A6 tax-baseline report | `a5236b8` |
+| Spine bare `board_append` flock | herdr-spine `25c1ef0` (`_spine_common` + `spine-claim`) |
+| COMMS-ARCH factual co-sign | `verify-gate-bypass` named; posted on `tower/bus-data` |
 
 ## Not ours
 
-- `tower/bus-data` open field WAs (cursor-spine / spine server) — CORD bus-data
+- cursor-shim printf BOARD WAs (`to_role: CORD cursor-shim`) + bus-data `need-help` → concierge
 - Board compaction Phase-2 / rotate Phase-2 — concierge ruling
 - agent-core push GH013 — operator
 - Arc fleet — CORD arc
 
 ## Named residuals (honest, not silent)
 
-- Doorbell / spine done→deliverable pairs: GAP in W3 FINAL (not re-opened this resume)
-- Claim TTL 30s heartbeat fragility — doctrine names it; runtime fix is a future unit (bus-data or tower)
+- Doorbell / spine done→deliverable live-pair: GAP in W3 FINAL (exercise gap, not integrity hole)
+- Claim TTL 30s heartbeat fragility — doctrine names it; runtime fix is a future unit
 
 ## Stopping state this resume
 
-CORD-scope open missions for fully-op + codify + wave-rollup + A6 land: **done-conditions met**.
-Not parked awaiting instruction. Next work enters via field `work-available` or concierge directive.
+Open field WAs routed to CORD tower: **cleared** (twin + spine flock). Remaining open field rows are cursor-shim / concierge. Done-conditions for claimed work met. Not awaiting a prompt.
