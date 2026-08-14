@@ -127,8 +127,14 @@ pass / 0 fail, doctor 14 ok / 0 fail, pushed).
 
 ## L6 · GENOME + MIRROR — agent-core
 
-Repo `~/agent-core` (green, pushed). Kernel CORE → **kernel/**; the zig CLI
-CORE → **mirror/** (already its own repo/submodule: `jcbbge/agent-core-cli`).
+**TOPOLOGY RULING (operator, 2026-08-14, rev 5): agent-core is NOT part of
+Tup.** It is the operator's personal machine tooling directory — the house's
+law, registry, mirror, and skills. Tup consumes it as a machine PREREQUISITE
+(bootstrap step 2) and grows its OWN kernel/ and mirror/; anything that
+moves from here into Tup is extracted piece-by-piece via the grouping
+walkthrough, never absorbed wholesale. The Tup submodule that briefly
+existed was removed same day (tup `e5aeabe`). Dispositions below read
+**MACHINE (personal)** with per-piece extraction candidacy noted where real.
 
 | Piece | Count / detail | Disposition |
 |---|---|---|
@@ -263,8 +269,8 @@ candidates loom/keel/marrow/deck retired.) Layout:
 
 ```
 tup/
-  kernel/       law · rules · profiles · directives · skills   (from agent-core/primitives)
-  mirror/       registry + sync + status + component-verify    (from agent-core/cli — already a submodule)
+  kernel/       Tup's OWN law · profiles · contracts            (new — per-piece extraction from the operator's agent-core, walkthrough-ruled)
+  mirror/       Tup's OWN registry + status                     (new — machine agent-core/cli is the prerequisite instrument until then)
   substrate/    RuntimeAdapter + reflexes                      (from herdr-spine)
   field/        the bus: server · cli · grammar · hooks · doctrine  (from primitives/mcps/tower)
   gates/        canonical enforcement bodies + VERIFY oracles  (from primitives/hooks)
@@ -353,12 +359,14 @@ registers keep Made Well's console/cartridge/jump-pack untouched.)
 **P0 — done (today).** Estate green, pushed, mirrored (250/0/0), fully
 inventoried (this document).
 
-**P1 — the umbrella (1 sitting).** Create the repo; adopt `agent-core`,
-`herdr-spine`, `circadian`, `cursor-shim`, `rumen`, `strudel` as submodules
-beside the existing `cli` one. Write `bootstrap.sh`: fresh clone →
-submodules → build zig tools → `deploy/install` (idempotent; today's
-installers composed) → `status` green. Zero file moves; one clone now holds
-the entire organism. *Acceptance:* bootstrap on a scratch $HOME passes
+**P1 — the umbrella (DONE 2026-08-14, corrected same day).** `jcbbge/tup`
+created with FIVE organ submodules — `herdr-spine`, `circadian` (engine
+only; mind data structurally excluded), `cursor-shim`, `rumen`, `strudel`.
+agent-core was briefly a sixth and was removed by topology ruling: it is a
+machine PREREQUISITE bootstrap declares (step 2), never a submodule.
+`bootstrap.sh`: fresh clone → submodules → build zig tools → mirror gate →
+boot-card report → honest NOT-YET list. Zero file moves; one clone holds
+the framework organs. *Acceptance:* bootstrap on a scratch $HOME passes
 boot-card.
 
 **P2 — the contracts (the real design work).** Freeze six seams as
