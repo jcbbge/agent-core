@@ -1,0 +1,8 @@
+DONE
+unit: A6 vein retro-baseline
+report: ~/agent-core/research/A6-tax-baseline-2026-08-13.md
+signal: noise — SNR 0.024 (within-class variance swamps between-class differences)
+headline: irreversible/data-ops 17.1% [8-33] n=35 lit-only; feature-with-schema 7.4% [5-11] n=312; test-authoring 3.0% [1-8] n=101; docs-only 2.6% [1-6] n=235; mechanical-refactor collapsed n=8 refuse-threshold
+cannot: tax.jsonl empty; LEARNED 0; arbiter bounce rates; cursor JSONL not in vein; board DONE→rework fleet rate; causal delay model
+worker: agnt-coder-w2y-p1g (reaped) · VERIFY PASS by orch-orchestrator-w2y-p1e
+board: agent-core/a6-baseline
