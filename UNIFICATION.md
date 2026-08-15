@@ -45,7 +45,7 @@ an engine. Everything below exists to hold what engines cannot.
 
 | Piece | Where | Disposition |
 |---|---|---|
-| herdr 0.8.0 (server + TUI + CLI + socket API) | `~/.local/bin/herdr`; source checkout `~/source/herdr` + `~/source/herdr-RETROFIT-MAP.md` | ADAPTER (behind the RuntimeAdapter seam — P2 contract) |
+| herdr 0.8.0 (server + TUI + CLI + socket API) | `~/.local/bin/herdr`; source checkout `~/source/herdr` + `~/source/herdr-RETROFIT-MAP.md` | ADAPTER (behind the RuntimeAdapter seam — P2 contract). **Relicensed Apache-2.0 at 0.8.0** (dossier-proven, 2026-08-14): fork/vendor inside Tup is now legal, widening P2's options; the generated 251KB API schema + CI is the pinning instrument. Full evidence: `~/tup/research/herdr-architecture-dossier.md` |
 | `~/bin/herdr` wrapper (`herdr pi [profile]` blessed fleet path) | `~/bin` | CORE → substrate/ |
 | config.toml spine-managed block (sidebar rows, keybindings prefix+space / prefix+i) | `~/.config/herdr/config.toml` L19–148 | CORE → deploy/ (installer-owned block) |
 | plugins.json (herdr-spine enabled: events/startup/actions/link_handlers) | `~/.config/herdr/plugins.json` | CORE → deploy/ |
