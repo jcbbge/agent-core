@@ -390,6 +390,18 @@ versioned documents + VERIFY manifests in `kernel/contracts/`:
   relationship (see, reach, hold).
 *Acceptance:* component-verify runs all six manifests green.
 
+**P2's first settled input — the fork posture (operator-ruled 2026-08-14,
+house/rulings):** EXTEND herdr, never fork by default — versioned plugin
+surface + RuntimeAdapter, pinned by diffing the generated API schema per
+release. Forking is a standing OPTION that never expires (Apache-2.0 on
+shipped versions is irrevocable), exercised only on a named trigger:
+license change on new versions · upstream abandonment · a hard blocker
+upstream refuses. Evidence base: the herdr dossier + reviews in
+`~/tup/research/`. Grounding facts: herdr is Herdr Inc., YC-backed,
+actively shipping (0.8.0; commercial hosted-agents teaser pending) —
+abandonment is not the near-term risk; churn and cloud-gravity are, and
+both are hedged by the adapter + schema tripwire.
+
 **P3 — physical consolidation, leaf-first, mirror-gated.** Order chosen so
 each move's dependents are already inside: instruments → gates → field →
 substrate → method → mind engine → kernel+mirror last. Each move = relocate
