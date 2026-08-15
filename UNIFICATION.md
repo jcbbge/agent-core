@@ -369,7 +369,7 @@ boot-card report → honest NOT-YET list. Zero file moves; one clone holds
 the framework organs. *Acceptance:* bootstrap on a scratch $HOME passes
 boot-card.
 
-**P2 — the contracts (the real design work).** Freeze six seams as
+**P2 — the contracts (the real design work).** Freeze seven seams as
 versioned documents + VERIFY manifests in `kernel/contracts/`:
 - **RuntimeAdapter** (substrate↔body): spawn / address / send / read /
   wait-for-status / lifecycle-events / tokens — herdr is implementation #1;
@@ -388,7 +388,14 @@ versioned documents + VERIFY manifests in `kernel/contracts/`:
   enforceable wall through the same DOOR/HOOK machinery — PACK-CONTRACT.md
   is the draft; freezing it also settles the mirror↔gateway↔rumen
   relationship (see, reach, hold).
-*Acceptance:* component-verify runs all six manifests green.
+- **Org topology** (roles↔field, operator-designed 2026-08-14): the org
+  chart as a rooted tree of layers — nLayers × nAgents, all comms via Tower
+  (lateral = field within a unit; down = recorded directives; up = one-link
+  reports under nQ), the org spec as DATA, and the house five-tier as the
+  minimal instance. Draft: `~/tup/contracts/org-topology.md` (default
+  strata: ORG/CEO → DEPT → DIVISION → STRIKE TEAM lead+members; queues per
+  layer; five open questions listed for the cycle).
+*Acceptance:* component-verify runs all seven manifests green.
 
 **P2's first settled input — the fork posture (operator-ruled 2026-08-14,
 house/rulings):** EXTEND herdr, never fork by default — versioned plugin
