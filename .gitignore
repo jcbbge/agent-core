@@ -16,3 +16,6 @@ node_modules/
 # disk, verifiable by those hashes; they do not enter the repo.
 briefs/tower/bus-data/backups/
 briefs/tower/w0-swap-evidence/board.jsonl.pre-recovery-*
+# Same ruling, already recorded in the tree by an earlier pass — see
+# rotate-proofs/*/TOWER-COPY-OMITTED.md. PROOF.md carries the shas.
+briefs/tower/w4-retention-evidence/rotate-proofs/*/tower-copy/
