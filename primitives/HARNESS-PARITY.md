@@ -81,7 +81,13 @@ harness config naming it on an event. An unwired gate reports ✗, not ✓.
 | **herdr** (multiplexer ops) | herdr CLI + skill — harness-agnostic (shell/socket) | ← (+ deployed skill) | ← (+ deployed skill) | `agent-core status` → skill/herdr (also `deploy prime-agent`) |
 | **tup** (durable deck / `socket/` seam) | deployed skill | ← | ← | `agent-core status` → skill/tup (pi + claude-code + cursor + prime-agent) |
 | **herdr agent state** | `herdr-agent-state.ts` | `herdr-agent-state.sh` | `herdr-agent-state.sh` | herdr's own estate — `herdr integration install <harness>` (NOT registered) |
-| **herdr-spine (fleet spawn)** | `spine-spawn … --kind pi --profile <p>` | `spine-spawn … --kind claude --profile <p>` | `cursor-fleet up\|orch\|worker\|make` (cursor-shim; spine refuses cursor kinds and points there) | `~/bin/spine-spawn --help`; `command -v cursor-fleet` |
+| **herdr-spine (fleet spawn)** | `spine-spawn … --kind pi --profile <p>` | `spine-spawn … --kind claude --profile <p>` | `spine-spawn … --kind cursor --profile <p>` — proven live 2026-08-16 (pane `w3W:p3`, `agent=cursor`, `source=herdr:cursor`, status `working`). `cursor-fleet up\|orch\|worker\|make` also still live and unmodified; both paths work | `bash ~/herdr-spine/test/spine-cursor-route.sh` → `PASS=30 FAIL=0`; `command -v cursor-fleet` |
+| **Fleet-spawn model resolution** | gateway slug passed through as-is | `models.json` → `kind_models.claude` | `CURSOR_MODEL_MAP` in `spine-spawn` translates the profile's gateway slug to a cursor-agent id; unknown slug → best-effort de-slug; nothing resolvable → `auto` + WARN | `bash ~/herdr-spine/test/spine-cursor-route.sh` (C4a-C4e); live: spawn log line `model=composer-2.5-fast` from `--profile researcher` |
+| **Resource claim** (`spine-claim`) | works unmodified | works unmodified | works unmodified — **run by a cursor agent itself** 2026-08-16, and its claim token was seen by `spine-watch` from another pane. Engine-blind by construction (`:157` `$HERDR_PANE_ID`, `:213` `herdr pane report-metadata`) | `spine-claim claim probe --ttl 30 && spine-claim release probe` (exit 0 on every harness) |
+| **Workspace door** (`spine-workspace`) | works unmodified | works unmodified | works unmodified — no pane or engine concept at all; a cursor pane and a claude pane produced byte-identical output and the same exit code | `grep -c 'herdr workspace' ~/herdr-spine/bin/spine-workspace` → `4` (pure herdr calls, no engine branch) |
+| **Ruling deposit** (`spine-ruling`) | works unmodified | works unmodified | works unmodified — pure board append, no pane concept; refuses an unscoped ruling on every harness | `python3 -c "import json;print(sum(1 for l in open('$HOME/.tower/board.jsonl') if l.strip() and json.loads(l).get('topic')=='house/rulings'))"` |
+| **Fleet observation** (`spine-watch`) | works unmodified | works unmodified | works unmodified — **no source filter of any kind**, so a cursor pane is observed like any other; 31 token events captured on `w3W:p3` 2026-08-16 | `grep -c source ~/herdr-spine/bin/spine-watch` → `0` (nothing to widen) |
+| **Session duration** (`ctl-fleet`) | **NOT MEASURED** — renders `—` | real duration, read from `~/.claude/projects` transcripts | **NOT MEASURED** — renders `—`. Deliberate: `thesis.md:67` rules out truth derived from exhaust, so no second transcript reader was added. A dash says "not measured here"; the blank it replaced read as a sub-minute session | `bun ~/herdr-spine/bin/ctl-fleet \| head -400` — cursor rows show `—`, claude rows show a real duration, same frame |
 | **herdr tooling** (ctl-fleet, handlers, statem obs) | herdr-side, watches panes of any kind — agnostic | ← | ← | `ls ~/herdr-spine/bin/handlers/` |
 | **Made Well (statem, twr)** | `bun primitives/tools/statem/{statem,twr}.ts` — agnostic; Verify beat enforced by briefs (pi/claude) | ← | ← + cursor-shim arbiter enforces Verify beat natively | `ls ~/agent-core/primitives/tools/statem/` |
 | **Profiling (role identity)** | `spine-spawn --profile` reads `primitives/profiles/<role>.md` | same (`--kind claude`) | `cursor-spine <profile>` reads the same dir (`cursor-spine:52,393`) | `grep -n PROFILES_DIR ~/cursor-shim/cursor-spine` |
@@ -116,6 +122,22 @@ harness config naming it on an event. An unwired gate reports ✗, not ✓.
   N/A today: pi agent definitions (profiles are pi's agents), cursor
   circadian *write-side* (wake reads are wired; sleep/REM run machine-side in
   the circadian repo, not per-harness).
+- **The spawn-door misdirection — RESOLVED 2026-08-16, by making the pointer
+  true rather than by editing the hook.** `primitives/hooks/spawn-door.sh:39-40`
+  denies any command containing `herdr agent start`, on every harness, with no
+  harness branch, and its deny text points at one destination:
+  `~/bin/spine-spawn`. That row is recorded FULL on cursor above, and the hook
+  genuinely did fire on cursor — but until today the destination it named
+  refused cursor at `spine-spawn:1470-1475`, and `~/bin/herdr:83` writes
+  `cursor` into `~/.config/herdr/desk-harness`, which `spine-spawn:1459-1468`
+  reads as the default kind. A cursor agent that obeyed the door was therefore
+  routed into a hard `sys.exit(1)`: the gate was enforcing, correctly, a path to
+  nowhere. **A hook can be FULL and still be a dead end; "the guard fires" and
+  "the guard helps" are separate facts, and only the first was ever verified.**
+  The refusal is now deleted and cursor spawns through that exact door
+  (`PROOF-cursor-spawn.md`), so the hook's single unbranched pointer is correct
+  for all three harnesses. `spawn-door.sh` itself was not modified and needs no
+  cursor branch. Verify: `grep -c 'cursor spawns do not go through' ~/herdr-spine/bin/spine-spawn` → `0`.
 
 ## Known boundaries (disclosed, not routed)
 
