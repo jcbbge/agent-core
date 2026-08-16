@@ -49,6 +49,7 @@ and a compilation note. Vows are not a status.
 | No provider/model/harness names in briefs or law | AGENTS.md §Fleet spawn; 2026-08-14 ruling | none | DOCTRINE | candidate: extend `enforce-brief.mjs` + a brief-lint in `brief` SKILL |
 | Comms: status is not mail; no fabrication | COMMS-ARCH | fabrication OFF by default (flag-gated) | DOOR | all |
 | Naming prefixes before agent start | control-flow.md §Naming | `spine-spawn` stamps; raw path refused by spawn-door (all three harnesses) | DOOR+HOOK | CC + pi + cursor |
+| Board row is exactly one newline-terminated JSON object | COMMS-ARCH §Board row schema; tower-bus-integrity task-3 | `tower-ledger.mjs jsonlRowRejectReason` + `appendLine` (called by `append`) | DOOR | JS/Bun writers via cli/server/lib. herdr-spine `board_append` is a second writer — not this door |
 
 ## Parity law (operator ruling, 2026-08-14)
 

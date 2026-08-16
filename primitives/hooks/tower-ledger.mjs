@@ -134,8 +134,28 @@ function withAppendLockfile(file, fn) {
   throw new Error(`append lock timeout: ${file}`)
 }
 
-export function append(file, obj) {
-  const line = JSON.stringify(obj) + '\n'
+function isPlainObject(v) {
+  return v !== null && typeof v === 'object' && !Array.isArray(v)
+}
+
+/** Refuse a JSONL row that is not exactly one newline-terminated JSON object. */
+export function jsonlRowRejectReason(line) {
+  if (typeof line !== 'string') return 'row is not a string'
+  if (!line.endsWith('\n')) return 'row has no terminating newline'
+  if (line.indexOf('\n') !== line.length - 1) return 'row contains an embedded newline'
+  const payload = line.slice(0, -1)
+  if (payload.length === 0) return 'row is empty'
+  let parsed
+  try {
+    parsed = JSON.parse(payload)
+  } catch {
+    return 'row is not parseable JSON'
+  }
+  if (!isPlainObject(parsed)) return 'row is not exactly one JSON object'
+  return null
+}
+
+function writeLocked(file, line) {
   mkdirSync(dirname(file), { recursive: true })
   if (_flock) {
     const fd = openSync(file, 'a')
@@ -150,6 +170,18 @@ export function append(file, obj) {
   } else {
     withAppendLockfile(file, () => appendFileSync(file, line))
   }
+}
+
+/** Sanctioned raw-line write. Validates, then flocked-appends. */
+export function appendLine(file, line) {
+  const reason = jsonlRowRejectReason(line)
+  if (reason) throw new Error(`board append refused: ${reason}`)
+  writeLocked(file, line)
+}
+
+export function append(file, obj) {
+  if (!isPlainObject(obj)) throw new Error('board append refused: not a JSON object')
+  appendLine(file, JSON.stringify(obj) + '\n')
 }
 
 // ─── dead-letter sink (COMMS-ARCH §Alarm rationalization) ───────────────────
