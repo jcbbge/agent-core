@@ -21,14 +21,40 @@ here contaminates control arms.
 | Herdr | active — live multiplexer (panes, detection, CLI + socket) | `~/agent-core/primitives/skills/herdr/SKILL.md` — fleet agents invoke when operating panes. The operator does not. |
 | Tup | active — durable deck; `socket/` is the seam to a runtime | `~/agent-core/primitives/skills/tup/SKILL.md` — concierge/CORD invoke for findings, spawn-door law, supervisor, mirror. Wired runtime today = herdr. |
 | Tower | active | MCP `mcp__tower__*` (CC) · `~/.tower/cli.mjs` + `board.jsonl` (everywhere) — see below |
-| Coraline | active | CLI `coraline` (33 languages) — no MCP registration |
+| Coraline | active | CLI `coraline` — symbol graph, callers, impact; any repo after `init`+`index`; 33 languages; no MCP |
+| colgrep | active | CLI `colgrep` — semantic grep of the working tree |
+| pickbrain | active | CLI `pickbrain` — semantic search of past agent sessions, not source |
 | Composto | active | CLI `composto` — IR compression; TS/JS/Python/Go/Rust, NOT Swift/Zig |
 | slim | active (2026-08-11) | 6-verb output compactor (`~/.local/bin/slim`; source `~/agent-core/primitives/tools/slim/`, Zig) — compacts ls/ps/wc/df/git status/git log only; truth law: child exit codes propagate, unparseable output passes raw, truncation always marked. CC: PreToolUse `slim-guard.sh` · pi: `slim-rewrite` extension · cursor: preToolUse `slim-guard-cursor.sh` (`~/.cursor/hooks.json`). Pipes/compounds/machine-format flags never rewritten |
 | latch | active (2026-08-11) | blocking wait/hold primitive (`~/.local/bin/latch`; source `primitives/tools/latch/`, Zig) — wait on pane state/files/board/gates with distinct exit codes; replaces polling loops |
-| vein | active (2026-08-11) | transcript-corpus miner (`~/.local/bin/vein`; source `primitives/tools/vein/`, Zig) — reproduces the session-mining studies in seconds; the acceptance instrument for tooling decisions |
+| vein | active (2026-08-11) | transcript-corpus miner (`~/.local/bin/vein`; source `primitives/tools/vein/`, Zig) — the acceptance instrument for "did agents actually run X" |
 | assay | active (2026-08-11) | memory-propagation instrument (source `primitives/tools/assay/`, Zig) — cohort tool, proposes only; golden set = 5 hand-labeled sessions, decoy-FP 0/25 is the standing honesty metric |
 | cursor-shim | active (2026-08-11, operator-sanctioned reversal of the same-day CLI retirement) | `~/cursor-shim/` — self-contained, rip-out-able bridge running `cursor-agent` tiers inside herdr+Tower topology; spawn via `cursor-fleet` / `cursor-spine` ONLY (spine-spawn still refuses cursor kinds and points there); enforces the Made Well Verify beat (bifurcated test/impl worktrees, arbiter, nQ≤3). Docs: `~/cursor-shim/docs/inner-loop-verify.md`; rules: `~/cursor-shim/rules/cursor-fleet.md`; proof: `docs/qa-verify.sh` (71/71). Delete the dir = integration gone |
-| Bigfile | active | pi: via super-search `--file` · CC: `mcp__bigfile__*` · cursor: MCP `bigfile` (`~/.cursor/mcp.json` → `bun run primitives/tools/bigfile/src/server.ts`) |
+| Bigfile | active | MCP on CC (`mcp__bigfile__*`) and cursor (`bigfile` in `~/.cursor/mcp.json`); CLI/library `~/agent-core/primitives/tools/bigfile/`. Never Read a 3k+ PHP/JS/TS/TSX file. |
+
+## Utensils — call them by name
+
+No search router. Super-search was retired 2026-08-16 (unused; its auto-route
+only woke Coraline for two repo names). Every harness deploys a skill per
+utensil. Call the binary or MCP. Do not invent a second router.
+
+HOOK (`utensil-guard.mjs` / `utensil-guard-pi.ts`, 2026-08-16): native Read of
+a 3k+ PHP/JS/TS/TSX file, natural-language Grep, bare `sleep` / sleep-poll,
+and transcript-dir greps are denied and pointed at the utensil. Bypass:
+`UTENSIL_GUARD=off`. coraline and composto remain skill-only (no safe matcher).
+
+| Need | Utensil |
+|---|---|
+| Meaning-search this working tree | `colgrep "<query>"` (hook-denied NL Grep) |
+| Symbol / callers / impact (any indexed repo) | `coraline query` / `callers` / `impact` |
+| Exact string or regex | `rg` or the harness Grep tool |
+| One 3k+ PHP/JS/TS/TSX file | bigfile MCP (`load` → `symbols`/`grep`/`peek`) (hook-denied Read) |
+| Map of a file, not the body | `composto ir <file> L1` |
+| What did we decide last session | `pickbrain "<recall>"` (hook-denied transcript-dir grep) |
+| Noisy `ls`/`ps`/`git status`/`git log` | slim (hook-enforced on the six verbs) |
+| Wait, don't poll | `latch wait --pane\|--file\|--board` (hook-denied sleep-poll) |
+| Did agents actually use the pantry | `vein report --last N` |
+| Did wake-memory change behavior | `assay` |
 
 ## Tower — the message bus (orchestration convention)
 
@@ -54,22 +80,6 @@ is the bus (how their output reaches the user).
   in the same breath. A prompt to a pane isn't delivered until its
   `agent_status` flips to `working`.
 - Full protocol: `~/agent-core/primitives/rules/tower-orchestration.md`.
-
-## Search — one canonical router
-
-Every harness: `bun ~/agent-core/primitives/skills/super-search/search.ts
-"<query>" [--pattern] [--repo] [--file] [--scope] [--limit]` (CC + cursor:
-also the `super-search` skill wrapper).
-Canonical home: `~/agent-core/primitives/skills/super-search/` —
-`~/.claude/skills/super-search` and `~/.cursor/skills-cursor/super-search`
-symlink to it.
-Layers: colgrep (project) · coraline (`~/source`) · pickbrain (memory) ·
-ripgrep (exact) · bigfile (>3k-line files).
-Extend this skill — never build a second router.
-
-Layers are also callable individually: `grep` (ripgrep); `colgrep`,
-`coraline`, `pickbrain`, `composto` CLIs; CC additionally has
-`mcp__bigfile__*` MCP tools; cursor has the `bigfile` MCP server.
 
 ## Bigfile — huge-file navigation
 
@@ -119,8 +129,8 @@ state), `tower-auto.ts` (ambient Tower posting), `tower-lifecycle.ts`
 `write-gate.ts` + `spawn-door.ts` (2026-08-14 enforcement adapters, shims →
 `primitives/hooks/write-gate-pi.ts` / `spawn-door-pi.ts` — see
 `primitives/rules/ENFORCEMENT.md`). Removed 2026-08-02:
-`strudel/` (parity with CC — both harnesses reach the stack via super-search
-+ CLIs; strudel itself untouched at `~/strudel`). Not installed: subagent,
+`strudel/` (parity with CC — both harnesses reach the stack via utensil
+CLIs + MCP; strudel itself untouched at `~/strudel`). Not installed: subagent,
 smart-search, propose-extension, peer-session — spawn agents via the herdr
 skill (invoke on demand).
 
@@ -193,7 +203,12 @@ never `git add -A`.
 | Project | Path | Context lives in |
 |---|---|---|
 | Arc (event sales) | `~/Infinity/arc/` | repo `AGENTS.md` (invariants, delegation, testing) |
-| Strudel + evals | `~/strudel/`, `~/evals/` | repo docs + session memory |
+
+## Paused — do not surface
+
+| Project | Path | Note |
+|---|---|---|
+| Strudel + evals | `~/strudel/`, `~/evals/` | Paused entirely (operator, 2026-08-16) — not in-flight, not this-week forward |
 
 ## Retired — never reference
 
@@ -210,7 +225,9 @@ corvus/lyra/spectra agents (`_deprecated-alembic/`) · KotaDB `:7001` +
 `com.kotadb.server` launch agent + CC `kotadb` HTTP MCP (2026-08-06; launchd
 agent booted out, stale `~/Library/LaunchAgents` symlink + `~/.claude.json`
 registration removed — DB still at `~/.kotadb/kota.db`) · smart_search pi
-extension (never installed; router = super-search) · substrate MCP / "breath
+extension (never installed) · **super-search router (2026-08-16; unused;
+classifier only woke Coraline for two repo names — utensils are called by
+name)** · substrate MCP / "breath
 lifecycle" (never registered) · coraline MCP registration (CLI only) ·
 executor `:8788`, anima `:3098`, dev-brain `:3097`, SurrealDB `:8002`,
 Manifold / UHP / Mesh-OS.

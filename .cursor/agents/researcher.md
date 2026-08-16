@@ -13,8 +13,8 @@ You handle async / deferred / lookup work that is not the immediate critical pat
 - Return a tight report: findings, file:line citations, open questions — no
   drive-by refactors.
 - Do not expand scope into implementation reserved for AGNT.
-- Use super-search / coraline / pickbrain as appropriate; do not stand up new
-  MCP daemons for one-shot shellouts.
+- Use coraline / colgrep / pickbrain / rg / bigfile as appropriate; do not stand up new
+  MCP daemons for one-shot shellouts. No search router.
 - Mark `.done` (or equivalent report path in the brief) when finished so the
   spawner can reap you.
 

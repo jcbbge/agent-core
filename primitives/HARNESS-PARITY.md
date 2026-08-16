@@ -17,13 +17,13 @@ build it before calling the harness registered.
 ~/agent-core/cli/zig-out/bin/agent-core status --harness machine   # tool binaries, git hooks
 ```
 
-**Current: 250 ok / 3 stale / 0 missing** (2026-08-14).
+**Current: 340 ok / 0 stale / 0 missing** (2026-08-16, after utensil-guard
+HOOK: `utensil-guard.mjs` bound on CC PreToolUse `Read|Grep`+`Bash` and cursor
+preToolUse `Read|Grep|Shell`; pi/prime extension shims; directive/core
+recomposed. Super-search remains retired.)
 
-The three stale rows are real and named: `tool/slim`, `tool/latch`, and
-`tool/vein` are installed at `~/.local/bin/` from builds that predate the last
-edit under each tool's `src/`. `zig build` + reinstall clears them. They are
-listed here rather than rounded away — a green number bought by not looking is
-the failure mode this file exists to prevent.
+The 2026-08-14 stale-binary paragraph is struck: live `agent-core status`
+this session reports 0 stale. Re-run the binary before citing a count.
 
 **On the number 214.** Until 2026-08-14 this file claimed "214 ok / 0 stale /
 0 missing", and that was true of the *registered subset* while being false of
@@ -65,11 +65,12 @@ harness config naming it on an event. An unwired gate reports ✗, not ✓.
 | **Tools/bins** (slim, latch, vein, assay) | `~/.local/bin/` on PATH — harness-agnostic | ← | ← | `agent-core status --harness machine` → tool/* |
 | **cursor-fleet / cursor-spine** | n/a | n/a | `~/cursor-shim/` (rip-out-able; not agent-core estate) | `command -v cursor-fleet` |
 | **slim guard** (rewrite adapter) | extension shim `~/.pi/agent/extensions/slim-rewrite.ts` → canonical `primitives/hooks/slim-rewrite.ts` | PreToolUse `hook/slim-guard` (managed) | `hooks.json` preToolUse `hook/slim-guard` (managed, hooks-json adapter) | `agent-core status` → hook/slim-guard, hook/slim-guard-wiring, hook/slim-rewrite-pi |
+| **utensil guard** (pantry use) | extension shim `~/.pi/agent/extensions/utensil-guard.ts` → `primitives/hooks/utensil-guard-pi.ts` | PreToolUse `Read\|Grep` + `Bash` → store `utensil-guard.mjs` | `hooks.json` preToolUse matcher `Read\|Grep\|Shell` → same mjs (`hook/utensil-guard`) | `agent-core status` → hook/utensil-guard{,-pi,-prime} |
 | **Write-gate** (the model to copy — FULL) | `write-gate-pi.ts` via ext shim | `~/.tower/hooks/write-gate.mjs` (Stop) | `write-gate-cursor.sh` (stop) | `agent-core status` → hook/write-gate{,-cursor,-pi} |
 | **Spawn-door** (FULL) | `spawn-door-pi.ts` via ext shim | `spawn-door.sh`, store path invoked directly | `spawn-door.sh`, store path invoked directly | `agent-core status` → hook/spawn-door{,-pi} |
 | **Grounding hook** | `grounding-hook.ts` (body in extensions dir) | `~/.claude/hooks/grounding-hook.mjs`, 3 bindings | **none** — parity gap | `agent-core status` → hook/grounding{,-pi} |
 | **credential-guard** (git-level, per REPO not per harness) | agnostic | ← | ← | `agent-core status` → hook/credential-guard |
-| **bigfile** | via super-search `--file` | MCP `mcp__bigfile__*` | MCP `bigfile` (`~/.cursor/mcp.json`) | `python3 -c "import json;print(list(json.load(open('$HOME/.cursor/mcp.json'))['mcpServers']))"` |
+| **bigfile** | MCP or library; no router | MCP `mcp__bigfile__*` | MCP `bigfile` (`~/.cursor/mcp.json`) | `python3 -c "import json;print(list(json.load(open('$HOME/.cursor/mcp.json'))['mcpServers']))"` |
 | **Tower hook farm** (11 hooks: session-start, stop-guard, stop-verdict, prompt-inject, enforce-brief, ask-bridge, odometer, odometer-stop, deposit-reminder, flight-recorder, write-gate) | n/a — pi reaches Tower via `tower-auto.ts` + CLI | `~/.tower/hooks/*.mjs` symlinks → `primitives/mcps/tower/hooks/`, bound in `settings.json` | n/a — MCP + CLI | `agent-core status` → hook/tower-* (link + check per hook) |
 | **Tower read (carry-over at wake)** | `tower-auto.ts` before_agent_start | `~/.tower/hooks/session-start.mjs` | `session-boundary-cursor.sh` leg 1 | `agent-core status` → hook/tower-session-start, hook/session-boundary-cursor |
 | **Tower write (mail/board)** | `tower-auto` tools + `bun ~/.tower/cli.mjs` | MCP `mcp__tower__*` | MCP `tower` (`~/.cursor/mcp.json`) + `bun ~/.tower/cli.mjs` | mcp.json check above; `bun ~/.tower/cli.mjs status` |
