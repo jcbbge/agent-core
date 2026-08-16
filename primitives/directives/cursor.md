@@ -7,8 +7,11 @@
   `~/.cursor/skills-cursor/` (CLI-managed copies, not symlinks — `herdr`,
   `navigating-big-files`, `slim`, `latch`, `vein`, `assay`, `coraline`,
   `colgrep`, `pickbrain`, `composto`) ·
-  fleet spawn = `~/cursor-shim/cursor-fleet` / `~/cursor-shim/cursor-spine`
-  (not `spine-spawn --kind cursor`) · briefs name profiles only
+  fleet spawn = `spine-spawn --kind cursor` seats the pane (spine now routes
+  this kind — proof: `~/agent-core/briefs/harness-homogeneity/PROOF-cursor-spawn.md`);
+  `~/cursor-shim/cursor-fleet` / `~/cursor-shim/cursor-spine` still own the
+  Verify beat below — run `cursor-fleet make` when it is required · briefs
+  name profiles only
   (`coordinator`, `orchestrator`, `coder`, …); models via `profile-model` at
   spawn — never provider/model/`--kind` in brief text ·
   `cursor-fleet make` enforces the Verify beat (bifurcated test/impl worktrees,
