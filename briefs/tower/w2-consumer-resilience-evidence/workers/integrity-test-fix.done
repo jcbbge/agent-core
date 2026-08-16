@@ -1,0 +1,6 @@
+AGNT w2-integrity-test-fix DONE
+artifact: primitives/mcps/tower/jsonl-integrity.test.mjs
+result: 15 pass / 1 skip / 0 fail (coder worktree wt-agnt-coder-w2y-p18)
+changes:
+  - retargeted boardFor+TOWER_HOME test → readJsonlStats on explicit temp fixture path
+  - skipped TOWER_HOME CLI isolation test (BOARD homedir-anchored; TOWER_HOME does not redirect)

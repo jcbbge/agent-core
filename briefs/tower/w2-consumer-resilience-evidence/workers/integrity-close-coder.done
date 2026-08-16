@@ -1,0 +1,6 @@
+AGNT coder w2y-p18 — integrity-close
+base: 7f42ba48de45f53423150fc74bff5b1c1ff38bdb
+files: primitives/mcps/tower/COMMS-ARCH.md (+25), primitives/mcps/tower/cli.mjs status mirror (+7)
+live: readJsonlStats(BOARD).bad_line_count === 26 (max bad line 2577)
+board/status: integrity line present
+commit: none (per brief)

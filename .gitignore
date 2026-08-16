@@ -9,3 +9,10 @@ primitives/profiles/selection.json
 .pi/
 node_modules/
 /.done-cursor-purge
+
+# Raw Tower board dumps — local-only evidence. They carry a localhost proxy
+# credential that credential-guard (correctly) blocks, and redacting them would
+# break the sha256 pins in briefs/tower/bus-data/INVENTORY.json. They stay on
+# disk, verifiable by those hashes; they do not enter the repo.
+briefs/tower/bus-data/backups/
+briefs/tower/w0-swap-evidence/board.jsonl.pre-recovery-*

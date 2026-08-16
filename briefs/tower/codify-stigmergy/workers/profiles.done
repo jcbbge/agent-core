@@ -1,0 +1,38 @@
+agnt-coder-w2y-p1k profiles partition DONE 2026-08-13
+
+## rg evidence
+
+```
+$ rg -n 'pull loop|two stopping|stopping state' primitives/profiles/{coordinator,orchestrator,coder,researcher}.md
+primitives/profiles/orchestrator.md:66:- **The pull loop.** ...
+primitives/profiles/orchestrator.md:72:- **Two acceptable stopping states, and only two:** ...
+primitives/profiles/coordinator.md:77:- **The pull loop.** ...
+primitives/profiles/coordinator.md:83:- **Two acceptable stopping states, and only two:** ...
+primitives/profiles/coder.md:24:- **The pull loop.** ...
+primitives/profiles/coder.md:30:- **Two acceptable stopping states, and only two:** ...
+primitives/profiles/researcher.md:24:- **The pull loop.** ...
+primitives/profiles/researcher.md:30:- **Two acceptable stopping states, and only two:** ...
+(all four files hit)
+
+$ rg -n 'plane 4|leave.a.trace|board trace' primitives/profiles/concierge.md
+121:## Stigmergy exception (plane 4 — stated once)
+126:That is plane 4 (OPERATOR DIRECTIVES), ...
+130:**The one obligation the exception carries (leave-a-trace):** ...
+133:from stigmergy, not from leaving a board trace.
+```
+
+## Files touched
+- primitives/profiles/coordinator.md
+- primitives/profiles/orchestrator.md
+- primitives/profiles/coder.md
+- primitives/profiles/researcher.md
+- primitives/profiles/concierge.md
+
+## Field ids
+- work-available: ph-mss729tm-uy4l
+- work-claimed: ph-mss72f2l-9aam
+- board claim: t-mss72gnc-s2n6
+- work-done: ph-mss72vv7-7q2i
+
+## Deviations
+None. Wording quoted verbatim from unit brief Part 1 (stigmergy) and Part 2 (concierge exception). No edits outside partition. No commit (ORCH integrates).

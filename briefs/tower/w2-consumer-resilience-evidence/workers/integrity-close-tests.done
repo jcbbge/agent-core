@@ -1,0 +1,5 @@
+artifact=primitives/mcps/tower/jsonl-integrity.test.mjs
+base_sha=7f42ba48de45f53423150fc74bff5b1c1ff38bdb
+author=AGNT w2-integrity-tests
+role=test-maker
+tests_executed=no

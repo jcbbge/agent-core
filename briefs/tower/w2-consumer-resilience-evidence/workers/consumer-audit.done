@@ -1,0 +1,5 @@
+MATRIX_OK /Users/jrg/agent-core/briefs/tower/w2-consumer-resilience-evidence/CONSUMER-MATRIX.md
+throwers=0
+board_badRows=26
+deviations=40-tower-bridge-no-count,twr-GAP-count-only,10-notify-write-only,statem-write-only
+source=SAGT headless w2Y:p1C report collected by ORCH

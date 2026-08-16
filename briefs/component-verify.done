@@ -1,0 +1,9 @@
+done: 2026-08-12, agnt-component-verify-test
+branch: spine/component-verify-test @ 2c6f1fc (worktree ~/.spine/worktrees/agent-core/component-verify-test)
+evidence: component-verify --all = 6 components, 16/16 oracles PASS; all suites green;
+  self-acceptance (positive+negative controls) green; coverage burn-down committed
+  (briefs/component-verify.coverage.txt, 0/49 registry ids).
+machine-global (not in commit): ~/.agent-core/registry VERIFY LAW header line;
+  ~/.local/bin/component-verify wrapper now AGENT_CORE_ROOT-aware.
+findings: board topic agent-core/component-verify (5 pre-verified-fact corrections).
+merge note: CORD arbitrates vs sibling claim component-verify-worker (idle, clean worktree).

@@ -1,0 +1,26 @@
+AGNT skills-fleet (agnt-coder-w2y-p1m) — partition complete 2026-08-14
+
+Files touched:
+- primitives/skills/brief/SKILL.md — extended MANDATORY pull-loop: scope ranks 1–4, concierge exception + board trace, anti push-and-wait, need-help nQ fields, nQ=0 before deliverable, heartbeat/TTL incident note
+- /Users/jrg/cursor-shim/rules/cursor-fleet.md — Five planes + pull loop subsection; nQ field expression pointer
+
+rg evidence (agent-core):
+75:  system is stigmergic by design (`~/.tower/COMMS-ARCH.md` plane 5, and plane
+83:  **Scope (ranks 1–4 only).** Stigmergic coordination is MANDATORY for
+92:  **Never teach push-and-wait for ranks 1–4.**
+111:  - **nQ=0 before deliverable.**
+
+rg evidence (cursor-shim):
+139:One message, one audience, once, in full. **Five planes, strictly separated**
+160:### Pull loop (ranks 1–4 — MANDATORY)
+190:*"nQ = the number of unresolved questions a star holds. A star must reach nQ=0
+198:**nQ=0 before deliverable**
+
+Four planes check: PASS (no "Four planes" in cursor-fleet.md)
+
+Field ids:
+- claim ref: ph-mss6zytm-ko8f (work-available)
+- work-claimed: ph-mss72hbg-yydr
+- heartbeat: ph-mss734gi-arkk
+
+Deviations: none. No commit (ORCH integrates). No pheromones.jsonl row-shape change proposed — nQ fields documented as semantics only per brief partition.

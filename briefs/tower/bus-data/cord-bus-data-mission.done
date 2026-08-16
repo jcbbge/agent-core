@@ -1,0 +1,22 @@
+# CORD bus-data — mission closeout (in-scope)
+
+**Date:** 2026-08-14T00:43Z
+**Land tip:** main@1a8b0a8 (tower/bus-data-residuals)
+
+## Objectives
+
+| # | Objective | Verdict | Proof |
+|---|-----------|---------|-------|
+| 1 | Fix board data (26 bad + 46 authorless) | GO | briefs/tower/bus-data/RECOVERY-REPORT.md, ATTRIBUTION-REPORT.md; board append-only (bad lines retained; integrity:26) |
+| 2–3 | Verify/harden write path | GO | assertAuthoredBoardFrom; flock LOCK_EX in tower-ledger; brief skill no hand-append; statem→append(); cli/server flocked |
+| 4 | Schema split ruling | GO | COMMS-ARCH multi-kind + verify-gate-bypass named; Plane 5 intact (320) |
+| Compaction | Phase-2 rewrite | DEFERRED | CONCIERGE-RULING-compaction.md = NO |
+
+## Residuals handed off (not silent)
+
+- Out-of-fence printf/board_append: field WA → CORD cursor-shim / CORD tower (ph-mss83uqw-z1bb, ph-mss83urd-6shl, ph-mss83uru-k4zr)
+- verify-gate-bypass volume N=117 → finding t-mss83wdo-2z7i for concierge/operator
+
+## Stopping state
+
+In-scope done-conditions met. Not parked awaiting instruction. Next work enters via field work-available or concierge directive.

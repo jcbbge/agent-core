@@ -1,0 +1,16 @@
+HEAD=5c0b30f4844a232d87a1fbbc967e1d6612a608e1 (dirty: tower-ledger.mjs, cli.mjs, COMMS-ARCH.md)
+worktree=/Users/jrg/.cursor/worktrees/agent-core/wt-agnt-coder-w2y-p14
+
+test_command=SKIPPED (coder isolation wall — tester owns bun test)
+test_tail=SKIPPED
+
+live_badRows_board=26
+live_badRows_ledger=0
+live_exit=0
+
+files_touched:
+  primitives/hooks/tower-ledger.mjs
+  primitives/mcps/tower/cli.mjs
+  primitives/mcps/tower/COMMS-ARCH.md
+  briefs/tower/w2-consumer-resilience-evidence/LIVE-PROOF.txt
+  briefs/tower/w2-consumer-resilience-evidence/workers/coder.done

@@ -1,0 +1,39 @@
+AGNT test-maker w2y-p15 — oracle complete
+worktree: /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-test-maker-w2y-p15
+HEAD: 5c0b30f4844a232d87a1fbbc967e1d6612a608e1
+
+test_paths:
+  - primitives/mcps/tower/jsonl-integrity.test.mjs
+
+test_command:
+  cd /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-test-maker-w2y-p15/primitives/mcps/tower && bun test jsonl-integrity.test.mjs
+
+unpatched_fail_signature (base@5c0b30f):
+  3 pass / 10 fail / 13 total
+  PASS (baseline already skips bad JSONL; no count API):
+    - boardFor on fixture with bad lines returns only parseable rows
+    - readAll on fixture ledger with bad lines does not throw
+    - inboxState on fixture with bad ledger lines does not throw
+  FAIL (coder must implement):
+    - typeof lib.jsonlIntegrity === 'undefined' (Expected function)
+    - fixture badRows/lastBadOffset — TypeError: lib.jsonlIntegrity is not a function
+    - live board badRows=26 — TypeError: lib.jsonlIntegrity is not a function
+    - CLI status missing integrity line (no /integrity/i, no badRows=N)
+    - CLI status missing ledger integrity line
+    - TOWER_HOME fixture status missing badRows=1
+
+contract_locked:
+  - API: jsonlIntegrity(file) -> { badRows, lastBadOffset }
+  - lastBadOffset: byte offset into scanned file text where final malformed line begins (0-based)
+  - CLI: integrity line with board badRows=N (ledger if same helper)
+
+live_integrity_measure (strict JSON.parse, session):
+  badRows=26 totalNonEmpty=7288 on ~/.tower/board.jsonl
+
+acceptance_mapped:
+  A: jsonlIntegrity export, fixture skip-and-count, live badRows=26, reader tolerance
+  B: CLI status integrity line (live + TOWER_HOME fixture)
+  D: fixture JSONL oracle in jsonl-integrity.test.mjs
+
+files_touched:
+  + primitives/mcps/tower/jsonl-integrity.test.mjs

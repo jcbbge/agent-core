@@ -1,0 +1,37 @@
+AGNT coder DONE — fix/spine-board-flock board_append flock
+
+Branch: fix/spine-board-flock (worktree /Users/jrg/.cursor/worktrees/herdr-spine/wt-agnt-coder-w2y-p1q)
+
+Files modified:
+- bin/handlers/_spine_common.py — import fcntl; LOCK_EX on TOWER_BOARD_PATH append (lines 17, 340-342)
+- bin/spine-claim — import fcntl in embedded PY helper; LOCK_EX on path append (lines 62, 100-102)
+
+Per-file diff:
+- _spine_common.py: +import fcntl; +fcntl.flock(fh.fileno(), fcntl.LOCK_EX) before fh.write in board_append
+- spine-claim: same pattern in embedded board_append(path, ...)
+
+rg proof:
+  bin/handlers/_spine_common.py:340:    with open(TOWER_BOARD_PATH, "a") as fh:
+  bin/handlers/_spine_common.py:341:        fcntl.flock(fh.fileno(), fcntl.LOCK_EX)
+  bin/spine-claim:100:    with open(path, "a") as fh:
+  bin/spine-claim:101:        fcntl.flock(fh.fileno(), fcntl.LOCK_EX)
+
+Smoke command:
+  TMP=$(mktemp /tmp/spine-board-flock.XXXXXX) && mv "$TMP" "${TMP}.jsonl" && TMP="${TMP}.jsonl"
+  SPINE_BOARD_PATH="$TMP" python3 -c "
+  import sys; sys.path.insert(0, 'bin/handlers'); import _spine_common
+  _spine_common.board_append('note', 'smoke', 'orch-test', 'tower/fully-operational')
+  with open('$TMP', 'rb') as f:
+      data = f.read()
+      assert data.endswith(b'\n')
+      import json; obj = json.loads(data.decode().strip())
+      assert all(k in obj for k in ('type','from','topic','body','id','ts'))
+      print('OK', obj['type'], obj['from'], obj['topic'])
+      print('TAIL:', data[-80:].decode())
+  "
+
+Smoke output tail:
+  OK note orch-test tower/fully-operational
+  TAIL: ote", "from": "orch-test", "topic": "tower/fully-operational", "body": "smoke"}
+
+Deviations: none. Did not factor spine-claim onto _spine_common (per ORCH fork). Did not commit/push/merge. Did not write tests (test-maker partition).

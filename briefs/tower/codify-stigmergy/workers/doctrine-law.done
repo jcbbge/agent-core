@@ -1,0 +1,34 @@
+# doctrine-law AGNT — done
+
+## Files touched
+- primitives/mcps/tower/COMMS-ARCH.md — extended plane 5: stigmergy mandatory ranks 1–4, pull loop, two stopping states, decay/heartbeat, spine-claim vs field (contest semantics cite), stalled-fleet diagnosis, concierge exception + leave-a-trace, nQ on field
+- primitives/mcps/tower/RESPONSIBLE-PARTY-AND-NQ.md — added §6 field expression of nQ; orbit.zig vocabulary preserved verbatim; field↔ledger binding via ref; nQ=0 before deliverable invariant
+- primitives/rules/control-flow.md — Communications: ranks 1–4 stigmergic duties + concierge exception with leave-a-trace
+
+## rg evidence
+```
+primitives/rules/control-flow.md:73:**Stigmergic coordination (ranks 1–4):** Coordinator, Orchestrator, Agent, and
+primitives/rules/control-flow.md:75:deposit never deliver, mandatory pull loop, two stopping states only. They do
+primitives/mcps/tower/RESPONSIBLE-PARTY-AND-NQ.md:15:questions a star holds. A star must reach nQ=0 before emitting its
+primitives/mcps/tower/RESPONSIBLE-PARTY-AND-NQ.md:125:The field expression of nQ (alongside the ledger plane in §2) closes the gap
+primitives/mcps/tower/RESPONSIBLE-PARTY-AND-NQ.md:135:questions a star holds. A star must reach nQ=0 before emitting its
+primitives/mcps/tower/RESPONSIBLE-PARTY-AND-NQ.md:163:### THE LOAD-BEARING INVARIANT: nQ=0 before deliverable
+primitives/mcps/tower/COMMS-ARCH.md:63:**Applies to ranks 1–4** — Coordinator → Orchestrator → Agent/Subagent.
+primitives/mcps/tower/COMMS-ARCH.md:76:- **The pull loop (mandatory).** Emit `work-available` (with mandatory
+primitives/mcps/tower/COMMS-ARCH.md:102:  pull loop *is* the scheduler. Do not bolt supervisor/heartbeat daemons onto
+primitives/mcps/tower/COMMS-ARCH.md:117:The concierge exception: rank 0 facilitates the movable parts. The Concierge
+primitives/mcps/tower/COMMS-ARCH.md:147:- **THE LOAD-BEARING INVARIANT: nQ=0 before deliverable.** An actor must not
+```
+
+## Proposed pheromone shape
+Posted to tower/bus-data: t-mss73e8n-13sb
+- need-help additive fields: `nq` (number), `ref` (ledger question id)
+- escalation appends new need-help rows; work-done gated on nQ=0
+
+## Field ids
+- work-available: ph-mss72n5o-p3mn
+- work-claimed: ph-mss7302q-3esg
+- board claim: t-mss72n5x-nwss
+
+## Deviations
+- none

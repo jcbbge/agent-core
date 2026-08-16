@@ -1,0 +1,161 @@
+cursor-spine: spawned SAGT researcher in pane w2Y:p1C  (model=composer-2.5-fast, headless)
+Investigating the listed consumer paths for JSONL parsing behavior and thrower patterns. Read-only — I'll deliver the matrix report here; file writes require Agent mode.
+# SAGT Report — Consumer Matrix (w2-consumer-audit)
+
+**Ask mode:** I cannot write `CONSUMER-MATRIX.md`, the `.done` marker, or post a Tower FINDING. Below is the complete audit content ready to land; switch to **Agent mode** to write files and post the board finding.
+
+---
+
+## Summary
+
+| Metric | Value |
+|--------|-------|
+| **Matrix path (target)** | `/Users/jrg/agent-core/briefs/tower/w2-consumer-resilience-evidence/CONSUMER-MATRIX.md` |
+| **Throwers** | **0** |
+| **Live board integrity** | `badRows=26` (coder arm LIVE-PROOF, 2026-08-13) |
+| **Core parse API** | `tower-ledger.mjs` `parseJsonl` / `readJsonlStats` — skip-and-count |
+
+**Thrower** = direct parse of board/ledger JSONL lines where a malformed line can escape uncaught and break the consumer. Every audited path is either INHERIT (via `lib.mjs`), locally tolerate (`try/catch` / `try/except continue`), write-only, or out of scope (hook stdin / agent transcript JSONL).
+
+---
+
+## CONSUMER-MATRIX (ready to write)
+
+```markdown
+# CONSUMER-MATRIX — w2-consumer-resilience audit
+# 2026-08-13 · SAGT w2-consumer-audit · live board badRows=26
+
+| path | parse path | tolerate? | surfaces count? | FIXED/INHERIT/GAP | evidence |
+|------|------------|-----------|-----------------|-------------------|----------|
+| `herdr-spine/bin/handlers/40-tower-bridge` | `scan_ledger_tail()` → `json.loads(line)` per ledger tail line | yes (`try/except continue`) | no | **FIXED** (local tolerate; no lib import) | ```224:227:../herdr-spine/bin/handlers/40-tower-bridge``` |
+| `herdr-spine/bin/handlers/10-notify` | write-only `sc.board_append()` — no board/ledger read | n/a | n/a | **GAP-write-only** | ```326:340:../herdr-spine/bin/handlers/_spine_common.py``` (append only); handler never reads JSONL |
+| `primitives/mcps/tower/hooks/session-start.mjs` | `inboxState(cwd)` via `../lib.mjs` | yes (INHERIT) | no | **INHERIT** | ```15:30:primitives/mcps/tower/hooks/session-start.mjs``` |
+| `primitives/mcps/tower/hooks/stop-guard.mjs` | `inboxState(cwd)` via `../lib.mjs` | yes (INHERIT) | no | **INHERIT** | ```13:27:primitives/mcps/tower/hooks/stop-guard.mjs``` |
+| `primitives/mcps/tower/hooks/prompt-inject.mjs` | `inboxState(cwd)` via `../lib.mjs` | yes (INHERIT) | no | **INHERIT** | ```8:20:primitives/mcps/tower/hooks/prompt-inject.mjs``` |
+| `primitives/mcps/tower/hooks/ask-bridge.mjs` | `lib.inboxState(key)` for answered refs | yes (INHERIT) | no | **INHERIT** | ```166:166:primitives/mcps/tower/hooks/ask-bridge.mjs```; other `JSON.parse` = state file / herdr pane list / hook stdin (not board/ledger lines) |
+| `primitives/mcps/tower/hooks/flight-recorder.mjs` | shim → canonical body | yes (INHERIT) | no | **INHERIT** | ```1:3:primitives/mcps/tower/hooks/flight-recorder.mjs``` |
+| `primitives/mcps/tower/hooks/stop-verdict.mjs` | hook stdin + **Claude transcript** JSONL (not tower board/ledger) | yes (`catch` / `continue`) | n/a | **N/A-out-of-scope** | ```52:52``` stdin; ```94:94``` transcript lines |
+| `primitives/mcps/tower/hooks/odometer-stop.mjs` | **agent transcript** JSONL → writes `ODOMETER` | yes (`continue`) | n/a | **N/A-out-of-scope** | ```25:32:primitives/mcps/tower/hooks/odometer-stop.mjs``` |
+| `primitives/mcps/tower/hooks/odometer.mjs` | hook stdin only; append to odometer | n/a | n/a | **N/A-write-only** | ```21:21:primitives/mcps/tower/hooks/odometer.mjs``` |
+| `primitives/mcps/tower/hooks/enforce-brief.mjs` | hook stdin only | yes (`catch exit 0`) | n/a | **N/A-out-of-scope** | ```20:22:primitives/mcps/tower/hooks/enforce-brief.mjs``` |
+| `primitives/mcps/tower/hooks/deposit-reminder.mjs` | hook stdin only | yes (`catch`) | n/a | **N/A-out-of-scope** | ```12:12:primitives/mcps/tower/hooks/deposit-reminder.mjs``` |
+| `primitives/hooks/flight-recorder.mjs` | `inboxState(cwd)` via `./tower-ledger.mjs` | yes (INHERIT) | no | **INHERIT** | ```10:35:primitives/hooks/flight-recorder.mjs``` |
+| `primitives/hooks/session-capture-cursor.mjs` | `inboxState(cwd)` via `./tower-ledger.mjs` | yes (INHERIT) | no | **INHERIT** | ```44:77:primitives/hooks/session-capture-cursor.mjs``` |
+| `primitives/tools/statem/twr.ts` | primary: `boardFor`/`readAll` from `~/.tower/lib.mjs`; sig: raw read + `JSON.parse` last line | yes (INHERIT + local `try/catch` on sig) | no | **INHERIT + GAP-count-only** | ```7:7``` import; ```38:41``` scoped read; ```82:84``` sig parse |
+| `primitives/tools/statem/statem.ts` | write-only `appendFileSync(BOARD, …)`; reads `.madewell/` only | n/a | n/a | **GAP-write-only** | ```87:97:primitives/tools/statem/statem.ts``` |
+
+## Core reference (canonical tolerate+count)
+
+| path | parse path | tolerate? | surfaces count? | FIXED/INHERIT/GAP | evidence |
+|------|------------|-----------|-----------------|-------------------|----------|
+| `primitives/hooks/tower-ledger.mjs` | `parseJsonl` / `readJsonlStats` | yes | yes (`bad_line_count`) | **FIXED** | ```229:254:primitives/hooks/tower-ledger.mjs``` |
+| `primitives/mcps/tower/cli.mjs` | `readJsonlStats(BOARD)` on status/board | yes | yes (`integrity:` line) | **FIXED** | coder LIVE-PROOF: `badRows=26` |
+
+## Thrower tally
+
+**throwers = 0**
+
+No audited consumer throws on a bad board/ledger line without catching.
+
+## Deviations (named GAPs, not throwers)
+
+1. **40-tower-bridge** — duplicate ledger tail parser (Python) instead of importing `lib.mjs`; tolerates but does not surface `bad_line_count`.
+2. **10-notify / statem.ts** — append-only; no read path to audit.
+3. **twr.ts** — inherits tolerant reads for render; change-detection sig uses ad-hoc `JSON.parse` on last raw line (tolerates, no count display). ORCH pre-verified this GAP as acceptable.
+4. **All INHERIT hooks** — survive bad rows via core `parseJsonl`; none print integrity counts (by design).
+```
+
+---
+
+## File:line evidence (key citations)
+
+**Core tolerate+count** — `parseJsonl` skips bad lines and counts them:
+
+```229:241:primitives/hooks/tower-ledger.mjs
+export function parseJsonl(text) {
+  const lines = text.split('\n').filter(Boolean)
+  const rows = []
+  const bad_line_numbers = []
+  for (let i = 0; i < lines.length; i++) {
+    try {
+      rows.push(JSON.parse(lines[i]))
+    } catch {
+      bad_line_numbers.push(i + 1)
+    }
+  }
+  return { rows, bad_line_count: bad_line_numbers.length, bad_line_numbers }
+}
+```
+
+**40-tower-bridge** — local tolerate on ledger tail:
+
+```220:227:../herdr-spine/bin/handlers/40-tower-bridge
+        for line in data.split("\n")[-TAIL_MAX_LINES:]:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                row = json.loads(line)
+            except Exception:
+                continue
+```
+
+**10-notify** — board write only (via `_spine_common.board_append`):
+
+```326:340:../herdr-spine/bin/handlers/_spine_common.py
+def board_append(entry_type, body, from_name, topic):
+    """Append one Tower board.jsonl line. Path is TOWER_BOARD_PATH (see
+    module docstring — overridable via SPINE_BOARD_PATH for testing)."""
+    entry = {
+        ...
+    }
+    with open(TOWER_BOARD_PATH, "a") as fh:
+        fh.write(json.dumps(entry) + "\n")
+```
+
+**twr.ts** — INHERIT for data, local sig parse:
+
+```38:41:primitives/tools/statem/twr.ts
+const scoped = () =>
+  boardPath === BOARD
+    ? boardFor(root, { limit: 1e9 })
+    : readAll(boardPath).filter((r: any) => normCwd(r.cwd ?? '') === normCwd(root))
+```
+
+```82:84:primitives/tools/statem/twr.ts
+  const rows = raw.split('\n').filter(Boolean)
+  let lastId = ''
+  try { lastId = JSON.parse(rows[rows.length - 1] ?? '{}').id ?? '' } catch {}
+```
+
+---
+
+## Marker content (when Agent mode writes it)
+
+```
+MATRIX_OK /Users/jrg/agent-core/briefs/tower/w2-consumer-resilience-evidence/CONSUMER-MATRIX.md
+throwers=0
+board_badRows=26
+deviations=40-tower-bridge-no-count,twr-GAP-count-only,10-notify-write-only,statem-write-only
+```
+
+---
+
+## Open questions
+
+1. **Main vs worktree:** Coder arm landed `readJsonlStats` + CLI integrity in a worktree (`wt-agnt-coder-w2y-p14`). Main tree shows modified `cli.mjs` / `COMMS-ARCH.md` but integration status on main is [UNKNOWN] without a fresh `bun ~/.tower/cli.mjs status` run on main.
+2. **40-tower-bridge consolidation:** Should the Python tail scanner eventually call a shared JS helper (or duplicate count surfacing), or is local tolerate-without-count the standing contract?
+3. **Prior SAGT idle:** `audit-headless.out` shows a prior spawn (`w2Y:p1C`) with no `consumer-audit.done` — this report is the missing matrix; files still need writing in Agent mode.
+
+---
+
+## Tower FINDING (draft for `tower/w2-consumer-resilience`)
+
+```
+FINDING w2-consumer-audit: CONSUMER-MATRIX complete. throwers=0. Audited paths: 40-tower-bridge (FIXED local tolerate), 10-notify (write-only GAP), 10 tower hooks (6 INHERIT ledger/board via inboxState/lib, 4 N/A stdin/transcript/write), flight-recorder + session-capture-cursor (INHERIT), twr.ts (INHERIT + GAP-count-only sig parse), statem.ts (write-only GAP). Core parseJsonl/readJsonlStats surfaces badRows=26 on live board. Evidence: briefs/tower/w2-consumer-resilience-evidence/CONSUMER-MATRIX.md
+```
+
+---
+
+**Report back:** Matrix path = `briefs/tower/w2-consumer-resilience-evidence/CONSUMER-MATRIX.md` (not yet on disk). **Throwers = 0.** Switch to Agent mode to write the evidence files, post the FINDING, and drop `workers/consumer-audit.done`.cursor-spine: reaped pane w2Y:p1C
+cursor-spine: SAGT researcher complete (cursor-agent rc=0, model 54286ms), pane w2Y:p1C reaped

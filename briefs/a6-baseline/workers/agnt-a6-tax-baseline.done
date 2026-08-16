@@ -1,0 +1,4 @@
+DONE
+report: ~/agent-core/research/A6-tax-baseline-2026-08-13.md
+signal: noise — SNR 0.024; within-class variance swamps between-class correction-tax differences
+headline: irreversible/data-ops 17.1% [8-33] n=35 (lit-only); feature-with-schema 7.4% [5-11] n=312; test-authoring 3.0% [1-8] n=101; docs-only 2.6% [1-6] n=235; collapsed: mechanical-refactor n=8 (refuse threshold)
