@@ -1,19 +1,17 @@
 ---
 name: herdr
 description: >
-  Operate Herdr, the terminal multiplexer/runtime substrate for this
-  machine's agent fleet: a background server owns real terminal processes
-  (panes survive crashes, detach, SSH drop), detects agent identity and
-  status per pane, and exposes a CLI + socket API. control-flow.md
-  (operator law, 2026-08-10) names herdr THE substrate — use, leverage,
-  optimize, and extend it in every way possible. Invoke when the user
-  mentions Herdr, or asks to inspect/control panes, tabs, workspaces, or
-  terminals; invoke ambiently whenever you are about to spawn, name, or
-  observe an agent. Pane-local control requires HERDR_ENV=1; fleet
-  observation and spawning work from any shell via the global server socket.
+  Operate Herdr, the terminal multiplexer/runtime for this machine's agent
+  fleet: a background server owns real terminal processes (panes survive
+  crashes, detach, SSH drop), detects agent identity and status per pane,
+  and exposes a CLI + socket API. Invoke when inspecting or controlling
+  panes, tabs, workspaces, or terminals, or when spawning, naming, or
+  observing an agent in a pane. Pane-local control requires HERDR_ENV=1;
+  fleet observation and spawning work from any shell via the global server
+  socket.
 metadata:
   author: jrg
-  version: "1.2"
+  version: "1.4"
   tags: herdr, multiplexer, panes, terminals, substrate, control-flow, comms-arch, tower
   upstream: UNKNOWN — https://raw.githubusercontent.com/ogulcancelik/herdr/master/SKILL.md returns HTTP 404 (verified live this session, 2026-08-10); no working upstream source confirmed
   gateway: strudel pantry (roots ~/.pi/agent + ~/agent-core/primitives)
@@ -37,6 +35,9 @@ socket (`PermissionDenied`/`fetch failed` on `~/.config/herdr/herdr.sock`).
 Verify once per session with `herdr api snapshot`; if it fails, rerun herdr
 commands with the sandbox disabled for those calls. Do not relocate to an
 unsandboxed pane and do not fall back to polling files.
+
+Machine composition (this install) lives in `~/agent-core/primitives/AGENTS.md`,
+not in this skill. A prompt is not delivered until `agent_status` flips.
 
 ## Canonical docs — read these, don't re-derive them
 
@@ -144,7 +145,8 @@ dialog shows no busy banner yet correctly surfaces as `blocked`.
 
 Default to a sibling pane in the current tab/cwd unless the user asked for
 different topology. Split without stealing focus, read the returned ID,
-stamp its role, launch:
+stamp its role, launch. Prefer `~/bin/spine-spawn` when spawning fleet
+workers — it bakes topology, rename, readiness, and verified submit.
 
 ```bash
 herdr pane split --current --direction right --no-focus   # or: down
@@ -159,10 +161,11 @@ is pi config, nothing more), thinking level via `--thinking` (they do not
 stack in one ID):
 
 ```bash
-herdr pi                                  # daily entry (~/bin/herdr wrapper)
-herdr pi coder                            # profile / profile:option via profile-model
-spine-spawn worker --kind pi --profile coder …    # fleet path
-herdr agent start <name> --kind pi --pane <id> -- --model 'cursor/grok-4.5:high'
+herdr pi                                  # the door (harness + concierge)
+herdr claude                              # same, Claude Code
+herdr cursor                              # same, cursor
+herdr prime                               # same, prime-agent
+spine-spawn worker --profile coder …      # fleet: kind from desk default
 ```
 
 `agent start` waits for interactive readiness; launch by plain executable
@@ -190,7 +193,7 @@ herdr pane read <id> --source visible --lines 6 | grep -q "Pasted text" \
   && herdr pane send-keys <id> Enter && sleep 2 && herdr pane get <id>
 ```
 
-Two additions from the tup final run (2026-08-15):
+Two delivery traps (verified 2026-08-15):
 
 - **Cursor follow-up trap.** A prompt sent to a cursor pane mid-turn queues
   as a follow-up ("enter send now") and sits UNSENT after the turn ends —
@@ -198,11 +201,10 @@ Two additions from the tup final run (2026-08-15):
   status-flip check above catches it; the fix is one more `send-keys Enter`.
   Bake the retry into every delivery path, not just the happy one.
 - **Status flips wake no one.** `done` is visible but nothing subscribes —
-  an idle parent will sit forever beside finished children. Until the
-  resident supervisor lands (tup `socket/`, finding-M), run a bellman: a
-  background loop that wakes idle parents when children report done, with
-  the verified-submit protocol above and a 10-min per-pane debounce.
-  Reference implementation: `~/tup-lab/bellman.py`.
+  an idle parent will sit forever beside finished children. Until a resident
+  supervisor holds `events.subscribe`, run `~/tup-lab/bellman.py` (wake idle
+  parents on child done, verify submit, 10-min debounce). Do not re-implement
+  that loop in herdr-spine.
 
 **Prefer the wrapper:** `~/bin/spine-spawn <orch|worker|fanout|prompt>`
 (= `python3 ~/herdr-spine/bin/spine-spawn` — **never `bun`**, bun parses the
@@ -360,10 +362,8 @@ moments; sending a prompt to ANY pane, idle included, can silently fail to
 submit — the verify-submit step above is mandatory after every
 prompt-carrying `pane run`.
 
-**Ground the substrate before driving it.** Read the installed skill and run
-`which <tool>` first — don't reverse-engineer from `--help` when a skill
-exists (skills live in `~/agent-core/primitives/skills/`, confirmed on disk
-this session). Confirm `HERDR_ENV=1` before any control command. A blocked
+**Ground the substrate before driving it.** Run `which <tool>` before
+improvising from `--help`. Confirm `HERDR_ENV=1` before any control command. A blocked
 agent's decision belongs to its spawner, up the chain — reserve the
 operator for genuinely external prerequisites; batch every ambiguity to a
 spawned orchestrator up front, then let it run.

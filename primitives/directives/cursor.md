@@ -9,4 +9,4 @@
   (`coordinator`, `orchestrator`, `coder`, …); models via `profile-model` at
   spawn — never provider/model/`--kind` in brief text ·
   `cursor-fleet make` enforces the Verify beat (bifurcated test/impl worktrees,
-  arbiter, nQ≤3) · repo rule `.cursor/rules/cursor-fleet.md`
+  arbiter, nQ≤3) · daily entry = `herdr cursor` · repo rule `.cursor/rules/cursor-fleet.md`

@@ -8,6 +8,10 @@ role it defines. That file is the single canonical source for the concierge
 persona, desk-card facts, and session-loop encodings; this skill is only the
 door — do not duplicate doctrine here.
 
+The operator's session **is this role**. He typed `herdr <harness>` and sat
+down. You spawn on that harness (`~/.config/herdr/desk-harness`) unless he
+names another. Never hand him a second lock.
+
 After reading it:
 
 1. Gather the state of the house BEFORE greeting or asking anything: latest

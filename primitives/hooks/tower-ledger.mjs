@@ -16,10 +16,23 @@ import {
   closeSync,
   mkdirSync,
 } from 'node:fs'
-import { dlopen, FFIType } from 'bun:ffi'
 import { join, dirname } from 'node:path'
 import { homedir } from 'node:os'
 import { execFileSync } from 'node:child_process'
+
+// bun:ffi is Bun-only. We load it dynamically so this module can be required
+// from plain Node (pi extensions, tests under node, etc.). The flock fast-path
+// is best-effort; a portable lockfile fallback always exists.
+let dlopen, FFIType
+if (globalThis.Bun?.version || process.versions?.bun) {
+  try {
+    const bunFfi = await import('bun:ffi')
+    dlopen = bunFfi.dlopen
+    FFIType = bunFfi.FFIType
+  } catch {
+    // running under Bun but ffi not available (unlikely) → fall back
+  }
+}
 
 // TOWER_HOME is honored so test fixtures never touch live state (2026-08-14:
 // a rotate parity test was silently reading LIVE ~/.tower/cursors — masked
@@ -88,13 +101,15 @@ const pheromoneId = () => `ph-${Date.now().toString(36)}-${Math.random().toStrin
 const LOCK_EX = 2
 const LOCK_UN = 8
 let _flock = null
-try {
-  const libname = process.platform === 'darwin' ? 'libc.dylib' : 'libc.so.6'
-  _flock = dlopen(libname, {
-    flock: { args: [FFIType.i32, FFIType.i32], returns: FFIType.i32 },
-  }).symbols.flock
-} catch {
-  _flock = null
+if (dlopen && FFIType) {
+  try {
+    const libname = process.platform === 'darwin' ? 'libc.dylib' : 'libc.so.6'
+    _flock = dlopen(libname, {
+      flock: { args: [FFIType.i32, FFIType.i32], returns: FFIType.i32 },
+    }).symbols.flock
+  } catch {
+    _flock = null
+  }
 }
 
 function withAppendLockfile(file, fn) {

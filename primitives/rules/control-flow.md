@@ -54,13 +54,26 @@ The prefix is what makes the herdr sidebar legible — who it is, at a glance.
 | Agent | one item in the imagine queue (with the Isolation Mandate roles) |
 | Subagent | discovery-queue / deferred items run async |
 
+## Operator entry
+
+In Ghostty: `herdr pi` (or `claude`, `cursor`, `prime`). That is the door —
+herdr + harness + concierge. The harness is the desk default until you
+start with a different one. After that you only talk to the concierge.
+The concierge spawns every later agent on that harness unless you name
+another.
+
 ## Substrate
 
-herdr is the substrate: use, leverage, optimize, and extend it in every way
-possible — with herdr's established names, conventions, and API surface.
-Extend without forking; where the codebase limits us, retrofit our patterns
-into what it offers. (Codebase map + leverage/extend/retrofit analysis:
-see the herdr research report, dispatched 2026-08-10.)
+herdr is the live multiplexer: panes, tabs, workspaces, agent detection,
+CLI + Unix socket. Use, leverage, optimize, and extend it — with herdr's
+established names, conventions, and API surface. Extend without forking;
+where the codebase limits us, retrofit our patterns into what it offers.
+
+Tup `socket/` is the seam contract above that machine (spawn · send · read
+· wait · events · spawn door · resident supervisor · reaping). herdr is the
+runtime wired behind the seam today. Agents operating panes use the herdr
+skill; spawn-door / supervisor / findings use the tup skill. The operator
+invokes neither — the concierge does.
 
 ## Communications
 

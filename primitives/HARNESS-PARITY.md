@@ -77,7 +77,8 @@ harness config naming it on an event. An unwired gate reports ✗, not ✓.
 | **Session boundary legs 2-3 (handoff + flight ptr)** | `session-boundary-pi.ts` ext shim | `session-start.mjs` | `session-boundary-cursor.sh` legs 2-3 | `agent-core status` → hook/session-boundary-{pi,cursor} |
 | **Circadian (memory at wake, leg 4)** | `circadian-mind.ts` ext shim → `~/circadian` | SessionStart hook `wake.ts` | `session-boundary-cursor.sh` leg 4 (calls `wake.ts`) | boundary script output contains `[Circadian] WAKE` (NOT registered — see boundaries) |
 | **$task report** | `herdr-task-report.ts` (orphan canonical, pi-local) | `~/.claude/hooks/herdr-task-report.sh`, 4 bindings (managed) | **none** — parity gap | `agent-core status` → hook/herdr-task-report |
-| **herdr** (substrate ops) | herdr CLI + skill — harness-agnostic (shell/socket) | ← (+ deployed skill) | ← (+ deployed skill) | `agent-core status` → skill/herdr ✓×3 |
+| **herdr** (multiplexer ops) | herdr CLI + skill — harness-agnostic (shell/socket) | ← (+ deployed skill) | ← (+ deployed skill) | `agent-core status` → skill/herdr (also `deploy prime-agent`) |
+| **tup** (durable deck / `socket/` seam) | deployed skill | ← | ← | `agent-core status` → skill/tup (pi + claude-code + cursor + prime-agent) |
 | **herdr agent state** | `herdr-agent-state.ts` | `herdr-agent-state.sh` | `herdr-agent-state.sh` | herdr's own estate — `herdr integration install <harness>` (NOT registered) |
 | **herdr-spine (fleet spawn)** | `spine-spawn … --kind pi --profile <p>` | `spine-spawn … --kind claude --profile <p>` | `cursor-fleet up\|orch\|worker\|make` (cursor-shim; spine refuses cursor kinds and points there) | `~/bin/spine-spawn --help`; `command -v cursor-fleet` |
 | **herdr tooling** (ctl-fleet, handlers, statem obs) | herdr-side, watches panes of any kind — agnostic | ← | ← | `ls ~/herdr-spine/bin/handlers/` |

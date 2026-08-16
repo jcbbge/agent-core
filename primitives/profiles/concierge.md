@@ -134,11 +134,10 @@ The persona, enforced as what it never does:
 - **Hierarchy:** OPERATOR → you → `CORD [project]` (one per project; never
   implements) → `ORCH [unit]` → `AGNT [task]` / `SAGT [todo]`. Delegation
   flows down; escalation climbs one link at a time with an nq=3 budget.
-- **Spawn path:** fleets are harness-homogeneous — the root spawn's harness
-  defines every downstream agent; harness choice is the operator's per-mission
-  intake decision. Spawn verbs, flags, and paths live in
-  `~/agent-core/primitives/directives/<harness>.md`. Briefs name profiles/roles
-  only — never provider, model, or `--kind`. Models via `profile-model`.
+- **Desk harness:** `~/.config/herdr/desk-harness`, set by `herdr <harness>`.
+  Spawn every later agent on that harness (`spine-spawn` with no `--kind`;
+  cursor → `cursor-fleet`). Only pass `--kind` when the operator names a
+  different harness.
 - **Session loop:** one load-bearing CORD until Land or Park; parallel threads
   spawn async and must not starve it. Operator "top priority" = load-bearing.
 - **Tower (mailbox ≠ substrate):** Tower is **operational** only when

@@ -1,5 +1,5 @@
 # Global Agent Context
-**Updated:** 2026-08-12
+**Updated:** 2026-08-16
 
 Loaded by every harness — claude, pi, prime, cursor. CANONICAL CORE:
 `~/agent-core/primitives/AGENTS.md` (git-tracked). Deployed entrypoints are
@@ -18,7 +18,8 @@ here contaminates control arms.
 
 | Tool | Status | Access |
 |---|---|---|
-| Herdr | active — THE substrate (control-flow.md) | `~/agent-core/primitives/skills/herdr/SKILL.md` (canonical; `~/.claude/skills/herdr` + `~/.pi/agent/skills/herdr` symlink to it) — invoke ambiently when spawning, naming, or observing agents |
+| Herdr | active — live multiplexer (panes, detection, CLI + socket) | `~/agent-core/primitives/skills/herdr/SKILL.md` — fleet agents invoke when operating panes. The operator does not. |
+| Tup | active — durable deck; `socket/` is the seam to a runtime | `~/agent-core/primitives/skills/tup/SKILL.md` — concierge/CORD invoke for findings, spawn-door law, supervisor, mirror. Wired runtime today = herdr. |
 | Tower | active | MCP `mcp__tower__*` (CC) · `~/.tower/cli.mjs` + `board.jsonl` (everywhere) — see below |
 | Coraline | active | CLI `coraline` (33 languages) — no MCP registration |
 | Composto | active | CLI `composto` — IR compression; TS/JS/Python/Go/Rust, NOT Swift/Zig |
@@ -152,11 +153,18 @@ Canonical doc: `~/agent-core/primitives/rules/control-flow.md`. The ONE
 hierarchy for agentic work: Operator → Concierge → `CORD [project]` (one
 coordinator per project; reads/verifies/briefs, never implements) →
 `ORCH [feature/bug/chore]` → `AGNT [task]` / `SAGT [todo]`.
-Herdr is THE substrate: workers run as herdr panes (visible, surviving),
-spawned via the herdr skill — registration names lowercase-kebab, human
-name + `$task` stamped at birth, reaped when done (done = gone).
-Spawner pre-verifies every command, path, and endpoint; spawn prompts carry
-Pre-Verified Facts / Tasks with done-when / Report-back.
+
+**Operator entry:** in Ghostty, type `herdr pi` (or `claude`, `cursor`,
+`prime`). That starts herdr, that harness, and the concierge. That harness
+is the desk default until you start with a different one. After that you
+only talk to the concierge.
+
+Workers run as herdr panes (visible, surviving). Spawn-door law (stamp
+identity, deliver brief, verify the submit landed) lives in tup `socket/`;
+execution on this install is herdr + `spine-spawn`. Registration names
+lowercase-kebab, human name + `$task` stamped at birth, reaped when done
+(done = gone). Spawner pre-verifies every command, path, and endpoint;
+spawn prompts carry Pre-Verified Facts / Tasks with done-when / Report-back.
 Comms law: `~/.tower/COMMS-ARCH.md` — one message, one audience, once, in
 full; status is not mail; fleet-mail board topics are
 `<project-slug>/<topic>`; only `to:"operator"` mail reaches the operator
@@ -211,9 +219,9 @@ Manifold / UHP / Mesh-OS.
 
 Harness deltas live in `primitives/directives/<harness>.md`; deployed entrypoints are composed — edit sources, not deployed files.
 
-- **prime:** pi-based RLM runtime; harness-specific doc at
-  `~/.prime/agent/AGENTS.md` (which defers to this file for machine-wide
-  context)
+- **prime:** pi-based RLM runtime; composed entry at `~/.prime/agent/AGENTS.md`
+  (core+delta via `agent-core sync directive/core`); harness delta at
+  `primitives/directives/prime-agent.md`
 
 ## Fleet spawn + comms (law, 2026-08-11; amended 2026-08-12)
 
