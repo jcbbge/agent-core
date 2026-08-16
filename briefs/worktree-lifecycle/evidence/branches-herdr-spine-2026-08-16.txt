@@ -1,0 +1,30 @@
+chore/spine-twin-server-sync|077044b|2026-08-13 11:04:34 -0500|chore(cc-hooks): sync server.mjs twin to canonical Tower MCP
+feat/parity-make-test-maker|5ff9109|2026-08-13 20:47:20 -0500|feat(spine-spawn): staff test-maker on make path
+feat/parity-verify-gate-unify|e5db921|2026-08-14 16:19:05 -0500|docs(spine): MANUAL addendum to 0.8.0 reality; 15-restore-view stale docstring fixed
+fix/spine-board-flock|25c1ef0|2026-08-13 19:48:54 -0500|fix(spine): flock board_append writers (LOCK_EX)
+main|f7a90f5|2026-08-16 10:45:27 -0500|feat(spawn): desk-harness default + prime kind; land the parity/cabinet brief record
+pr-1-verify-beat|5ff9109|2026-08-13 20:47:20 -0500|feat(spine-spawn): staff test-maker on make path
+spine/u2ev-9964-pi|e2a1222|2026-08-12 13:35:50 -0500|docs(herdr-spine): correct spawn-path doctrine — harness-homogeneous, agnostic-by-design
+spine/u2ev-9964-pi-test|e2a1222|2026-08-12 13:35:50 -0500|docs(herdr-spine): correct spawn-path doctrine — harness-homogeneous, agnostic-by-design
+spine/u2ev-9985-claude|e2a1222|2026-08-12 13:35:50 -0500|docs(herdr-spine): correct spawn-path doctrine — harness-homogeneous, agnostic-by-design
+spine/u2ev-9985-claude-test|e2a1222|2026-08-12 13:35:50 -0500|docs(herdr-spine): correct spawn-path doctrine — harness-homogeneous, agnostic-by-design
+spine/w0-install-reconcile|1872986|2026-08-12 19:39:53 -0500|fix(tower): sync canonical server.mjs to live — relay_inbox + stigmergy fold
+tower/w0-install-reconcile|b42132e|2026-08-13 00:21:33 -0500|fix(tower-auto): stop cc-hooks competing for ownership of Tower's deployed code
+wt-agnt-coder-w2c-p6|7778575|2026-08-12 10:53:07 -0500|docs(herdr-spine): topology doctrine — Engine Shop + task workspaces
+wt-agnt-coder-w2g-p5|63e1010|2026-08-12 11:20:08 -0500|docs(herdr-spine): fleet spawn-path doctrine — cursor-shim is the spawn path
+wt-agnt-coder-w2g-p6|63e1010|2026-08-12 11:20:08 -0500|docs(herdr-spine): fleet spawn-path doctrine — cursor-shim is the spawn path
+wt-agnt-coder-w2g-pe|872cf68|2026-08-12 13:40:56 -0500|feat(spine-spawn): port Made Well Verify beat for pi/claude kinds
+wt-agnt-coder-w2h-p4|63e1010|2026-08-12 11:20:08 -0500|docs(herdr-spine): fleet spawn-path doctrine — cursor-shim is the spawn path
+wt-agnt-coder-w2h-pg|248a35e|2026-08-12 11:59:25 -0500|feat(handlers): idle-flip 50-scent-digest pheromone field digest
+wt-agnt-coder-w2k-p4|4838882|2026-08-12 13:20:27 -0500|test(ctl): tick A6 human-QA — TASKS live chrome verified in CTRL w29:p12
+wt-agnt-coder-w2k-p6|4838882|2026-08-12 13:20:27 -0500|test(ctl): tick A6 human-QA — TASKS live chrome verified in CTRL w29:p12
+wt-agnt-coder-w2y-p11|b42132e|2026-08-13 00:21:33 -0500|fix(tower-auto): stop cc-hooks competing for ownership of Tower's deployed code
+wt-agnt-coder-w2y-p1q|077044b|2026-08-13 11:04:34 -0500|chore(cc-hooks): sync server.mjs twin to canonical Tower MCP
+wt-agnt-test-maker-w2c-p7|7778575|2026-08-12 10:53:07 -0500|docs(herdr-spine): topology doctrine — Engine Shop + task workspaces
+wt-agnt-test-maker-w2g-p7|63e1010|2026-08-12 11:20:08 -0500|docs(herdr-spine): fleet spawn-path doctrine — cursor-shim is the spawn path
+wt-agnt-test-maker-w2g-pf|872cf68|2026-08-12 13:40:56 -0500|feat(spine-spawn): port Made Well Verify beat for pi/claude kinds
+wt-agnt-test-maker-w2h-p5|63e1010|2026-08-12 11:20:08 -0500|docs(herdr-spine): fleet spawn-path doctrine — cursor-shim is the spawn path
+wt-agnt-test-maker-w2k-p5|4838882|2026-08-12 13:20:27 -0500|test(ctl): tick A6 human-QA — TASKS live chrome verified in CTRL w29:p12
+wt-agnt-test-maker-w2k-p7|4838882|2026-08-12 13:20:27 -0500|test(ctl): tick A6 human-QA — TASKS live chrome verified in CTRL w29:p12
+wt-agnt-test-maker-w2y-p12|b42132e|2026-08-13 00:21:33 -0500|fix(tower-auto): stop cc-hooks competing for ownership of Tower's deployed code
+wt-agnt-test-maker-w2y-p1r|02fcc9f|2026-08-16 11:17:10 -0500|wip(wt-agnt-test-maker-w2y-p1r): uncommitted worktree state preserved before reclaim

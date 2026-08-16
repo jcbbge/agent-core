@@ -138,7 +138,7 @@ At Land or Park, return every resource your thread took:
 | Resource | Return at Done/Park |
 |---|---|
 | herdr panes, tabs, workspaces you spawned | closed/reaped |
-| git worktrees / spine branches | removed when merged or named in pickup brief |
+| git worktrees / spine branches | removed when merged or named in pickup brief — see worktree-lifecycle.md |
 | Arc Docker images your unit built | Arc allowlist only (`arc-*`, `jcbbge/arc-demo`); see `~/Infinity/arc/AGENTS.md` invariant 8 |
 | Neon numeric allowlist resources your unit provisioned | torn down per project pickup brief |
 

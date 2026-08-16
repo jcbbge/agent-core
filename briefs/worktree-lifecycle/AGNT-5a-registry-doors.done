@@ -1,0 +1,32 @@
+AGNT registry-doors — done 2026-08-16.
+
+verify-5a-registry-doors.sh: TOTAL 15 passed, 1 failed at completion time.
+The one red (3d: "0 stale 0 missing") is pre-existing and out of Touch ONLY
+scope: baseline before this task was already 333 ok 5 stale 0 missing
+(directive/core ×4 harnesses + hook/slim-guard cursor), not the
+334 ok 0 stale 0 missing the brief's Pre-Verified Fact #5 claimed. Flagged
+as a finding on board topic agent-core/worktree-lifecycle before starting
+work, not fixed here — fixing it means running `agent-core sync`, which
+writes outside the registry-only partition and could collide with other
+agents' in-flight primitive edits. After this task: 335 ok 5 stale 0 missing
+(+2 ok, the two new entries; stale/missing unchanged).
+
+Doors registered, both as `check machine` entries under
+rule/worktree-teardown-cursor and rule/worktree-teardown-spine:
+- cursor-finish needle: `trap cleanup_and_preserve_rc EXIT` — the trap
+  registration line itself; removing/renaming it drops the needle.
+- spine-spawn needle: `def cmd_reap(` — the reap function's own def line;
+  removing/renaming cmd_reap drops the needle.
+Both proved to flip off ok when the needle is deleted from a fixture copy
+(criteria 4b/4c), and the real door files' shasums are unchanged before vs.
+after (c2f29bc4959173eed3ad7e3a83244410578376ac,
+5f01c626e324998ea0712e7f5191a705de721b43).
+
+The "Enforcement estate deliberately NOT registered this pass" comment was
+amended (not deleted) with a narrow-exception paragraph explaining these two
+check-only cross-program entries are wiring evidence, not ownership claims.
+
+Files touched:
+- ~/.agent-core/registry (untracked machine state; backup in scratchpad)
+
+Never committed, per brief (and the registry is untracked besides).

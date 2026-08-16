@@ -1,0 +1,13 @@
+AGNT ledger-refresh — done 2026-08-16.
+
+verify-5b-ledger-refresh.sh: TOTAL 18 passed, 0 failed at completion time.
+(A later concurrent, out-of-partition edit to ENFORCEMENT.md line 34 by
+another agent introduced an unrelated malformed row; flagged as a finding
+on board topic agent-core/worktree-lifecycle, not fixed here — out of
+Touch ONLY scope.)
+
+Files touched:
+- primitives/rules/ENFORCEMENT.md (line 47/48 row only)
+- primitives/rules/worktree-lifecycle.md (section 7 + SOURCES line)
+
+Never committed, per brief.

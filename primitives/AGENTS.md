@@ -95,7 +95,7 @@ Project-specific services are NOT cross-project.
 ## Rules (runtime, per-harness config)
 
 Canonical store: `~/agent-core/primitives/rules/` (debugging-discipline,
-long-running-processes, tower-orchestration, git, secrets,
+long-running-processes, tower-orchestration, git, worktree-lifecycle, secrets,
 backend-first-security, work-file-format). The commit convention lives inline
 in this file (Work tracking), not in the rule store. Project rules surface
 per harness (CC: `.claude/rules` + `@`-imports; pi: `~/.pi/agent/rules/`).

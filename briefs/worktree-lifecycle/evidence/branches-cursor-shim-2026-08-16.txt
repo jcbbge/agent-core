@@ -1,0 +1,49 @@
+feat/a3-freshness-gate|d71a24e|2026-08-13 20:10:56 -0500|fix(spine): author + flock machine Tower emissions
+feat/a5-batch-record|6c5c998|2026-08-16 10:46:05 -0500|feat(models): map grok-4.6 tiers; land the-door briefs; ignore run markers
+fix/shim-emitter-author|d71a24e|2026-08-13 20:10:56 -0500|fix(spine): author + flock machine Tower emissions
+lever-1-herdr-kind|7f874d9|2026-08-11 20:08:02 -0500|feat(cursor-spine): --kind cursor interactive launch for persistent tiers (CORD/ORCH/coder)
+lever-2-mcp-tools|4e32b47|2026-08-16 11:17:09 -0500|wip(lever-2-mcp-tools): uncommitted worktree state preserved before reclaim
+lever-3-proem-cache|f4a9068|2026-08-11 19:52:26 -0500|feat(cursor-spine): byte-identical cache prefix — fixed directive header + dry-run instruction print
+lever-4-sessions|c7568a2|2026-08-16 11:17:09 -0500|wip(lever-4-sessions): uncommitted worktree state preserved before reclaim
+lever-5-mode-json|33ebaa9|2026-08-11 20:08:02 -0500|feat(cursor-spine): --mode plan|ask read-only tiers + json headless completion
+lever-6-statem-reap|cd9ad2f|2026-08-11 20:03:25 -0500|feat(cursor-fleet): statem glyph tab titles + event-driven reap
+lever-7-fanout|482dfa1|2026-08-11 20:08:02 -0500|feat(cursor-fleet): fanout verb — 4-cap gridded coder tab, shared brief prefix
+main|6e41889|2026-08-13 19:15:30 -0500|docs(fleet): five planes + pull loop; drop four-plane push framing
+wt-agnt-coder-w29-p19|d988eff|2026-08-11 23:25:22 -0500|fix(spawn): derive worktree name from label+pane; deliver instructions via file
+wt-agnt-coder-w29-p1b|d988eff|2026-08-11 23:25:22 -0500|fix(spawn): derive worktree name from label+pane; deliver instructions via file
+wt-agnt-coder-w29-p1d|d988eff|2026-08-11 23:25:22 -0500|fix(spawn): derive worktree name from label+pane; deliver instructions via file
+wt-agnt-coder-w29-p1n|d988eff|2026-08-11 23:25:22 -0500|fix(spawn): derive worktree name from label+pane; deliver instructions via file
+wt-agnt-coder-w29-p1t|d988eff|2026-08-11 23:25:22 -0500|fix(spawn): derive worktree name from label+pane; deliver instructions via file
+wt-agnt-coder-w29-p1x|d988eff|2026-08-11 23:25:22 -0500|fix(spawn): derive worktree name from label+pane; deliver instructions via file
+wt-agnt-coder-w29-p2e|d988eff|2026-08-11 23:25:22 -0500|fix(spawn): derive worktree name from label+pane; deliver instructions via file
+wt-agnt-coder-w29-p2p|d988eff|2026-08-11 23:25:22 -0500|fix(spawn): derive worktree name from label+pane; deliver instructions via file
+wt-agnt-coder-w2m-pa|6c85350|2026-08-12 15:36:53 -0500|test(qa-verify): assert gate permit via marker — dry-run skips the gate
+wt-agnt-coder-w31-p12|6e41889|2026-08-13 19:15:30 -0500|docs(fleet): five planes + pull loop; drop four-plane push framing
+wt-agnt-coder-w31-p19|6e41889|2026-08-13 19:15:30 -0500|docs(fleet): five planes + pull loop; drop four-plane push framing
+wt-agnt-coder-w31-p1a|6e41889|2026-08-13 19:15:30 -0500|docs(fleet): five planes + pull loop; drop four-plane push framing
+wt-agnt-coder-w31-p47|57cae06|2026-08-16 11:17:07 -0500|wip(wt-agnt-coder-w31-p47): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w31-p4e|d136efd|2026-08-16 11:17:06 -0500|wip(wt-agnt-coder-w31-p4e): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w31-p4j|6bb9740|2026-08-16 11:17:08 -0500|wip(wt-agnt-coder-w31-p4j): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w31-p4p|fdb16d0|2026-08-16 11:17:08 -0500|wip(wt-agnt-coder-w31-p4p): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w31-p4q|3dbefe3|2026-08-16 11:17:07 -0500|wip(wt-agnt-coder-w31-p4q): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w31-p4r|b6270a7|2026-08-16 11:17:07 -0500|wip(wt-agnt-coder-w31-p4r): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w31-p5b|de0d6f4|2026-08-16 11:17:07 -0500|wip(wt-agnt-coder-w31-p5b): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w31-p62|6e41889|2026-08-13 19:15:30 -0500|docs(fleet): five planes + pull loop; drop four-plane push framing
+wt-agnt-coder-w31-p8|1fdcc11|2026-08-16 11:17:09 -0500|wip(wt-agnt-coder-w31-p8): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w31-pb|afcaf7a|2026-08-16 11:17:08 -0500|wip(wt-agnt-coder-w31-pb): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w31-pe|3c70dbd|2026-08-16 11:17:06 -0500|wip(wt-agnt-coder-w31-pe): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w31-pf|f7bd7d7|2026-08-16 11:17:06 -0500|wip(wt-agnt-coder-w31-pf): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w31-pg|6e41889|2026-08-13 19:15:30 -0500|docs(fleet): five planes + pull loop; drop four-plane push framing
+wt-agnt-coder-w31-ph|6e41889|2026-08-13 19:15:30 -0500|docs(fleet): five planes + pull loop; drop four-plane push framing
+wt-agnt-coder-w31-pj|247eaf5|2026-08-16 11:17:05 -0500|wip(wt-agnt-coder-w31-pj): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w31-pk|6e41889|2026-08-13 19:15:30 -0500|docs(fleet): five planes + pull loop; drop four-plane push framing
+wt-agnt-coder-w31-pm|78af57f|2026-08-16 11:17:05 -0500|wip(wt-agnt-coder-w31-pm): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w31-pn|6e41889|2026-08-13 19:15:30 -0500|docs(fleet): five planes + pull loop; drop four-plane push framing
+wt-agnt-coder-w31-pp|e41c26b|2026-08-16 11:17:04 -0500|wip(wt-agnt-coder-w31-pp): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w31-pr|6e41889|2026-08-13 19:15:30 -0500|docs(fleet): five planes + pull loop; drop four-plane push framing
+wt-agnt-coder-w31-pv|6e41889|2026-08-13 19:15:30 -0500|docs(fleet): five planes + pull loop; drop four-plane push framing
+wt-agnt-coder-w31-py|6e41889|2026-08-13 19:15:30 -0500|docs(fleet): five planes + pull loop; drop four-plane push framing
+wt-agnt-test-maker-w29-p1a|d988eff|2026-08-11 23:25:22 -0500|fix(spawn): derive worktree name from label+pane; deliver instructions via file
+wt-agnt-test-maker-w2m-pb|6c85350|2026-08-12 15:36:53 -0500|test(qa-verify): assert gate permit via marker — dry-run skips the gate
+wt-agnt-test-maker-w31-p9|50bfbbf|2026-08-16 11:17:08 -0500|wip(wt-agnt-test-maker-w31-p9): uncommitted worktree state preserved before reclaim
+wt-agnt-test-maker-w31-pc|8a7774e|2026-08-16 11:17:08 -0500|wip(wt-agnt-test-maker-w31-pc): uncommitted worktree state preserved before reclaim

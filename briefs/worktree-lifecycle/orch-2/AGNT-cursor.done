@@ -1,0 +1,71 @@
+AGNT-cursor — done 2026-08-16
+
+Ordering followed: 3.3 -> 3.1 -> 2.3.
+
+Task 3.3 (preservation guard) — DONE, DOOR (cursor-finish, bash, cursor path
+only). cleanup() now: parks a detached HEAD onto a branch before anything
+else; attempts to preserve dirty state via commit; re-checks
+`git status --porcelain`; keeps the directory + branch and logs path/branch/
+unpreserved-count if still dirty (pre-commit hook refusal); only removes the
+worktree and deletes the branch once the tree is clean. Idempotent by
+construction (verified via direct double-invocation on both outcomes).
+Evidence: real fixture repo, real pre-commit hooks (permissive and
+refusing), both outcomes quoted to Tower board
+(agent-core/worktree-lifecycle).
+
+Task 3.1 (arm the trap) — DONE, DOOR (cursor-finish, bash, cursor path
+only). `trap cleanup EXIT` armed immediately after `resolve_git_root`, before
+the SPINE/LATCH executable checks, so every die()/crash/normal-exit from that
+point on reaps via the same idempotent cleanup(). Bash preserves the
+original `exit N` status through an EXIT trap unless the trap itself calls
+exit (verified with a standalone repro); no wrapper needed. End-to-end:
+forced a real die (missing cursor-spine) with two pre-existing dirty
+detached-HEAD worktrees — both preserved+removed via the trap,
+`git worktree list` clean after, rc=1 preserved. Repeated with a refusing
+pre-commit hook — both kept with reports, rc=1 preserved.
+
+Task 2.3 (sparse checkout on the cursor path) — DONE, DOOR (cursor-spine,
+bash, cursor path only), opt-in. cursor-agent's own `--worktree` has no
+sparse flag, but it does read an untracked `.cursor/worktrees.json`
+(`setup-worktree` / `setup-worktree-unix`, reverse-engineered from the
+bundled index.js) synchronously before the agent starts. Proved that lever
+works standalone, but it's racy for cursor-spine's actual use (shared config
+file, cursor-agent reads it asynchronously in its own background process —
+two concurrent spawns against the same $DIR with different partitions could
+cross-read). Chose a race-free alternative: new repeatable
+`cursor-spine ... --partition <path>` flag. When set, cursor-spine itself
+(not cursor-agent) synchronously creates the worktree
+(`git worktree add --no-checkout` + `sparse-checkout init --cone` +
+`sparse-checkout set` + `checkout`) at the same path convention
+cursor-finish's `worktree_path()` already expects, then passes cursor-agent
+`--workspace <precreated-path>` instead of `--worktree <name>` — no shared
+file, no timing dependency. Verified end-to-end through the real CLI
+(`cursor-spine researcher --dir <fixture> --worktree --partition apps/api
+--headless`): resulting worktree contained only root.txt + apps/api/main.py.
+Default behavior (no --partition) is unchanged: full checkout via
+cursor-agent's own --worktree, now with an explicit log line naming the
+cost, per the "never silently narrow" law.
+
+Files touched (only, ~/cursor-shim, this worktree): cursor-finish,
+cursor-spine. No commits made — left in the working tree per brief.
+
+qa-verify.sh: 147 passed / 2 failed, unchanged before and after my edits
+(stash-diffed to confirm — .monitor.json state file present, AC1 non-repo
+coder PERMITTED after criteria — both pre-existing, unrelated to this unit).
+Brief's noted baseline of 71/71 is stale; 147 is current total including
+both pre-existing failures.
+
+Zero worktrees / branches leaked: all test fixtures built under
+/private/tmp/claude-501/.../scratchpad/ (this session's scratch dir), torn
+down after each test; one accidental real spawn landed briefly under
+~/.cursor/worktrees/repo/... during CLI end-to-end verification and was
+immediately reaped (git worktree remove --force + branch -D) —
+`ls ~/.cursor/worktrees` now errors "No such file or directory" (empty/gone),
+`ls ~/.spine/worktrees` shows only this session's own two live AGNT
+worktrees (cursor-shim, herdr-spine), which are my and my sibling's current
+working directories, not leaks.
+
+Board: claim + 3 findings + work-done pheromone posted to
+agent-core/worktree-lifecycle, evidence file referenced.
+
+No deviations from the brief. No blockers.

@@ -1,0 +1,79 @@
+docs/codify-stigmergy-nq|94c2d0d|2026-08-13 19:15:59 -0500|docs(tower): stamp orch-codify-stigmergy.done
+feat/a2-ground-manifest-exhaust|31f913e|2026-08-16 11:13:27 -0500|wip(feat/a2-ground-manifest-exhaust): uncommitted worktree state preserved before reclaim
+feat/parity-verify-beat-roles|af2c415|2026-08-13 20:47:20 -0500|feat(profiles): add test-maker, tester, arbiter Verify-beat roles
+feat/wave-rollup-skill|1139647|2026-08-13 14:28:44 -0500|chore(wave-rollup): stamp orch.done with commit SHA
+fix/a8-alarm-rationalization|73fd284|2026-08-13 20:25:01 -0500|docs(tower): A8 alarm rationalization doctrine (malformed ≠ legacy)
+main|60181fe|2026-08-16 11:17:34 -0500|chore(gitignore): honor the existing tower-copy omission ruling
+orch/w0-driftcheck-fix|34011ee|2026-08-13 00:42:50 -0500|docs(tower): persist orch-w0-canonical-source's own handoff
+orch/w3-plane-fixes|6ac4bb1|2026-08-16 11:13:11 -0500|wip(orch/w3-plane-fixes): uncommitted worktree state preserved before reclaim
+orch/w4-retention|1bf3a74|2026-08-16 11:16:48 -0500|wip(orch/w4-retention): preserve divergent worktree state before reclaim
+rescue/parity-verify-beat-roles|af2c415|2026-08-13 20:47:20 -0500|feat(profiles): add test-maker, tester, arbiter Verify-beat roles
+spine/u2-smoke-claude|5f1b9e4|2026-08-12 13:22:02 -0500|fix(fleet-task): read herdr role token from the real pane-get envelope
+spine/u2-smoke-claude-test|5f1b9e4|2026-08-12 13:22:02 -0500|fix(fleet-task): read herdr role token from the real pane-get envelope
+spine/u2-smoke-pi|5f1b9e4|2026-08-12 13:22:02 -0500|fix(fleet-task): read herdr role token from the real pane-get envelope
+spine/u2-smoke-pi-test|5f1b9e4|2026-08-12 13:22:02 -0500|fix(fleet-task): read herdr role token from the real pane-get envelope
+spine/w0-driftcheck|dbabe4f|2026-08-13 00:27:31 -0500|feat(tower): make code drift fail a check instead of waiting for a human
+spine/w0-preserve-and-stage-w1|949238d|2026-08-12 21:06:51 -0500|feat(directive): Write discipline law — one write per file, read before re-write
+spine/w0-preserve-and-stage-w2|949238d|2026-08-12 21:06:51 -0500|feat(directive): Write discipline law — one write per file, read before re-write
+spine/w0-readme|5e281be|2026-08-12 23:57:16 -0500|feat(tower): put Tower's code set under version control at its canonical home
+spine/w0-swap|9ff8778|2026-08-13 00:02:48 -0500|docs(tower): record the canonical/deployed pattern and keep state out of the code home
+tower/board-write-path-hardening|6d076b2|2026-08-13 08:59:28 -0500|docs(tower): stamp orch-board-data-integrity.done
+tower/bus-data-residuals|1a8b0a8|2026-08-13 19:42:04 -0500|fix(tower): flocked statem board writes + twr integrity footer
+tower/flock-integrity|8986eab|2026-08-13 11:05:34 -0500|docs(tower): orch-bus-data-hardening.done stamp
+tower/w0-canonical-source|1722f56|2026-08-13 00:38:51 -0500|fix(tower): declare repo-only files so the drift check cannot cry wolf
+tower/w0-version-control|cab69eb|2026-08-13 07:36:47 -0500|merge(tower): land 1722f56 repo-only drift-check fix into W0
+wt-agnt-coder-w2b-p4|560bf07|2026-08-12 11:18:30 -0500|docs(fleet-tasks): CORD/ORCH whiteboard task-layer design — research + placement recommendation
+wt-agnt-coder-w2b-p9|be8c04f|2026-08-12 11:45:07 -0500|feat(directive): factor harness deltas into primitives/directives
+wt-agnt-coder-w2b-pc|7fe23dd|2026-08-12 11:52:51 -0500|feat(tower): pheromone stream emit + derived field reader
+wt-agnt-coder-w2b-pj|7fe23dd|2026-08-12 11:52:51 -0500|feat(tower): pheromone stream emit + derived field reader
+wt-agnt-coder-w2b-pq|7fe23dd|2026-08-12 11:52:51 -0500|feat(tower): pheromone stream emit + derived field reader
+wt-agnt-coder-w2b-ps|5f1b9e4|2026-08-12 13:22:02 -0500|fix(fleet-task): read herdr role token from the real pane-get envelope
+wt-agnt-coder-w2b-pw|2efbe08|2026-08-12 15:27:14 -0500|feat(cursor-parity): Unit C3 — commands/subagents/hooks harness parity
+wt-agnt-coder-w2h-p6|be8c04f|2026-08-12 11:45:07 -0500|feat(directive): factor harness deltas into primitives/directives
+wt-agnt-coder-w2h-pq|3c91cfd|2026-08-12 13:15:36 -0500|feat(fleet-task): CORD/ORCH whiteboard CLI — U1+U2 implement + U3 mission artifacts
+wt-agnt-coder-w2y-p14|5b41841|2026-08-16 11:14:15 -0500|wip(wt-agnt-coder-w2y-p14): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w2y-p18|9d5a70f|2026-08-16 11:14:14 -0500|wip(wt-agnt-coder-w2y-p18): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w2y-p1x|ad4b0ab|2026-08-16 11:14:13 -0500|wip(wt-agnt-coder-w2y-p1x): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w2y-p21|9f5e88e|2026-08-16 11:13:15 -0500|wip(wt-agnt-coder-w2y-p21): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w2y-p4|cab69eb|2026-08-13 07:36:47 -0500|merge(tower): land 1722f56 repo-only drift-check fix into W0
+wt-agnt-coder-w2y-p5|cab69eb|2026-08-13 07:36:47 -0500|merge(tower): land 1722f56 repo-only drift-check fix into W0
+wt-agnt-coder-w2y-p6|cab69eb|2026-08-13 07:36:47 -0500|merge(tower): land 1722f56 repo-only drift-check fix into W0
+wt-agnt-coder-w2y-p7|cab69eb|2026-08-13 07:36:47 -0500|merge(tower): land 1722f56 repo-only drift-check fix into W0
+wt-agnt-coder-w2y-pb|387440b|2026-08-16 11:14:12 -0500|wip(wt-agnt-coder-w2y-pb): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w2y-pf|2d9e316|2026-08-16 11:14:11 -0500|wip(wt-agnt-coder-w2y-pf): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w2y-pn|404d7b1|2026-08-16 11:16:47 -0500|wip(wt-agnt-coder-w2y-pn): preserve divergent worktree state before reclaim
+wt-agnt-coder-w2y-px|a62e746|2026-08-13 10:52:06 -0500|feat(tower): Phase-1 retention rotate (archive, never destroy)
+wt-agnt-coder-w2z-p4|cab69eb|2026-08-13 07:36:47 -0500|merge(tower): land 1722f56 repo-only drift-check fix into W0
+wt-agnt-coder-w2z-p5|cab69eb|2026-08-13 07:36:47 -0500|merge(tower): land 1722f56 repo-only drift-check fix into W0
+wt-agnt-coder-w2z-p6|8d31bf3|2026-08-16 11:16:47 -0500|wip(wt-agnt-coder-w2z-p6): preserve divergent worktree state before reclaim
+wt-agnt-coder-w2z-p8|074b442|2026-08-16 11:13:38 -0500|wip(wt-agnt-coder-w2z-p8): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w2z-pa|8cdf2c5|2026-08-16 11:13:37 -0500|wip(wt-agnt-coder-w2z-pa): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w2z-pb|4c83a6d|2026-08-16 11:13:36 -0500|wip(wt-agnt-coder-w2z-pb): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w2z-pc|aa6675d|2026-08-16 11:13:36 -0500|wip(wt-agnt-coder-w2z-pc): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w2z-pf|8c35583|2026-08-16 11:13:35 -0500|wip(wt-agnt-coder-w2z-pf): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w2z-pp|dbaced9|2026-08-16 11:13:35 -0500|wip(wt-agnt-coder-w2z-pp): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w2z-pt|35fdcdb|2026-08-16 11:13:34 -0500|wip(wt-agnt-coder-w2z-pt): uncommitted worktree state preserved before reclaim
+wt-agnt-coder-w3a-p6|73fd284|2026-08-13 20:25:01 -0500|docs(tower): A8 alarm rationalization doctrine (malformed ≠ legacy)
+wt-agnt-coder-w3a-p7|73fd284|2026-08-13 20:25:01 -0500|docs(tower): A8 alarm rationalization doctrine (malformed ≠ legacy)
+wt-agnt-coder-w3a-p8|73fd284|2026-08-13 20:25:01 -0500|docs(tower): A8 alarm rationalization doctrine (malformed ≠ legacy)
+wt-agnt-test-maker-w2b-p5|560bf07|2026-08-12 11:18:30 -0500|docs(fleet-tasks): CORD/ORCH whiteboard task-layer design — research + placement recommendation
+wt-agnt-test-maker-w2b-pa|be8c04f|2026-08-12 11:45:07 -0500|feat(directive): factor harness deltas into primitives/directives
+wt-agnt-test-maker-w2b-pd|7fe23dd|2026-08-12 11:52:51 -0500|feat(tower): pheromone stream emit + derived field reader
+wt-agnt-test-maker-w2b-pk|7fe23dd|2026-08-12 11:52:51 -0500|feat(tower): pheromone stream emit + derived field reader
+wt-agnt-test-maker-w2b-pt|5f1b9e4|2026-08-12 13:22:02 -0500|fix(fleet-task): read herdr role token from the real pane-get envelope
+wt-agnt-test-maker-w2b-px|2efbe08|2026-08-12 15:27:14 -0500|feat(cursor-parity): Unit C3 — commands/subagents/hooks harness parity
+wt-agnt-test-maker-w2h-p7|be8c04f|2026-08-12 11:45:07 -0500|feat(directive): factor harness deltas into primitives/directives
+wt-agnt-test-maker-w2h-pr|3c91cfd|2026-08-12 13:15:36 -0500|feat(fleet-task): CORD/ORCH whiteboard CLI — U1+U2 implement + U3 mission artifacts
+wt-agnt-test-maker-w2y-p15|1a1c026|2026-08-16 11:13:33 -0500|wip(wt-agnt-test-maker-w2y-p15): uncommitted worktree state preserved before reclaim
+wt-agnt-test-maker-w2y-p19|e485051|2026-08-16 11:13:33 -0500|wip(wt-agnt-test-maker-w2y-p19): uncommitted worktree state preserved before reclaim
+wt-agnt-test-maker-w2y-p1y|f4161f2|2026-08-16 11:13:32 -0500|wip(wt-agnt-test-maker-w2y-p1y): uncommitted worktree state preserved before reclaim
+wt-agnt-test-maker-w2y-p22|8c152d9|2026-08-16 11:13:15 -0500|wip(wt-agnt-test-maker-w2y-p22): uncommitted worktree state preserved before reclaim
+wt-agnt-test-maker-w2y-pc|cbeafa4|2026-08-16 11:13:31 -0500|wip(wt-agnt-test-maker-w2y-pc): uncommitted worktree state preserved before reclaim
+wt-agnt-test-maker-w2y-pg|2c385e6|2026-08-16 11:13:31 -0500|wip(wt-agnt-test-maker-w2y-pg): uncommitted worktree state preserved before reclaim
+wt-agnt-test-maker-w2y-pp|c68c71f|2026-08-16 11:13:16 -0500|wip(wt-agnt-test-maker-w2y-pp): uncommitted worktree state preserved before reclaim
+wt-agnt-test-maker-w2z-p9|b602926|2026-08-16 11:13:30 -0500|wip(wt-agnt-test-maker-w2z-p9): uncommitted worktree state preserved before reclaim
+wt-agnt-test-maker-w2z-pg|7cf3342|2026-08-16 11:13:29 -0500|wip(wt-agnt-test-maker-w2z-pg): uncommitted worktree state preserved before reclaim
+wt-agnt-test-maker-w2z-pr|a1f689b|2026-08-16 11:13:28 -0500|wip(wt-agnt-test-maker-w2z-pr): uncommitted worktree state preserved before reclaim
+wt-agnt-test-maker-w2z-pv|840e9b2|2026-08-16 11:13:28 -0500|wip(wt-agnt-test-maker-w2z-pv): uncommitted worktree state preserved before reclaim
+wt-finish-a2-exhaust|1565b9e|2026-08-13 19:49:46 -0500|docs(tower): CORD-SCOPE after spine flock unpark
+wt-verify-assay-recall|e16e2fc|2026-08-11 22:29:32 -0500|feat(decisions): all 4 lanes integrated — ledger byte-cursor, latch multi-until, flywheel retired
