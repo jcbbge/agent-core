@@ -189,8 +189,12 @@ never `git add -A`.
 
 ## Retired — never reference
 
-opencode harness (2026-08-11; dropped from agent-core registry,
-`~/.config/opencode/` targets dead) · bb agentic IDE (2026-08-11;
+~~opencode harness (2026-08-11; dropped from agent-core registry,
+`~/.config/opencode/` targets dead)~~ **CORRECTION 2026-08-15 (operator):
+retirement STALE — opencode is live again as the concierge's spawn seat for
+cursor fleets (profile-model rulings). Evidence: tup finding-J. The
+2026-08-11 entry stands struck-through beside this correction per kernel
+law; do not re-retire without an operator ruling.** · bb agentic IDE (2026-08-11;
 uninstalled — app, CLIs, `~/.bb` data all removed) ·
 SurrealDB `:6000` + `com.surrealdb.*` (2026-08-02; data archived `~/surreal/`,
 plists `~/dotfiles/launchagents/deprecated/`) · alembic MCP + dream-daemon +

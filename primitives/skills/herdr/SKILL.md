@@ -190,6 +190,20 @@ herdr pane read <id> --source visible --lines 6 | grep -q "Pasted text" \
   && herdr pane send-keys <id> Enter && sleep 2 && herdr pane get <id>
 ```
 
+Two additions from the tup final run (2026-08-15):
+
+- **Cursor follow-up trap.** A prompt sent to a cursor pane mid-turn queues
+  as a follow-up ("enter send now") and sits UNSENT after the turn ends —
+  the pane reads idle with the directive trapped in its input box. The
+  status-flip check above catches it; the fix is one more `send-keys Enter`.
+  Bake the retry into every delivery path, not just the happy one.
+- **Status flips wake no one.** `done` is visible but nothing subscribes —
+  an idle parent will sit forever beside finished children. Until the
+  resident supervisor lands (tup `socket/`, finding-M), run a bellman: a
+  background loop that wakes idle parents when children report done, with
+  the verified-submit protocol above and a 10-min per-pane debounce.
+  Reference implementation: `~/tup-lab/bellman.py`.
+
 **Prefer the wrapper:** `~/bin/spine-spawn <orch|worker|fanout|prompt>`
 (= `python3 ~/herdr-spine/bin/spine-spawn` — **never `bun`**, bun parses the
 Python file as JS and dies). Bakes topology, rename, readiness, verified
