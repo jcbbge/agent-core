@@ -19,3 +19,7 @@ briefs/tower/w0-swap-evidence/board.jsonl.pre-recovery-*
 # Same ruling, already recorded in the tree by an earlier pass — see
 # rotate-proofs/*/TOWER-COPY-OMITTED.md. PROOF.md carries the shas.
 briefs/tower/w4-retention-evidence/rotate-proofs/*/tower-copy/
+# Same ruling, tower-bus-integrity unit: raw board backups and repair tails are
+# local-only evidence carrying the same credential. On disk, never in git.
+briefs/tower-bus-integrity/backups/
+briefs/tower-bus-integrity/repair/*.raw

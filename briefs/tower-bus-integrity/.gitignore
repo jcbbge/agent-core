@@ -1,0 +1,6 @@
+# Raw board rows carry the localhost proxy credential (agent-core 60181fe).
+# Backups, quarantined rows, and per-row repair dumps never enter git.
+backups/
+quarantine/*.jsonl
+repair/
+tools/*.out

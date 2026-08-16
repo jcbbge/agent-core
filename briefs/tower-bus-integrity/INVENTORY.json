@@ -1,0 +1,1204 @@
+{
+  "meta": {
+    "board_path": "/Users/jrg/.tower/board.jsonl",
+    "inventoried_at": "2026-08-16T18:22:22.919Z",
+    "line_count": 12527,
+    "sha256": "4cf11dbede05db1aa35fcb860b70ab9523b0eee0ceda7b968da8749d07ce2a19",
+    "byte_length": 6922336
+  },
+  "agreement_with_bus_data_inventory": {
+    "same_26_line_numbers": true,
+    "same_damage_class_per_line_except": [
+      {
+        "line": 2527,
+        "disagreement": "bus-data/INVENTORY.json records only 'concatenated_objects'; object 1 on this line ALSO has an internal unescaped-quote defect (fails to JSON.parse standalone) independent of the concatenation — two compounding defects, not one."
+      }
+    ],
+    "note": "bus-data/INVENTORY.json omits `writer`, the exact separator bytes, and (for the concatenated rows) does not check whether object 1 itself independently fails to parse. This inventory adds all three."
+  },
+  "histogram": {
+    "non_json_text": 2,
+    "truncated": 1,
+    "unescaped_body": 1,
+    "invalid_escape": 1,
+    "concatenated_objects": 21
+  },
+  "bad_lines": [
+    {
+      "line": 1,
+      "damage_class": "non_json_text",
+      "raw_byte_len": 16,
+      "extractable": {},
+      "recoverable": false,
+      "writer": "UNKNOWN",
+      "notes": "Not a board row. Literal text '1 matches in 1F:' — captured stdout of a search/grep-style tool that got appended to board.jsonl instead of a proper post."
+    },
+    {
+      "line": 2,
+      "damage_class": "non_json_text",
+      "raw_byte_len": 15,
+      "extractable": {},
+      "recoverable": false,
+      "writer": "UNKNOWN",
+      "notes": "Not a board row. Literal text '[file] 628 (1):' — same captured-stdout artifact as line 1, part of the same leaked tool run (grep/search-style match summary header)."
+    },
+    {
+      "line": 3,
+      "damage_class": "truncated",
+      "raw_byte_len": 91,
+      "extractable": {
+        "ts": {
+          "read": "2026-07-24T09:18:30Z"
+        }
+      },
+      "recoverable": false,
+      "writer": "UNKNOWN",
+      "notes": "Not a board row on its own: begins '     0: \"spine-...\", \"ts\": ..., \"cwd...' (numbered-line dump format, no opening '{', truncated mid-key at 'cwd'). Same leaked-stdout artifact family as lines 1-2 — looks like a numbered match dump (e.g. `grep -n`-style output) of a JSON line, not the line itself."
+    },
+    {
+      "line": 553,
+      "damage_class": "unescaped_body",
+      "raw_byte_len": 863,
+      "extractable": {
+        "id": {
+          "read": "t-find-1785206344-w1"
+        },
+        "ts": {
+          "read": "2026-07-28T02:39:04.735Z"
+        },
+        "from": {
+          "read": "worker-1"
+        },
+        "topic": {
+          "read": "tower-auto"
+        },
+        "cwd": {
+          "read": "/Users/jrg/herdr-spine"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "worker-1",
+      "notes": "whole-object JSON.parse error: \"JSON Parse error: Expected '}'\". Body value contains a literal unescaped `\"` pair around `\"tower ask\"` (should be `\\\"tower ask\\\"`); parser treats the body string as ending there, then errors on trailing content. id/ts/cwd/type/from/topic sit before body and parse cleanly via regex."
+    },
+    {
+      "line": 2113,
+      "damage_class": "invalid_escape",
+      "raw_byte_len": 1566,
+      "extractable": {
+        "id": {
+          "read": "ws1-done-1786216197"
+        },
+        "ts": {
+          "read": "2026-08-08T19:09:57Z"
+        },
+        "from": {
+          "read": "ws1"
+        },
+        "topic": {
+          "read": "fut-rename"
+        },
+        "cwd": {
+          "read": "/Users/jrg/fut"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "ws1",
+      "notes": "whole-object JSON.parse error: \"JSON Parse error: Invalid escape character -\". Body contains a literal `\\-` sequence (backslash immediately followed by a hyphen, inside a described regex/replace() snippet) — not a legal JSON escape (only \" \\\\ / b f n r t u are legal after a backslash). id/ts/cwd/type/from/topic sit before body and parse cleanly."
+    },
+    {
+      "line": 2502,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 614,
+      "extractable": {
+        "id": {
+          "read": "c003-test-runner-claim"
+        },
+        "ts": {
+          "read": "2026-08-10T05:18:22Z"
+        },
+        "from": {
+          "read": "c003-test-runner"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-test-runner + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-test-runner",
+          "topic": "c003",
+          "byte_len": 300,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 313,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-test-runner (c003). Object 2: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2504,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 1555,
+      "extractable": {
+        "id": {
+          "read": "c003-test-runner-done"
+        },
+        "ts": {
+          "read": "2026-08-10T05:22:27Z"
+        },
+        "from": {
+          "read": "c003-test-runner"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-test-runner + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-test-runner",
+          "topic": "c003",
+          "byte_len": 1230,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 324,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-test-runner (c003). Object 2: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2507,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 833,
+      "extractable": {
+        "id": {
+          "read": "c003-triage-c-claim"
+        },
+        "ts": {
+          "read": "2026-08-10T05:25:59Z"
+        },
+        "from": {
+          "read": "c003-triage-c"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-triage-c + c003-triage-b + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        },
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-triage-c",
+          "topic": "c003",
+          "byte_len": 254,
+          "parses_standalone": true
+        },
+        {
+          "writer": "c003-triage-b",
+          "topic": "c003",
+          "byte_len": 268,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 309,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "3 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-triage-c (c003). Object 2: c003-triage-b (c003). Object 3: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2511,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 2125,
+      "extractable": {
+        "id": {
+          "read": "c003-triage-b-done"
+        },
+        "ts": {
+          "read": "2026-08-10T05:35:57Z"
+        },
+        "from": {
+          "read": "c003-triage-b"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-triage-b + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-triage-b",
+          "topic": "c003",
+          "byte_len": 1799,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 325,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-triage-b (c003). Object 2: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2513,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 1797,
+      "extractable": {
+        "id": {
+          "read": "c003-triage-c-done"
+        },
+        "ts": {
+          "read": "2026-08-10T05:44:18Z"
+        },
+        "from": {
+          "read": "c003-triage-c"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-triage-c + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-triage-c",
+          "topic": "c003",
+          "byte_len": 1470,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 326,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-triage-c (c003). Object 2: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2514,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 613,
+      "extractable": {
+        "id": {
+          "read": "c003-fix-impl-claim"
+        },
+        "ts": {
+          "read": "2026-08-10T05:47:59Z"
+        },
+        "from": {
+          "read": "c003-fix-impl"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-fix-impl + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-fix-impl",
+          "topic": "c003",
+          "byte_len": 303,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 309,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-fix-impl (c003). Object 2: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2515,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 2826,
+      "extractable": {
+        "id": {
+          "read": "c003-fix-impl-done"
+        },
+        "ts": {
+          "read": "2026-08-10T05:54:31Z"
+        },
+        "from": {
+          "read": "c003-fix-impl"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-fix-impl + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-fix-impl",
+          "topic": "c003",
+          "byte_len": 2504,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 321,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-fix-impl (c003). Object 2: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2516,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 696,
+      "extractable": {
+        "id": {
+          "read": "c003-fix-tests-claim"
+        },
+        "ts": {
+          "read": "2026-08-10T05:56:43Z"
+        },
+        "from": {
+          "read": "c003-fix-tests"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-fix-tests + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-fix-tests",
+          "topic": "c003",
+          "byte_len": 386,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 309,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-fix-tests (c003). Object 2: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2521,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 614,
+      "extractable": {
+        "id": {
+          "read": "c003-test-runner-2-claim"
+        },
+        "ts": {
+          "read": "2026-08-10T06:17:24Z"
+        },
+        "from": {
+          "read": "c003-test-runner-2"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-test-runner-2 + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-test-runner-2",
+          "topic": "c003",
+          "byte_len": 304,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 309,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-test-runner-2 (c003). Object 2: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2523,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 1438,
+      "extractable": {
+        "id": {
+          "read": "c003-test-runner-2-done"
+        },
+        "ts": {
+          "read": "2026-08-10T06:22:39Z"
+        },
+        "from": {
+          "read": "c003-test-runner-2"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-test-runner-2 + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-test-runner-2",
+          "topic": "c003",
+          "byte_len": 1111,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 326,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-test-runner-2 (c003). Object 2: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2525,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 653,
+      "extractable": {
+        "id": {
+          "read": "c003-triage-d-claim"
+        },
+        "ts": {
+          "read": "2026-08-10T06:25:13Z"
+        },
+        "from": {
+          "read": "c003-triage-d"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-triage-d + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-triage-d",
+          "topic": "c003",
+          "byte_len": 338,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 314,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-triage-d (c003). Object 2: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2527,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 3739,
+      "extractable": {
+        "id": {
+          "read": "c003-triage-d-done"
+        },
+        "ts": {
+          "read": "2026-08-10T06:45:33Z"
+        },
+        "from": {
+          "read": "c003-triage-d"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-triage-d + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-triage-d",
+          "topic": "c003",
+          "byte_len": 3412,
+          "parses_standalone": false
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 326,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-triage-d (c003). Object 2: spine-daemon (herdr-spine). ADDITIONAL DEFECT beyond concatenation: object 1 itself fails to parse standalone (JSON Parse error: Expected '}') — it has its own internal unescaped-quote defect (same disease as line 553), independent of the concatenation. This is NOT captured by bus-data/INVENTORY.json's \"concatenated_objects\" label for this line."
+    },
+    {
+      "line": 2530,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 649,
+      "extractable": {
+        "id": {
+          "read": "c003-fix-impl-2-claim"
+        },
+        "ts": {
+          "read": "2026-08-10T06:49:38Z"
+        },
+        "from": {
+          "read": "c003-fix-impl-2"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-fix-impl-2 + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-fix-impl-2",
+          "topic": "c003",
+          "byte_len": 309,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 339,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-fix-impl-2 (c003). Object 2: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2542,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 582,
+      "extractable": {
+        "id": {
+          "read": "c003-triage-e-claim"
+        },
+        "ts": {
+          "read": "2026-08-10T07:46:35Z"
+        },
+        "from": {
+          "read": "c003-triage-e"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-triage-e + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-triage-e",
+          "topic": "c003",
+          "byte_len": 267,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 314,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-triage-e (c003). Object 2: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2556,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 624,
+      "extractable": {
+        "id": {
+          "read": "c003-fix-3-claim"
+        },
+        "ts": {
+          "read": "2026-08-10T08:20:04Z"
+        },
+        "from": {
+          "read": "c003-fix-3"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-fix-3 + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-fix-3",
+          "topic": "c003",
+          "byte_len": 309,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 314,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-fix-3 (c003). Object 2: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2559,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 3568,
+      "extractable": {
+        "id": {
+          "read": "c003-fix-3-done"
+        },
+        "ts": {
+          "read": "2026-08-10T08:28:13Z"
+        },
+        "from": {
+          "read": "c003-fix-3"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-fix-3 + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-fix-3",
+          "topic": "c003",
+          "byte_len": 3245,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 322,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-fix-3 (c003). Object 2: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2569,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 2159,
+      "extractable": {
+        "id": {
+          "read": "c003-fix-tests-3-done"
+        },
+        "ts": {
+          "read": "2026-08-10T08:38:52Z"
+        },
+        "from": {
+          "read": "c003-fix-tests-3"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-fix-tests-3 + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-fix-tests-3",
+          "topic": "c003",
+          "byte_len": 1834,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 324,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-fix-tests-3 (c003). Object 2: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2571,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 624,
+      "extractable": {
+        "id": {
+          "read": "c003-test-runner-4-3-claim"
+        },
+        "ts": {
+          "read": "2026-08-10T08:40:51Z"
+        },
+        "from": {
+          "read": "c003-test-runner-4-3"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-test-runner-4-3 + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-test-runner-4-3",
+          "topic": "c003",
+          "byte_len": 309,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 314,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-test-runner-4-3 (c003). Object 2: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2573,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 747,
+      "extractable": {
+        "id": {
+          "read": "c003-test-runner-4-3-done"
+        },
+        "ts": {
+          "read": "2026-08-10T08:44:50Z"
+        },
+        "from": {
+          "read": "c003-test-runner-4-3"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-test-runner-4-3 + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-test-runner-4-3",
+          "topic": "c003",
+          "byte_len": 420,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 326,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-test-runner-4-3 (c003). Object 2: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2574,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 585,
+      "extractable": {
+        "id": {
+          "read": "c003-acceptance-claim"
+        },
+        "ts": {
+          "read": "2026-08-10T08:47:27Z"
+        },
+        "from": {
+          "read": "c003-acceptance"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-acceptance + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-acceptance",
+          "topic": "c003",
+          "byte_len": 275,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 309,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-acceptance (c003). Object 2: spine-daemon (herdr-spine)."
+    },
+    {
+      "line": 2577,
+      "damage_class": "concatenated_objects",
+      "raw_byte_len": 848,
+      "extractable": {
+        "id": {
+          "read": "c003-acceptance-done"
+        },
+        "ts": {
+          "read": "2026-08-10T09:04:08Z"
+        },
+        "from": {
+          "read": "c003-acceptance"
+        },
+        "topic": {
+          "read": "c003"
+        },
+        "cwd": {
+          "read": "/Users/jrg/.herdr/worktrees/future/c003-fractal-chrome"
+        },
+        "type": {
+          "read": "finding"
+        }
+      },
+      "recoverable": true,
+      "writer": "c003-acceptance + spine-daemon",
+      "separators": [
+        {
+          "chars": "n",
+          "byte_len": 1,
+          "codepoints": [
+            110
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "writer": "c003-acceptance",
+          "topic": "c003",
+          "byte_len": 524,
+          "parses_standalone": true
+        },
+        {
+          "writer": "spine-daemon",
+          "topic": "herdr-spine",
+          "byte_len": 323,
+          "parses_standalone": true
+        }
+      ],
+      "notes": "2 JSON objects concatenated on one physical line; separator between them is a bare \"n\" (codepoint(s) 110) — consistent with a \"\\n\" that lost its backslash. Object 1: c003-acceptance (c003). Object 2: spine-daemon (herdr-spine)."
+    }
+  ],
+  "parse_summary": {
+    "total_nonempty": 12527,
+    "ok": 12501,
+    "bad_count": 26
+  }
+}

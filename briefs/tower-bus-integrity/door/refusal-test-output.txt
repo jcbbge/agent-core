@@ -1,0 +1,8 @@
+PASS  newline-less write refused  — board append refused: row has no terminating newline
+PASS  concatenated / non-single-object write refused  — board append refused: row is not parseable JSON
+PASS  non-object append() refused  — board append refused: not a JSON object
+PASS  non-JSON text write refused  — board append refused: row is not parseable JSON
+PASS  well-formed append() accepted  — bytes=77 endsWithNL=true
+PASS  well-formed appendLine() accepted  — lines=2
+RESULT  all refusals proven against tower-ledger.mjs
+EXIT:0

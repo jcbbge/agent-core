@@ -1,0 +1,39 @@
+{
+  "agreement": "Agrees with briefs/tower/bus-data/INVENTORY.json on the set of damaged lines (identical 26 line numbers), on every raw_byte_len, and on 24 of 26 damage_class values and 26 of 26 recoverable values. Two damage_class disagreements, both listed under disagreements: line 3 and line 2527.",
+  "rows": {
+    "default": {
+      "writer": null,
+      "notes": "Two or more complete board rows written onto one physical line. Proven by splitting at the literal separator and parsing each part independently (evidence.recovery_proof). Separator is a single 0x6e byte ('n') between '}' and '{' — a newline that arrived with its backslash stripped. The first part is compact-serialized (\"id\":\"...\"), the trailing part is spaced-serialized (\"id\": \"...\"): two different serializers on one line. Repair is a pure split; no byte is lost."
+    },
+    "1": {
+      "writer": "Not a board writer: captured stdout of a search/grep-style tool. No id/from/topic/cwd present.",
+      "notes": "Not a board row. The literal 16-byte text `1 matches in 1F:` at the head of the file. First of a three-line block (lines 1-3) of captured tool stdout. No JSON object, no field is extractable, nothing to recover into a row — the line should be deleted, not repaired. No local tool in ~/agent-core/primitives or ~/.local/bin prints the string 'matches in' (rg, this session), so the producing tool is UNKNOWN."
+    },
+    "2": {
+      "writer": "Not a board writer: captured stdout of a search/grep-style tool. No id/from/topic/cwd present.",
+      "notes": "Not a board row. The literal 15-byte text `[file] 628 (1):` — second line of the same captured tool-stdout block as lines 1 and 3."
+    },
+    "3": {
+      "writer": "Not a board writer: captured tool stdout quoting the fields of a spine-daemon row (id spine-fddfcbe6-..., ts 2026-07-24T09:18:30Z). The quoted row itself was written by whatever emits spine-* ids; the physical line was written by the capturing tool.",
+      "notes": "Not a board row. Third line of the captured tool-stdout block: five leading spaces, then `0: \"spine-fddfcbe6-...\", \"ts\": \"2026-07-24T09:18:30Z\", \"cwd` — a numbered excerpt of a board row printed by a tool. There is no opening brace anywhere on the line, and it stops mid-key at `\"cwd`. Both defects are real; the primary class is non_json_text because the line never was a serialized row, and the truncation is secondary. Unrecoverable: the tail is gone and the head was never JSON.",
+      "disagreement": "Prior classed line 3 as `truncated`. It is truncated, but it is first of all non-JSON: it opens with five spaces and `0: ` and contains no `{`, and it is the third line of the lines 1-3 stdout capture. Classing it `truncated` implies a serialized row got cut; classing it `non_json_text` says what the bytes are. recoverable=false either way."
+    },
+    "553": {
+      "writer": null,
+      "notes": "Single complete row, not a concatenation. Its body carries bare `\"` characters (a $task-token quoted inline, `text \"tower ask\"`) which close the JSON string early — V8 reports `Expected ',' or '}' after property value` at byte 393. Recoverable and proven: escaping the bare quotes inside the trailing \"body\" value makes the row JSON.parse cleanly (evidence.recovery_proof). Agrees with prior: unescaped_body, recoverable."
+    },
+    "2113": {
+      "writer": null,
+      "notes": "Single complete row. The body quotes Rust source — `name.replace(\\-\\,_\\)` — whose backslashes are not valid JSON escapes; V8 reports `Bad escaped character` at byte 1354. Recoverable and proven: escaping each stray backslash makes the row parse. Agrees with prior: invalid_escape, recoverable."
+    },
+    "2527": {
+      "writer": null,
+      "notes": "Two defects on one line. It is concatenated (one 0x6e separator; the trailing 326-byte spaced-serialized spine-daemon object parses as-is after the split), AND the leading 3400-byte compact worker object carries bare `\"` characters in its body (`wait_for(\"c new\")`, byte 774 of the line) so it does not parse even after the split. Recoverable and proven: split at '}n{', then escape the bare quotes in the leading object's body, and both halves JSON.parse.",
+      "disagreement": "Prior classed it plain `concatenated_objects`. Per this brief's rule — a concatenation is only classified once each split part parses — 2527 fails that test: part 0 needs an escape repair as well. Class recorded as `concatenated_objects+escape_bare_quotes_in_body` so a repair pass does not assume a split alone will fix it. recoverable=true in both inventories."
+    },
+    "2507": {
+      "writer": null,
+      "notes": "Three complete rows on one physical line (two separators, both a single 0x6e byte): two compact-serialized c003 worker rows followed by one spaced-serialized spine-daemon row. All three parse after the split. This is the only 3-object line in the set."
+    }
+  }
+}

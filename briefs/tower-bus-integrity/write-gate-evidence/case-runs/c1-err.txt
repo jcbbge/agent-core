@@ -1,0 +1,1 @@
+[Tower write-gate] outstanding claim ref=ph-msw4kmc2-zpaw topic=tower/write-gate-probe-20260816: run `bun ~/.tower/cli.mjs emit work-done tower/write-gate-probe-20260816 briefs/tower-bus-integrity/AGNT-write-gate-probe.md --ref ph-msw4kmc2-zpaw --evidence "released by write-gate"` to release it.

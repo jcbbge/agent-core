@@ -1,0 +1,19 @@
+AGNT-forensics DONE 2026-08-16T18:xx (see WRITER-FORENSICS.md for full report)
+
+Mechanism named, file+line, both sides:
+- agent-core primitives/hooks/tower-ledger.mjs append() -- JSON.stringify (compact), unlocked for the whole 2026-07-24..08-10 damage window
+- herdr-spine bin/spine-claim board_append() (+ bin/handlers/_spine_common.py) -- json.dumps (spaced, Python default separators), unlocked from introduction (cc72a03, 2026-07-24T09:19:43Z) through 25c1ef0~1
+- Both fixed same day 2026-08-13 (agent-core 88b3d6f; herdr-spine 25c1ef0 adds fcntl.flock)
+- Lines 1-2 non-JSON grep-tool stdout traced to the pre-88b3d6f brief-skill hand-append doctrine (deleted in 88b3d6f)
+
+5/5 VERDICT lines in WRITER-FORENSICS.md:
+1. trailing newline omission -- RULED OUT (code-level, both writers always append \n)
+2. non-atomic interleave -- CONFIRMED (no shared lock existed); exact byte tear UNKNOWN (repro negative result honestly reported)
+3. crashed partial write -- UNKNOWN, subsumed by candidate 2, no independent crash evidence
+4. direct >> bypass -- CONFIRMED as mechanism for lines 1-2; specific tool binary UNKNOWN (droid/pi-coding-agent eliminated)
+5. jrg:wheel ownership -- UNKNOWN; narrowed to a recent (today) flip, disconnected from the original damage window
+
+Posted: finding cli-40428341-f65f-433a-9abd-00c5f6f6e33d @ agent-core/tower-bus-integrity
+Pheromone: work-done ph-msw5b5s7-axep ref ph-msw4jd95-v8ap
+Files touched: WRITER-FORENSICS.md, forensics/{writer_node.mjs,writer_python.py,repro-race.sh,repro-echo-escape.sh}
+No credential (srt:...) in any file I created. ~/.tower/board.jsonl never written by me.
