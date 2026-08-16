@@ -1,0 +1,4 @@
+ORCH-2 doctrine-parity DONE 2026-08-16.
+T1 cursor-shim 97073c5 (branch doctrine/coder-profile-parity, unmerged).
+T2/T3/T5 DOCTRINE-SWEEP.md + T4 directives/cursor.md committed a7f6930 (unpushed).
+Deploy pending: agent-core sync --harness cursor (not run).

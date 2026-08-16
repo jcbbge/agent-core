@@ -1,0 +1,5 @@
+AGNT-3 shim-profile-law: done
+commit: 54938f8 on branch doctrine/coder-profile-parity (~/cursor-shim)
+Files: profiles/test-maker.md, profiles/tester.md — inserted 23-line
+Stigmergic coordination block verbatim from agent-core coder.md plus a
+one-line hand-sync note. coder.md and arbiter.md untouched.
