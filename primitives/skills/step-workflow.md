@@ -1,6 +1,7 @@
 ---
 name: step-workflow
-description: Two-step sequential workflow: creative ideation followed by critical review and optimization.
+description: >
+  Two-step sequential workflow: creative ideation followed by critical review and optimization.
 metadata:
   version: "1.0"
   tags: workflow, planning, ideation, optimization

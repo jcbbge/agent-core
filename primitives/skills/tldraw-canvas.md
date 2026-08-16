@@ -1,6 +1,7 @@
 ---
 name: tldraw-canvas
-description: Master-level operation of the tldraw offline desktop app as a live, interactive whiteboard. Read/edit shapes, compose reference-quality diagrams, and install durable document scripts (clickable UI, animation loops) for interactive explainers. Use when the user wants to visualize, diagram, explain, or present something on the canvas, or references tldraw / a .tldraw file / "the whiteboard". Two modes: private explain-to-me, and live-stream field-a-question.
+description: >
+  Master-level operation of the tldraw offline desktop app as a live, interactive whiteboard. Read/edit shapes, compose reference-quality diagrams, and install durable document scripts (clickable UI, animation loops) for interactive explainers. Use when the user wants to visualize, diagram, explain, or present something on the canvas, or references tldraw / a .tldraw file / "the whiteboard". Two modes: private explain-to-me, and live-stream field-a-question.
 metadata:
   author: jrg
   version: "1.1"

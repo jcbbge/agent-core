@@ -1,7 +1,8 @@
 ---
 name: micro-animation-director
-description: Elite motion direction for HTML presentations and interactive pages. Spring-physics-first, Emil Kowalski-inspired micro-animations that feel alive, premium, and effortless — like Linear, Apple, or high-end Framer prototypes. Use when user says "add animations", "refine transitions", "make it feel alive", "add springs", or "polish the motion". Composable with any presentation skill (atelier, editorial-magazine, tufte).
-argument-hint: <html-file-or-topic> [intensity: restrained|balanced|playful]
+description: >
+  Elite motion direction for HTML presentations and interactive pages. Spring-physics-first, Emil Kowalski-inspired micro-animations that feel alive, premium, and effortless — like Linear, Apple, or high-end Framer prototypes. Use when user says "add animations", "refine transitions", "make it feel alive", "add springs", or "polish the motion". Composable with any presentation skill (atelier, editorial-magazine, tufte).
+argument-hint: "<html-file-or-topic> [intensity: restrained|balanced|playful]"
 allowed-tools: Bash Read Write
 metadata:
   author: jrg

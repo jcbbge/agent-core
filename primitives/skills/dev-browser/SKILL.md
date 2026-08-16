@@ -1,6 +1,7 @@
 ---
 name: dev-browser
-description: Browser automation, debugging, and UI verification via the dev-browser CLI — console capture, network inspection, JS execution in page context, flow driving with persistent pages, attaching to the user's own Chrome. Use when users ask to navigate/test/debug web apps, check the console, watch network requests, verify a UI change end-to-end, reproduce a browser bug, take screenshots, fill forms, or automate browser workflows. Trigger phrases: "go to [url]", "click on", "check the console", "what's the network doing", "watch the requests", "test the flow", "debug in my browser", "verify in the browser", "take a screenshot", "test the website".
+description: >
+  Browser automation, debugging, and UI verification via the dev-browser CLI — console capture, network inspection, JS execution in page context, flow driving with persistent pages, attaching to the user's own Chrome. Use when users ask to navigate/test/debug web apps, check the console, watch network requests, verify a UI change end-to-end, reproduce a browser bug, take screenshots, fill forms, or automate browser workflows. Trigger phrases: "go to [url]", "click on", "check the console", "what's the network doing", "watch the requests", "test the flow", "debug in my browser", "verify in the browser", "take a screenshot", "test the website".
 ---
 
 # Dev Browser
