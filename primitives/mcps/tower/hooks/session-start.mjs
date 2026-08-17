@@ -13,6 +13,7 @@ import { execSync } from 'node:child_process'
 import { readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { inboxState, FLIGHT } from '../lib.mjs'
+import { resolveIdentity, isFleetMember } from '../node-identity.mjs'
 
 let input = ''
 for await (const chunk of process.stdin) input += chunk
@@ -26,13 +27,18 @@ try {
 const cwd = evt.cwd ?? process.cwd()
 const lines = []
 
+// Only the fleet-mail carry-over is gated on identity; the handoff and
+// flight snapshot below orient ANY session and belong to the repo, not to a
+// node. An unstamped engine boots without inheriting another node's inbox.
 let towerLoaded = false
-const { unrelayed, openQuestions } = inboxState(cwd)
-if (unrelayed.length > 0 || openQuestions.length > 0) {
-  towerLoaded = true
-  lines.push(
-    `[Tower] Carried over from earlier sessions: ${unrelayed.length} unrelayed message(s), ${openQuestions.length} open question(s). Run /tower to see them; relay/surface before new work.`
-  )
+if (isFleetMember(resolveIdentity())) {
+  const { unrelayed, openQuestions } = inboxState(cwd)
+  if (unrelayed.length > 0 || openQuestions.length > 0) {
+    towerLoaded = true
+    lines.push(
+      `[Tower] Carried over from earlier sessions: ${unrelayed.length} unrelayed message(s), ${openQuestions.length} open question(s). Run /tower to see them; relay/surface before new work.`
+    )
+  }
 }
 
 let handoffLoaded = false

@@ -11,6 +11,7 @@
 // stop cycle — allow the stop so a malfunction can never trap the agent.
 
 import { inboxState, renderMessage } from '../lib.mjs'
+import { resolveIdentity, isFleetMember } from '../node-identity.mjs'
 
 let input = ''
 for await (const chunk of process.stdin) input += chunk
@@ -22,6 +23,12 @@ try {
 }
 
 if (evt.stop_hook_active) process.exit(0)
+
+// Fleet mail is for fleet members. An engine with no identity stamp is an
+// observer — the operator's desk, a one-off session — and inherits nobody's
+// obligations. Without this, cwd alone decides, and whoever stands in a
+// directory is handed that directory's mail. See ../node-identity.mjs.
+if (!isFleetMember(resolveIdentity())) process.exit(0)
 
 const cwd = evt.cwd ?? process.cwd()
 const { unrelayed, openQuestions } = inboxState(cwd)

@@ -6,6 +6,7 @@
 // progress beacons. Silent when there is nothing — zero noise on quiet days.
 
 import { inboxState } from '../lib.mjs'
+import { resolveIdentity, isFleetMember } from '../node-identity.mjs'
 
 let input = ''
 for await (const chunk of process.stdin) input += chunk
@@ -15,6 +16,10 @@ try {
 } catch {
   process.exit(0)
 }
+
+// Observers get no fleet mail: an unstamped engine is nobody's agent, so
+// another node's questions are not its ambient context. See ../node-identity.mjs.
+if (!isFleetMember(resolveIdentity())) process.exit(0)
 
 const cwd = evt.cwd ?? process.cwd()
 const { unrelayed, openQuestions, progress } = inboxState(cwd)
