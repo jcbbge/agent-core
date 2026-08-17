@@ -4,7 +4,7 @@ description: >
   The WWWWW+H of Tup — the durable-agent utility library. Its own registry,
   dependency atlas, component dictionary, extension and update protocol.
   Use whenever a task touches tup — findings, the store, events, renders,
-  the dogfood, contracts under ~/tup, the lab under ~/tup-lab (research/briefs only), board topic
+  the dogfood, contracts under ~/tup, research/ and briefs/ under ~/tup, board topic
   tup/layer4, spawn-door / supervisor / mirror contracts — or when an agent
   needs to know what tup is, where a piece lives, how to operate it from
   outside, how to extend it, or how to update it. Tup is a utility library
@@ -51,13 +51,13 @@ Thirteen packages (law: `~/tup/contracts/shape.md`), each one need:
 Vocabulary of record: `shape.md` §3 (seat · deck · field · trace · deposit ·
 spawn door · fascia · mint · touchstone · **kiln** · lockout · POST ·
 letter · guild). Design language: camera-lucida
-(`~/tup-lab/looking-glass/tokens.json` — day plates / night phosphor;
+(`~/tup/research/looking-glass/tokens.json` — day plates / night phosphor;
 Whimsy Law: nothing delightful that isn't true).
 
 ## WHEN
 
 Invoke this skill when a task touches: finding objects or their renders ·
-`~/tup/contracts/*` · `~/tup-lab/*` · events/chain verification · the
+`~/tup/contracts/*` · `~/tup/research/*` · events/chain verification · the
 dogfood phases · board topic `tup/layer4` · bearings/promotions/dismissals ·
 spawn-door / resident supervisor / mirror contracts · or any question of
 the form "where does X live in tup / how do I extend tup / what depends on
@@ -77,10 +77,9 @@ what."
   field/field.py           deposit door: deposit · pending · collect
   gates/helm.py · mind/    helm key · journal
   tests/                   7 suites — run ONLY on an isolated replica
-~/tup-lab/                 the laboratory: research + briefs only (code moved
-                           into ~/tup 2026-08-17; bellman.py and
-                           finding-store/cli.py remain as exec shims)
+  research/                essays, dossiers, reports, looking-glass tokens
   briefs/                  spawn briefs (profiles only, never models)
+(~/tup-lab is ABOLISHED, 2026-08-17 operator ruling — absorbed here)
 Board: tup/layer4          claims · compares · keys · bearings
 ```
 
