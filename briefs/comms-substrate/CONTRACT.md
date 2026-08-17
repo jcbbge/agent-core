@@ -384,6 +384,44 @@ delivery be confirmed against an already-working pane without a status flip.
 It does not license summarising content — COMMS-ARCH "No truncation" still
 binds. The ids are carried **in addition to** the full bodies, never instead.
 
+## 6d. LEASE RECLAIM — CORD condition 2, verified unmet
+
+CORD read `deposit.mjs` directly (not the claim) and found: **nothing returns a
+row stuck in `delivering` back to `queued`.** `markDeferred` and `requeue` are
+correct and properly distinct, but condition 2 of the DESIGN §5a ruling is
+unmet, and it voids the exact guarantee this unit sells — **a courier that
+crashes mid-delivery strands that message permanently**, in a state no retry
+path ever revisits. A message stuck in `delivering` forever is neither delivered
+nor dead-lettered, which is the third outcome §0 says cannot exist.
+
+This is more urgent under the resident courier than it was under the two-shot
+design: a resident process holds leases across many messages, so one crash can
+strand a batch.
+
+```js
+export const LEASE_TIMEOUT_SECONDS = 120
+export function reclaimLeases(to, now)   // -> [deposit_id] reclaimed
+```
+
+- A row in `delivering` whose transition timestamp is older than
+  `LEASE_TIMEOUT_SECONDS` returns to **`queued`**, with `next_attempt_at` set to
+  `now` so the next drain picks it up.
+- **Reclaim does NOT burn an attempt.** The message was never proven undelivered
+  — the courier died, which is not the addressee's fault and not a delivery
+  failure. Charging an attempt here would walk crash-interrupted messages toward
+  `MAX_ATTEMPTS` and dead-letter them for the courier's own instability.
+- Reclaim sets neither `last_error` nor `deferred_reason`. It is a **third,
+  distinct** cause of requeue and must not borrow either field's meaning —
+  same reasoning as §6a rule 3.
+- 120s is four courier ticks (§6a `DEFER_RETRY_SECONDS` = 15, CORD condition 3
+  caps the tick at 15s). Long enough that a slow-but-live delivery is never
+  reclaimed out from under itself; short enough that a crash is recovered inside
+  the `STUCK_THRESHOLD_SECONDS` = 300 window, so `stuck` never reports a
+  permanent stranding that the system would have healed on its own.
+
+`stuck` rule 3 (§6b) — "a `delivering` row past its lease" — is exactly this
+condition, and is what makes an unreclaimed lease loud rather than silent.
+
 ## 7. Exported surface of `deposit.mjs` — pinned signatures
 
 ```js

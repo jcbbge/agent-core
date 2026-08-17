@@ -136,7 +136,14 @@ These conditions exist to close exactly those, and your work is judged on them:
    nothing delivering them — with no symptom.
 2. **Every `delivering` row is a LEASE** that returns to `queued` past a
    timeout. A crash mid-delivery must not strand a message forever in
-   `delivering`. Pick a lease timeout and state it.
+   `delivering` — neither delivered nor dead-lettered is the third outcome the
+   design forbids.
+   **The queue side of this is already built and is NOT yours to write:**
+   `deposit.mjs` exports `LEASE_TIMEOUT_SECONDS = 120` and
+   `reclaimLeases(to, now) -> [deposit_id]` (CONTRACT §6d). **Call it at the top
+   of every drain pass.** Reclaim burns no attempt and sets neither
+   `last_error` nor `deferred_reason` — a courier crash is not the addressee's
+   fault and not a delivery failure.
 3. **Internal tick ≤ 15s**, so the liveness floor is the one DESIGN §5 promised
    and Unit 3's operator-focused test still means what it meant.
 4. **The nudge handler contains NO delivery logic** — touch a file, exit 0.

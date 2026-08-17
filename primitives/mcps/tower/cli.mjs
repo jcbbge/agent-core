@@ -8,6 +8,14 @@
 //                                 — append a board row (fleet agents on any
 //                                   harness; the ONLY sanctioned non-MCP write)
 //   bun ~/.tower/cli.mjs emit <scent> <topic> <payload_ref> [--ref id] [--evidence path] ...
+//   bun ~/.tower/cli.mjs deposit <to> <kind> "<body>" --from <name> [--ref <id>] [--ttl <seconds>]
+//           [--evidence-status <s>] [--evidence-done-marker <path>]
+//           [--evidence-work-done-ref <id>] [--evidence-verdict <token>]
+//                                 — queue a message on the deposit/courier bus;
+//                                   prints the receipt as one JSON line;
+//                                   exit 0 accepted, exit 1 refused
+//   bun ~/.tower/cli.mjs stuck    — is anything owed and undelivered, and why;
+//                                   exit 0 nothing stuck, exit 1 something stuck
 //   bun ~/.tower/cli.mjs field [--topic t] [--json]
 //   bun ~/.tower/cli.mjs scan [--topic t] [--json]
 //   bun ~/.tower/cli.mjs burn     — fleet token burn (today, by session)
@@ -17,7 +25,8 @@
 // Used by the /tower command (dynamic context injection) and directly by the
 // developer from any terminal.
 
-import { inboxState, renderMessage, readAll, boardFor, normCwd, BOARD, ODOMETER, emitPheromone, pheromoneField, pheromoneFieldFromRows, readAllFull, PHEROMONES, ledgerInboxCursor, deriveInboxStateFromCursor, assertAuthoredBoardFrom, append, readJsonlStats } from './lib.mjs'
+import { existsSync, statSync } from 'node:fs'
+import { inboxState, renderMessage, readAll, boardFor, normCwd, BOARD, ODOMETER, TOWER, emitPheromone, pheromoneField, pheromoneFieldFromRows, readAllFull, PHEROMONES, ledgerInboxCursor, deriveInboxStateFromCursor, assertAuthoredBoardFrom, append, readJsonlStats, readDeadLetters, deposit, listInboxes, pendingItems, dueItems, readInbox, unslugAddressee, MAX_ATTEMPTS, STUCK_THRESHOLD_SECONDS } from './lib.mjs'
 
 // ─── defensive JSONL field access (rows are append-only, partial rows happen) ─
 function preview(value, max = 100) {
@@ -88,6 +97,10 @@ function parseFlags(args) {
     if (a === '--ttl') { out.ttl = Number(args[++i]); continue }
     if (a === '--topic') { out.topic = args[++i]; continue }
     if (a === '--json') { out.json = true; continue }
+    if (a === '--evidence-status') { out.evidence_status = args[++i]; continue }
+    if (a === '--evidence-done-marker') { out.evidence_done_marker = args[++i]; continue }
+    if (a === '--evidence-work-done-ref') { out.evidence_work_done_ref = args[++i]; continue }
+    if (a === '--evidence-verdict') { out.evidence_verdict = args[++i]; continue }
     out._.push(a)
   }
   return out
@@ -106,6 +119,51 @@ function availabilityState(av, field) {
   if (field.evaporated.some((r) => r.id === av.id)) return 'evaporated'
   if (field.open.some((r) => r.id === av.id)) return 'open'
   return 'unknown'
+}
+
+// `stuck`'s only source of engine liveness. null = pane list unavailable —
+// callers must not treat that as "every pane is dead".
+function livePaneIds() {
+  try {
+    const r = Bun.spawnSync(['herdr', 'pane', 'list'], { stdout: 'pipe', stderr: 'ignore' })
+    const obj = JSON.parse(r.stdout?.toString?.() ?? '')
+    const panes = obj?.result?.panes
+    if (!Array.isArray(panes)) return null
+    return new Set(panes.map((p) => p.pane_id).filter(Boolean))
+  } catch {
+    return null
+  }
+}
+
+// CONTRACT §6b condition 1-3: is this one folded row itself the reason `stuck`
+// should exit non-zero? A deferred item is NOT stuck for being deferred — it
+// only trips condition 1, on the same overdue clock as everything else.
+function itemIsStuck(row, now) {
+  if (row.state === 'queued') {
+    const nextMs = new Date(row.next_attempt_at).getTime()
+    if (Number.isFinite(nextMs) && now - nextMs > STUCK_THRESHOLD_SECONDS * 1000) return true
+  }
+  if ((row.attempts ?? 0) >= MAX_ATTEMPTS) return true
+  if (row.state === 'delivering') {
+    const tsMs = new Date(row.ts ?? 0).getTime()
+    if (Number.isFinite(tsMs) && now - tsMs > STUCK_THRESHOLD_SECONDS * 1000) return true
+  }
+  return false
+}
+
+// CONTRACT §6b condition 5 / DESIGN §6 condition 1: "a dead courier must be
+// loud." No heartbeat file path is pinned yet (board finding posted); this
+// reads the mtime of a placeholder path and returns null — not stale — when
+// the file does not exist, so a courier that this unit has not built yet
+// cannot force a permanent false-positive `stuck` exit 1.
+function courierHeartbeatAgeS(now) {
+  const path = process.env.TOWER_COURIER_HEARTBEAT_PATH || `${TOWER}/courier-heartbeat.json`
+  try {
+    if (!existsSync(path)) return null
+    return Math.round((now - statSync(path).mtimeMs) / 1000)
+  } catch {
+    return null
+  }
 }
 
 if (cmd === 'status') {
@@ -212,6 +270,102 @@ if (cmd === 'status') {
     console.error(String(err?.message ?? err))
     process.exit(2)
   }
+} else if (cmd === 'deposit') {
+  // The seam a python handler binding shells to (CONTRACT §8) — parsing and
+  // exit codes are load-bearing. No queue logic here: deposit() from
+  // deposit.mjs (via lib.mjs) owns refusal, folding, and dead-lettering.
+  const f = parseFlags(process.argv.slice(3))
+  const [to, kind, body] = f._
+  if (!to || !kind) {
+    console.error('usage: cli.mjs deposit <to> <kind> "<body>" --from <name> [--ref <id>] [--ttl <seconds>] [--evidence-status <s>] [--evidence-done-marker <path>] [--evidence-work-done-ref <id>] [--evidence-verdict <token>]')
+    process.exit(2)
+  }
+  const evidence = {}
+  if (f.evidence_status !== undefined) evidence.status = f.evidence_status
+  if (f.evidence_done_marker !== undefined) evidence.done_marker = f.evidence_done_marker
+  if (f.evidence_work_done_ref !== undefined) evidence.work_done_ref = f.evidence_work_done_ref
+  if (f.evidence_verdict !== undefined) evidence.verdict_token = f.evidence_verdict
+  const receipt = deposit({
+    to,
+    kind,
+    body: body ?? '',
+    from: f.from ?? null,
+    ref: f.ref ?? null,
+    ttl_s: f.ttl,
+    evidence,
+  })
+  console.log(JSON.stringify(receipt))
+  process.exit(receipt.accepted ? 0 : 1)
+} else if (cmd === 'stuck') {
+  // Observability only — reads the pinned deposit.mjs surface (CONTRACT §7),
+  // never re-derives queue state. "Incapable of silence": an empty queue
+  // still prints a line, and dead-letters always get their own section.
+  // Exit code per CONTRACT §6b: non-zero iff a specific stuck condition
+  // holds (overdue queued item, exhausted attempts, expired delivering
+  // lease, stranded addressee, or a stale courier heartbeat) — never merely
+  // because something is queued or paced or deferred.
+  const now = Date.now()
+  const livePanes = livePaneIds()
+  const rows = []
+  for (const entry of listInboxes()) {
+    const to = unslugAddressee(entry.slug)
+    const pending = pendingItems(to)
+    if (pending.length === 0) continue
+    const raw = readInbox(to)
+    const pendingIds = new Set(pending.map((r) => r.deposit_id))
+    // The folded row's `ts` is its last write; the deposit's age is the ts of
+    // its FIRST row (CONTRACT §3), so oldest-age walks the raw log, not the fold.
+    const firstSeen = new Map()
+    for (const r of raw) {
+      if (pendingIds.has(r.deposit_id) && !firstSeen.has(r.deposit_id)) firstSeen.set(r.deposit_id, r.ts)
+    }
+    let oldestId = null
+    let oldestTs = null
+    for (const [id, ts] of firstSeen) {
+      const t = new Date(ts).getTime()
+      if (Number.isFinite(t) && (oldestTs === null || t < oldestTs)) { oldestTs = t; oldestId = id }
+    }
+    const oldest = pending.find((r) => r.deposit_id === oldestId) ?? pending[0]
+    const liveness = to.startsWith('pane:')
+      ? (livePanes && livePanes.has(to.slice('pane:'.length)) ? 'live' : 'stranded')
+      : 'live'
+    // CONTRACT §6a (ORCH ruling): deferred_reason is a distinct column from
+    // last_error — the two are never written by the same event, so a busy
+    // addressee never reads as a failing one.
+    const deferredReason = oldest?.deferred_reason ?? '-'
+    const stuck = liveness === 'stranded' || pending.some((r) => itemIsStuck(r, now))
+    rows.push({
+      to,
+      liveness,
+      queued: pending.filter((r) => r.state === 'queued').length,
+      oldestAgeS: oldestTs !== null ? Math.max(0, Math.round((now - oldestTs) / 1000)) : 0,
+      attempts: oldest?.attempts ?? 0,
+      nextAttempt: oldest?.next_attempt_at ?? '?',
+      lastError: oldest?.last_error ?? '-',
+      deferredReason,
+      stuck,
+    })
+  }
+  let anyStuck = false
+  if (rows.length === 0) {
+    console.log('nothing owed')
+  } else {
+    for (const r of rows) {
+      if (r.stuck) anyStuck = true
+      console.log(`${r.to}  ${r.liveness}  queued=${r.queued}  oldest=${r.oldestAgeS}s  attempts=${r.attempts}  next=${r.nextAttempt}  last_error=${r.lastError}  deferred=${r.deferredReason}`)
+    }
+  }
+  const heartbeatAgeS = courierHeartbeatAgeS(now)
+  if (heartbeatAgeS !== null && heartbeatAgeS > STUCK_THRESHOLD_SECONDS) {
+    anyStuck = true
+    console.log(`courier not ticking since ${new Date(now - heartbeatAgeS * 1000).toISOString()}`)
+  }
+  const deadLetters = readDeadLetters()
+  console.log(`dead-letter: ${deadLetters.length} row(s)`)
+  for (const r of deadLetters.slice(-20)) {
+    console.log(`  [${r.dead_lettered_at ?? r.ts ?? '?'}] ${r.to ?? '?'} ${r.kind ?? '?'} - ${r.reason ?? '?'}`)
+  }
+  process.exit(anyStuck ? 1 : 0)
 } else if (cmd === 'field') {
   const f = parseFlags(process.argv.slice(3))
   const field = pheromoneField(cwd, { topic: f.topic })
@@ -313,11 +467,9 @@ if (cmd === 'status') {
     console.log(`  ${slug.padEnd(16)} ${stage} ${rum}  ${inbox}`)
   }
 } else {
-  console.log('usage: cli.mjs [status|inbox|board|post|emit|field|scan|burn|all|projects]')
+  console.log('usage: cli.mjs [status|inbox|board|post|emit|deposit|stuck|field|scan|burn|all|projects]')
 }
 
 } // end main()
 
 if (import.meta.main) main()
-
-export { preview, rowPreview, dayOf, timeOf }

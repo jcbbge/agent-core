@@ -13,6 +13,41 @@ import {
   _test,
 } from '../../hooks/tower-ledger.mjs'
 
+// Deposit/queue/dead-letter core (CONTRACT: primitives/mcps/tower/deposit.mjs
+// is the pinned home; this is its re-export surface). Named explicitly rather
+// than `export *` so a future name collision with tower-ledger.mjs fails at
+// review time, not silently at link time. The queue-plane fold is named
+// `foldInbox` (ORCH ruling, CONTRACT §6b) precisely to avoid colliding with
+// tower-ledger.mjs's pre-existing `inboxState(cwd)` (ledger-plane, consumed
+// live by cli.mjs and server.mjs), which remains untouched below.
+export {
+  PACE_WINDOW_SECONDS,
+  MAX_ATTEMPTS,
+  STUCK_THRESHOLD_SECONDS,
+  DEFER_RETRY_SECONDS,
+  NQ_BUDGET,
+  LEASE_TIMEOUT_SECONDS,
+  ALLOWED_KINDS,
+  STATUS_PLANE_KINDS,
+  slugForAddressee,
+  unslugAddressee,
+  inboxPath,
+  deposit,
+  readInbox,
+  foldInbox,
+  listInboxes,
+  dueItems,
+  pendingItems,
+  markDelivering,
+  markDelivered,
+  markAcked,
+  markDeferred,
+  requeue,
+  expireTtl,
+  reclaimLeases,
+  paceGate,
+} from './deposit.mjs'
+
 mkdirSync(DELIVERABLES, { recursive: true })
 mkdirSync(FLIGHT, { recursive: true })
 

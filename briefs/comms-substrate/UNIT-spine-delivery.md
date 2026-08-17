@@ -154,6 +154,32 @@ these in order:
      without depositing` — which is a `need-help` signal, **not** a completion.
      `-> idle` and `-> done` must be distinguishable in the board row **and** in
      the delivered prompt text.
+4b. **Fix the verifier itself** (DESIGN §3a — CORD's Task 6b). This is the
+   defect that makes at-least-once delivery unsafe, so it lands *before* the
+   courier starts trusting it.
+
+   `verified_prompt()` (`_spine_common.py:363-398`) waits `--until working`. If
+   the target is **already working** there is no transition to observe, the wait
+   times out, and it **raises — reporting non-delivery for a delivered
+   message.** Your ORCH measured it returning the identical `FAIL` for two
+   delivered and two undelivered messages (PROOF.md §0.3): in the
+   already-working case its verdict is **uncorrelated with reality**, not merely
+   pessimistic.
+
+   Required behavior:
+   - **Never raise merely because the target is busy.** "Already working" is a
+     **distinct outcome** — a defer — and must not share a return path with a
+     genuine delivery failure. A courier that requeues on it produces unbounded
+     duplicate delivery concentrated on the busiest panes: amplification in
+     place of loss, which is worse, because a lost message is silent while a
+     duplicated one costs the receiver a turn every time.
+   - **Accept a transcript echo as evidence**, matched on the `deposit_id`
+     carried in the delivered text. That is the only way an already-working
+     target is verifiable at all.
+   - Report the three outcomes distinguishably: **delivered** (flip or echo),
+     **deferred** (target busy), **failed** (reachable, attempted, demonstrably
+     did not land).
+
 5. **The DOOR, last** (DESIGN §7). Rename `notify()` (`:291`) and
    `verified_prompt()` (`:363`) private and gate them on `SPINE_COURIER=1`,
    which only the courier sets. Called from any other process they **raise**.
