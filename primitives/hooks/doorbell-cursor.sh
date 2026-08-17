@@ -72,8 +72,6 @@ for qjson in "${UNRUNG_JSON[@]}"; do
 
   if [ -f "$PROJECT/durable/cli.py" ]; then
     (cd "$PROJECT" && python3 durable/cli.py doorbell --question-id "$QID") 2>/dev/null || true
-  elif [ -f "$PROJECT/finding-store/cli.py" ]; then
-    (cd "$PROJECT" && python3 finding-store/cli.py doorbell --question-id "$QID") 2>/dev/null || true
   fi
 
   MSG_PARTS+=("$QTEXT")
