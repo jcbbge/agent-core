@@ -4,7 +4,7 @@ description: >
   The WWWWW+H of Tup — the durable-agent utility library. Its own registry,
   dependency atlas, component dictionary, extension and update protocol.
   Use whenever a task touches tup — findings, the store, events, renders,
-  the dogfood, contracts under ~/tup, the lab under ~/tup-lab, board topic
+  the dogfood, contracts under ~/tup, the lab under ~/tup-lab (research/briefs only), board topic
   tup/layer4, spawn-door / supervisor / mirror contracts — or when an agent
   needs to know what tup is, where a piece lives, how to operate it from
   outside, how to extend it, or how to update it. Tup is a utility library
@@ -98,7 +98,8 @@ durable object with an engine seated in it.** Corollaries that bind every
 caller: state whose only home is a context window is banned · truth is
 never derived from exhaust · single writer, many renders · status is not
 mail · every law names its enforcer or wears an honest DOCTRINE label ·
-the system earns trust by being incapable of silence.
+the system earns trust by being incapable of silence · the suite runs
+only on an isolated replica — six of seven suites mutate the live store.
 
 ## HOW
 
@@ -114,6 +115,9 @@ python3 ~/tup/socket/bellman.py                  # resident wake organ (herdr se
 python3 ~/tup/field/field.py deposit --from <me> --to <parent> --kind done --body "<what landed>"
 python3 ~/tup/field/field.py pending --to <me>   # my inbox
 ```
+Docs of record: `README.md` (human) · `AGENTS.md` (engine operating manual) ·
+`docs/api-surface.md` (every verb/refusal/exit code) ·
+`docs/herdr-integration.md` (runtime seam + swap contract).
 Never hand-edit a render or the store files; never edit `events.jsonl`
 (append-only, hash-chained). A finding's idea is durable; its grounding has
 a shelf life — re-ground at promotion. Promotion spawns the inner unit;
