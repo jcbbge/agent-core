@@ -12,20 +12,22 @@ HOME = Path(os.environ.get("TOWER_HOME") or (Path.home() / ".tower"))
 DB_PATH = Path(os.environ.get("TOWER_DB") or (HOME / "tower.db"))
 
 SCHEMA = """
+-- The log. Append-only: no statement in this file updates or deletes a row.
 CREATE TABLE IF NOT EXISTS msg (
   id        INTEGER PRIMARY KEY AUTOINCREMENT,
   ts        INTEGER NOT NULL,
   sender    TEXT    NOT NULL,
-  recipient TEXT,
+  recipient TEXT,              -- durable agent name; NULL = broadcast
   topic     TEXT,
-  kind      TEXT    NOT NULL,
+  kind      TEXT    NOT NULL,  -- note|finding|deliverable|question|answer|alert
   body      TEXT    NOT NULL,
-  reply_to  INTEGER,
-  dedup     TEXT UNIQUE
+  reply_to  INTEGER,           -- correlates an answer to its question
+  dedup     TEXT UNIQUE        -- idempotency: retry is free, dupes are refused
 );
 CREATE INDEX IF NOT EXISTS msg_recipient_idx ON msg(recipient, id);
 CREATE INDEX IF NOT EXISTS msg_topic_idx     ON msg(topic, id);
 
+-- The only mutable table in the bus: one high-water mark per consumer.
 CREATE TABLE IF NOT EXISTS cursor (
   consumer TEXT PRIMARY KEY,
   acked_id INTEGER NOT NULL DEFAULT 0,
