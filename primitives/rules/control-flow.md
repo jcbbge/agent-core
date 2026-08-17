@@ -47,27 +47,12 @@ The prefix is what makes the herdr sidebar legible — who it is, at a glance.
 
 ## Mapping to Made Well (this is why it's clean)
 
-| Control flow | Made Well | Queue unit | Git resource |
-|---|---|---|---|
-| Coordinator | outer loop: Discovery → Commit → Build → Land | **TODO** | none |
-| Orchestrator | one Cycle: Imagine → Plan → Make → Verify | **TASK** | one worktree |
-| Agent | one SUBTASK of that task's mandatory decomposition | **SUBTASK** | one branch |
-| Subagent | one-off assist (research, measurement, verification) | none | none |
-
-The work model those units obey — the two queues, promotion, mandatory
-decomposition, and the harness-is-an-implementation law — is
-`two-queues.md`. Read it before dispatching anything. Its four load-bearing
-sentences:
-
-1. The outer loop queues TODO items.
-2. The inner loop queues TASKS; promotion is the only way in, and the only gate.
-3. Every TASK is decomposed into SUBTASKS by the Orchestrator, in planning,
-   every time, without exception.
-4. One TASK = one worktree. One SUBTASK = one branch in it.
-
-No step inside a task's cycle asks the operator for authorization. Stating
-an expected result and asking the operator to compare it is banned — if an
-outcome must be checked, the check is a test.
+| Control flow | Made Well |
+|---|---|
+| Coordinator | the outer loop owner: Discovery → Commit → Build → Land |
+| Orchestrator | one Cycle: Imagine → Plan → Make → Verify |
+| Agent | one item in the imagine queue (with the Isolation Mandate roles) |
+| Subagent | discovery-queue / deferred items run async |
 
 ## Operator entry
 
