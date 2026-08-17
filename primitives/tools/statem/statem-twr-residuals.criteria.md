@@ -1,54 +1,63 @@
-# Test criteria — statem-twr-residuals (T1 flocked statem + T2 twr integrity)
+# Test criteria — statem-twr-residuals (rebuilt onto the Tower `msg` table)
 
-Authored by test-maker from plan/brief only (`agnt-test-maker-w2z-pr.md` TASK +
-Pre-Verified Facts). Each assert maps to an acceptance criterion. Tests live in
-`statem-twr-residuals.test.mjs`; the tester runs them — test-maker does not.
+The oracle test file is authored by the **test seat** (`agnt-statem-test`,
+worktree `statem-test`, commit `431dc18` on `spine/statem-test`) as the other
+half of a bifurcated test/impl pair — it describes the contract, not this
+worktree's code, and this worktree's `statem.ts`/`twr.ts` are graded against
+it verbatim. Do not edit the test file to make it pass; if an assert in it
+looks wrong, post a finding to the orchestrator and wait. This document
+records what that suite checks, for readers of this partition.
 
-## statem board write — flocked append path (AC: a / T1)
+Contract (posted as tower msg id 44, topic `tower/cutover`, agreed by both
+seats):
 
-| Assert name | Criterion |
-|-------------|-----------|
-| `transition append via --board temp → parseable finding row, zero bad lines` | Temp project + baseline mismatch triggers transition; `statem.ts --once --no-tabs --board <temp> --baseline <temp>` exits 0; new board bytes are newline-terminated; zero concat (`}{`) and zero unparseable lines; `readJsonlStats` reports `bad_line_count=0`; at least one new row has `type:finding`, `from` starts with `statem@`, `topic:statem` |
-| `statem board lines are objects not double-stringified append payloads` | Every physical line `JSON.parse`s to an object (not a string wrapper); rows carry `type`, `from` matching `^statem@`, `topic:statem` — catches double-`JSON.stringify` misuse of flocked `append()` |
-| `--board override honored — writes land on temp path not live board` | `--board <isolated temp>` receives rows; live `~/.tower/board.jsonl` byte length unchanged |
+1. **Isolation** is `TOWER_HOME`/`TOWER_DB`, exactly as
+   `primitives/tower/tower.mjs` reads them. The old `--board <path>` flag is
+   retired.
+2. **Scoping.** `PROJECT = basename(realpathSync(<project-root>))`. statem
+   writes one `msg` row per transition: `sender = "statem@" + PROJECT`,
+   `topic = PROJECT + "/statem"`, `kind = "finding"`, `body` = the transition
+   string, unchanged. twr scopes by topic prefix `PROJECT + "/"`.
+3. **twr writes nothing, ever** — no `msg` rows, no cursor advances.
+4. **The integrity footer reports `PRAGMA integrity_check`**, not a JSONL
+   bad-line count — a sqlite table has no unparseable lines. Literal prefix
+   `integrity: ` is load-bearing; the oracle keys on it.
 
-## twr integrity surface — bad_line_count (AC: b / T2)
+The oracle reads the scratch store directly with `bun:sqlite` (readonly) —
+it never asks `statem.ts`/`twr.ts` what they wrote; every assertion is
+against the store itself, and every test runs in its own temp
+`TOWER_HOME`, never the live `~/.tower/tower.db`.
 
-| Assert name | Criterion |
-|-------------|-----------|
-| `fixture with N bad lines → twr --once reports exact bad_line_count` | Temp JSONL with N unparseable lines interleaved with good rows; `readJsonlStats(fixture).bad_line_count === N`; `twr.ts <project> --board fixture --once` exits 0 without throw; stdout/stderr integrity footer `integrity: N unparseable` surfaces count === N (oracle strips ANSI before parse — dim/color SGR codes false-match loose regex) |
-| `all-good fixture → twr --once reports bad_line_count=0` | Parseable-only fixture → surfaced integrity count is 0 |
-| `twr --once on damaged fixture does not throw` | Mixed good/bad fixture → `readJsonlStats` and `twr --once` both tolerate bad lines (no TypeError; exit 0) |
+## `statem → msg table (T1)`
 
-## twr render — good lines still parse and display (AC: c)
+| Test | Criterion |
+|------|-----------|
+| `a transition writes one finding row with the contracted sender/topic/kind` | Schema created on demand (no pre-made DB required); at least one row with `kind:finding`, `sender:statem@<project>`, `topic:<project>/statem`, numeric `ts` |
+| `the OUTER transition body survives the store swap verbatim` | The transition table (`statem.ts`'s `transitions()`) is untouched by the migration — row body equals the exact pre-migration string, e.g. `<project> OUTER discovery→commit` |
+| `body is a plain string, not a JSON-stringified board row` | No row body is a JSON envelope (`{id,ts,cwd,type,...}`) — catches a regression back toward the old board-row shape |
+| `cold start seeds the baseline and writes no transitions` | First run with no baseline file writes zero `msg` rows — cold start is silent, matching pre-migration behavior |
+| `TOWER_HOME isolates the write — nothing lands on the live bus` | A transition run against a temp `TOWER_HOME` never appears in the live `~/.tower/tower.db` |
 
-| Assert name | Criterion |
-|-------------|-----------|
-| `twr --once renders TRANSITIONS and FINDINGS for good rows amid bad lines` | Fixture with statem transition row + non-statem finding + bad line; `twr --once` output includes TRANSITIONS and FINDINGS sections and clipped-safe anchors from good rows (`/OUTER disc/`, `/oracle non-statem/`, oracle topic slug) — not full unclipped body text (twr clips to terminal width) |
-| `readJsonlStats rows from fixture match twr-scoped good line count` | Two good + one bad → `readJsonlStats.rows.length === 2`, `bad_line_count === 1`; twr integrity surface agrees |
+## `twr → msg table (T2)`
 
-## Out of scope for test-maker oracle (coder / human proof)
+| Test | Criterion |
+|------|-----------|
+| `renders statem rows under TRANSITIONS and other rows under FINDINGS` | Seeded statem-shaped row → TRANSITIONS; seeded non-statem row, same topic prefix → FINDINGS |
+| `scoping is the topic prefix — another project is not rendered` | A row seeded under a different project's topic prefix never appears in this project's `twr --once` output |
+| `twr writes nothing — the row count is identical across a run` | `msg` row count before and after a `twr --once` invocation is identical |
+| `the integrity footer reports SQLite integrity, not a JSONL bad-line count` | Footer line matches `/integrity:\s*ok/i` against a healthy store — not a `bad_line_count` figure |
+| `an empty store renders without throwing` | Zero rows → `twr --once` exits cleanly, no throw |
+
+## `statem ⇄ twr residual — the two agree on the convention`
+
+| Test | Criterion |
+|------|-----------|
+| `a transition statem wrote is a transition twr renders` | End-to-end: run `statem.ts --once`, then `twr.ts --once` against the same `TOWER_HOME`/project — the transition appears under TRANSITIONS |
+| `an inner-phase transition round-trips end to end` | Same, for an `INNER` (cycle-phase) transition rather than an `OUTER` one |
+
+## Out of scope for this suite
 
 | Item | Owner |
 |------|-------|
-| Live `~/.tower/board.jsonl` bad_line_count ≈ 26 on `twr.ts` against agent-core | Coder proof in `STATEM-TWR-RESIDUALS-PROOF.md` |
-| Residual `appendFileSync` scan across repo (T4) | Sibling SAGT |
-| COMMS-ARCH factual sync (T3) | Sibling AGNT |
-| Source-level grep proving no `appendFileSync(` to BOARD in `statem.ts` | Coder proof |
-
-## Run command (tester, not test-maker)
-
-```bash
-bun test /Users/jrg/.cursor/worktrees/agent-core/wt-agnt-test-maker-w2z-pr/primitives/tools/statem/statem-twr-residuals.test.mjs
-```
-
-Or from the statem tools directory:
-
-```bash
-cd ~/agent-core/primitives/tools/statem && bun test statem-twr-residuals.test.mjs
-```
-
-## Dependencies on implementer
-
-- `statem.ts` must route board writes through flocked `append(BOARD, row)` (not bare `appendFileSync`).
-- `twr.ts` must import `readJsonlStats` (or equivalent) and surface `bad_line_count` on header/footer; `--once` flag required for non-interactive oracle runs.
+| Live `~/.tower/tower.db` row counts / cross-tool integration proof | Coder proof in the orchestrator's cutover report, not this oracle |
+| Residual `~/.tower/lib.mjs` / `board.jsonl` references elsewhere in the repo | Sibling AGNT/SAGT partitions (not `primitives/tools/statem/**`) |

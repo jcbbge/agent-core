@@ -1,13 +1,13 @@
 #!/usr/bin/env bun
 // statem — gen_statem-style tracker for Made Well state (.madewell/).
 // Explicit state enums, explicit logged transitions, nothing implicit.
-// Every transition = one board row (~/.tower/board.jsonl, type "finding",
-// topic "statem") + optional herdr tab-title glyphs. stdout is the trace.
-// Brief: ~/agent-core/briefs/agnt-statem-core.md
+// Every transition = one Tower `msg` row (kind "finding", topic
+// "<project>/statem") + optional herdr tab-title glyphs. stdout is the trace.
+// Brief: ~/agent-core/briefs/tower-rebuild/AGNT-statem.md
 import { readFileSync, writeFileSync, existsSync, realpathSync } from "node:fs";
 import { join, basename } from "node:path";
 import { homedir } from "node:os";
-import { append } from "/Users/jrg/.tower/lib.mjs";
+import { open, send } from "../../tower/tower.mjs";
 
 // ── States (the enums ARE the spec; source: future/.madewell/guides/STATE-SHAPE.md) ──
 const OUTER = ["discovery", "commit", "build", "land"]; // outer stage
@@ -18,7 +18,7 @@ const ABSENT = "absent"; // a cycle/item not present in the state at all
 const argv = process.argv.slice(2);
 if (!argv[0] || argv[0].startsWith("--")) {
   console.error(
-    "usage: bun statem.ts <project-root> [--interval ms] [--once] [--board path] [--tabs path] [--no-tabs] [--baseline path]",
+    "usage: bun statem.ts <project-root> [--interval ms] [--once] [--tabs path] [--no-tabs] [--baseline path]",
   );
   process.exit(1);
 }
@@ -31,7 +31,6 @@ const PROJECT = basename(ROOT);
 const ONCE = argv.includes("--once");
 const NO_TABS = argv.includes("--no-tabs");
 const INTERVAL = Number(opt("--interval", "2000"));
-const BOARD = opt("--board", join(homedir(), ".tower", "board.jsonl"));
 const TABS = opt("--tabs", join(homedir(), ".tower", "statem-tabs.json"));
 const BASELINE = opt("--baseline", join(homedir(), ".tower", `statem-${PROJECT}.json`));
 
@@ -84,18 +83,19 @@ function transitions(prev, next, project) {
   return out;
 }
 
-// ── plumbing: board append, tab glyphs, poll loop ────────────────────────────
-function appendBoard(body) {
-  const row = {
-    id: "statem-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 6),
-    ts: new Date().toISOString(),
-    cwd: ROOT,
-    type: "finding",
-    from: `statem@${PROJECT}`,
-    topic: "statem",
+// ── plumbing: Tower send, tab glyphs, poll loop ──────────────────────────────
+// Topic convention (COMMS-ARCH board-topic shape, chosen here because the new
+// store has no per-cwd field): "<project>/statem". twr.ts scopes on the same
+// "<project>/" prefix so a project's transitions and its other findings
+// render together without a cwd column to join on.
+const db = await open();
+async function appendMsg(body) {
+  await send(db, {
+    sender: `statem@${PROJECT}`,
+    topic: `${PROJECT}/statem`,
+    kind: "finding",
     body,
-  };
-  append(BOARD, row);
+  });
 }
 
 const glyphs = (v, en) => "▰".repeat(en.indexOf(v) + 1).padEnd(4, "▱"); // unknown -> ▱▱▱▱
@@ -129,7 +129,7 @@ function renameTabs(state) {
 let prev = existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE, "utf8")) : null;
 const wasCold = prev === null;
 
-function poll() {
+async function poll() {
   let next;
   try {
     next = readState(ROOT);
@@ -143,7 +143,7 @@ function poll() {
   } else {
     const trs = transitions(prev, next, PROJECT);
     for (const t of trs) {
-      appendBoard(t.body);
+      await appendMsg(t.body);
       console.log(`${new Date().toISOString()} ${t.ok ? "" : "?"}${t.body}`);
     }
     if (trs.length && !NO_TABS) renameTabs(next);
@@ -156,9 +156,11 @@ function poll() {
   }
 }
 
-poll();
+await poll();
 if (ONCE) {
   if (!wasCold && prev) console.log(`statem: state — ${JSON.stringify(prev)}`);
   process.exit(0);
 }
-setInterval(poll, INTERVAL);
+setInterval(() => {
+  poll().catch((e) => console.error(`statem: poll error: ${e.message}`));
+}, INTERVAL);

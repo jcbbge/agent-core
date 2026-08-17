@@ -1,78 +1,117 @@
 #!/usr/bin/env bun
-// Oracle tests for statem-twr-residuals (T1 flocked statem + T2 twr integrity surface).
-// Authored from plan/brief only — never from implementation source.
-import { describe, expect, test } from 'bun:test'
-import {
-  existsSync,
-  readFileSync,
-  writeFileSync,
-  mkdirSync,
-  mkdtempSync,
-  rmSync,
-} from 'node:fs'
-import { join } from 'node:path'
-import { tmpdir } from 'node:os'
-import { readJsonlStats } from '../../mcps/tower/lib.mjs'
+// Oracle tests for statem + twr on the NEW tower store (the `msg` table).
+//
+// Authored from the brief and the agreed contract only — never from the
+// implementation source. statem.ts and twr.ts are written by the sibling impl
+// seat (agnt-statem) in a separate worktree; this file is the test seat's half
+// of the bifurcated pair, so it must describe the contract rather than the
+// code that happens to exist.
+//
+// The contract under test (posted as tower msg 44, topic tower/cutover):
+//   1. Isolation is TOWER_HOME / TOWER_DB, exactly as primitives/tower/tower.mjs
+//      does it. The old `--board <path>` flag is retired.
+//   2. PROJECT = basename(realpathSync(<project-root>)).
+//      statem writes one msg row per transition:
+//        sender = "statem@" + PROJECT
+//        topic  = PROJECT + "/statem"
+//        kind   = "finding"
+//        body   = the transition string, unchanged.
+//      twr scopes by TOPIC PREFIX `PROJECT + "/"`.
+//   3. twr writes nothing, ever.
+//   4. The integrity footer reports PRAGMA integrity_check, not a JSONL
+//      bad-line count — a SQLite table has no unparseable lines.
+//
+// The oracle reads the store DIRECTLY with bun:sqlite. It never asks a tool
+// under test what the tool under test wrote.
+import { describe, expect, test, beforeEach, afterEach } from 'bun:test'
+import { Database } from 'bun:sqlite'
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { basename, join } from 'node:path'
+import { realpathSync } from 'node:fs'
+import { tmpdir, homedir } from 'node:os'
 
 const STATEM_DIR = import.meta.dir
 const STATEM = join(STATEM_DIR, 'statem.ts')
 const TWR = join(STATEM_DIR, 'twr.ts')
-const WORKTREE =
-  process.env.AGENT_CORE ??
-  '/Users/jrg/.cursor/worktrees/agent-core/wt-agnt-test-maker-w2z-pr'
-const ORACLE_TOPIC = 'tower/bus-data-statem-twr-oracle'
 
-function writeFixtureJsonl(path, parts) {
-  const text = parts.join('\n') + (parts.length ? '\n' : '')
-  writeFileSync(path, text)
-  return text
+// ── scratch: one temp TOWER_HOME per test, never the live bus ───────────────
+// The live ~/.tower/tower.db is read by the coordinator and four other panes
+// while this suite runs. Nothing here may touch it.
+const LIVE_DB = join(homedir(), '.tower', 'tower.db')
+
+let scratch
+let towerHome
+let projectRoot
+let baseline
+let PROJECT
+
+beforeEach(() => {
+  scratch = mkdtempSync(join(tmpdir(), 'statem-oracle-'))
+  towerHome = join(scratch, 'tower-home')
+  mkdirSync(towerHome, { recursive: true })
+  baseline = join(scratch, 'baseline.json')
+})
+
+afterEach(() => {
+  if (scratch) rmSync(scratch, { recursive: true, force: true })
+})
+
+const dbPath = () => join(towerHome, 'tower.db')
+
+/** Every row in the scratch store, oldest first. Direct read — the oracle does
+ *  not route its observations through twr. */
+function rows() {
+  if (!existsSync(dbPath())) return []
+  const db = new Database(dbPath(), { readonly: true })
+  try {
+    return db.query('SELECT * FROM msg ORDER BY id').all()
+  } finally {
+    db.close()
+  }
 }
 
-/** Count concat smash, unparseable lines, and valid object rows. */
-function auditJsonl(content) {
-  let concat = 0
-  let unparseable = 0
-  let valid = 0
-  for (const line of content.split('\n').filter(Boolean)) {
-    if (/\}\s*\{/.test(line)) {
-      concat++
-      continue
-    }
-    try {
-      const parsed = JSON.parse(line)
-      if (parsed == null || typeof parsed !== 'object' || Array.isArray(parsed)) {
-        unparseable++
-      } else {
-        valid++
-      }
-    } catch {
-      unparseable++
+/** Seed the scratch store so a fresh DB + schema exist without running statem
+ *  — twr must be observable on a store it did not create. */
+function seed(msgs) {
+  const proc = Bun.spawnSync(['true'])
+  void proc
+  for (const m of msgs) {
+    const r = Bun.spawnSync(
+      [
+        'tower', 'send',
+        '--from', m.sender,
+        ...(m.topic ? ['--topic', m.topic] : []),
+        '--kind', m.kind ?? 'finding',
+        m.body,
+      ],
+      { env: { ...process.env, TOWER_HOME: towerHome }, stdout: 'pipe', stderr: 'pipe' },
+    )
+    if (r.exitCode !== 0) {
+      throw new Error(`seed failed: ${r.stderr.toString()}`)
     }
   }
-  return { concat, unparseable, valid }
 }
 
-function writeMinimalProject(scratch, { outerStage = 'commit', cyclePhase = 'imagine' } = {}) {
-  const mwDir = join(scratch, '.madewell')
-  const cyclesDir = join(mwDir, 'cycles')
-  mkdirSync(cyclesDir, { recursive: true })
+/** A .madewell/ project whose basename is unique per test, so an assertion
+ *  about the live bus can name this project and never collide with real fleet
+ *  traffic. */
+function writeMinimalProject({ outerStage = 'commit', cyclePhase = 'imagine' } = {}) {
+  const root = join(scratch, `oraclefix${Math.random().toString(36).slice(2, 8)}`)
+  const mwDir = join(root, '.madewell')
+  mkdirSync(join(mwDir, 'cycles'), { recursive: true })
 
   writeFileSync(
     join(mwDir, 'madewell.json'),
-    JSON.stringify(
-      {
-        project: 'statem-oracle-fixture',
-        profile: null,
-        stage: outerStage,
-        updated: new Date().toISOString(),
-        context: { summary: 'oracle fixture', openThread: 'oracle' },
-        discovery: [],
-        active: [{ id: 'd001', cycle: '.madewell/cycles/c001.json' }],
-        blocked: [],
-      },
-      null,
-      2,
-    ),
+    JSON.stringify({
+      project: 'statem-oracle-fixture',
+      profile: null,
+      stage: outerStage,
+      updated: new Date().toISOString(),
+      context: { summary: 'oracle fixture', openThread: 'oracle' },
+      discovery: [],
+      active: [{ id: 'd001', cycle: '.madewell/cycles/c001.json' }],
+      blocked: [],
+    }, null, 2),
   )
 
   writeFileSync(
@@ -86,326 +125,259 @@ function writeMinimalProject(scratch, { outerStage = 'commit', cyclePhase = 'ima
     }),
   )
 
-  return scratch
+  projectRoot = root
+  PROJECT = basename(realpathSync(root))
+  return root
 }
 
-function writeBaseline(path, outer, cycles = {}) {
-  writeFileSync(path, JSON.stringify({ outer, cycles }))
+function writeBaseline(outer, cycles = {}) {
+  writeFileSync(baseline, JSON.stringify({ outer, cycles }))
 }
 
-async function runStatemOnce(projectRoot, { board, baseline }) {
-  const args = [
-    'bun',
-    STATEM,
-    projectRoot,
-    '--once',
-    '--no-tabs',
-    '--board',
-    board,
-    '--baseline',
-    baseline,
-  ]
-  const proc = Bun.spawn(args, {
+function run(args) {
+  const proc = Bun.spawnSync(args, {
     cwd: STATEM_DIR,
+    env: { ...process.env, TOWER_HOME: towerHome },
     stdout: 'pipe',
     stderr: 'pipe',
   })
-  const [stdout, stderr, code] = await Promise.all([
-    new Response(proc.stdout).text(),
-    new Response(proc.stderr).text(),
-    proc.exited,
-  ])
-  return { stdout, stderr, code, combined: `${stdout}\n${stderr}` }
+  const stdout = proc.stdout.toString()
+  const stderr = proc.stderr.toString()
+  return { stdout, stderr, code: proc.exitCode, combined: `${stdout}\n${stderr}` }
 }
 
-async function runTwrOnce(projectRoot, boardPath) {
-  const proc = Bun.spawn(['bun', TWR, projectRoot, '--board', boardPath, '--once'], {
-    cwd: STATEM_DIR,
-    stdout: 'pipe',
-    stderr: 'pipe',
+const runStatemOnce = () =>
+  run(['bun', STATEM, projectRoot, '--once', '--no-tabs', '--baseline', baseline])
+
+const runTwrOnce = () => run(['bun', TWR, projectRoot, '--once'])
+
+const stripAnsi = (t) => t.replace(/\x1b\[[0-9;]*[A-Za-z]/g, '')
+
+/** The transition rows statem is contracted to write for this project. */
+const statemRows = () =>
+  rows().filter((r) => r.sender === `statem@${PROJECT}` && r.topic === `${PROJECT}/statem`)
+
+// ───────────────────────────────────────────────────────────────────────────
+describe('statem → msg table (T1)', () => {
+  test('a transition writes one finding row with the contracted sender/topic/kind', () => {
+    writeMinimalProject({ outerStage: 'commit' })
+    writeBaseline('discovery', { c001: { phase: 'imagine', items: { i001: 'pending' } } })
+
+    const { code, stderr } = runStatemOnce()
+    expect(code).toBe(0)
+    expect(stderr).not.toContain('TypeError')
+    expect(stderr).not.toContain('Cannot find module')
+
+    // The schema is created on demand — statem must not require a pre-made DB.
+    expect(existsSync(dbPath())).toBe(true)
+
+    const written = statemRows()
+    expect(written.length).toBeGreaterThan(0)
+    for (const r of written) {
+      expect(r.kind).toBe('finding')
+      expect(r.sender).toBe(`statem@${PROJECT}`)
+      expect(r.topic).toBe(`${PROJECT}/statem`)
+      expect(typeof r.ts).toBe('number')
+    }
   })
-  const [stdout, stderr, code] = await Promise.all([
-    new Response(proc.stdout).text(),
-    new Response(proc.stderr).text(),
-    proc.exited,
-  ])
-  return { stdout, stderr, code, combined: `${stdout}\n${stderr}` }
-}
 
-function stripAnsi(text) {
-  return text.replace(/\x1b\[[0-9;]*m/g, '')
-}
+  test('the OUTER transition body survives the store swap verbatim', () => {
+    writeMinimalProject({ outerStage: 'commit' })
+    writeBaseline('discovery', { c001: { phase: 'imagine', items: { i001: 'pending' } } })
 
-/** Parse twr footer `integrity: N unparseable line(s)...` — strip ANSI first (SGR digits like [2m/[32m false-match). */
-function extractIntegrityCount(text) {
-  const plain = stripAnsi(text)
-  const patterns = [
-    /integrity:\s*(\d+)\s*unparseable/i,
-    /(\d+)\s*unparseable/i,
-    /bad[_\s-]?line[_\s-]?count[^\d]*(\d+)/i,
-  ]
-  for (const re of patterns) {
-    const m = plain.match(re)
-    if (m) return Number(m[1])
-  }
-  return null
-}
+    expect(runStatemOnce().code).toBe(0)
 
-function statemTransitionRow(suffix, projectRoot) {
-  return {
-    id: `t-statem-oracle-${suffix}`,
-    ts: '2026-08-13T12:00:00.000Z',
-    cwd: projectRoot,
-    type: 'finding',
-    from: `statem@${projectRoot}`,
-    topic: 'statem',
-    body: `${projectRoot} OUTER discovery→commit`,
-  }
-}
+    // statem.ts's transition table is not being redesigned, so the exact string
+    // it produced against board.jsonl must still be the row body.
+    const bodies = statemRows().map((r) => r.body)
+    expect(bodies).toContain(`${PROJECT} OUTER discovery→commit`)
+  })
 
-function nonStatemFindingRow(suffix, projectRoot) {
-  return {
-    id: `t-finding-oracle-${suffix}`,
-    ts: '2026-08-13T12:00:00.000Z',
-    cwd: projectRoot,
-    type: 'finding',
-    from: 'AGNT statem-twr-residuals-tests',
-    topic: ORACLE_TOPIC,
-    body: 'oracle non-statem finding for twr render',
-  }
-}
+  test('body is a plain string, not a JSON-stringified board row', () => {
+    writeMinimalProject({ outerStage: 'build' })
+    writeBaseline('commit', { c001: { phase: 'plan', items: { i001: 'pending' } } })
 
-describe('statem board write — flocked append path (AC: a / T1)', () => {
-  test('transition append via --board temp → parseable finding row, zero bad lines', async () => {
-    const scratch = mkdtempSync(join(tmpdir(), 'statem-oracle-project-'))
-    const board = join(scratch, 'board.jsonl')
-    const baseline = join(scratch, 'baseline.json')
+    expect(runStatemOnce().code).toBe(0)
 
-    try {
-      const projectRoot = writeMinimalProject(scratch, { outerStage: 'commit' })
-      writeBaseline(baseline, 'discovery', {
-        c001: { phase: 'imagine', items: { i001: 'pending' } },
-      })
-
-      const beforeBytes = existsSync(board) ? readFileSync(board).length : 0
-      const { code, stderr } = await runStatemOnce(projectRoot, { board, baseline })
-
-      expect(code).toBe(0)
-      expect(stderr).not.toContain('TypeError')
-      expect(existsSync(board)).toBe(true)
-
-      const raw = readFileSync(board).subarray(beforeBytes).toString('utf8')
-      expect(raw.length).toBeGreaterThan(0)
-
-      const audit = auditJsonl(raw)
-      expect(audit.concat).toBe(0)
-      expect(audit.unparseable).toBe(0)
-      expect(audit.valid).toBeGreaterThan(0)
-
-      const stats = readJsonlStats(board)
-      expect(stats.bad_line_count).toBe(0)
-
-      const newRows = stats.rows.slice(-audit.valid)
-      const statemRows = newRows.filter(
-        (r) => r.type === 'finding' && String(r.from ?? '').startsWith('statem@') && r.topic === 'statem',
-      )
-      expect(statemRows.length).toBeGreaterThan(0)
-
-      for (const row of newRows) {
-        expect(typeof row).toBe('object')
-        expect(row).not.toBeNull()
-        expect(raw).toMatch(/\n$/)
-      }
-    } finally {
-      rmSync(scratch, { recursive: true, force: true })
+    const written = statemRows()
+    expect(written.length).toBeGreaterThan(0)
+    for (const r of written) {
+      expect(typeof r.body).toBe('string')
+      // The old bus wrapped the transition in an envelope {id,ts,cwd,type,...}.
+      // The envelope is now the table's columns; re-encoding it in `body` would
+      // be the double-stringify regression this suite has always guarded.
+      expect(r.body.trim().startsWith('{')).toBe(false)
+      expect(r.body).not.toContain('"topic"')
     }
-  }, 20_000)
+  })
 
-  test('statem board lines are objects not double-stringified append payloads', async () => {
-    const scratch = mkdtempSync(join(tmpdir(), 'statem-oracle-shape-'))
-    const board = join(scratch, 'board.jsonl')
-    const baseline = join(scratch, 'baseline.json')
+  test('cold start seeds the baseline and writes no transitions', () => {
+    writeMinimalProject({ outerStage: 'commit' })
+    // No baseline file on disk => cold start.
+    expect(existsSync(baseline)).toBe(false)
 
-    try {
-      const projectRoot = writeMinimalProject(scratch, { outerStage: 'build' })
-      writeBaseline(baseline, 'commit', {
-        c001: { phase: 'plan', items: { i001: 'pending' } },
-      })
+    const { code, stdout } = runStatemOnce()
+    expect(code).toBe(0)
+    expect(stripAnsi(stdout)).toContain('cold start')
 
-      const { code } = await runStatemOnce(projectRoot, { board, baseline })
-      expect(code).toBe(0)
-      expect(existsSync(board)).toBe(true)
+    // Cold start must not spam the bus with a full-state diff.
+    expect(statemRows().length).toBe(0)
+    expect(existsSync(baseline)).toBe(true)
+  })
 
-      for (const line of readFileSync(board, 'utf8').split('\n').filter(Boolean)) {
-        const parsed = JSON.parse(line)
-        expect(typeof parsed).toBe('object')
-        expect(parsed).not.toBeNull()
-        expect(typeof parsed.type).toBe('string')
-        expect(String(parsed.from ?? '')).toMatch(/^statem@/)
-        expect(parsed.topic).toBe('statem')
+  test('TOWER_HOME isolates the write — nothing lands on the live bus', () => {
+    writeMinimalProject({ outerStage: 'land' })
+    writeBaseline('build', { c001: { phase: 'verify', items: { i001: 'done' } } })
+
+    expect(runStatemOnce().code).toBe(0)
+    expect(statemRows().length).toBeGreaterThan(0)
+
+    // The project basename is randomised per test, so this names rows only this
+    // run could have written. A count-before/count-after check would be flaky:
+    // five other panes are writing to the live bus while this suite runs.
+    if (existsSync(LIVE_DB)) {
+      const live = new Database(LIVE_DB, { readonly: true })
+      try {
+        const hit = live
+          .query('SELECT COUNT(*) AS n FROM msg WHERE sender = ? OR topic = ?')
+          .get(`statem@${PROJECT}`, `${PROJECT}/statem`)
+        expect(hit.n).toBe(0)
+      } finally {
+        live.close()
       }
-    } finally {
-      rmSync(scratch, { recursive: true, force: true })
     }
-  }, 20_000)
-
-  test('--board override honored — writes land on temp path not live board', async () => {
-    const scratch = mkdtempSync(join(tmpdir(), 'statem-oracle-board-override-'))
-    const board = join(scratch, 'isolated-board.jsonl')
-    const baseline = join(scratch, 'baseline.json')
-    const liveBoard = join(process.env.HOME ?? '', '.tower', 'board.jsonl')
-    const liveBefore = existsSync(liveBoard) ? readFileSync(liveBoard).length : 0
-
-    try {
-      const projectRoot = writeMinimalProject(scratch, { outerStage: 'land' })
-      writeBaseline(baseline, 'build', {
-        c001: { phase: 'verify', items: { i001: 'done' } },
-      })
-
-      const { code } = await runStatemOnce(projectRoot, { board, baseline })
-      expect(code).toBe(0)
-      expect(existsSync(board)).toBe(true)
-      expect(readFileSync(board, 'utf8').trim().length).toBeGreaterThan(0)
-
-      if (existsSync(liveBoard)) {
-        expect(readFileSync(liveBoard).length).toBe(liveBefore)
-      }
-    } finally {
-      rmSync(scratch, { recursive: true, force: true })
-    }
-  }, 20_000)
+  })
 })
 
-describe('twr integrity surface — bad_line_count (AC: b / T2)', () => {
-  test('fixture with N bad lines → twr --once reports exact bad_line_count', async () => {
-    const scratch = mkdtempSync(join(tmpdir(), 'twr-oracle-integrity-'))
-    const fixture = join(scratch, 'board.jsonl')
-    const projectRoot = join(scratch, 'project')
-    mkdirSync(projectRoot, { recursive: true })
-
-    const goodA = JSON.stringify(statemTransitionRow('a', projectRoot))
-    const goodB = JSON.stringify(nonStatemFindingRow('b', projectRoot))
-    const badLines = ['{truncated-json', 'not json at all', '{"missing":']
-    writeFixtureJsonl(fixture, [goodA, badLines[0], goodB, badLines[1], badLines[2], goodA])
-
-    const expected = readJsonlStats(fixture).bad_line_count
-    expect(expected).toBe(badLines.length)
-
-    try {
-      const { code, stderr, combined } = await runTwrOnce(projectRoot, fixture)
-      expect(code).toBe(0)
-      expect(stderr).not.toContain('TypeError')
-
-      const surfaced = extractIntegrityCount(combined)
-      expect(surfaced).not.toBeNull()
-      expect(surfaced).toBe(expected)
-    } finally {
-      rmSync(scratch, { recursive: true, force: true })
-    }
-  }, 20_000)
-
-  test('all-good fixture → twr --once reports bad_line_count=0', async () => {
-    const scratch = mkdtempSync(join(tmpdir(), 'twr-oracle-clean-'))
-    const fixture = join(scratch, 'board.jsonl')
-    const projectRoot = join(scratch, 'project')
-    mkdirSync(projectRoot, { recursive: true })
-
-    writeFixtureJsonl(fixture, [
-      JSON.stringify(statemTransitionRow('clean-a', projectRoot)),
-      JSON.stringify(nonStatemFindingRow('clean-b', projectRoot)),
+// ───────────────────────────────────────────────────────────────────────────
+describe('twr → msg table (T2)', () => {
+  test('renders statem rows under TRANSITIONS and other rows under FINDINGS', () => {
+    writeMinimalProject()
+    seed([
+      { sender: `statem@${PROJECT}`, topic: `${PROJECT}/statem`, body: `${PROJECT} OUTER discovery→commit` },
+      { sender: 'orch-oracle', topic: `${PROJECT}/cutover`, body: 'oracle non-statem finding for twr render' },
     ])
 
-    try {
-      const { code, combined } = await runTwrOnce(projectRoot, fixture)
-      expect(code).toBe(0)
-      const expected = readJsonlStats(fixture).bad_line_count
-      expect(expected).toBe(0)
+    const { code, stderr, combined } = runTwrOnce()
+    expect(code).toBe(0)
+    expect(stderr).not.toContain('TypeError')
 
-      const surfaced = extractIntegrityCount(combined)
-      expect(surfaced).not.toBeNull()
-      expect(surfaced).toBe(0)
-    } finally {
-      rmSync(scratch, { recursive: true, force: true })
-    }
-  }, 20_000)
+    const hay = stripAnsi(combined)
+    expect(hay).toMatch(/TRANSITIONS/i)
+    expect(hay).toMatch(/FINDINGS/i)
+    expect(hay).toContain('OUTER discovery→commit')
+    // The findings line carries its sender and topic, as the old renderer did.
+    expect(hay).toContain('orch-oracle')
+    expect(hay).toContain(`${PROJECT}/cutover`)
+  })
 
-  test('twr --once on damaged fixture does not throw', async () => {
-    const scratch = mkdtempSync(join(tmpdir(), 'twr-oracle-tolerance-'))
-    const fixture = join(scratch, 'board.jsonl')
-    const projectRoot = join(scratch, 'project')
-    mkdirSync(projectRoot, { recursive: true })
-
-    writeFixtureJsonl(fixture, [
-      JSON.stringify(statemTransitionRow('tol', projectRoot)),
-      '<<<bad>>>',
-      JSON.stringify(nonStatemFindingRow('tol2', projectRoot)),
+  test('scoping is the topic prefix — another project is not rendered', () => {
+    writeMinimalProject()
+    seed([
+      { sender: `statem@${PROJECT}`, topic: `${PROJECT}/statem`, body: `${PROJECT} OUTER discovery→commit` },
+      { sender: 'statem@elsewhere', topic: 'elsewhere/statem', body: 'elsewhere OUTER commit→build' },
+      { sender: 'someone', topic: 'unrelated/topic', body: 'ORACLE-LEAK-MARKER unrelated project row' },
     ])
 
+    const { code, combined } = runTwrOnce()
+    expect(code).toBe(0)
+
+    const hay = stripAnsi(combined)
+    expect(hay).toContain('OUTER discovery→commit')
+    expect(hay).not.toContain('ORACLE-LEAK-MARKER')
+    expect(hay).not.toContain('elsewhere OUTER commit→build')
+  })
+
+  test('twr writes nothing — the row count is identical across a run', () => {
+    writeMinimalProject()
+    seed([
+      { sender: `statem@${PROJECT}`, topic: `${PROJECT}/statem`, body: `${PROJECT} OUTER discovery→commit` },
+    ])
+
+    const before = rows()
+    expect(before.length).toBe(1)
+
+    expect(runTwrOnce().code).toBe(0)
+
+    const after = rows()
+    expect(after.length).toBe(before.length)
+    expect(after.map((r) => r.id)).toEqual(before.map((r) => r.id))
+  })
+
+  test('the integrity footer reports SQLite integrity, not a JSONL bad-line count', () => {
+    writeMinimalProject()
+    seed([
+      { sender: `statem@${PROJECT}`, topic: `${PROJECT}/statem`, body: `${PROJECT} OUTER discovery→commit` },
+    ])
+
+    // The oracle's own answer, straight from the engine.
+    const db = new Database(dbPath(), { readonly: true })
+    let verdict
     try {
-      expect(() => readJsonlStats(fixture)).not.toThrow()
-      const { code, stderr } = await runTwrOnce(projectRoot, fixture)
-      expect(code).toBe(0)
-      expect(stderr).not.toContain('TypeError')
+      verdict = db.query('PRAGMA integrity_check').get()
     } finally {
-      rmSync(scratch, { recursive: true, force: true })
+      db.close()
     }
-  }, 20_000)
+    expect(Object.values(verdict)[0]).toBe('ok')
+
+    const { code, combined } = runTwrOnce()
+    expect(code).toBe(0)
+
+    const hay = stripAnsi(combined)
+    // The literal prefix survives the store swap; the JSONL vocabulary does not.
+    expect(hay).toMatch(/integrity:\s*ok/i)
+    expect(hay).not.toMatch(/unparseable/i)
+  })
+
+  test('an empty store renders without throwing', () => {
+    writeMinimalProject()
+    seed([{ sender: 'bootstrap', topic: 'someoneelse/topic', body: 'not this project' }])
+
+    const { code, stderr, combined } = runTwrOnce()
+    expect(code).toBe(0)
+    expect(stderr).not.toContain('TypeError')
+    expect(stripAnsi(combined)).toMatch(/TRANSITIONS/i)
+    expect(stripAnsi(combined)).toMatch(/\(none\)/)
+  })
 })
 
-describe('twr render — good lines still parse and display (AC: c)', () => {
-  test('twr --once renders TRANSITIONS and FINDINGS for good rows amid bad lines', async () => {
-    const scratch = mkdtempSync(join(tmpdir(), 'twr-oracle-render-'))
-    const fixture = join(scratch, 'board.jsonl')
-    const projectRoot = join(scratch, 'project')
-    mkdirSync(projectRoot, { recursive: true })
+// ───────────────────────────────────────────────────────────────────────────
+// The residual the bifurcated pair exists to protect: statem's writes and twr's
+// reads must agree on the convention. Either tool can be internally consistent
+// and still fail this.
+describe('statem ⇄ twr residual — the two agree on the convention', () => {
+  test('a transition statem wrote is a transition twr renders', () => {
+    writeMinimalProject({ outerStage: 'commit' })
+    writeBaseline('discovery', { c001: { phase: 'imagine', items: { i001: 'pending' } } })
 
-    const transition = statemTransitionRow('render', projectRoot)
-    const finding = nonStatemFindingRow('render', projectRoot)
-    writeFixtureJsonl(fixture, [
-      JSON.stringify(transition),
-      '{bad line}',
-      JSON.stringify(finding),
-    ])
+    expect(runStatemOnce().code).toBe(0)
+    const written = statemRows()
+    expect(written.length).toBeGreaterThan(0)
 
-    try {
-      const { stdout, combined, code, stderr } = await runTwrOnce(projectRoot, fixture)
-      expect(code).toBe(0)
-      expect(stderr).not.toContain('TypeError')
+    const { code, combined } = runTwrOnce()
+    expect(code).toBe(0)
 
-      const hay = `${stdout}\n${combined}`
-      expect(hay).toMatch(/TRANSITIONS/i)
-      expect(hay).toMatch(/FINDINGS/i)
-      // twr clips long lines to terminal width — anchor on prefixes that survive clip
-      expect(hay).toMatch(/OUTER disc/)
-      expect(hay).toMatch(/oracle non-statem/)
-      expect(hay).toMatch(new RegExp(ORACLE_TOPIC.replace(/\//g, '\\/')))
-    } finally {
-      rmSync(scratch, { recursive: true, force: true })
+    const hay = stripAnsi(combined)
+    const transitionsBlock = hay.slice(
+      hay.search(/TRANSITIONS/i),
+      hay.search(/FINDINGS/i) === -1 ? undefined : hay.search(/FINDINGS/i),
+    )
+    for (const r of written) {
+      expect(transitionsBlock).toContain(r.body)
     }
-  }, 20_000)
+  })
 
-  test('readJsonlStats rows from fixture match twr-scoped good line count', async () => {
-    const scratch = mkdtempSync(join(tmpdir(), 'twr-oracle-rows-'))
-    const fixture = join(scratch, 'board.jsonl')
-    const projectRoot = join(scratch, 'project')
-    mkdirSync(projectRoot, { recursive: true })
+  test('an inner-phase transition round-trips end to end', () => {
+    writeMinimalProject({ outerStage: 'commit', cyclePhase: 'make' })
+    writeBaseline('commit', { c001: { phase: 'imagine', items: { i001: 'pending' } } })
 
-    writeFixtureJsonl(fixture, [
-      JSON.stringify(statemTransitionRow('rows-a', projectRoot)),
-      'garbage',
-      JSON.stringify(nonStatemFindingRow('rows-b', projectRoot)),
-    ])
+    expect(runStatemOnce().code).toBe(0)
 
-    try {
-      const stats = readJsonlStats(fixture)
-      expect(stats.rows.length).toBe(2)
-      expect(stats.bad_line_count).toBe(1)
+    const bodies = statemRows().map((r) => r.body)
+    expect(bodies).toContain(`${PROJECT} INNER c001 imagine→make`)
 
-      const { code, combined } = await runTwrOnce(projectRoot, fixture)
-      expect(code).toBe(0)
-      expect(extractIntegrityCount(combined)).toBe(1)
-    } finally {
-      rmSync(scratch, { recursive: true, force: true })
-    }
-  }, 20_000)
+    const { code, combined } = runTwrOnce()
+    expect(code).toBe(0)
+    expect(stripAnsi(combined)).toContain('INNER c001 imagine→make')
+  })
 })
