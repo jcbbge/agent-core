@@ -102,18 +102,26 @@ only on an isolated replica — six of seven suites mutate the live store.
 
 ## HOW
 
-**Operate (from outside, always):**
+**Operate (from outside, always) — ONE door, the `tup` CLI**
+(`~/tup/bin/tup`; on PATH after `pip install -e ~/tup` or pipx; MIT,
+pyproject v0.1.0; exit codes are verdicts and propagate unchanged):
 ```bash
-python3 ~/tup/durable/cli.py list|get <id>
-python3 ~/tup/durable/cli.py mint --id <id> --json <FILE PATH>   # not inline JSON
-python3 ~/tup/durable/cli.py promote <id> --route "<dest>"
-python3 ~/tup/durable/cli.py dismiss <id> --reason "<why>"       # reason required
-python3 ~/tup/instruments/staging.py --write     # refresh render (default only prints)
-python3 ~/tup/instruments/wake.py --verify       # exit 0 = chain intact
-python3 ~/tup/socket/bellman.py                  # resident wake organ (herdr seam)
-python3 ~/tup/field/field.py deposit --from <me> --to <parent> --kind done --body "<what landed>"
-python3 ~/tup/field/field.py pending --to <me>   # my inbox
+tup status                       # THE glance: chain · store census · inbox · owed wakes
+tup list | tup get <id>
+tup mint --id <id> --json <FILE PATH>            # not inline JSON
+tup promote <id> --route "<dest>"
+tup dismiss <id> --reason "<why>"                # reason required
+tup seal · tup wake · tup doorbell               # chain verbs
+tup verify                       # exit 0 = chain intact
+tup render [--write]             # staging render (render, NOT truth)
+tup deposit --from <me> --to <parent> --kind done --body "<what landed>"
+tup pending --to <me>            # my inbox   ·   tup collect <dep-id>
+tup bellman                      # resident wake organ (herdr seam)
 ```
+Raw module paths (durable/cli.py, instruments/*.py, field/field.py,
+socket/bellman.py) exist beneath the CLI; briefs and hooks name `tup`
+verbs, never module paths. herdr plugin manifest:
+`deploy/herdr-plugin/herdr-plugin.toml` (root copy required at publish).
 Docs of record: `README.md` (human) · `AGENTS.md` (engine operating manual) ·
 `docs/api-surface.md` (every verb/refusal/exit code) ·
 `docs/herdr-integration.md` (runtime seam + swap contract).

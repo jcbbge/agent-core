@@ -202,7 +202,7 @@ Two delivery traps (verified 2026-08-15):
   Bake the retry into every delivery path, not just the happy one.
 - **Status flips wake no one.** `done` is visible but nothing subscribes —
   an idle parent will sit forever beside finished children. The resident
-  supervisor is tup's bellman: run `python3 ~/tup/socket/bellman.py` (wake
+  supervisor is tup's bellman: run `tup bellman` (CLI door; wake
   organ v1 — evidence-gated claim, clock-drained outbox, one-link-up
   escalation, verified submit). Do not re-implement that loop in herdr-spine.
 
