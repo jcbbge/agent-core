@@ -717,28 +717,62 @@ describe('(f) every CONTRACT §4 refusal returns a receipt and writes a dead-let
     expect(readJsonl(deadLetterFile(home))).toHaveLength(0)
   })
 
-  // CONTRACT §4 pins the reason `nq-exhausted` but pins no budget value and no
-  // parameter carrying one, so this asserts the guarantee's shape: a question
-  // stream is bounded, and the refusal string is exact. See board finding.
-  test('(f) a question past the nQ budget is refused with exactly "nq-exhausted"', async () => {
-    const home = newTowerHome('nq')
+  // CONTRACT §6c: nQ is the SENDER's escalation budget, not the queue's. The
+  // door refuses only when the caller passes a numeric `nq` greater than
+  // NQ_BUDGET (=3). It never counts questions itself: the inbox is durable and
+  // append-only, so a per-addressee counter would refuse the 4th question
+  // anyone ever sent to an addressee, and every one after it, forever —
+  // silently eating legitimate mail, which is the failure this unit removes.
+  test('(f) a question with nq at or under NQ_BUDGET is accepted', async () => {
+    const home = newTowerHome('nq-ok')
+    const got = await run(home, `
+      const to = ${JSON.stringify(TO)}
+      return [1, 2, 3].map((nq) => d.deposit({ to, kind: 'question', body: 'question ' + nq, from: 'oracle', nq }))`)
+
+    for (const r of got) {
+      expect(r.accepted).toBe(true)
+      expect(r.reason).toBeNull()
+    }
+    expect(readJsonl(deadLetterFile(home))).toHaveLength(0)
+  })
+
+  test('(f) a question with nq above NQ_BUDGET is refused with exactly "nq-exhausted"', async () => {
+    const home = newTowerHome('nq-over')
+    const got = await run(home, `
+      const to = ${JSON.stringify(TO)}
+      const receipts = [4, 5, 6].map((nq) => d.deposit({ to, kind: 'question', body: 'question ' + nq, from: 'oracle', nq }))
+      return { receipts, pending: ids(d.pendingItems(to)) }`)
+
+    for (const r of got.receipts) {
+      expect(r.accepted).toBe(false)
+      expect(r.reason).toBe('nq-exhausted') // exact string
+    }
+    expect(got.pending).toEqual([]) // refused is not owed
+
+    const dl = readJsonl(deadLetterFile(home))
+    expect(dl).toHaveLength(3) // one row per refusal, never silent
+    for (const row of dl) expect(row.reason).toBe('nq-exhausted')
+  })
+
+  test('(f) a question with NO nq is accepted — the door never invents a budget', async () => {
+    // The anti-regression test. An implementation that starts counting
+    // questions per addressee would begin eating them here, and would fail.
+    const home = newTowerHome('nq-absent')
     const got = await run(home, `
       const to = ${JSON.stringify(TO)}
       const receipts = []
       for (let i = 0; i < 12; i++) {
         receipts.push(d.deposit({ to, kind: 'question', body: 'question ' + i, from: 'oracle' }))
       }
-      return receipts`)
+      return { receipts, pending: ids(d.pendingItems(to)) }`)
 
-    const accepted = got.filter((r) => r.accepted)
-    const refused = got.filter((r) => !r.accepted)
-    expect(accepted.length).toBeGreaterThan(0) // the budget is not zero
-    expect(refused.length).toBeGreaterThan(0) // the budget is not unbounded
-    for (const r of refused) expect(r.reason).toBe('nq-exhausted')
-
-    const dl = readJsonl(deadLetterFile(home))
-    expect(dl).toHaveLength(refused.length)
-    for (const row of dl) expect(row.reason).toBe('nq-exhausted')
+    expect(got.receipts).toHaveLength(12)
+    for (const r of got.receipts) {
+      expect(r.accepted).toBe(true) // every one of them, not just the first three
+      expect(r.reason).toBeNull()
+    }
+    expect(got.pending).toHaveLength(12) // all twelve still owed
+    expect(readJsonl(deadLetterFile(home))).toHaveLength(0) // nothing eaten
   })
 })
 
