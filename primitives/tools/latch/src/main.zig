@@ -100,14 +100,14 @@ fn runWait(allocator: std.mem.Allocator, io: std.Io, init: std.process.Init, arg
                 try writeAll(io, argv.waitUsageMessage());
                 std.process.exit(2);
             };
-            const board_path = wait_board.resolveBoardPath(allocator, init.environ_map) catch {
-                try writeAll(io, "latch: cannot resolve board path\n");
+            const db_path = wait_board.resolveBoardPath(allocator, init.environ_map) catch {
+                try writeAll(io, "latch: cannot resolve tower store path\n");
                 std.process.exit(2);
             };
             const result = wait_board.waitBoard(allocator, io, .{
                 .topic = topic,
                 .timeout_ms = parsed.timeout_ms,
-                .board_path = board_path,
+                .db_path = db_path,
             }) catch {
                 try writeAll(io, "latch: board error\n");
                 std.process.exit(2);
@@ -183,7 +183,7 @@ fn printHelp(io: std.Io) !void {
         \\wait options:
         \\  --pane <pane-id>   herdr pane agent status (default until: idle or done)
         \\  --file <path>      path exists or changes (kqueue EVFILT_VNODE)
-        \\  --board <topic>    new Tower board row with topic (append-only tail scan)
+        \\  --board <topic>    new Tower message with topic (msg table, id > baseline)
         \\  --until <status>   pane only — match one status (repeatable, any-of)
         \\  --timeout <dur>    30s / 10m / 1h (default: 30m)
         \\
@@ -195,7 +195,7 @@ fn printHelp(io: std.Io) !void {
         \\
         \\paths:
         \\  herdr socket: $HERDR_SOCKET_PATH or ~/.config/herdr/herdr.sock
-        \\  board file:   $TOWER_HOME/board.jsonl or ~/.tower/board.jsonl
+        \\  tower store:  $TOWER_DB, else $TOWER_HOME/tower.db, else ~/.tower/tower.db
         \\  gate stamp:     ~/.fleet/gates/<gate>
         \\
     ;

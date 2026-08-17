@@ -2,9 +2,12 @@
 # Live acceptance matrix for latch — agnt-latch-verify
 set -euo pipefail
 
-LATCH="${LATCH:-$HOME/agent-core/primitives/tools/latch/zig-out/bin/latch}"
-EVIDENCE="${EVIDENCE:-$HOME/agent-core/briefs/fringe/latch-vein/acceptance-evidence.md}"
+# Default to the tree this script lives in, so a worktree checkout tests itself.
+LATCH_DIR="${LATCH_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+LATCH="${LATCH:-$LATCH_DIR/zig-out/bin/latch}"
+EVIDENCE="${EVIDENCE:-$LATCH_DIR/zig-out/acceptance-evidence.md}"
 SLEEP_PANE="${SLEEP_PANE:-}"
+PARENT_PANE="${PARENT_PANE:-w1Q:pD}"
 
 run_case() {
   local name="$1"
@@ -44,7 +47,7 @@ mkdir -p "$(dirname "$EVIDENCE")"
 
 echo "## Build" >> "$EVIDENCE"
 echo '```' >> "$EVIDENCE"
-cd "$HOME/agent-core/primitives/tools/latch"
+cd "$LATCH_DIR"
 zig build 2>&1 | tee -a "$EVIDENCE"
 BUILD_EXIT=${PIPESTATUS[0]}
 echo "BUILD_EXIT=$BUILD_EXIT" | tee -a "$EVIDENCE"
@@ -69,25 +72,29 @@ run_case "event file touch (expect 0)" bash -c "
   wait \$WP
 "
 
-TOPIC="agent-core/latch-vein-verify-$$"
-run_case "event board post (expect 0)" bash -c "
-  cd '$HOME/agent-core'
+# Tower store: a throwaway TOWER_HOME, never the live ~/.tower/tower.db.
+TOPIC="tower/latch-verify-$$"
+BOARD_HOME="/tmp/latch-tower-$$"
+run_case "event tower message (expect 0)" bash -c "
+  export TOWER_HOME='$BOARD_HOME'
+  mkdir -p \$TOWER_HOME
   ($LATCH wait --board '$TOPIC' --timeout 30s &)
   WP=\$!
   sleep 0.5
-  bun ~/.tower/cli.mjs post finding '$TOPIC' 'acceptance verify stamp' --from agnt-latch-verify >/dev/null
+  tower send --from agnt-latch-verify --topic '$TOPIC' --kind finding 'acceptance verify stamp' >/dev/null
   wait \$WP
 "
+rm -rf "$BOARD_HOME"
 
 # Vanished: closed pane at wait start (documented path)
-CLOSE_PANE=$(herdr pane split w1Q:pD --direction down --no-focus | python3 -c "import sys,json; print(json.load(sys.stdin)['result']['pane']['pane_id'])")
+CLOSE_PANE=$(herdr pane split "$PARENT_PANE" --direction down --no-focus | python3 -c "import sys,json; print(json.load(sys.stdin)['result']['pane']['pane_id'])")
 herdr pane close "$CLOSE_PANE" >/dev/null 2>&1
 sleep 0.3
 run_case "vanished closed pane at start (expect 4)" "$LATCH" wait --pane "$CLOSE_PANE" --until idle --timeout 5s
 
 # Event pane: default wait until idle|done
 if [[ -z "$SLEEP_PANE" ]]; then
-  SLEEP_PANE=$(herdr pane split w1Q:pD --direction down --no-focus | python3 -c "import sys,json; print(json.load(sys.stdin)['result']['pane']['pane_id'])")
+  SLEEP_PANE=$(herdr pane split "$PARENT_PANE" --direction down --no-focus | python3 -c "import sys,json; print(json.load(sys.stdin)['result']['pane']['pane_id'])")
   sleep 1
   herdr agent start latch-sleeper --kind pi --pane "$SLEEP_PANE" --timeout 90000 >/dev/null 2>&1
 fi

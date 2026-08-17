@@ -116,8 +116,16 @@ test "gate name rejection" {
     try std.testing.expect(hold.isValidGateName("migration-live"));
 }
 
-test "board topic match helper" {
-    const line = "{\"topic\":\"agent-core/latch-vein\",\"type\":\"finding\",\"body\":\"ok\"}";
-    try std.testing.expect(wait_board.boardTopicMatches(line, "agent-core/latch-vein"));
-    try std.testing.expect(!wait_board.boardTopicMatches(line, "other/topic"));
+test "board topic becomes an injection-proof sql literal" {
+    const lit = try wait_board.sqlTextLiteral(std.testing.allocator, "agent-core/latch-vein");
+    defer std.testing.allocator.free(lit);
+    try std.testing.expectEqualStrings(
+        "CAST(x'6167656e742d636f72652f6c617463682d7665696e' AS TEXT)",
+        lit,
+    );
+
+    // A topic full of quotes still yields exactly the two delimiter quotes.
+    const nasty = try wait_board.sqlTextLiteral(std.testing.allocator, "a'; DROP TABLE msg; --");
+    defer std.testing.allocator.free(nasty);
+    try std.testing.expectEqual(@as(usize, 2), std.mem.count(u8, nasty, "'"));
 }
