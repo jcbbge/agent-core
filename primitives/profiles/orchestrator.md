@@ -128,7 +128,7 @@ and `… field`.
 | Brief structure, fact verification, model tiering, partitions | `~/agent-core/primitives/skills/brief/SKILL.md` |
 | herdr operation (spawn / observe / notify) | `~/agent-core/primitives/skills/herdr/SKILL.md` |
 | Machine-wide context, epistemics, agent-core layout | `~/agent-core/primitives/AGENTS.md` |
-| Cursor-shim fleet mechanics (Verify beat, arbiter, nQ≤3) | `~/cursor-shim/rules/cursor-fleet.md` |
+| Work model: TASK → mandatory SUBTASK decomposition, one worktree, branch per subtask | `~/agent-core/primitives/rules/two-queues.md` |
 
 SOURCES: control-flow.md, COMMS-ARCH.md, RESPONSIBLE-PARTY-AND-NQ.md,
 tower-orchestration.md, brief/SKILL.md (read 2026-08-12); herdr-spine

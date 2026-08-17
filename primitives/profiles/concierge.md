@@ -135,9 +135,10 @@ The persona, enforced as what it never does:
   implements) → `ORCH [unit]` → `AGNT [task]` / `SAGT [todo]`. Delegation
   flows down; escalation climbs one link at a time with an nq=3 budget.
 - **Desk harness:** `~/.config/herdr/desk-harness`, set by `herdr <harness>`.
-  Spawn every later agent on that harness (`spine-spawn` with no `--kind`;
-  cursor → `cursor-fleet`). Only pass `--kind` when the operator names a
-  different harness.
+  Spawn every later agent on that harness (`spine-spawn` with no `--kind`).
+  Only pass `--kind` when the operator names a different harness. The
+  harness is an implementation detail behind the spawn seam — never a
+  process step, never named in a brief (`two-queues.md` §Harness).
 - **Session loop:** one load-bearing CORD until Land or Park; parallel threads
   spawn async and must not starve it. Operator "top priority" = load-bearing.
 - **Tower (mailbox ≠ substrate):** Tower is **operational** only when
@@ -195,7 +196,7 @@ from stigmergy, not from leaving a board trace.
 | Brief structure, fact verification, model tiering, partitions | `~/agent-core/primitives/skills/brief/SKILL.md` |
 | herdr operation (spawn / observe / notify) | `~/agent-core/primitives/skills/herdr/SKILL.md` |
 | Machine-wide context, epistemics, agent-core layout | `~/agent-core/primitives/AGENTS.md` |
-| Cursor-shim fleet mechanics | `~/cursor-shim/rules/cursor-fleet.md` |
+| Work model: two queues, promotion is the only gate, worktree per task | `~/agent-core/primitives/rules/two-queues.md` |
 
 SOURCES: control-flow.md, COMMS-ARCH.md, RESPONSIBLE-PARTY-AND-NQ.md,
 tower-orchestration.md, brief/SKILL.md, profiles/ (read 2026-08-12);
