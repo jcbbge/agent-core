@@ -226,21 +226,63 @@ export async function log(db, { topic, recipient, limit = 50 } = {}) {
  *  the way a desk is where a person is sitting — it is not who they are. The
  *  old bus recorded the desk and mailed the desk.
  *
- *  shepherd already maintains this mapping (it reconciles herdr's pane index
- *  every 60s), so the bus does not track presence itself. */
+ *  herdr is asked FIRST, because herdr is the live snapshot and everything
+ *  else is an index built from it. shepherd's registry is a cache refreshed on
+ *  a 60s floor, and a cache is wrong in both directions: measured 2026-08-16
+ *  it still listed ten panes herdr had already closed, and it knew only 1 of
+ *  the 8 tower panes then running — so resolving through it alone both mails
+ *  the dead and cannot find the newly born. shepherd remains the fallback,
+ *  since it can name an agent whose pane tokens are missing. Snapshot first,
+ *  index second: the same rule the worktree reconciler follows. */
 export function resolvePane(name) {
-  let out;
+  const want = String(name || "").toLowerCase();
+  if (!want) return null;
+
+  // herdr: authoritative and always current. spine-spawn stamps role + name
+  // at birth, and the registration name is exactly `<role>-<name>` — e.g.
+  // role "2-ORCH" + name "tower-hooks" -> "orch-tower-hooks".
   try {
-    out = execFileSync("shepherd", ["agent", "list", "--all", "--json"],
+    const out = execFileSync("herdr", ["pane", "list"],
+      { encoding: "utf8", timeout: 5000, maxBuffer: 16 * 1024 * 1024 });
+    const panes = JSON.parse(out)?.result?.panes || [];
+    for (const p of panes) {
+      const t = p.tokens || {};
+      const role = String(t.role || "").split("-").pop().toLowerCase();
+      const stamped = t.name ? `${role}-${t.name}`.toLowerCase() : null;
+      const label = String(p.label || "").replace(/\s+/g, "-").toLowerCase();
+      if (stamped === want || label === want) {
+        return { paneId: p.pane_id, status: p.agent_status, id: p.terminal_id };
+      }
+    }
+  } catch { /* fall through to shepherd */ }
+
+  try {
+    const out = execFileSync("shepherd", ["agent", "list", "--all", "--json"],
       { encoding: "utf8", timeout: 5000 });
+    const agents = JSON.parse(out).agents || [];
+    const hit = agents.find((a) => String(a.name || "").toLowerCase() === want);
+    // Verified against herdr before use — the cache may be naming a dead pane.
+    if (hit && paneIsLive(hit.paneId)) {
+      return { paneId: hit.paneId, status: hit.agentStatus, id: hit.id };
+    }
+  } catch { /* both sources unavailable */ }
+  return null;
+}
+
+/** Ask herdr — not the cache — whether a pane is still there. An unreadable
+ *  pane list returns true: refusing to guess beats refusing to deliver, and a
+ *  wasted prompt is cheaper than mail that never leaves. */
+function paneIsLive(paneId) {
+  if (!paneId) return false;
+  try {
+    const out = execFileSync("herdr", ["pane", "list"],
+      { encoding: "utf8", timeout: 5000, maxBuffer: 16 * 1024 * 1024 });
+    const panes = JSON.parse(out)?.result?.panes;
+    if (!Array.isArray(panes)) return true;
+    return panes.some((p) => p.pane_id === paneId);
   } catch {
-    return null; // shepherd down: mail still queued, wake simply not possible
+    return true;
   }
-  let agents;
-  try { agents = JSON.parse(out).agents || []; } catch { return null; }
-  const hit = agents.find((a) => a.name === name)
-    || agents.find((a) => (a.name || "").toLowerCase() === name.toLowerCase());
-  return hit ? { paneId: hit.paneId, status: hit.agentStatus, id: hit.id } : null;
 }
 
 /** Tell a recipient it has mail. Best-effort AND ONLY EVER BEST-EFFORT.
