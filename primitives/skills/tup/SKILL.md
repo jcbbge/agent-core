@@ -66,15 +66,20 @@ what."
 ## WHERE — registry and dependency atlas
 
 ```
-~/tup/                     the product: contracts + DOGFOOD.md (criteria; run-record index)
-~/tup-lab/                 the laboratory (v0 implementations)
-  finding-store/           live store, one JSON per object · cli.py (THE single writer)
-  phase-0/events.jsonl     hash-chained event log (append-only, sealed to genesis)
-  phase-0/wake.py          --verify: exit 0 = chain intact; silences enumerated
-  phase-0/staging.py       --write regenerates staging.md (render, NOT truth)
-  phase-0/tests/           suite — run ONLY on an isolated replica
-  bellman.py               exec wrapper → phase-0/supervisor.py (finding-M v0;
-                           holds the runtime events.subscribe)
+~/tup/                     the product: contracts + packages + DOGFOOD.md
+  durable/                 store/ (one JSON per object) · cli.py (THE single
+                           writer) · events.jsonl (hash-chained, sealed to genesis)
+  instruments/wake.py      --verify: exit 0 = chain intact; silences enumerated
+  instruments/staging.py   --write regenerates staging.md (render, NOT truth)
+  socket/bellman.py        wake organ v1, resident — evidence-gated claim ·
+                           clock-drained outbox · one-link-up escalation ·
+                           doorbell terminal (supervisor.py = v0 prior)
+  field/field.py           deposit door: deposit · pending · collect
+  gates/helm.py · mind/    helm key · journal
+  tests/                   7 suites — run ONLY on an isolated replica
+~/tup-lab/                 the laboratory: research + briefs only (code moved
+                           into ~/tup 2026-08-17; bellman.py and
+                           finding-store/cli.py remain as exec shims)
   briefs/                  spawn briefs (profiles only, never models)
 Board: tup/layer4          claims · compares · keys · bearings
 ```
@@ -99,12 +104,15 @@ the system earns trust by being incapable of silence.
 
 **Operate (from outside, always):**
 ```bash
-python3 ~/tup-lab/finding-store/cli.py list|get <id>
-python3 ~/tup-lab/finding-store/cli.py mint --id <id> --json <FILE PATH>   # not inline JSON
-python3 ~/tup-lab/finding-store/cli.py promote <id> --route "<dest>"
-python3 ~/tup-lab/finding-store/cli.py dismiss <id> --reason "<why>"       # reason required
-python3 ~/tup-lab/phase-0/staging.py --write     # refresh render (default only prints)
-python3 ~/tup-lab/phase-0/wake.py --verify       # exit 0 = chain intact
+python3 ~/tup/durable/cli.py list|get <id>
+python3 ~/tup/durable/cli.py mint --id <id> --json <FILE PATH>   # not inline JSON
+python3 ~/tup/durable/cli.py promote <id> --route "<dest>"
+python3 ~/tup/durable/cli.py dismiss <id> --reason "<why>"       # reason required
+python3 ~/tup/instruments/staging.py --write     # refresh render (default only prints)
+python3 ~/tup/instruments/wake.py --verify       # exit 0 = chain intact
+python3 ~/tup/socket/bellman.py                  # resident wake organ (herdr seam)
+python3 ~/tup/field/field.py deposit --from <me> --to <parent> --kind done --body "<what landed>"
+python3 ~/tup/field/field.py pending --to <me>   # my inbox
 ```
 Never hand-edit a render or the store files; never edit `events.jsonl`
 (append-only, hash-chained). A finding's idea is durable; its grounding has
