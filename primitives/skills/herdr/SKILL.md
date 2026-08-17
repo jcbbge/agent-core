@@ -201,10 +201,10 @@ Two delivery traps (verified 2026-08-15):
   status-flip check above catches it; the fix is one more `send-keys Enter`.
   Bake the retry into every delivery path, not just the happy one.
 - **Status flips wake no one.** `done` is visible but nothing subscribes —
-  an idle parent will sit forever beside finished children. Until a resident
-  supervisor holds `events.subscribe`, run `~/tup-lab/bellman.py` (wake idle
-  parents on child done, verify submit, 10-min debounce). Do not re-implement
-  that loop in herdr-spine.
+  an idle parent will sit forever beside finished children. The resident
+  supervisor is tup's bellman: run `python3 ~/tup/socket/bellman.py` (wake
+  organ v1 — evidence-gated claim, clock-drained outbox, one-link-up
+  escalation, verified submit). Do not re-implement that loop in herdr-spine.
 
 **Prefer the wrapper:** `~/bin/spine-spawn <orch|worker|fanout|prompt>`
 (= `python3 ~/herdr-spine/bin/spine-spawn` — **never `bun`**, bun parses the
@@ -319,12 +319,14 @@ is contextual (role + human work name + outcome), never raw ids;
 coalesce/drop anything within 60s of the prior notification from the same
 source.
 
-Board topics are project-namespaced (`<project-slug>/<topic>`, e.g.
+Tower topics are project-namespaced (`<project-slug>/<topic>`, e.g.
 `future/c004`); bare topics (`statem`, `comms`, `fleet`) are machine-plane
-infra only. Post from your real repo cwd — `board_post` refuses
-scratch/temp. File-append fallback when no MCP is present:
-`{"id","ts","cwd","type":"finding","from":"<you>","topic":"<t>","body":"..."}`
-into `~/.tower/board.jsonl`.
+infra only. Post with `tower send --from <you> --topic <t> --kind finding
+"<body>"` — one CLI on PATH, every harness, no MCP and no file-append
+fallback to reach for. The old MCP board tool's cwd-hygiene refusal
+(rejecting scratch/temp) is not in the rebuilt bus — `primitives/tower/tower.mjs` has
+no cwd check, so this is DOCTRINE only now, not enforced: post from your
+real repo cwd by convention.
 
 ## Run an ordinary command in another pane
 
