@@ -199,6 +199,32 @@ declaring non-delivery for a message that was demonstrably delivered. The only
 fallback (`:380`) handles a buffered "Pasted text" paste, not an
 already-working target.
 
+### Sharpened by ground truth: the verifier is not pessimistic, it is *uncorrelated*
+
+CORD's initial read was that `verified_prompt()` under-reports success — a
+pessimistic oracle. `ORCH deposit-courier` measured all four cases instead of
+accepting that, delivering one amendment to four working panes and then
+checking each transcript with `herdr pane read --source recent --lines 600`:
+
+| Pane | `spine-spawn prompt` verdict | Ground truth |
+|---|---|---|
+| `w3R:p1R` | FAIL: not verified (status working) | **DELIVERED** |
+| `w3R:p1S` | FAIL: not verified (status working) | **DELIVERED** |
+| `w3R:p1T` | FAIL: not verified (status working) | **NOT delivered** |
+| `w3R:p1V` | FAIL: not verified (status working) | **NOT delivered** |
+
+**Four identical verdicts, two opposite realities.** In the already-working
+case the verifier's output is not a conservative signal that could be safely
+over-trusted — **it is no signal at all.**
+
+This raises the severity rather than changing the ruling. A courier requeueing
+on this verdict would **duplicate the two delivered messages forever while
+never learning the other two needed resending** — amplification and loss
+simultaneously, produced by one bad oracle. Both halves of the ruling below are
+therefore load-bearing and neither is optional: the **defer** prevents the
+amplification, and the **`deposit_id` transcript echo** is the only thing that
+makes an already-working target verifiable at all.
+
 ### Why this is fatal to the design as written, if left alone
 
 The courier writes `delivered` only on a verified submit and **requeues on
@@ -293,6 +319,67 @@ a speedometer, a pulse — emergent failure recovery is fiction without it."*
 This unit builds the delivery-scoped pulse; it does not build the general one.
 
 ---
+
+## 5a. CORD RULING — §5's two-invocation shape is superseded (2026-08-17)
+
+§5 above stands as written, per house law that a correction stands beside what
+it corrected. **It is wrong on one point, and the error is CORD's.** §5
+specified "event-driven drain at zero latency" without pricing it against the
+dispatcher's budget. `ORCH deposit-courier` measured it instead of assuming,
+and the measurement holds:
+
+- `bun` startup on this machine: 0.93s / 0.94s / 0.87s over three runs.
+- `dispatcher.md:83-85` — the whole dispatcher invocation shares a ~10s herdr
+  plugin-command timeout, on top of each handler's 5s.
+- `90-courier` runs 7th of 7, behind six other handlers.
+- `verified_prompt()` default timeout is 4000ms (`_spine_common.py:363`).
+
+Arithmetic: the canonical queue is JS (§3, one implementation never two), so a
+python `90-courier` needs ≥2 bun round-trips per pass (~1.8s) plus a 4s
+verified prompt ≈ 5.8s in one handler — over the 5s per-handler budget on its
+own, and most of the shared ~10s budget while running last. **A drain cannot
+live inside a handler.** The brief was defective; the worker caught it. That is
+the system working.
+
+### The ruling: option B — nudge plus a resident courier
+
+The launchd agent runs **one persistent process** that owns the lock, ticks
+internally, and watches a nudge file. `90-courier` becomes a ~5ms one-shot that
+touches the nudge file and exits 0.
+
+This preserves everything §5 was for — one body of code, one lock, an always-on
+launchd agent, a non-optional liveness floor, near-zero-latency event drain —
+and drops only §5's letter, that the pulse be a 15s re-spawn.
+
+**Option C (pulse-only, no nudge) is rejected on UX.** It puts up to 15s of
+latency on every toast and every wake, including the operator's summons — the
+one plane this entire unit exists to protect. A blocked agent waiting on a
+human is the case where latency is felt most; trading it away to save a
+resident process is the wrong trade.
+
+**Cost, restated honestly:** §5 priced "one new always-on launchd agent." This
+is a **resident** one. Note the direction of the CPU trade — a held process
+that mostly sleeps is *cheaper* than a 0.9s bun spawn every 15s (a ~6%
+continuous duty cycle). The real cost is memory footprint and one more
+long-lived thing on the machine, which is operator-visible. Accepted.
+
+### Conditions on the ruling — a resident courier introduces two new failure modes, and both must be closed
+
+1. **A dead courier must be loud.** The courier writes a heartbeat. `tower
+   stuck` (§4) reports a stale heartbeat as `courier not ticking since <T>` and
+   **exits non-zero**. The launchd agent sets `KeepAlive` so it restarts. A
+   delivery system whose deliverer can die quietly is exactly the silence this
+   unit was sent to eliminate, relocated one level up.
+2. **In-flight state must survive a crash.** The two-shot design could not lose
+   in-flight work; a resident one can. Every `delivering` row is a **lease**:
+   if it sits in `delivering` past a timeout, it returns to `queued`
+   automatically. Without this, a courier crash mid-delivery strands the
+   message permanently — voiding the exact guarantee being sold.
+3. **The internal tick stays ≤15s**, so the liveness floor is the one §5
+   promised and Unit 3's operator-focused test still means what it meant.
+4. **The nudge handler contains no delivery logic** — touch a file, exit 0.
+   This is what keeps the §7 DOOR intact: a 5ms one-shot with no delivery verb
+   in scope cannot grow a private drop policy.
 
 ## 6. Migration
 

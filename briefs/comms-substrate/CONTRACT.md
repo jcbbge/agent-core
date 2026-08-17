@@ -173,6 +173,217 @@ done`, refused loudly with a dead-letter row.
   §Hard invariants ("No truncation") binds: summarising the contents is
   forbidden.
 
+## 6a. AMENDMENT — deferral is not failure (CORD ruling, DESIGN §3a)
+
+**Added 2026-08-17 after CONTRACT was first pinned. This overrides anything
+above that conflicts with it. It is binding and it is not optional.**
+
+CORD found a third live defect: `_spine_common.py:363-398` `verified_prompt()`
+waits `--until working`. If the target is **already working**, there is no
+transition to observe, the wait times out, and it **raises — declaring
+non-delivery for a message that was actually delivered.** Observed live: CORD's
+Task 6 amendment reached this ORCH and was acted on, while `spine-spawn`
+reported `FAIL: prompt NOT verified as submitted`.
+
+**Why this is fatal if left alone.** The courier writes `delivered` only on a
+verified submit and requeues on failure. At-least-once delivery plus a verifier
+that under-reports success equals **unbounded duplicate delivery**, concentrated
+on the busiest panes. This unit would ship message *amplification* in place of
+message *loss* — which is worse, because a lost message is silent while a
+duplicated one costs the receiver a turn every single time.
+
+### The rules
+
+1. **Capability-gated delivery is the DEFAULT.** Deliver on the flip to `idle`
+   or `blocked`. **Never type into a `working` pane.**
+2. **A busy target is a DEFER — never a failure, never a requeue.**
+3. **"Already working" is a distinct queue outcome and must never share a code
+   path with a genuine delivery failure.**
+4. **Evidence of delivery = a status flip OR a transcript echo matched on
+   `deposit_id`.** COMMS-ARCH sanctions both; `verified_prompt` implements only
+   the first. The second is what makes an already-working target verifiable.
+
+### What this changes in the pinned surface
+
+A new terminal-free outcome, **`deferred`**, joins the queue vocabulary:
+
+```
+queued -> delivering -> delivered -> acked
+   ^          |
+   +-- deferred (target busy, or paced)
+```
+
+- **`deferred` MUST NOT increment `attempts`.** This is the whole point. If a
+  busy pane burned an attempt each pass, a healthy addressee under load would
+  march to `MAX_ATTEMPTS` and get its mail **dead-lettered for being busy**.
+  That would be a new silent-loss bug shipped inside the fix for silent loss.
+- `deferred` sets `next_attempt_at` and returns the item to `queued`. Like
+  pacing, **it writes a future time and never a terminal state.**
+- `requeue()` is now **exclusively** for genuine delivery failures — the target
+  was reachable, delivery was attempted, and it demonstrably did not land.
+
+**Added export (CONTRACT §7):**
+
+```js
+export function markDeferred(to, ids, reason)   // no attempts increment; sets next_attempt_at
+```
+
+**Added `stuck` column (CONTRACT §8):** a deferred item reports its deferral
+reason, so `deferred: target busy` is visibly distinct from an item that is
+failing. An operator must never have to guess which one they are looking at.
+
+#### The deferral field — pinned exactly (raised by `agnt-stuck-cli`, 01:06:41Z)
+
+The first pin of §6a named `markDeferred(to, ids, reason)` but never said which
+folded-row field `reason` lands in, so `deposit.mjs` and `cli.mjs` were each
+about to guess. Pinned now, and it is not a guess for anyone:
+
+| Field | Pinned value |
+|---|---|
+| `deferred_reason` | the string passed to `markDeferred`, e.g. `target busy`, `paced` |
+| `state` | stays **`queued`** — a deferral is never its own terminal state |
+| `attempts` | **unchanged** by a deferral |
+| `next_attempt_at` | pushed to the future |
+
+- A deferred item is therefore exactly: `state === 'queued'` **and**
+  `deferred_reason` non-null. That pair is how `stuck` tells "deferred: target
+  busy" apart from a plain queued item, and from one that is failing.
+- **`deferred_reason` MUST be cleared to `null`** on a successful delivery and
+  on a genuine delivery failure (where `last_error` is set instead). A stale
+  deferral reason sitting on a failing row would tell the operator the exact
+  opposite of what is happening.
+- `last_error` and `deferred_reason` are **never** written by the same event.
+  Rule 3 of §6a — the two outcomes must not share a code path — is enforced by
+  that separation at the row level, so it is checkable by reading a row rather
+  than by trusting the code.
+
+`stuck` reads `deferred_reason` only. It does **not** need a fallback chain.
+
+## 6b. TWO MORE PINS — both raised by workers, both my gaps
+
+### The `inboxState` name collision (raised by `agnt-stuck-cli`, 01:10:45Z)
+
+`tower-ledger.mjs` **already exports `inboxState(cwd)`** — board/ledger inbox
+state, used throughout `cli.mjs` today. CONTRACT §7 pinned `deposit.mjs`
+`inboxState(to)` for folded deposit rows: same name, different signature,
+different meaning. Since `lib.mjs` re-exports with `export * from`, the two
+would collide silently at the exact surface everything imports from.
+
+**RULING — the deposit-side function is renamed:**
+
+| Was pinned | Is now pinned |
+|---|---|
+| `inboxState(to)` | **`foldInbox(to)`** |
+
+`foldInbox(to)` returns `Map<deposit_id, foldedRow>`, last-write-wins. The new
+name says what it does — folds the append log by `deposit_id` — and cannot
+collide with the ledger's `inboxState(cwd)`, which is **unchanged and still
+means what it always meant**. Everywhere §7 says `inboxState`, read
+`foldInbox`.
+
+### The unpinned `stuck` threshold (raised by `agnt-stuck-cli-test`, 01:09:32Z)
+
+DESIGN §4 says "exit 0 = nothing owed **past threshold**" and no threshold was
+ever pinned, so a boundary test could not be written without inventing the
+number. Correct catch. Pinned now:
+
+```js
+export const STUCK_THRESHOLD_SECONDS = 300
+```
+
+**`stuck` exits 1 if ANY of these hold; otherwise exit 0:**
+
+1. an item with `state === 'queued'` whose `next_attempt_at` is more than
+   `STUCK_THRESHOLD_SECONDS` in the past;
+2. an item with `attempts >= MAX_ATTEMPTS` that is not yet terminal;
+3. a `delivering` row past its lease (a crashed mid-delivery, CORD condition 2);
+4. a **stranded** inbox — addressee has no live engine and no successor;
+5. a **stale courier heartbeat** (CORD condition 1 — a dead courier must be
+   loud; this is the condition that makes it loud).
+
+300s is chosen against the machine's own timings: the pace window is 60s and the
+courier's tick is ≤15s, so a healthy item is delivered well inside ~75s. An item
+still owed five minutes past its due time is not slow, it is stuck.
+
+Deferred items are **not** stuck merely for being deferred — they are stuck only
+by rule 1, on the same overdue clock as anything else. A busy pane must not
+raise an alarm just for being busy.
+
+## 6c. PINS FORCED BY THE ACCEPTANCE RUN (ORCH verify beat)
+
+First integration run of `deposit.test.mjs` against `deposit.mjs`: **55 pass, 9
+fail.** Two of the failure causes are gaps in this contract, not implementation
+defects. Pinned here so the fix is unambiguous.
+
+### How far a deferral pushes `next_attempt_at`
+
+§6a said a deferral "pushes `next_attempt_at` to the future" and **never said by
+how much**, so `markDeferred` could satisfy the letter while leaving the item
+immediately due — which is what happened, and it is what four §6a tests and both
+(e) tests caught.
+
+```js
+export const DEFER_RETRY_SECONDS = 15
+export function markDeferred(to, ids, reason, nextAttemptAt)  // 4th arg optional
+```
+
+- Omitting `nextAttemptAt` defaults to `now + DEFER_RETRY_SECONDS`. The 3-arg
+  call pinned in §6a stays valid.
+- **15s = one courier tick** (CORD condition 3). A busy pane usually frees up in
+  seconds; pushing a busy-target defer by the full 60s pace window would make an
+  idle pane wait a minute for mail it could have taken immediately — a UX
+  regression on the operator's summons plane, caused by the fix.
+- Pace deferrals pass the pace-derived time explicitly, from `paceGate`.
+
+> **Binding, and the thing the tests actually check:** after **any** deferral or
+> requeue, the item **MUST NOT be returned by `dueItems(to, now)`** at the same
+> `now`. "Writes a future time" means a time that is actually in the future.
+
+### The nQ budget, which was never defined
+
+§4 pins the refusal `nq-exhausted` but this contract never said what the budget
+is or how `deposit()` could possibly know a question exceeded it. The implementer
+had no way to satisfy it and the refusal never fired.
+
+```js
+export const NQ_BUDGET = 3
+```
+
+- `deposit()` refuses `kind: "question"` with exactly `nq-exhausted` when the
+  caller passes a numeric `nq` **greater than** `NQ_BUDGET`.
+- If `nq` is absent, **no refusal** — the door does not invent a budget it was
+  not told about. Guessing here would silently eat legitimate questions, which
+  is the failure mode this unit exists to remove.
+
+### Two genuine implementation defects (contract was already clear)
+
+1. **`ttl-expired` is never written.** `expireTtl()` must dead-letter the
+   expired item with exactly `ttl-expired` (§6). The run produced zero rows
+   where one was required.
+2. **A row carries `last_error` and `deferred_reason` simultaneously.** §6a
+   forbids this explicitly: they are never written by the same event, and
+   `deferred_reason` clears on a genuine failure. That row-level separation is
+   the *only* mechanical check that deferral and failure do not share a code
+   path — if both fields coexist, rule 3 of §6a is unenforced.
+
+### A third finding, recorded (raised by `agnt-stuck-cli-test`, 01:09:32Z)
+
+Today an unknown verb prints the usage string and **exits 0** — verified:
+`bun cli.mjs stuck` and `bun cli.mjs deposit …` both exited 0 before either verb
+existed. **Any acceptance test asserting only "exit 0" or "stdout is non-empty"
+therefore passes vacuously against a CLI that does not implement the verb at
+all.** Every test in this unit must assert on *specific* output or a *specific*
+non-zero code. This is exactly the class of false-green the unit exists to
+eliminate, found in the test harness itself.
+
+### The delivered prompt must carry its `deposit_id`s
+
+So the transcript echo in rule 4 is matchable, the coalesced prompt the courier
+writes **names the `deposit_id` of every item it carries**. This is what lets
+delivery be confirmed against an already-working pane without a status flip.
+It does not license summarising content — COMMS-ARCH "No truncation" still
+binds. The ids are carried **in addition to** the full bodies, never instead.
+
 ## 7. Exported surface of `deposit.mjs` — pinned signatures
 
 ```js

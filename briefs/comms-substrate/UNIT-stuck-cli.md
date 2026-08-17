@@ -88,32 +88,47 @@ Board topic: `agent-core/comms-substrate`.
 
 ---
 
-# YOUR TASK — W3, the CLI verbs
+# THIS BRIEF ADDRESSES TWO SEATS. FIND YOURS FIRST.
 
-Registration name: `agnt-stuck-cli`. Human name: `AGNT stuck-cli`.
+`spine-spawn make` forked this unit into an **implementer** and a
+**test-maker**, in separate git worktrees with **no cross-sight**. You are one
+of them. Your herdr registration name tells you which:
 
-## Your file partition — this file and no other
+| Registration name | You are | You write |
+|---|---|---|
+| `agnt-stuck-cli` | the **IMPLEMENTER** | `primitives/mcps/tower/cli.mjs` |
+| `agnt-stuck-cli-test` | the **TEST-MAKER** | `primitives/mcps/tower/stuck.test.mjs` |
+
+Find your name: `echo $HERDR_PANE_ID` then `herdr pane list`, or read the
+`name=` token on your own pane. **If you cannot determine which seat you are,
+post a `need-help` finding and stop — do not guess.**
+
+**The law of this fork:** the test agent is NOT the implementation agent;
+criteria come BEFORE code. **Do not read the other seat's work, and do not do
+the other seat's job.**
+
+## Shared subject matter (both seats)
+
+Two new CLI verbs on `cli.mjs`, per CONTRACT §8 and DESIGN §4.
+
+A parallel unit is building `deposit.mjs` in a worktree you cannot see. **Code
+and test against the pinned surface in CONTRACT §7** — it may not exist on disk
+yet. That is expected.
+
+**The queue logic is NOT yours.** `cli.mjs` parses, calls `deposit.mjs`,
+formats, and sets an exit code. If a function you need is missing from CONTRACT
+§7, post a finding and ask — **do not add a private copy.** Two implementations
+of this queue is the exact failure this whole unit exists to remove.
+
+---
+
+## IF YOU ARE THE IMPLEMENTER (`agnt-stuck-cli`)
 
 **Touch ONLY:** `primitives/mcps/tower/cli.mjs`.
 
-- `~/agent-core/primitives/mcps/tower/cli.mjs` — **yours alone.**
-
-**You do NOT write tests.** `AGNT deposit-criteria` is authoring `stuck.test.mjs`
-from the same CONTRACT, in parallel, right now. Do not create it.
-
-**You do NOT touch `deposit.mjs`** — `AGNT deposit-core` owns it and is building
-it in parallel. **Import from it; do not implement queue logic yourself.** If a
-function you need is missing from CONTRACT §7's pinned surface, post a finding
-and ask — do not add a private copy. Two implementations of this queue is the
-exact failure this unit exists to remove.
-
-Your code may land before `deposit.mjs` exists. That is fine — code against the
-pinned surface in CONTRACT §7.
-
-## Build
-
 Add two verbs to the `if (cmd === ...)` chain (starts at `cli.mjs:111`) and
-update the usage string (`cli.mjs:316`).
+update the usage string (`cli.mjs:316`). Follow the existing `post` (`:153`) and
+`emit` (`:188`) verbs for flag-parsing and usage-string style.
 
 ### 1. `deposit` (CONTRACT §8)
 
@@ -127,44 +142,92 @@ bun ~/.tower/cli.mjs deposit <to> <kind> "<body>" --from <name>
 Prints the receipt as one JSON line. **Exit 0 accepted, exit 1 refused.** A
 refusal is not an error to hide — it is the product. Print the reason.
 
-This verb is the seam the python handler binding shells to, so its argument
-parsing and exit codes are load-bearing. Follow the existing `post` and `emit`
-verbs (`cli.mjs:153`, `:188`) for flag-parsing style and usage-string form.
+This is the seam the python handler binding shells to, so argument parsing and
+exit codes are load-bearing.
 
-### 2. `stuck` (DESIGN §4, CONTRACT §8)
+### 2. `stuck` (DESIGN §4)
 
 One line per non-empty inbox: **addressee** (round-tripped through
-`unslugAddressee` back to the real URI, not the slug), **engine liveness**,
-**queued count**, **oldest age**, **attempts**, **next attempt**, **last
-error**. Then the dead-letter tail with reasons.
+`unslugAddressee` back to the real URI, never the raw slug), **engine
+liveness**, **queued count**, **oldest age**, **attempts**, **next attempt**,
+**last error**. Then the dead-letter tail with reasons.
 
 - **Exit 0** nothing owed past threshold; **exit 1** something is stuck. The
-  non-zero exit is what makes it composable with `latch` and gateable by a hook,
-  rather than something a human has to read.
-- **Incapable of silence:** on an empty queue it prints `nothing owed`. It must
-  **never** print nothing. A command that prints nothing is indistinguishable
-  from a command that is broken — which is the failure mode this whole unit is
+  non-zero exit is what makes it composable with `latch` and gateable by a hook
+  rather than something a human must read.
+- **Incapable of silence:** on an empty queue print `nothing owed`. It must
+  **never** print nothing — a command that prints nothing is indistinguishable
+  from a command that is broken, which is the failure mode this entire unit is
   about.
 - An inbox whose addressee has no live engine and no successor prints as
-  `stranded`. Engine liveness for a `pane:` addressee is resolved against the
-  live pane list; a pane id that is gone is dead, not merely quiet.
+  `stranded`. Liveness for a `pane:` addressee resolves against the live pane
+  list; a pane id that is gone is dead, not merely quiet.
 
-## done when
+### done when
 
 - Both verbs work end to end against a real `TOWER_HOME` temp dir with real
-  files, driven from the shell, and you have pasted the real output.
-- `stuck` exits 0/1 correctly — demonstrate **both** exit codes from the shell.
-- `stuck` prints `nothing owed` on an empty queue — demonstrate it.
-- `deposit` exits 0 on accept and 1 on refusal — demonstrate **both**, including
-  a `no-completion-evidence: idle is not done` refusal.
-- The usage string at `cli.mjs:316` lists both new verbs.
-- No queue logic is implemented in `cli.mjs`. It parses, calls `deposit.mjs`,
-  formats, and sets an exit code.
+  files, driven from the shell, with the real output pasted.
+- `stuck` demonstrates **both** exit codes from the shell.
+- `stuck` prints `nothing owed` on an empty queue — demonstrated.
+- `deposit` demonstrates exit 0 on accept and exit 1 on refusal, including a
+  `no-completion-evidence: idle is not done` refusal.
+- The usage string lists both new verbs.
+- **No queue logic lives in `cli.mjs`.**
 
-## Report back with (post to the board topic, then write `.done`)
+### Report back with
 
-- The literal shell transcript of each demonstration above, including the
-  `echo $?` exit codes.
+- The literal shell transcript of each demonstration, including `echo $?` codes.
 - The exact usage string as shipped.
-- Any pinned name in CONTRACT §7 that was missing or wrong for your needs, and
-  the finding you posted about it.
+- Any pinned name in CONTRACT §7 that was missing or wrong, and the finding you
+  posted.
+
+---
+
+## IF YOU ARE THE TEST-MAKER (`agnt-stuck-cli-test`)
+
+**Touch ONLY:** `primitives/mcps/tower/stuck.test.mjs`.
+
+You are the **acceptance authority** for the CLI verbs. Write from `DESIGN.md`
+§4 and `CONTRACT.md` §8 **only**. The implementation is in a worktree you cannot
+see. **A test that passes because you weakened it to match code you peeked at is
+worse than no test.** Failing right now is expected and correct.
+
+### Prove
+
+- One line per non-empty inbox carrying **all seven** fields: addressee, engine
+  liveness, queued count, oldest age, attempts, next attempt, last error.
+- The addressee **round-trips** through the slug back to its original URI — a
+  test that would fail if someone swapped in a lossy or hashed slug.
+- `nothing owed` is printed on an empty queue. **Assert it is incapable of
+  silence** — empty stdout is a failure, not a pass.
+- **Exit 0** when nothing is stuck, **exit 1** when something is. Assert both,
+  by exit code, not by output text.
+- An orphaned inbox (no live engine, no successor) reports as `stranded`.
+- `deposit` exits 0 on accept and 1 on refusal, and prints a parseable receipt
+  JSON line carrying `deposit_id`, `accepted`, `reason`.
+- A `completion` deposit whose only evidence is `status=idle` is refused through
+  the CLI with exit 1 and reason `no-completion-evidence: idle is not done`.
+
+### Rules for your tests
+
+- **NO MOCKS.** Drive the real CLI as a subprocess against a real `TOWER_HOME`
+  temp dir; assert real exit codes and real stdout. Never touch live `~/.tower`.
+- Read `cli.test.mjs` first and match its style and runner. **Do not invent a
+  new test runner.**
+- Deterministic. No sleeps as synchronisation.
+
+### done when
+
+- `stuck.test.mjs` exists, runs under the existing runner, and is honest about
+  the current state of the tree.
+- Every item above has a test that would actually catch its violation, and you
+  can name the mutation each detects.
+- No test inspects the implementer's work to decide what to assert.
+
+### Report back with
+
+- Test names mapped to the items above.
+- The exact mutation the `nothing owed` and exit-code tests detect.
+- The literal pass/fail output of your run, whatever it is. Report failures
+  faithfully.
+- Any criterion untestable as written, with a board finding.
