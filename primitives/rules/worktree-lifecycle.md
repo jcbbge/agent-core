@@ -83,22 +83,42 @@ Workaround: if a worktree agent must verify a gate command that depends on insta
 
 Reference: `~/agent-core/primitives/skills/brief/SKILL.md:192-196`.
 
-## 7. Enforcer: DOOR (cursor path, sparse-at-spawn) + DOCTRINE (spine auto-invocation gap)
+## 7. Enforcer: DOOR, all three legs
 
-**Status: mixed, not uniform DOCTRINE.** Teardown on the cursor path and sparse-at-spawn on both spawners are DOOR; automatic invocation of the spine-side reap remains DOCTRINE.
+**Status: DOOR.** Teardown on the cursor path, sparse-at-spawn on both spawners, and spine-side reap are each mechanically enforced. The DOCTRINE gap recorded here on 2026-08-16 is closed; see §7.1.
 
 **Cursor path — DOOR.** `~/cursor-shim/cursor-finish:460` traps `cleanup_and_preserve_rc EXIT` on every halt, die, or crash: it saves the incoming exit status before cleanup and re-exits with it, so cleanup can never mask a failing run. Cleanup is preserve-or-keep — parks detached HEADs on a branch, commits dirty work, re-checks reachability from a ref, removes only if safe; when a pre-commit hook refuses it, cleanup keeps the directory, skips `branch -D`, names the path, and returns non-zero. `cursor-spine` carries the same EXIT traps at :721 and :766.
 
 **Sparse-at-spawn — DOOR, both spawners.** `spine-spawn` narrows a coder worktree via explicit `--sparse` or by parsing the brief's `Touch ONLY` partition; `cursor-spine sparse-apply` narrows a cursor-agent worktree post-creation. Absent a partition, both degrade to a full checkout plus a WARN naming the cost — never a silent narrowing.
 
-**Spine-side auto-invocation — DOCTRINE, the honest gap.** `spine-spawn reap <path>` is correct and registered (visible in `spine-spawn --help`, preserve-or-keep, fails loudly and non-zero while a directory still stands), but nothing invokes it automatically. This is structural, not laziness: `cursor-finish` owns a unit's whole lifetime so an EXIT trap belongs there, whereas `spine-spawn` exits immediately while the pane it spawned lives on — an EXIT trap there would delete the worktree out from under a running agent. Some other tier must own the reap. Until a rule or supervisor forces it, spine-side teardown is DOCTRINE, and an orchestrator that forgets to reap still leaks.
+**Sparse mode is non-cone on BOTH spawners.** Cone mode always materializes every top-level file, so a "narrowed" worktree still carries the repo root — not what "only the declared paths" means. Reproduced 2026-08-16: cone narrowed to `primitives/hooks` still checked out `README.md`; non-cone checked out exactly the partition. `cursor-spine` used cone until then, so the same brief yielded different trees depending on which spawner seated the engine. Both now use `sparse-checkout set --no-cone`.
+
+### 7.1 Spine-side reap — DOOR, via reconciliation (closed 2026-08-16)
+
+`spine-spawn reap <path>` is the sanctioned teardown door: preserve-or-keep, non-zero while a directory still stands. Until 2026-08-16 **nothing invoked it**, which is how 85 orphans / 1.06 GB accumulated.
+
+It is now invoked by `~/herdr-spine/bin/handlers/18-worktree-reconcile`, auto-discovered by the dispatcher (basename sort; no manifest edit needed).
+
+**Why a reconciler and not an event handler — the load-bearing part.** herdr emits exactly one event, `pane.agent_status_changed`. There is no pane-closed event, so there is no moment to hang teardown on. And `done` is **not terminal** — panes go `done -> working` routinely — so reaping on `done` would delete a worktree out from under a live agent mid-unit. That is why an EXIT trap works for `cursor-finish` (it owns a unit's whole lifetime) and cannot work for `spine-spawn` (it exits while the pane it spawned lives on).
+
+The resolution is tup's own rule (`~/tup/contracts/thesis.md`): *"Events are hints and drop silently; a snapshot is truth. The wiring reconciles rather than trusts."* The event is only a tick. Truth is the snapshot: worktrees on disk compared against panes that exist. A worktree no live pane sits in is garbage, whatever sequence of events did or did not fire.
+
+Safety properties, each verified live 2026-08-16:
+- Only paths under `~/.spine/worktrees` and `~/.cursor/worktrees` are considered; a main checkout is structurally out of scope, not merely filtered.
+- Reaped only when no live pane reports it as `cwd` or `foreground_cwd`. Verified against the real snapshot: four worktrees belonging to live agents were all classified PROTECTED.
+- `GRACE_SECONDS` (900) protects a just-created worktree whose pane has not yet registered a cwd — the spawn race.
+- An empty pane list aborts the sweep. No snapshot means no truth, and reaping against an empty list would orphan every live worktree at once.
+- Teardown goes through the door, which preserves first. Proven end to end: an aged orphan holding uncommitted work was reaped and the work survived as a commit on its own branch.
+- A refused reap keeps the directory and posts to `herdr-spine/worktree-reconcile` rather than retrying silently.
 
 **Where it resolves, and why not yet (re-stated 2026-08-16).** This residual is unchanged by the harness-homogeneity work of 2026-08-16, and it is deliberately NOT upgraded here. That unit taught `spine-spawn` to route cursor (`--kind cursor` is now a first-class, live-proven path) and it touched nothing in `~/cursor-shim/`, so the tier that owns the reap is exactly who it was this morning. Stated per path, as of today:
 
 - **cursor path — DOOR.** `cursor-finish`'s EXIT trap, unchanged.
-- **pi and claude paths — DOCTRINE.** An orchestrator reaps by discipline; nothing forces it. This is the leak.
+- **pi and claude paths — DOOR since 2026-08-16**, via `18-worktree-reconcile` (§7.1). Previously DOCTRINE.
 
-It resolves at **`PLAN.md` §3 Phase 5** (`~/agent-core/briefs/harness-homogeneity/PLAN.md:213,216-224`), where `cursor-finish`'s teardown is repointed at `spine-spawn reap` instead of its own copy. At that moment `cursor-finish` becomes the tier that owns the reap — the "some other tier" this gap has always been waiting on — and the row can be re-read per path with the cursor side genuinely DOOR through the shared body. Phase 5 has not run; Phases 4-6 are a later unit. **Do not upgrade this row to DOOR on the strength of work that has not happened** — an enforcer label is a claim about what mechanically refuses, and today nothing refuses on the pi/claude path.
+**Correction, same day — the premise was wrong, not the caution.** An earlier revision said this resolved only at `PLAN.md` §3 Phase 5, once `cursor-finish` was repointed at the shared reap, and warned against upgrading the label on the strength of unrun work. The caution was right and is retained as law. Its premise was not: it assumed the reap needed an *owner* — a tier remembering to call it at the right moment — and therefore had to wait for one. Reconciliation needs neither owner nor moment; it compares two snapshots and acts on the difference. Phase 5 is still worth doing to collapse two teardown bodies into one, but it is no longer what closes this leak. The correction stands beside what it corrected.
+
+**The reconciler is harness-agnostic by construction.** It watches worktree roots and pane occupancy, neither of which knows which engine is seated. pi, claude, and cursor are covered by the same sweep — DOOR on all three not because a tier is disciplined, but because nothing has to remember.
 
 ---
 
