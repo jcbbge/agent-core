@@ -37,12 +37,15 @@
  * and the sqlite3 CLI. No ORM. No driver. No install step.
  */
 
-import { existsSync, mkdirSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { mkdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
 const HOME = process.env.TOWER_HOME || join(homedir(), ".tower");
 const DB_PATH = process.env.TOWER_DB || join(HOME, "tower.db");
+const SPINE_SPAWN = process.env.SPINE_SPAWN
+  || join(homedir(), "herdr-spine", "bin", "spine-spawn");
 
 /** Open SQLite from whichever runtime we are in. Bun ships a `node:sqlite`
  *  that imports cleanly but exports nothing, so feature-detect rather than
@@ -214,19 +217,83 @@ export async function log(db, { topic, recipient, limit = 50 } = {}) {
   ).reverse();
 }
 
+// ------------------------------------------------------------- delivery
+
+/** Resolve a durable agent NAME to the pane it currently occupies.
+ *
+ *  This is the one place a pane id is allowed to appear, and it is looked up
+ *  fresh every time rather than stored. A pane is where an agent is right now,
+ *  the way a desk is where a person is sitting — it is not who they are. The
+ *  old bus recorded the desk and mailed the desk.
+ *
+ *  shepherd already maintains this mapping (it reconciles herdr's pane index
+ *  every 60s), so the bus does not track presence itself. */
+export function resolvePane(name) {
+  let out;
+  try {
+    out = execFileSync("shepherd", ["agent", "list", "--all", "--json"],
+      { encoding: "utf8", timeout: 5000 });
+  } catch {
+    return null; // shepherd down: mail still queued, wake simply not possible
+  }
+  let agents;
+  try { agents = JSON.parse(out).agents || []; } catch { return null; }
+  const hit = agents.find((a) => a.name === name)
+    || agents.find((a) => (a.name || "").toLowerCase() === name.toLowerCase());
+  return hit ? { paneId: hit.paneId, status: hit.agentStatus, id: hit.id } : null;
+}
+
+/** Tell a recipient it has mail. Best-effort AND ONLY EVER BEST-EFFORT.
+ *
+ *  The message is already durable before this runs, and the recipient's cursor
+ *  will surface it whether or not this call succeeds. That ordering is the
+ *  whole design: waking is an optimisation on latency, never a step in
+ *  delivery. The old bus inverted this — it decided whether to interrupt and
+ *  then, if it declined, never wrote the message down at all. Pacing bounded
+ *  delivery instead of bounding interruption, and 32.1% of completions died in
+ *  that branch. Here the worst case of a failed wake is that mail waits. */
+export async function wake(db, name) {
+  const pending = await inbox(db, name, 1000);
+  if (!pending.length) return { woke: false, reason: "no unread", unread: 0 };
+  const pane = resolvePane(name);
+  if (!pane) return { woke: false, reason: "no live pane", unread: pending.length };
+  const summary = `[tower] ${pending.length} unread. Read with: tower inbox ${name}` +
+    ` — then: tower ack ${name} <last-id>`;
+  try {
+    execFileSync("python3", [SPINE_SPAWN, "prompt", pane.paneId, summary],
+      { encoding: "utf8", timeout: 30000, stdio: "pipe" });
+    return { woke: true, pane: pane.paneId, unread: pending.length };
+  } catch (e) {
+    return {
+      woke: false, pane: pane.paneId, unread: pending.length,
+      reason: `prompt failed: ${String(e.message).slice(0, 80)}`,
+    };
+  }
+}
+
 // ---------------------------------------------------------------- CLI
 
 const USAGE = `tower — message bus (log + per-consumer cursor)
 
   tower send   --from <who> [--to <agent>] [--topic <t>] [--kind <k>]
-               [--dedup <key>] [--reply-to <id>] <body>
+               [--dedup <key>] [--reply-to <id>] [--wake] <body>
   tower inbox  <consumer> [--limit N] [--json]      unread, oldest first
   tower ack    <consumer> <id>                      advance the cursor
+  tower wake   <agent>                              tell it that it has mail
   tower log    [--topic t] [--to agent] [--limit N] [--json]
   tower stat                                        counts + every cursor
 
 Unread means id > the consumer's cursor. Nothing is ever marked delivered,
-so nothing can be silently dropped. A new consumer starts at 0, not latest.`;
+so nothing can be silently dropped. A new consumer starts at 0, not latest.
+
+wake is a latency optimisation, never a delivery step: the message is durable
+before the wake is attempted, and the recipient's cursor surfaces it either
+way. A wake that fails costs waiting, not mail.`;
+
+// Flags that take no value. Without this list, `--wake <body>` greedily eats
+// the message body as its argument and the send fails for "body required" —
+// which is exactly how it failed the first live end-to-end test.
+const BOOLEAN_FLAGS = new Set(["wake", "json"]);
 
 function parseArgs(argv) {
   const flags = {};
@@ -236,8 +303,9 @@ function parseArgs(argv) {
     if (a.startsWith("--")) {
       const key = a.slice(2);
       const next = argv[i + 1];
-      if (next === undefined || next.startsWith("--")) flags[key] = true;
-      else { flags[key] = next; i++; }
+      if (BOOLEAN_FLAGS.has(key) || next === undefined || next.startsWith("--")) {
+        flags[key] = true;
+      } else { flags[key] = next; i++; }
     } else rest.push(a);
   }
   return { flags, rest };
@@ -267,8 +335,21 @@ async function main() {
       reply_to: flags["reply-to"] ? Number(flags["reply-to"]) : null,
       body,
     });
+    // Wake AFTER the write has returned, never instead of it. A send that
+    // cannot wake its recipient is still a successful send.
+    if (flags.wake && typeof flags.to === "string") {
+      r.wake = await wake(db, flags.to);
+    }
     console.log(JSON.stringify(r));
     return 0;
+  }
+
+  if (cmd === "wake") {
+    const name = rest[0];
+    if (!name) { console.error("wake: agent name required"); return 2; }
+    const r = await wake(db, name);
+    console.log(JSON.stringify(r));
+    return 0; // never non-zero: a failed wake is not a failed delivery
   }
 
   if (cmd === "inbox") {
