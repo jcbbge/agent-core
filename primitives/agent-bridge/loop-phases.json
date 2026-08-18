@@ -1,0 +1,79 @@
+{
+  "domains": {
+    "outer": {
+      "label": "Outer loop (Made Well)",
+      "phases": ["OA", "OB", "OC", "OD"],
+      "phase_names": {
+        "OA": "Orient / Facilitate",
+        "OB": "Ideate",
+        "OC": "Plan",
+        "OD": "Land"
+      }
+    },
+    "inner": {
+      "label": "Inner loop (unit of work)",
+      "phases": ["I1", "I2", "I3", "I4"],
+      "phase_names": {
+        "I1": "Imagine criteria",
+        "I2": "Author tests",
+        "I3": "Implement",
+        "I4": "Verify / Triage"
+      }
+    }
+  },
+  "roles": {
+    "concierge": {
+      "rank": 0,
+      "function": "Facilitate Made Well",
+      "domain": "outer",
+      "default_phase": "OA"
+    },
+    "coordinator": {
+      "rank": 1,
+      "function": "Ideate",
+      "domain": "outer",
+      "default_phase": "OB"
+    },
+    "orchestrator": {
+      "rank": 2,
+      "function": "Plan",
+      "domain": "outer",
+      "default_phase": "OC"
+    },
+    "coder": {
+      "rank": 3,
+      "function": "Implement",
+      "domain": "inner",
+      "default_phase": "I3"
+    },
+    "researcher": {
+      "rank": 4,
+      "function": "Research",
+      "domain": "outer",
+      "default_phase": "OB"
+    },
+    "test-maker": {
+      "rank": 3,
+      "function": "Author tests",
+      "domain": "inner",
+      "default_phase": "I2"
+    },
+    "tester": {
+      "rank": 3,
+      "function": "Run tests",
+      "domain": "inner",
+      "default_phase": "I4"
+    },
+    "arbiter": {
+      "rank": 3,
+      "function": "Triage failure",
+      "domain": "inner",
+      "default_phase": "I4"
+    }
+  },
+  "chain": {
+    "outer": ["OA", "OB", "OC", "OD"],
+    "inner": ["I1", "I2", "I3", "I4"],
+    "note": "Phases are a linked list; insert nodes by index without renumbering downstream ids."
+  }
+}

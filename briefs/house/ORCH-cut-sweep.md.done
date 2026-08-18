@@ -1,0 +1,54 @@
+# ORCH-cut-sweep done 2026-08-18
+
+Workers: agnt-cut-restore (w41:p8), agnt-cut-docs (w41:p9, +bounce), agnt-cut-shim (w41:pA). Reaped. No commit.
+
+## Per-file (this unit)
+
+Created:
+- briefs/house/agnt-cut-restore.md + .criteria.md + .done
+- briefs/house/agnt-cut-docs.md + .criteria.md + .done + agnt-cut-docs-bounce.md
+- briefs/house/agnt-cut-shim.md + .criteria.md + .done
+
+Modified (spawn-door):
+- primitives/HARNESS-PARITY.md — rows 66/84/93: cursor-fleet/cursor-spine retired; live door spine-spawn
+- primitives/profiles/concierge.md — desk card dropped `cursor → cursor-fleet`; house-law row to cursor-fleet.md removed
+- primitives/rules/worktree-lifecycle.md — Cursor path DOOR is spine-spawn reap + 18-worktree-reconcile; sparse/non-cone spine-spawn only; cursor-finish/cursor-spine historical
+- ~/cursor-shim/cursor-fleet — 559→4 line RETIRED stub, execs $HOME/bin/spine-spawn
+- ~/cursor-shim/cursor-finish — 474→5 line RETIRED stub, exit 0
+
+Unchanged by this unit:
+- primitives/AGENTS.md — rg empty; pre-existing concierge dirt only
+- primitives/directives/cursor.md — already spine-spawn; harness stays
+- ~/cursor-shim/docs/qa-verify.sh — still RETIRED 2026-08-17, exit 0, no shim-precedence check
+- .cursor/rules/cursor-fleet.md — still gone (not restored)
+
+Restored (86 archive files via `git checkout -- briefs/CORD-cursor-shim.md briefs/HANDOFF-cursor-switch-2026-08-13.md briefs/cursor-parity briefs/harness-homogeneity`). Spot: CORD-cursor-shim.md, HANDOFF-cursor-switch-2026-08-13.md, cursor-parity/mission.md, harness-homogeneity/PROOF-cursor-spawn.md all present.
+
+## rg tails (Touch ONLY) — no instructional spawn-door remaining
+
+```
+~/cursor-shim/cursor-finish:3:# Use ~/bin/spine-spawn for spawn; former cursor-spine subcommands retired.
+primitives/rules/worktree-lifecycle.md:90: ... (Historical: retired `cursor-finish` / `cursor-spine` ...)
+primitives/rules/worktree-lifecycle.md:94: ... (historical: retired `cursor-spine` used cone until 2026-08-16).
+~/cursor-shim/cursor-fleet:2:# RETIRED — cursor-fleet spawn door (2026-08-18 cut-sweep).
+~/cursor-shim/docs/qa-verify.sh:3:# Former cursor-shim lever QA referenced deleted cursor-spine.
+primitives/HARNESS-PARITY.md:66: | **cursor-shim spawn doors (retired)** | ... live door is `spine-spawn` ...
+```
+
+concierge.md / AGENTS.md / cursor.md: empty.
+
+## Harness preserved
+
+```
+test ! -e ~/cursor-shim/cursor-spine   → 0
+test -f ~/agent-core/primitives/directives/cursor.md   → 0
+rg -n '^harness cursor$' ~/.agent-core/registry   → 48:harness cursor
+```
+
+## Deviations
+
+- Fanout native submit stalled on w2/w3 (5s); both later working without re-prompt. Stamped after.
+- First docs pass failed inspection: worktree-lifecycle.md:90 still cited cursor-finish:460 as live DOOR after shim stub. Bounce rewritten and re-verified.
+- spine-spawn has no `make` subcommand on this install. Criteria authored at Plan via verify-mark.
+- AGENTS.md / cursor.md / most of concierge.md remain pre-existing uncommitted dirt (concierge overreach). This unit did not revert them.
+- Directory checkout of briefs/harness-homogeneity restored the tree (more than the 8 deleted paths in the starting status).

@@ -19,18 +19,16 @@ here contaminates control arms.
 | Tool | Status | Access |
 |---|---|---|
 | Herdr | active — live multiplexer (panes, detection, CLI + socket) | `~/agent-core/primitives/skills/herdr/SKILL.md` — fleet agents invoke when operating panes. The operator does not. |
-| Tup | active — durable deck; `socket/` is the seam to a runtime | `~/agent-core/primitives/skills/tup/SKILL.md` — concierge/CORD invoke for findings, spawn-door law, supervisor, mirror. Wired runtime today = herdr. |
-| Tower | active | MCP `mcp__tower__*` (CC) · `~/.tower/cli.mjs` + `board.jsonl` (everywhere) — see below |
+| Tup | active — durable deck; `socket/` is the seam to a runtime | `~/agent-core/primitives/skills/tup/SKILL.md` — concierge/CORD invoke for findings, spawn-door law, supervisor, mirror, durable comms. Wired runtime today = herdr. |
 | Coraline | active | CLI `coraline` — symbol graph, callers, impact; any repo after `init`+`index`; 33 languages; no MCP |
 | colgrep | active | CLI `colgrep` — semantic grep of the working tree |
 | pickbrain | active | CLI `pickbrain` — semantic search of past agent sessions, not source |
 | Composto | active | CLI `composto` — IR compression; TS/JS/Python/Go/Rust, NOT Swift/Zig |
-| slim | active (2026-08-11) | 6-verb output compactor (`~/.local/bin/slim`; source `~/agent-core/primitives/tools/slim/`, Zig) — compacts ls/ps/wc/df/git status/git log only; truth law: child exit codes propagate, unparseable output passes raw, truncation always marked. CC: PreToolUse `slim-guard.sh` · pi: `slim-rewrite` extension · cursor: preToolUse `slim-guard-cursor.sh` (`~/.cursor/hooks.json`). Pipes/compounds/machine-format flags never rewritten |
+| slim | active (2026-08-11) | 6-verb output compactor (`~/.local/bin/slim`; source `~/agent-core/primitives/tools/slim/`, Zig) — compacts ls/ps/wc/df/git status/git log only; truth law: child exit codes propagate, unparseable output passes raw, truncation always marked. CC: PreToolUse `slim-guard.sh` · pi: `slim-rewrite` extension · harness deltas deploy `slim-guard-cursor.sh` where applicable |
 | latch | active (2026-08-11) | blocking wait/hold primitive (`~/.local/bin/latch`; source `primitives/tools/latch/`, Zig) — wait on pane state/files/board/gates with distinct exit codes; replaces polling loops |
 | vein | active (2026-08-11) | transcript-corpus miner (`~/.local/bin/vein`; source `primitives/tools/vein/`, Zig) — the acceptance instrument for "did agents actually run X" |
 | assay | active (2026-08-11) | memory-propagation instrument (source `primitives/tools/assay/`, Zig) — cohort tool, proposes only; golden set = 5 hand-labeled sessions, decoy-FP 0/25 is the standing honesty metric |
-| cursor-shim | active (2026-08-11, operator-sanctioned reversal of the same-day CLI retirement) | `~/cursor-shim/` — self-contained, rip-out-able bridge running `cursor-agent` tiers inside herdr+Tower topology; spawn via `cursor-fleet` / `cursor-spine` ONLY (spine-spawn still refuses cursor kinds and points there); enforces the Made Well Verify beat (bifurcated test/impl worktrees, arbiter, nQ≤3). Docs: `~/cursor-shim/docs/inner-loop-verify.md`; rules: `~/cursor-shim/rules/cursor-fleet.md`; proof: `docs/qa-verify.sh` (71/71). Delete the dir = integration gone |
-| Bigfile | active | MCP on CC (`mcp__bigfile__*`) and cursor (`bigfile` in `~/.cursor/mcp.json`); CLI/library `~/agent-core/primitives/tools/bigfile/`. Never Read a 3k+ PHP/JS/TS/TSX file. |
+| Bigfile | active | MCP on CC (`mcp__bigfile__*`) and harness MCP where registered; CLI/library `~/agent-core/primitives/tools/bigfile/`. Never Read a 3k+ PHP/JS/TS/TSX file. |
 
 ## Utensils — call them by name
 
@@ -56,30 +54,25 @@ and transcript-dir greps are denied and pointed at the utensil. Bypass:
 | Did agents actually use the pantry | `vein report --last N` |
 | Did wake-memory change behavior | `assay` |
 
-## Tower — the message bus (orchestration convention)
+## Comms — durable fleet mail (tup skill)
 
-Tower is how deliverables, questions, and findings move between the user, the
-coordinator, and every worker. Agents live in the terminal substrate; Tower
-is the bus (how their output reaches the user).
+Deliverables, questions, and findings move between the user, the coordinator,
+and every worker through the **tup skill**
+(`~/agent-core/primitives/skills/tup/SKILL.md`) — deposit, pending, collect,
+status. Pane observation uses the **herdr skill**. Comms law:
+`~/agent-core/primitives/rules/comms-arch.md` and
+`~/agent-core/primitives/rules/control-flow.md` §Communications.
 
-- **Server:** MCP stdio (CC registration `mcp__tower__*` runs
-  `~/.tower/server.mjs`; canonical home + state: `~/.tower/`).
-- **State:** append-only JSONL — `board.jsonl` (claims/findings),
-  `ledger.jsonl` (messages/questions/acks), `odometer.jsonl` (token burn),
-  `deliverables/`, `flight/`. Any harness can append via `bun ~/.tower/cli.mjs`.
-- **Tools:** `send_to_user` · `ask_user` · `reply` · `check_inbox` ·
-  `mark_relayed` · `board_post` · `board_read`.
-- **Verbatim guarantee (COMMS-ARCH routing, 2026-08-10):** only
-  operator-addressed mail blocks turn-end — `alert`s, `deliverable`s carrying
-  `to:"operator"`, and open `question`s. Status flips are board-only
-  (done-fabrication OFF by default); fleet mail flows up the hierarchy and is
-  never relayed verbatim to the user. Full law: `~/.tower/COMMS-ARCH.md`.
-- **Doorbell (hard rule):** anything the USER must see goes to the Tower bus
-  AND a desktop notification (mechanism per the herdr skill:
+- **Fleet mail:** `tup deposit --from <role> --to <parent> --kind
+  report|done|need-help|question --body "<...>"`. Read inbox:
+  `tup pending --to <role>`. Full verbs: tup skill.
+- **Verbatim guarantee:** only operator-addressed mail blocks turn-end — see
+  comms-arch.md plane routing.
+- **Doorbell (hard rule):** anything the USER must see gets a desktop
+  notification (herdr skill:
   `herdr notification show "<title>" --body "<one line>" --sound request`)
   in the same breath. A prompt to a pane isn't delivered until its
   `agent_status` flips to `working`.
-- Full protocol: `~/agent-core/primitives/rules/tower-orchestration.md`.
 
 ## Bigfile — huge-file navigation
 
@@ -105,7 +98,7 @@ Project-specific services are NOT cross-project.
 ## Rules (runtime, per-harness config)
 
 Canonical store: `~/agent-core/primitives/rules/` (debugging-discipline,
-long-running-processes, tower-orchestration, git, worktree-lifecycle, secrets,
+long-running-processes, comms-arch, git, worktree-lifecycle, secrets,
 backend-first-security, work-file-format). The commit convention lives inline
 in this file (Work tracking), not in the rule store. Project rules surface
 per harness (CC: `.claude/rules` + `@`-imports; pi: `~/.pi/agent/rules/`).
@@ -123,12 +116,12 @@ with its enforcer named or its DOCTRINE label explicit.
 `~/.pi/agent/extensions/*.ts`, each `export default function(pi)`, jiti-loaded,
 `/reload` hot-reloads. Installed: `circadian-mind.ts` (memory hooks),
 `herdr-agent-state.ts` + `herdr-task-report.ts` (herdr-managed sidebar
-state), `tower-auto.ts` (ambient Tower posting), `tower-lifecycle.ts`
-(flight-recorder / stop-verdict / deposit-reminder port), `slim-rewrite.ts` +
-`grounding-hook.ts` (shims → `~/agent-core/primitives/hooks/`),
-`write-gate.ts` + `spawn-door.ts` (2026-08-14 enforcement adapters, shims →
-`primitives/hooks/write-gate-pi.ts` / `spawn-door-pi.ts` — see
-`primitives/rules/ENFORCEMENT.md`). Removed 2026-08-02:
+state), `slim-rewrite.ts` + `grounding-hook.ts` (shims →
+`~/agent-core/primitives/hooks/`), `write-gate.ts` + `spawn-door.ts`
+(2026-08-14 enforcement adapters, shims → `primitives/hooks/write-gate-pi.ts`
+/ `spawn-door-pi.ts` — see `primitives/rules/ENFORCEMENT.md`). Leftover
+installed filenames (dead): `tower-auto.ts`, `tower-lifecycle.ts` — retired
+bus; do not call. Removed 2026-08-02:
 `strudel/` (parity with CC — both harnesses reach the stack via utensil
 CLIs + MCP; strudel itself untouched at `~/strudel`). Not installed: subagent,
 smart-search, propose-extension, peer-session — spawn agents via the herdr
@@ -175,10 +168,10 @@ execution on this install is herdr + `spine-spawn`. Registration names
 lowercase-kebab, human name + `$task` stamped at birth, reaped when done
 (done = gone). Spawner pre-verifies every command, path, and endpoint;
 spawn prompts carry Pre-Verified Facts / Tasks with done-when / Report-back.
-Comms law: `~/.tower/COMMS-ARCH.md` — one message, one audience, once, in
-full; status is not mail; fleet-mail board topics are
-`<project-slug>/<topic>`; only `to:"operator"` mail reaches the operator
-plane.
+Comms law: invoke the **tup skill** and
+`~/agent-core/primitives/rules/comms-arch.md` — one message, one audience,
+once, in full; status is not mail; fleet mail via `tup deposit` up the
+hierarchy; only operator-addressed mail reaches the operator plane.
 
 ## Work tracking & commits
 
@@ -245,7 +238,7 @@ Harness deltas live in `primitives/directives/<harness>.md`; deployed entrypoint
 - **Spawn (agnostic core):** Provider/model/harness/platform/vendor-agnostic by design —
   nothing in the canonical core expresses a harness preference. Fleets are
   harness-homogeneous: the root spawn's harness defines every downstream agent (pi
-  root → pi fleet; claude root → claude fleet; cursor root → cursor fleet). Harness
+  root → pi fleet; claude root → claude fleet). Harness
   selection is the operator's per-mission intake decision, cost-driven. Per-harness
   spawn verbs, flags, and paths live in `primitives/directives/<harness>.md`.
 - **Briefs (law):** Briefs name **profiles/roles only** — never provider, model,
@@ -253,10 +246,11 @@ Harness deltas live in `primitives/directives/<harness>.md`; deployed entrypoint
   directives. A brief that hardcodes harness or model is invalid.
 - **Hierarchy:** CORD → ORCH → AGNT/SAGT via the harness's spawn path — see deltas.
   Briefs on disk; CLAIM-first / board findings / `.done`-last.
-- **Comms:** `~/.tower/COMMS-ARCH.md`. Status (idle/done) is NOT mail and is
-  NOT a summons. Fleet mail = Tower board (`<project>/<topic>`). Operator
-  mail only when `to:"operator"`. Collect via board + `.done` + CTRL/TOWR —
-  **never** re-prompt idle panes for status.
+- **Comms:** invoke the **tup skill**; comms law in
+  `~/agent-core/primitives/rules/comms-arch.md`. Status (idle/done) is NOT
+  mail and is NOT a summons. Fleet mail = `tup deposit` up the hierarchy.
+  Operator mail only when addressed to the operator. Collect via
+  `tup pending` + `.done` — **never** re-prompt idle panes for status.
 - **Wake:** Circadian injects memory as pure data (`<mind:greeting>` block
   included when fitness allows); it carries NO behavioral mandate and no
   role-suppression machinery (removed 2026-08-12, circadian a2a01a7 — law 1,

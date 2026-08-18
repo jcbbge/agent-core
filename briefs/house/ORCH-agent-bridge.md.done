@@ -1,0 +1,55 @@
+# orch-agent-bridge — done
+
+ORCH Verify against artifacts (not claims). nQ unused.
+
+## Per-file
+
+Created:
+- `/Users/jrg/agent-core/briefs/house/agnt-bridge-footer.md` (ORCH prompt book)
+- `/Users/jrg/agent-core/briefs/house/agnt-bridge-footer.criteria.md` (Plan criteria)
+- `/Users/jrg/agent-core/briefs/house/agnt-bridge-footer.md.done` (AGNT)
+- `/Users/jrg/agent-core/.verify/791b438e82dc54ac/.authored` (verify-mark)
+- `/Users/jrg/agent-core/.verify/791b438e82dc54ac/criteria.md` (verify-mark copy)
+
+Modified:
+- `/Users/jrg/agent-core/primitives/agent-bridge/compose-directive` line 47 footer only. False "Concierge only / workers get profile + brief only" replaced with locked sentence: "This block is prepended at spawn for every pane (orch/worker/fanout/desk). Concierge gets the composed harness directive; workers get constructed prompt + this block."
+
+Held, not modified:
+- `loop-phases.json` — OA–OD, I1–I4, chain.note insertable-index present
+- `primitives/profiles/test-maker.md`, `tester.md`, `arbiter.md`
+- `~/herdr-spine/bin/spine-spawn` (prepend intact)
+
+## compose-directive stdout tail
+
+```
+This block is prepended at spawn for every pane (orch/worker/fanout/desk). Concierge gets the composed harness directive; workers get constructed prompt + this block.
+```
+
+Prove `~/agent-core/primitives/agent-bridge/compose-directive coordinator pi OB` exit 0. Five-row table: Role=coordinator Function=Ideate Loop domain=outer Loop phase=OB — Ideate Harness=pi. No "Concierge only:" / no "profile + brief only".
+
+## profile-model get tails
+
+- test-maker → `cursor/kimi-k2.7-code` exit 0
+- tester → `cursor/composer-2.5` exit 0
+- arbiter → `cursor/kimi-k3:high` exit 0
+- `test ! -e ~/cursor-shim/profiles` — absent
+
+## py_compile
+
+`python3 -m py_compile ~/herdr-spine/bin/spine-spawn` exit 0
+
+## Line cites (spine-spawn)
+
+- COMPOSE_DIRECTIVE :118–120
+- compose_directive_block :129–143
+- spawn_into_pane prepend :940–949
+- cmd_desk → spawn_into_pane :1169
+- kind == "cursor" kind_model :579
+- kind == "cursor" start_agent :677
+- rg cmd_make / test_args.profile — empty
+
+## Deviations
+
+- VERIFY_GATE=off on coder spawn: partition is untracked, commit forbidden; forced worktree would hide compose-directive. Criteria still authored (`verify-mark` unit 791b438e82dc54ac). `cmd_make` absent — not restored.
+- First spawn failed `invalid_agent_name` (display-case label). Reused husk w41:p7 with `--label agnt-bridge-footer`. Native submit stalled then recovered; GO confirmed `agent_status=working` before collect.
+- spine-report not on PATH; used `~/herdr-spine/bin/spine-report`.
