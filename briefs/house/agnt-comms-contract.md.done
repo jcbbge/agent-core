@@ -1,0 +1,86 @@
+# agnt-comms-contract — done
+
+## Files modified
+
+1. `/Users/jrg/agent-core/primitives/agent-bridge/compose-directive` — added optional `[from-name] [parent-name]` args; Comms contract section (Parent, From, deposit command, two stops, empty-inbox-is-not-stop, report-is-not-done, spine-report path, nQ=0, dead claimant UNKNOWN); updated usage comment.
+
+2. `/Users/jrg/tup/socket/spawn.py` — added `compose_directive_parent()` locked map; extended `compose_directive_block(..., from_name=None)` to pass registration name + parent into subprocess argv; `spawn_into_pane` passes `role` as from-name.
+
+3. `/Users/jrg/agent-core/primitives/AGENTS.md` — `## Fleet spawn + comms` only: Operator→Concierge→CORD→ORCH→AGNT/SAGT hierarchy, CORD parent=concierge, status flip not done, report vs done/Land, bellman on done deposit, two stopping states, empty inbox not stop, "I did not edit product" not stop, CORD gates Land/origin/main, workers no commit unless brief orders, dead claimant UNKNOWN.
+
+4. `/Users/jrg/agent-core/primitives/directives/pi.md` — one line: fleet comms tup CLI via shell; no retired bus.
+
+5. `/Users/jrg/agent-core/primitives/directives/cursor.md` — same.
+
+6. `/Users/jrg/agent-core/primitives/directives/claude-code.md` — same.
+
+7. `/Users/jrg/agent-core/primitives/directives/prime-agent.md` — same.
+
+Config synced: `~/.claude/CLAUDE.md`, `~/.pi/agent/AGENTS.md`, `~/AGENTS.md`, `~/.prime/agent/AGENTS.md` via `agent-core sync directive/core`.
+
+## Prove command stdout
+
+```
+~/agent-core/primitives/agent-bridge/compose-directive coordinator pi OB cord-agent-bridge concierge
+```
+
+```
+## Agent bridge (spawn-time)
+
+| Field | Value |
+|---|---|
+| Role | coordinator |
+| Function | Ideate |
+| Loop domain | outer |
+| Loop phase | OB — Ideate |
+| Harness | pi |
+
+Stack awareness (grab what you need; no hard coupling):
+- **Herdr** — multiplexer: panes, tabs, `herdr agent …`, fleet topology.
+- **Spawn door** — `~/bin/spine-spawn` (orch/worker/fanout/desk): profile prompt + model + verified submit.
+- **Tup** — durable half: `~/tup/durable/cli.py`, `~/tup/field/field.py` deposit, bellman at `~/tup/socket/bellman.py`.
+- **Profiles** — `~/agent-core/primitives/profiles/` + `profile-model get`.
+- **Comms** — `~/agent-core/primitives/rules/comms-arch.md` plane 5 (stigmergic field).
+
+Comms contract:
+- Parent: concierge
+- From: cord-agent-bridge
+- Deposit (tup field only; not the operator pane): `python3 ~/tup/field/field.py deposit --from cord-agent-bridge --to concierge --kind done --body "<evidence>"`
+- Two stopping states only: every done-when met with evidence, or `need-help` naming owner after finishing independent work.
+- Empty inbox is not a stop.
+- "I did not edit product" is not a stop.
+- `report` is not `done`.
+- Herdr sidebar: `~/herdr-spine/bin/spine-report`
+- `nQ` to operator is `0`
+- Dead claimant recovery: UNKNOWN
+
+This block is prepended at spawn for every pane (orch/worker/fanout/desk). Concierge gets the composed harness directive; workers get constructed prompt + this block.
+```
+
+## spawn.py rg cites
+
+```
+118:COMPOSE_DIRECTIVE = os.path.expanduser(
+129:def compose_directive_parent(from_name):
+142:def compose_directive_block(profile_spec, kind, loop_phase=None, from_name=None):
+147:    parent_name = compose_directive_parent(from_name or "")
+151:                COMPOSE_DIRECTIVE, base, kind or "", loop_phase or "",
+152:                from_name or "", parent_name,
+957:    directive = compose_directive_block(
+958:        getattr(args, "profile", None), kind, loop_phase, role,
+```
+
+## agent-core sync directive/core tail
+
+```
+✓ directive/core [claude-code] synced → /Users/jrg/.claude/CLAUDE.md
+✓ directive/core [pi] synced → /Users/jrg/.pi/agent/AGENTS.md
+✓ directive/core [cursor] synced → /Users/jrg/AGENTS.md
+✓ directive/core [prime-agent] synced → /Users/jrg/.prime/agent/AGENTS.md
+```
+
+Exit 0.
+
+## Deviations
+
+None.

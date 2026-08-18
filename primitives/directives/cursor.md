@@ -9,4 +9,6 @@
   `colgrep`, `pickbrain`, `composto`) ·
   fleet spawn = `spine-spawn --kind cursor --profile <role>` · briefs name
   profiles only; models via `profile-model` at spawn — never
-  provider/model/`--kind` in brief text · daily entry = `herdr cursor`
+  provider/model/`--kind` in brief text · fleet comms are tup CLI
+  (`python3 ~/tup/field/field.py`); this harness invokes it via the shell; do
+  not use a retired bus · daily entry = `herdr cursor`

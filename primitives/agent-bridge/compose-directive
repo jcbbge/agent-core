@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 # compose-directive — spawn-time stack awareness (agent bridge).
 # Optional lego: no hard deps on herdr, herdr-spine, or tup — paths are hints.
-# Usage: compose-directive <profile> [harness] [loop_phase]
+# Usage: compose-directive <profile> [harness] [loop_phase] [from-name] [parent-name]
 set -euo pipefail
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
 PROFILE="${1:-concierge}"
 HARNESS="${2:-}"
 PHASE="${3:-}"
+FROM_NAME="${4:-}"
+PARENT_NAME="${5:-}"
 LOOP="$DIR/loop-phases.json"
 
 role="${PROFILE%%:*}"
@@ -43,6 +45,18 @@ Stack awareness (grab what you need; no hard coupling):
 - **Tup** — durable half: \`~/tup/durable/cli.py\`, \`~/tup/field/field.py\` deposit, bellman at \`~/tup/socket/bellman.py\`.
 - **Profiles** — \`~/agent-core/primitives/profiles/\` + \`profile-model get\`.
 - **Comms** — \`~/agent-core/primitives/rules/comms-arch.md\` plane 5 (stigmergic field).
+
+Comms contract:
+- Parent: ${PARENT_NAME:-[UNKNOWN]}
+- From: ${FROM_NAME:-[UNKNOWN]}
+- Deposit (tup field only; not the operator pane): \`python3 ~/tup/field/field.py deposit --from ${FROM_NAME:-[UNKNOWN]} --to ${PARENT_NAME:-[UNKNOWN]} --kind done --body "<evidence>"\`
+- Two stopping states only: every done-when met with evidence, or \`need-help\` naming owner after finishing independent work.
+- Empty inbox is not a stop.
+- "I did not edit product" is not a stop.
+- \`report\` is not \`done\`.
+- Herdr sidebar: \`~/herdr-spine/bin/spine-report\`
+- \`nQ\` to operator is \`0\`
+- Dead claimant recovery: UNKNOWN
 
 This block is prepended at spawn for every pane (orch/worker/fanout/desk). Concierge gets the composed harness directive; workers get constructed prompt + this block.
 EOF

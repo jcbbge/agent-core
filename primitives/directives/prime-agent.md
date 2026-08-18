@@ -6,7 +6,9 @@
   children via `rlm(...)` in the IPython kernel (`rlmMaxDepth`: 3 in settings) ·
   prime-spine package at `~/prime-spine` (`packages` in settings) · peer sessions via
   `/peer` ·   herdr panes: `herdr prime` (desk door; herdr has no `--kind prime-agent` —
-  the wrapper runs `prime-agent` in the pane)
+  the wrapper runs `prime-agent` in the pane) · fleet comms are tup CLI
+  (`python3 ~/tup/field/field.py`); this harness invokes it via the shell; do
+  not use a retired bus
 
 **Updated:** 2026-08-16
 
@@ -115,8 +117,9 @@ Working: chapter mark, now-panel, greeting, compaction adapter, overlay TOC (ctr
 Canonical bodies in `~/agent-core/primitives/hooks/`; Prime loads via
 `~/.prime/agent/extensions/` shims (same pattern as pi): `session-boundary.ts`,
 `spawn-door.ts`, `write-gate.ts`, `slim-rewrite.ts`. Prime-local (not shims):
-`grounding-hook.ts`, `tower-auto.ts`, `tower-lifecycle.ts`, `circadian-mind.ts`,
-`herdr-agent-state.ts`, `herdr-task-report.ts`, `peer-session.ts`.
+`grounding-hook.ts`, `circadian-mind.ts`, `herdr-agent-state.ts`,
+`herdr-task-report.ts`, `peer-session.ts`. Leftover installed filenames
+(dead): `tower-auto.ts`, `tower-lifecycle.ts` — retired bus; do not call.
 
 ## Trust model (Prime Agent)
 

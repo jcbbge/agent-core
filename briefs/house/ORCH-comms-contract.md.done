@@ -1,0 +1,70 @@
+# orch-comms-contract — done
+
+Inspected against artifacts, not the worker claim. agnt-comms-contract w41:pE submitted=true, then done; pane closed; worktree reaped.
+
+## Files touched
+
+1. `/Users/jrg/agent-core/primitives/agent-bridge/compose-directive` — optional from-name/parent-name; Comms contract section.
+2. `/Users/jrg/tup/socket/spawn.py` — `compose_directive_parent` map + argv in `compose_directive_block`; `spawn_into_pane` passes `role`. stamp_lineage and herdr-spine stub untouched.
+3. `/Users/jrg/agent-core/primitives/AGENTS.md` — Fleet spawn + comms only (Q1 Q2 Q3 Q4 Q7 Q8 Q9 Q10 Q11).
+4. `/Users/jrg/agent-core/primitives/directives/pi.md` — one tup-CLI line.
+5. `/Users/jrg/agent-core/primitives/directives/cursor.md` — one tup-CLI line.
+6. `/Users/jrg/agent-core/primitives/directives/claude-code.md` — one tup-CLI line.
+7. `/Users/jrg/agent-core/primitives/directives/prime-agent.md` — one tup-CLI line.
+
+Sync targets (already in sync after worker): `~/.claude/CLAUDE.md`, `~/.pi/agent/AGENTS.md`, `~/AGENTS.md`, `~/.prime/agent/AGENTS.md`.
+
+ORCH-only (not production): `briefs/house/agnt-comms-contract.md`, `briefs/house/agnt-comms-contract.criteria.md`, `briefs/house/agnt-comms-contract.md.done`.
+
+No commit.
+
+## compose-directive stdout sample
+
+Command: `~/agent-core/primitives/agent-bridge/compose-directive coordinator pi OB cord-agent-bridge concierge` (ORCH Verify, exit 0)
+
+```
+Comms contract:
+- Parent: concierge
+- From: cord-agent-bridge
+- Deposit (tup field only; not the operator pane): `python3 ~/tup/field/field.py deposit --from cord-agent-bridge --to concierge --kind done --body "<evidence>"`
+- Two stopping states only: every done-when met with evidence, or `need-help` naming owner after finishing independent work.
+- Empty inbox is not a stop.
+- "I did not edit product" is not a stop.
+- `report` is not `done`.
+- Herdr sidebar: `~/herdr-spine/bin/spine-report`
+- `nQ` to operator is `0`
+- Dead claimant recovery: UNKNOWN
+```
+
+Omitted-args check: `compose-directive coordinator pi OB` prints `Parent: [UNKNOWN]` and `From: [UNKNOWN]`.
+
+## spine-spawn rg cites (`/Users/jrg/tup/socket/spawn.py`)
+
+```
+129:def compose_directive_parent(from_name):
+133:    if from_name.startswith("cord-"): return "concierge"
+135:    if from_name.startswith("orch-"): return "cord-agent-bridge"
+137:    if from_name.startswith("agnt-") or from_name.startswith("sagt-"): return "orch"
+142:def compose_directive_block(..., from_name=None):
+151:                COMPOSE_DIRECTIVE, base, kind or "", loop_phase or "",
+152:                from_name or "", parent_name,
+957:    directive = compose_directive_block(
+958:        getattr(args, "profile", None), kind, loop_phase, role,
+```
+
+`~/herdr-spine/bin/spine-spawn` still 9 lines (stub).
+
+## sync tail
+
+ORCH re-ran `agent-core sync directive/core` — exit 0:
+
+```
+directive/core [claude-code] already in sync
+directive/core [pi] already in sync
+directive/core [cursor] already in sync
+directive/core [prime-agent] already in sync
+```
+
+## Deviations
+
+None on the plate. Mid-Make CORD Land `ff68071` (expected; absorb files ignored). Worker did not commit. cursor-spine: no new hits. Worker pane + `spine/agnt-comms-contract` worktree reaped.

@@ -7,5 +7,7 @@
   `spine-spawn … --profile <name>[:option]` (kind from `~/.config/herdr/desk-harness`
   unless `--kind` is passed) (`~/bin/spine-spawn` =
   `python3 ~/herdr-spine/bin/spine-spawn`; profiles:
-  `~/agent-core/primitives/profiles/` + `profile-model`) · **Never**
-  `bun …/spine-spawn` (bun parses the Python file as JS and dies)
+  `~/agent-core/primitives/profiles/` + `profile-model`) · fleet comms are
+  tup CLI (`python3 ~/tup/field/field.py`); this harness invokes it via the
+  shell; do not use a retired bus · **Never** `bun …/spine-spawn` (bun parses
+  the Python file as JS and dies)

@@ -1,0 +1,35 @@
+CORD-agent-bridge-revamp Land (original mission). 2026-08-18. cord-agent-bridge.
+
+SHAs pushed origin/main:
+- tup 2148968 feat(socket): absorb spine-spawn as the tup spawn door
+- herdr-spine 4d561ff refactor(spawn): spine-spawn is a stub; body lives in tup
+- cursor-shim ef0cce5 refactor(shim): retire cursor-spine and cursor-fleet as spawn doors
+- agent-core ff68071 feat(bridge): agent-bridge files, spawn-door sweep, Verify profiles
+
+Proofs (CORD inspected; not testimony):
+- test ! -e ~/cursor-shim/cursor-spine → ABSENT
+- test -f ~/agent-core/primitives/directives/cursor.md → PRESENT
+- rg '^harness cursor$' ~/.agent-core/registry → line 48
+- profile-model get test-maker → cursor/kimi-k2.7-code
+- profile-model get tester → cursor/composer-2.5
+- profile-model get arbiter → cursor/kimi-k3:high
+- compose-directive coordinator pi OB → table + workers get this block (footer)
+- python3 -m py_compile ~/tup/socket/spawn.py → 0
+- python3 -m py_compile ~/herdr-spine/bin/spine-spawn → 0
+- tup spawn --help → orch/worker/fanout/prompt/desk/verify-*/reap
+- ~/bin/spine-spawn wrapper execs python3 ~/tup/bin/tup spawn
+- replica /tmp/tup-replica-cord-land-2 : Ran 49 tests in 13.582s OK (live ~/tup/tests/ not run)
+- agent-core sync directive/core → 0 (claude-code, pi, cursor, prime-agent)
+
+Files created/modified this Land (every tree, including config):
+- tup: socket/spawn.py, bin/tup, AGENTS.md, README.md, docs/api-surface.md, docs/herdr-integration.md, briefs/herdr-spine-absorption-PLAN.md, briefs/AGNT-absorb-spawn.md(+.done)
+- herdr-spine: bin/spine-spawn (stub), docs/spawn.md, test/spine-cursor-route.sh, handlers/cc-hooks/install retired-bus cuts
+- cursor-shim: cursor-spine deleted, cursor-fleet + cursor-finish stubs, qa-verify retired, shim profiles deleted
+- agent-core: primitives/agent-bridge/{compose-directive,loop-phases.json}, profiles/{test-maker,tester,arbiter}.md, models.json, AGENTS.md, HARNESS-PARITY.md, concierge.md, worktree-lifecycle.md, directives/cursor.md, .cursor/rules/cursor-fleet.md deleted, house ORCH/CORD briefs
+
+Deviations:
+- orch-spine-absorb died EPIPE after Unit A cook; CORD inspected artifacts and Landed. No ORCH-spine-absorb.md.done.
+- cursor-shim Land is cherry-pick of the cut onto origin/main (ef0cce5); doctrine/coder-profile-parity still holds the same cut at b2daf8c.
+- New unit ORCH-comms-contract seated (w41:pD / w41:pE) after original Land push. Terminal done deposit to concierge waits on that unit's inspect. nQ to operator = 0.
+
+Wave 1 .done on disk: ORCH-agent-bridge.md.done, ORCH-cut-sweep.md.done.

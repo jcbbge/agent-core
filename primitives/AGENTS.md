@@ -244,13 +244,22 @@ Harness deltas live in `primitives/directives/<harness>.md`; deployed entrypoint
 - **Briefs (law):** Briefs name **profiles/roles only** — never provider, model,
   or `--kind`. Models via `profile-model` at spawn; spawn verbs only in harness
   directives. A brief that hardcodes harness or model is invalid.
-- **Hierarchy:** CORD → ORCH → AGNT/SAGT via the harness's spawn path — see deltas.
-  Briefs on disk; CLAIM-first / board findings / `.done`-last.
+- **Hierarchy:** Operator → Concierge → CORD → ORCH → AGNT/SAGT. CORD's parent
+  is concierge unless a brief names another. CORD → ORCH → AGNT/SAGT via the
+  harness's spawn path — see deltas. Briefs on disk; CLAIM-first / board
+  findings / `.done`-last. CORD gates Land and `origin/main`; workers do not
+  commit unless the brief orders it.
 - **Comms:** invoke the **tup skill**; comms law in
-  `~/agent-core/primitives/rules/comms-arch.md`. Status (idle/done) is NOT
-  mail and is NOT a summons. Fleet mail = `tup deposit` up the hierarchy.
-  Operator mail only when addressed to the operator. Collect via
+  `~/agent-core/primitives/rules/comms-arch.md`. Status flip is NOT done.
+  `report` is progress; `done` is Land evidence — `report` is not `done`.
+  Fleet mail = `tup deposit` up the hierarchy (tup field only). Bellman wakes
+  the parent on a `done` deposit. Operator mail only when addressed to the
+  operator (`nQ` to operator = 0 for fleet workers). Collect via
   `tup pending` + `.done` — **never** re-prompt idle panes for status.
+- **Stopping states (two only):** every done-when met with evidence, or
+  `need-help` naming owner after finishing independent work. Empty inbox is not
+  a stop. "I did not edit product" is not a stop. Dead claimant recovery is
+  UNKNOWN — do not invent TTL or flags.
 - **Wake:** Circadian injects memory as pure data (`<mind:greeting>` block
   included when fitness allows); it carries NO behavioral mandate and no
   role-suppression machinery (removed 2026-08-12, circadian a2a01a7 — law 1,
