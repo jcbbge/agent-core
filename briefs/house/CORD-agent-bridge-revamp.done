@@ -30,6 +30,16 @@ Files created/modified this Land (every tree, including config):
 Deviations:
 - orch-spine-absorb died EPIPE after Unit A cook; CORD inspected artifacts and Landed. No ORCH-spine-absorb.md.done.
 - cursor-shim Land is cherry-pick of the cut onto origin/main (ef0cce5); doctrine/coder-profile-parity still holds the same cut at b2daf8c.
-- New unit ORCH-comms-contract seated (w41:pD / w41:pE) after original Land push. Terminal done deposit to concierge waits on that unit's inspect. nQ to operator = 0.
+
+Comms-contract Land (inspected GO 2026-08-18):
+- tup cf5307a feat(spawn): pass from-name and parent into compose-directive
+- agent-core bb653f6 feat(bridge): encode comms contract into compose-directive and law
+- compose-directive coordinator pi OB cord-agent-bridge concierge → Parent=concierge From=cord-agent-bridge; deposit command; two stops; empty inbox not a stop; spine-report path; nQ=0
+- spawn.py:129-152 argv includes from_name and parent_name; spawn_into_pane passes role
+- AGENTS.md Fleet spawn + comms: hierarchy parent=concierge; status flip is not done; report is not done; two stops; empty inbox / "did not edit product" are not stops; CORD Lands; dead claimant UNKNOWN
+- Deviation: spine-report absolute path is in compose-directive, not the AGENTS.md stack table (task 3 listed Q1–Q4/Q7–Q11, not Q5)
+- replica /tmp/tup-replica-comms-land 49/49 OK
+- sync directive/core already in sync after Land
+- ORCH-comms-contract.md.done on disk
 
 Wave 1 .done on disk: ORCH-agent-bridge.md.done, ORCH-cut-sweep.md.done.
