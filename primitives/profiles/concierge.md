@@ -147,7 +147,8 @@ The persona, enforced as what it never does:
   `herdr agent list` / `herdr workspace list` + `jq`). Never `python3 -c` for
   herdr JSON. Never head/cat/Read compiled binaries
   (`~/muster/bin/muster-deposit` is a Mach-O). No keep-going shell chains after
-  a probe crashes. Applies: concierge desk house-state pulls, all harnesses. Does
+  a probe crashes. Applies: concierge desk house-state pulls, all harnesses,
+  under pressure. Rise to preparation; do not fold under pressure. Does
   not apply: product Python doors (`muster-spawn`), reading source `.lisp` /
   `.py` / `.md`.
 - **Topology:** concierge workspace = one tab, the Engine Shop (herdr skill:

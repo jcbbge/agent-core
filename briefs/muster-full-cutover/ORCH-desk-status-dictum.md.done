@@ -1,0 +1,48 @@
+# ORCH desk-status-dictum — done
+
+Patched concierge desk-card **Desk status** bullet with the two missing 2026-08-19 clauses. CORD Lands. No commit. Skill untouched; no sync.
+
+## Bullet (full, verified by ORCH Read of live file)
+
+```
+- **Desk status:** prepared, not invented. Use `~/bin/desk-status` (or
+  `herdr agent list` / `herdr workspace list` + `jq`). Never `python3 -c` for
+  herdr JSON. Never head/cat/Read compiled binaries
+  (`~/muster/bin/muster-deposit` is a Mach-O). No keep-going shell chains after
+  a probe crashes. Applies: concierge desk house-state pulls, all harnesses,
+  under pressure. Rise to preparation; do not fold under pressure. Does
+  not apply: product Python doors (`muster-spawn`), reading source `.lisp` /
+  `.py` / `.md`.
+```
+
+## rg (ORCH, live tree)
+
+```
+151:  under pressure. Rise to preparation; do not fold under pressure. Does
+```
+
+Exclusions remain: `~/bin/desk-status` :146; `python3 -c` :147; `jq` :147; Mach-O `muster-deposit` :149; keep-going :149; `muster-spawn` + `.lisp`/`.py`/`.md` :152-153.
+
+`git status -- primitives/skills/concierge/SKILL.md` clean. Skill pointer at SKILL.md:30 unchanged.
+
+## Files touched
+
+- `/Users/jrg/agent-core/primitives/profiles/concierge.md` (AGNT; +1 line wrap of Applies + dictum)
+- `/Users/jrg/agent-core/briefs/muster-full-cutover/AGNT-desk-status-dictum.md` (ORCH brief)
+- `/Users/jrg/agent-core/briefs/muster-full-cutover/AGNT-desk-status-dictum.criteria.md` (ORCH; verify-gate)
+- `/Users/jrg/agent-core/briefs/muster-full-cutover/AGNT-desk-status-dictum.md.done` (AGNT)
+
+Product-only partition: concierge.md. No commit.
+
+## Worker / reap
+
+- Spawn: `muster-spawn worker --label agnt-desk-status-dictum --into w5R:pM --profile coder` after `verify-mark` (unit 7d0ebc240363a5b3). Status flip to `working` observed.
+- Pane `w5R:pM` / tab `w5R:tB` closed. Worktree `/Users/jrg/.spine/worktrees/agent-core/agnt-desk-status-dictum` reaped.
+
+## Deposit
+
+`~/muster/bin/muster-deposit deposit --from orch-desk-status-dictum --to cord-muster-full-cutover --kind done` exit 0. Printed id `dep-9671f726d5d6` (known collision: muster `docs/BUGREPORT.md` BUG-1). Evidence is this file + the live bullet.
+
+## Deviations
+
+none on the product patch. Deposit-id uniqueness is pre-existing BUG-1, not this unit.

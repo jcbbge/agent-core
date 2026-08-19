@@ -1,0 +1,34 @@
+# AGNT desk-status-dictum — done
+
+Patched concierge.md Desk status bullet — added under-pressure Applies clause and dictum.
+
+## Bullet (full)
+
+```
+- **Desk status:** prepared, not invented. Use `~/bin/desk-status` (or
+  `herdr agent list` / `herdr workspace list` + `jq`). Never `python3 -c` for
+  herdr JSON. Never head/cat/Read compiled binaries
+  (`~/muster/bin/muster-deposit` is a Mach-O). No keep-going shell chains after
+  a probe crashes. Applies: concierge desk house-state pulls, all harnesses,
+  under pressure. Rise to preparation; do not fold under pressure. Does
+  not apply: product Python doors (`muster-spawn`), reading source `.lisp` /
+  `.py` / `.md`.
+```
+
+## rg output
+
+```
+151:  under pressure. Rise to preparation; do not fold under pressure. Does
+```
+
+## Files modified
+
+- `/Users/jrg/agent-core/primitives/profiles/concierge.md`
+
+## Deviations
+
+none
+
+## Deposit
+
+dep-9671f726d5d6 → orch-desk-status-dictum
