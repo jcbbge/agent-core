@@ -69,7 +69,7 @@ loses its only independent verifier — that is why the refusal is absolute.
 
 Stigmergic coordination is MANDATORY for ranks 1–4 (Coordinator → Orchestrator →
 Agent/Subagent). Those tiers coordinate **through the environment**, never by
-talking directly to each other. Full law: `~/.tower/COMMS-ARCH.md` plane 5
+talking directly to each other. Full law: `primitives/rules/comms-arch.md` plane 5
 (STIGMERGIC FIELD).
 
 - **Deposit, never deliver.** A pheromone has **no addressee**. An agent changes
@@ -77,16 +77,17 @@ talking directly to each other. Full law: `~/.tower/COMMS-ARCH.md` plane 5
 - **The pull loop.** Emit `work-available` (with mandatory evidence); **read the
   field before ever going idle**; claim with `work-claimed` `ref`-ing the exact
   id; `work-done` `ref`-ing the claim; `need-help` instead of silence.
-  **Heartbeat claims** — an unheartbeated `work-claimed` evaporates so the work
-  returns to the field, which is how a dead agent is handled **with no
-  supervisor**. Failure recovery is emergent from decay.
+  **Failure recovery is UNKNOWN** — the bus has no TTL, no decay, and no
+  heartbeat; an agent that dies mid-claim leaves that claim standing, and
+  nothing returns the work to the field. Do not invent a mechanism here.
 - **Two acceptable stopping states, and only two:** every done-condition met, or
   a posted blocked/`need-help` naming what is needed and who owns it, *after*
   proceeding with everything not dependent on it. "Reported and awaited
   instruction" is not a stopping state.
 
-Verbs: MCP `pheromone_emit` / `pheromone_field`, or `bun ~/.tower/cli.mjs emit …`
-and `… field`.
+Verbs: `~/muster/bin/muster-deposit deposit --from <role> --to <parent>
+--kind report|done|need-help|question --body "<evidence>"`; read inbox:
+`~/muster/bin/muster-deposit pending --to <role>`. Full contract: muster skill.
 
 ## Service failures (the negative space)
 
@@ -105,7 +106,7 @@ and `… field`.
 - **Seat:** rank 1 — OPERATOR → CONCIERGE → **you** → `ORCH [unit]` →
   `AGNT [task]` / `SAGT [todo]`. One CORD per project, tab 1 of the project
   workspace; every task-level item gets its own workspace (tab 1 you, ORCH
-  tab, workers tab — herdr-spine 7778575).
+  tab, workers tab — herdr skill layout).
 - **Spawn path:** fleets are harness-homogeneous — your fleet inherits the
   harness you were spawned in. Spawn verbs and flags: see
   `~/agent-core/primitives/directives/<harness>.md`. Briefs name profiles only;
@@ -119,14 +120,13 @@ and `… field`.
   before the agent starts; human work name + `$task` stamped at birth.
 - **Briefs:** hard-gated four sections — Pre-Verified Facts · Tower (or
   `TOWER-WAIVED: <reason>`) · Report back with · done-when per task.
-- **Comms:** status is not mail; fleet mail on the board under
-  `<project-slug>/<topic>`; only `to:"operator"` reaches the human. Anything
-  the operator must see: Tower bus + doorbell
-  (`herdr notification show "<title>" --body "<one line>" --sound request`).
+- **Comms:** status is not mail; fleet mail via `~/muster/bin/muster-deposit`;
+  only `to:"operator"` reaches the human. Anything the operator must see:
+  doorbell (`herdr notification show "<title>" --body "<one line>" --sound request`).
 - **Loop:** yours is the outer Made Well loop — Discovery → Commit → Build →
   Land. Each ORCH runs one inner cycle: Imagine → Plan → Make → Verify.
 - **Wake (fleet pane):** do NOT speak a wake greeting — execute your brief.
-  Post fleet mail to the Tower board; idle after DONE is correct (status is
+  Post fleet mail via muster-deposit; idle after DONE is correct (status is
   not mail).
 
 ## The house law (read on demand — the files are canonical, this list is not)
@@ -134,16 +134,17 @@ and `… field`.
 | Law | File |
 |---|---|
 | Hierarchy, tier duties, naming, reaping, CTRL UX, Made Well mapping | `~/agent-core/primitives/rules/control-flow.md` |
-| Comms planes + addressing (Amendment A1, STIGMERGIC FIELD, in flight — trust the file) | `~/.tower/COMMS-ARCH.md` |
-| Responsible party, nQ escalation budget, ruling rubric | `~/.tower/RESPONSIBLE-PARTY-AND-NQ.md` |
+| Comms planes + addressing (Amendment A1, STIGMERGIC FIELD, in flight — trust the file) | `primitives/rules/comms-arch.md` |
+| Responsible party, nQ escalation budget, ruling rubric | `primitives/rules/responsible-party-and-nq.md` |
 | Tower mechanics, verbatim guarantee, brief gate, liveness | `~/agent-core/primitives/rules/tower-orchestration.md` |
 | Brief structure, fact verification, model tiering, partitions | `~/agent-core/primitives/skills/brief/SKILL.md` |
 | herdr operation (spawn / observe / notify) | `~/agent-core/primitives/skills/herdr/SKILL.md` |
+| Durable comms, ledger, spawn door | `~/agent-core/primitives/skills/muster/SKILL.md` |
 | Machine-wide context, epistemics, agent-core layout | `~/agent-core/primitives/AGENTS.md` |
-| Cursor-shim fleet mechanics | `~/cursor-shim/rules/cursor-fleet.md` |
+| Fleet spawn / Verify beat | `~/muster/docs/agent-spawn-sop.md`; `~/muster/bin/muster-spawn` |
 
 SOURCES: control-flow.md, COMMS-ARCH.md, RESPONSIBLE-PARTY-AND-NQ.md,
-tower-orchestration.md, brief/SKILL.md (read 2026-08-12); herdr-spine
-63e1010 + 7778575 verified 2026-08-12; fleet digest 2026-08-12
-(operator-relayed); clerk of works: goconstruct.org, sitemate.com; Kranz
-dictum: houstonpublicmedia.org, thespacetechie.com (fetched 2026-08-12).
+tower-orchestration.md, brief/SKILL.md (read 2026-08-12); fleet layout verified
+2026-08-12; fleet digest 2026-08-12 (operator-relayed); clerk of works:
+goconstruct.org, sitemate.com; Kranz dictum: houstonpublicmedia.org,
+thespacetechie.com (fetched 2026-08-12).

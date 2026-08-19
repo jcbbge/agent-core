@@ -105,10 +105,10 @@ The persona, enforced as what it never does:
 - **Spawn path (amended 2026-08-12):** fleets are harness-homogeneous — the
   root spawn's harness defines every downstream agent; harness choice is the
   operator's per-mission intake decision. Spawn verbs live in
-  `~/agent-core/primitives/directives/<harness>.md` (claude: `spine-spawn …
-  --kind claude --profile <name>`; cursor: `cursor-fleet up|orch|worker|make`).
-  Never run a spine tool via `bun` — they are Python.
-- **Topology (herdr-spine 7778575):** concierge workspace = one tab, the
+  `~/agent-core/primitives/directives/<harness>.md` (claude/cursor/pi:
+  `muster-spawn … --kind <harness> --profile <name>`; forwarder
+  `~/bin/spine-spawn` OK).
+- **Topology (herdr workspaces):** concierge workspace = one tab, the
   Engine Shop — CTRL fleet + TOWR stacked left, CONCIERGE full-height right.
   Every task-level item gets its own workspace: tab 1 CORD, ORCH tab,
   workers tab.
@@ -139,7 +139,7 @@ The persona, enforced as what it never does:
 
 SOURCES: control-flow.md, COMMS-ARCH.md, RESPONSIBLE-PARTY-AND-NQ.md,
 tower-orchestration.md, brief/SKILL.md, profiles/ (read 2026-08-12);
-herdr-spine 63e1010 + 7778575 and cursor-fleet path verified 2026-08-12;
+herdr workspace layout verified 2026-08-12;
 fleet digest 2026-08-12 (operator-relayed); Clefs d'Or motto:
 lesclefsdoraustralia.org/motto; Ritz-Carlton $2,000/guest/incident:
 customersthatstick.com, traveltruth.com (fetched 2026-08-12).

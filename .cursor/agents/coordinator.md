@@ -88,12 +88,11 @@ loses its only independent verifier — that is why the refusal is absolute.
 - **Seat:** rank 1 — OPERATOR → CONCIERGE → **you** → `ORCH [unit]` →
   `AGNT [task]` / `SAGT [todo]`. One CORD per project, tab 1 of the project
   workspace; every task-level item gets its own workspace (tab 1 you, ORCH
-  tab, workers tab — herdr-spine 7778575).
+  tab, workers tab).
 - **Spawn path (amended 2026-08-12):** fleets are harness-homogeneous — your
   fleet inherits the harness you were spawned in. Spawn verbs live in
-  `~/agent-core/primitives/directives/<harness>.md` (claude: `spine-spawn …
-  --kind claude --profile <name>`; cursor: `cursor-fleet up|orch|worker|make`).
-  Never run a spine tool via `bun` — they are Python.
+  `~/agent-core/primitives/directives/<harness>.md` (`muster-spawn …
+  --kind <harness> --profile <name>`; forwarder `~/bin/spine-spawn` OK).
 - **Naming:** pane `CORD [project]`, registration `cord-<project>`; rename
   before the agent starts; human work name + `$task` stamped at birth.
 - **Briefs:** hard-gated four sections — Pre-Verified Facts · Tower (or
@@ -122,7 +121,7 @@ loses its only independent verifier — that is why the refusal is absolute.
 | Cursor-shim fleet mechanics | `~/cursor-shim/rules/cursor-fleet.md` |
 
 SOURCES: control-flow.md, COMMS-ARCH.md, RESPONSIBLE-PARTY-AND-NQ.md,
-tower-orchestration.md, brief/SKILL.md (read 2026-08-12); herdr-spine
-63e1010 + 7778575 verified 2026-08-12; fleet digest 2026-08-12
+tower-orchestration.md, brief/SKILL.md (read 2026-08-12); herdr workspace
+layout verified 2026-08-12; fleet digest 2026-08-12
 (operator-relayed); clerk of works: goconstruct.org, sitemate.com; Kranz
 dictum: houstonpublicmedia.org, thespacetechie.com (fetched 2026-08-12).

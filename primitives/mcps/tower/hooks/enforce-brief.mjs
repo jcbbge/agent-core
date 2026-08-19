@@ -1,14 +1,15 @@
 #!/usr/bin/env bun
 // PreToolUse gate on agent spawns — the mechanical enforcement of the
 // delegation protocol. Installed 2026-06-11 after a session where all 13
-// hand-written briefs skipped the Tower section the /brief template requires:
+// hand-written briefs skipped the comms section the /brief template requires:
 // prose rules lose to task pressure; hooks do not.
 //
 // Blocks (exit 2) any spawn whose prompt lacks the required brief sections.
-// Read-only helper agents are exempt. To consciously waive Tower wiring for a
-// single-turn report-back agent, the brief must say TOWER-WAIVED with a reason
-// — the waiver is the habit-stack: you cannot skip it silently, you can only
-// skip it explicitly.
+// Read-only helper agents are exempt. To consciously waive tup-field wiring
+// for a single-turn report-back agent, the brief must say TUP-WAIVED with a
+// reason — the waiver is the habit-stack: you cannot skip it silently, you
+// can only skip it explicitly. (Filename path under primitives/mcps/tower/
+// is leftover installed provenance — dead; do not call that bus.)
 //
 // COVERAGE (matcher in ~/.claude/settings.json: "Agent|Task")
 //   Agent, Task — same tool_input shape ({ prompt, subagent_type }); both gated.
@@ -54,7 +55,7 @@ if (prompt.length < 400) process.exit(0) // trivial one-liner lookups are not fl
 
 const missing = []
 if (!/pre-?verified facts/i.test(prompt)) missing.push("## Pre-Verified Facts (lead ran every command/path personally) — phrase it 'Pre-Verified Facts' or 'Preverified facts'")
-if (!/tower|TOWER-WAIVED/i.test(prompt)) missing.push("## Tower section (board topic + send kinds) — phrase it 'Tower' or 'TOWER-WAIVED: <reason>'")
+if (!/tup|TUP-WAIVED/i.test(prompt)) missing.push("## tup field (deposit/pending/collect) — phrase it 'tup' or 'TUP-WAIVED: <reason>'")
 if (!/report/i.test(prompt)) missing.push("## Report back with (exact completion contract) — include the word 'report' (e.g. 'Report back with')")
 if (!/done[\s-]?when|done[\s-]?condition|exits? 0|must pass|pass criterion/i.test(prompt)) missing.push("explicit done-when conditions per task — add a 'done when'/'done-when'/'done condition' line, or 'exits 0' / 'must pass' / 'pass criterion'")
 

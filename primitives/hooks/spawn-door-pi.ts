@@ -13,9 +13,9 @@ import { spawn } from "node:child_process";
 import { homedir } from "node:os";
 
 const DENY_START =
-  "raw 'herdr agent start' is closed. Spawn through the door: ~/bin/spine-spawn (orch|worker|fanout|prompt) — it stamps role/name/task, delivers the brief, and verifies submit. Docs: ~/herdr-spine/docs/spawn.md. Deliberate low-level need: prefix SPAWN_DOOR=off (audited).";
+  "raw 'herdr agent start' is closed. Spawn through the door: ~/muster/bin/muster-spawn (orch|worker|fanout|prompt); compatibility name ~/bin/spine-spawn. Docs: ~/muster/docs/agent-spawn-sop.md. Deliberate low-level need: prefix SPAWN_DOOR=off (audited).";
 const DENY_CLOSE =
-  'raw \'herdr workspace close\' is closed. Use: spine-workspace close <id> --why "<reason>" — it posts the board trace and the operator-visible line. Diagnosis is not Land: close only at Done or Parked-on-disk (control-flow.md). Deliberate low-level need: prefix SPAWN_DOOR=off (audited).';
+  "raw 'herdr workspace close' is closed. Close only at Done or Parked-on-disk — see control-flow.md and the herdr skill. Diagnosis is not Land. Deliberate low-level need: prefix SPAWN_DOOR=off (audited).";
 
 /** Flatten newlines FIRST (quote pairs spanning heredoc lines mis-pair
  *  otherwise — caught live 2026-08-14), then strip quoted segments so

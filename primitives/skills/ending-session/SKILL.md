@@ -1,8 +1,8 @@
 ---
 name: ending-session
 description: Close a session cleanly against the full infrastructure - strike the
-  fleet (herdr/spine), commit with the standard handoff, land it, clear the Tower
-  bus, deliver the retrospective, mirror the boot. Project-agnostic. Call at the
+  fleet (herdr), commit with the standard handoff, land it, clear durable mail,
+  deliver the retrospective, mirror the boot. Project-agnostic. Call at the
   end of every session.
 argument-hint: <optional — summary of what was done>
 allowed-tools: Bash Read Write Edit
@@ -19,7 +19,7 @@ metadata:
 # Ending Session
 
 **A session closes only when: work is committed with a complete handoff, landed
-to this project's definition of done, the fleet is struck, the bus is clear,
+to this project's definition of done, the fleet is struck, durable mail is clear,
 and the retrospective is delivered.**
 
 Repo is truth: open = `git diff`, done = `git log`. No side-ledgers. Commit
@@ -28,11 +28,11 @@ steps in order; skip only steps that genuinely do not apply.
 
 ---
 
-## Step 1 — Strike the fleet (herdr / herdr-spine)
+## Step 1 — Strike the fleet (herdr)
 
 Only if you spawned agents this session. Done = gone (control-flow.md §Reaping).
 **Diagnosis ≠ Land:** do not run this step — and do not `herdr workspace close`
-or mission-level `tower close` — until the **outer** committed item is **Landed**
+— until the **outer** committed item is **Landed**
 or **Parked on disk with a pickup brief** (`briefs/…` or equivalent durable
 path). A sub-phase `.done`, a worker report, or a ground-phase diagnosis is
 **not** authorization to close a mission workspace. Refuse and keep the substrate
@@ -47,7 +47,7 @@ herdr pane list --workspace "$HERDR_WORKSPACE_ID"   # panes you spawned still al
 git worktree list | grep -c spine/worktrees          # leftover spine worktrees?
 ```
 
-- Collect stragglers via board + `.done` + status plane — never re-prompt idle panes.
+- Collect stragglers via muster-deposit pending + `.done` + status plane — never re-prompt idle panes.
 - Reap verified-done panes; remove merged worktrees; delete merged `spine/*` branches.
 - Return Arc Docker images your unit built via the Arc allowlist only (`arc-*`,
   `jcbbge/arc-demo`; see `~/Infinity/arc/AGENTS.md` invariant 8). **`docker
@@ -60,7 +60,7 @@ git worktree list | grep -c spine/worktrees          # leftover spine worktrees?
 Then **tear the substrate down to zero** (only after Land/Park on the outer item):
 every herdr pane, tab, and workspace you created or were responsible for this
 session is closed before you are — worker panes, worker tabs, and the
-observability panes you stood up for your own oversight (your CTRL/TOWR splits
+observability panes you stood up for your own oversight (your CTRL splits
 included; their job ends with your session). Survivors are exactly two kinds:
 the operator's focused pane, and standing infrastructure owned by missions that
 are not yours (never close what another live mission is using). The test is
@@ -121,14 +121,18 @@ If a gate requires human review you cannot satisfy, stop and report **BLOCKED**.
 
 ---
 
-## Step 5 — Clear the bus (Tower)
+## Step 5 — Clear durable mail (muster-deposit)
 
-- Relay any unrelayed operator mail; answer or explicitly hand off every open
-  question (an open question dies silently in a closed session).
-- If fleet work happened: post the closure finding to the mission topic —
-  what landed, verdicts, commit shas — and release any standing CLAIMs.
-- Deliverables the operator must keep: confirm they exist under
-  `~/.tower/deliverables/` or on disk at a named path, not only in scrollback.
+- Collect every pending deposit addressed to you: `~/muster/bin/muster-deposit
+  pending --to <you>`, then `~/muster/bin/muster-deposit collect <dep-id>` for
+  each handled row.
+- Answer or explicitly hand off every open question (an open question dies
+  silently in a closed session).
+- If fleet work happened: post closure via `~/muster/bin/muster-deposit deposit
+  --from <you> --to <parent> --kind done --body "<what landed, verdicts, commit
+  shas>"`.
+- Deliverables the operator must keep: confirm the message exists on disk at a
+  named path, not only in scrollback.
 
 ---
 
@@ -185,8 +189,8 @@ SESSION CLOSED  ·  <date>  ·  <repo>/<branch>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 LANDED      <committed @hash  |  pushed  |  PR #N merged → main>
 CI          <success  |  n/a>
-FLEET       <N panes reaped · worktrees clean · claims closed  |  n/a>
-TOWER       <inbox clear · closure posted  |  n/a>
+FLEET       <N panes reaped · worktrees clean  |  n/a>
+MAIL        <pending collected · closure posted  |  n/a>
 BOOT        <7/7 ✓  |  the ✗ and its fix>
 BLOCKED     <anything blocked, or: none>
 

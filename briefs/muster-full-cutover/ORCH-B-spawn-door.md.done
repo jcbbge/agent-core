@@ -1,0 +1,98 @@
+ORCH-B spawn-door VERIFY PASS. Workers reaped (w5R:p4 p5 p6; tab t4 auto-closed).
+
+## ls -la + first 15 / SPINE_SPAWN + desk invoke
+-rwxr-xr-x@ 1 jrg staff 61474 Aug 19 09:21 /Users/jrg/muster/bin/muster-spawn
+-rwxr-xr-x@ 1 jrg staff   150 Aug 19 09:23 /Users/jrg/bin/spine-spawn
+-rwxr-xr-x@ 1 jrg staff  1809 Aug 19 09:24 /Users/jrg/bin/herdr
+
+muster-spawn first 15:
+#!/usr/bin/env python3
+"""
+spine-spawn — one-command spawn wrapper ... (docstring kept from lift)
+
+spine-spawn (full):
+#!/usr/bin/env bash
+# Compatibility forwarder — live door is ~/muster/bin/muster-spawn.
+set -euo pipefail
+exec "$HOME/muster/bin/muster-spawn" "$@"
+
+herdr:
+SPINE_SPAWN="${SPINE_SPAWN:-$HOME/muster/bin/muster-spawn}"
+seat_desk: "$SPINE_SPAWN" desk --kind "$kind" --profile "$profile" --pane "$pane" >/dev/null
+(not python3)
+
+## help (ORCH re-ran)
+muster-spawn --help EXIT=0 lists: orch,worker,fanout,prompt,desk,verify-mark,verify-status,verify-migrate,reap
+muster-spawn desk --help EXIT=0
+tests/test-muster-spawn.sh EXIT=0 "OK: muster-spawn help checks passed"
+
+## Path-audit rg (door + wrappers) — ORCH re-ran
+/Users/jrg/muster/bin/muster-spawn:
+  :59  docstring verify-migrate "legacy ~/herdr-spine/.verify" — not executed on desk
+  :253 herdr_spine_root docstring
+  :265 return os.path.expanduser("~/herdr-spine") — fallback
+  :277 herdr_spine_legacy_verify_dir joins that root
+  :1245 cmd_verify_migrate is the sole caller
+  :1495 argparse help for verify-migrate
+  Zero hits: ~/tup, /Users/jrg/tup, tup/socket, tup/bin/tup, field.py
+  Desk/orch/worker/fanout/prompt/reap do not call herdr_spine_root. Remaining ~/herdr-spine cannot execute on desk seating.
+
+/Users/jrg/bin/spine-spawn and /Users/jrg/bin/herdr:
+  Zero hits for ~/tup, herdr-spine, tup/socket, tup/bin/tup, field.py
+  Only muster-spawn paths.
+
+## Files created or modified
+NEW:
+  /Users/jrg/muster/bin/muster-spawn
+  /Users/jrg/muster/tests/test-muster-spawn.sh
+  /Users/jrg/muster/tests/test-muster-isolation.lisp
+  /Users/jrg/agent-core/briefs/muster-full-cutover/AGNT-B1-lift-spawn-door.md
+  /Users/jrg/agent-core/briefs/muster-full-cutover/AGNT-B2-retarget-wrappers.md
+  /Users/jrg/agent-core/briefs/muster-full-cutover/AGNT-B3-isolation-docs.md
+  + matching .criteria.md and worker .done markers
+MOD:
+  /Users/jrg/bin/spine-spawn
+  /Users/jrg/bin/herdr
+  /Users/jrg/muster/field/field.lisp
+  /Users/jrg/muster/durable/cli.lisp
+  /Users/jrg/muster/AGENTS.md (spawn + isolation env only)
+  /Users/jrg/muster/docs/agent-spawn-sop.md
+  /Users/jrg/muster/docs/DRIVING.md
+NOT edited: ~/tup/**, ~/herdr-spine/**, agent-core primitives, tests/run-tests.lisp, bin/run-tests.sh, tests/test-field.lisp, tests/test-durable-cli.lisp
+No git commit. No deletes.
+
+## Isolation env (Lisp + docs)
+field.lisp: env-muster-tup; field-dir MUSTER_FIELD_DIR then TUP_FIELD_DIR; utc-ts MUSTER_FIXED_TS then TUP_FIXED_TS; gen-id MUSTER_FIXED_DEP_ID/COL_ID then TUP_*.
+durable/cli.lisp: store-dir MUSTER_STORE_DIR then TUP_STORE_DIR; events-path MUSTER_EVENTS_PATH then TUP_EVENTS_PATH; utc-ts MUSTER_FIXED_TS then TUP_FIXED_TS.
+Docs: MUSTER_* primary; TUP_* compat fallback only. Spawn taught as ~/muster/bin/muster-spawn (or ~/bin/spine-spawn forwarder). No ~/tup/socket/spawn.py or ~/herdr-spine/bin/spine-spawn as live.
+rg TUP_FIELD_DIR (ORCH re-ran):
+  AGENTS.md:49 MUSTER_FIELD_DIR ... TUP_FIELD_DIR accepted as compat fallback
+  docs/agent-spawn-sop.md:14 (TUP_FIELD_DIR, TUP_STORE_DIR, TUP_EVENTS_PATH remain accepted as compat fallback.)
+  docs/DRIVING.md:79 The test runner still exports TUP_FIELD_DIR, TUP_STORE_DIR, and TUP_EVENTS_PATH for compat
+ORCH re-ran ./bin/run-tests.sh: GREEN PASS 53 / FAIL 0 EXIT=0 (TUP_* fallback still green)
+
+## SHA256
+d77d5b2523ffc74f716707d4dd4edd51d2331f8e1ab4da50680b82292f80991e  /Users/jrg/muster/bin/muster-spawn
+f4c63b3b9cd2a26cdbf4304c482366f51c96690e3fc4a1771ea5d6c64825fd99  /Users/jrg/bin/spine-spawn
+c4c047a5dd33901a93b69856356a35c78088c0221bcf834415d97e2d362eabe1  /Users/jrg/bin/herdr
+
+## Deviations
+1. VERIFY_GATE=off on coder fanout. Reason: ~/muster has no git HEAD (CORD forbade commit); ~/bin is outside that repo; a tup-rooted worktree would seat cooks in a repo they must not edit.
+2. w5R:p5 (wrap) native submit stalled on buffered paste; herdr pane send-keys Enter; latch wait --until working 354ms. Then verified.
+3. Did not muster-deposit collect worker dones: live compiled door reuses id dep-9671f726d5d6 for every row (BUG-1 already in docs/BUGREPORT.md). Collect-by-id would collide with CORD-addressed rows. Lisp source gen-id is fine (suite printed distinct ids under TUP_FIXED only when set).
+
+## CORD bounce addendum (compose_directive_parent) — ORCH re-verified 2026-08-19
+First Land SHA d77d5b25… still had return "concierge". AGNT-B4 (w5R:p8 agnt-spawn-parent-map) patched the lifted door only. compose-directive mtime unchanged (1787020035 Aug 17 21:27:15 2026).
+
+(1) new return line (muster-spawn:133-134):
+    if from_name.startswith("cord-"):
+        return "cursor-concierge"
+
+(2) new SHA256 of muster-spawn:
+e24754f415837042a15ef3cd96ac61fd29b252383183d40b7b4e03f99937d07d  /Users/jrg/muster/bin/muster-spawn
+
+(3) rg 'return "cursor-concierge"' hits:
+134:        return "cursor-concierge"
+rg 'return "concierge"': NO_HITS
+Runtime: compose_directive_parent("cord-muster-full-cutover") -> 'cursor-concierge'; ("cord-x") -> 'cursor-concierge'; parent_name="other" still wins.
+No commit.

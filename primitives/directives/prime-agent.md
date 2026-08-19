@@ -6,9 +6,9 @@
   children via `rlm(...)` in the IPython kernel (`rlmMaxDepth`: 3 in settings) ·
   prime-spine package at `~/prime-spine` (`packages` in settings) · peer sessions via
   `/peer` ·   herdr panes: `herdr prime` (desk door; herdr has no `--kind prime-agent` —
-  the wrapper runs `prime-agent` in the pane) · fleet comms are tup CLI
-  (`python3 ~/tup/field/field.py`); this harness invokes it via the shell; do
-  not use a retired bus
+  the wrapper runs `prime-agent` in the pane) · fleet comms are the muster
+  deposit door (`~/muster/bin/muster-deposit`); this harness invokes it via
+  the shell; do not use a retired bus
 
 **Updated:** 2026-08-16
 

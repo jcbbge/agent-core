@@ -119,9 +119,9 @@ answer.
 
 Implementation: `~/.pi/agent/extensions/tower-auto.ts` (tower_ask routing,
 tower_escalate, injection scoping + nQ, human-answer path),
-`~/herdr-spine/bin/spine-spawn` (lineage row + `parent=` token at spawn),
-`~/herdr-spine/bin/handlers/40-tower-bridge` (bridge-race fix: never mint a
-question from a live screen scrape). Grammar (`tower-ledger.mjs`) is unchanged —
+`~/muster/bin/muster-spawn` (lineage row + `parent=` token at spawn),
+muster parent-wake (reads `parent=` pane token to resolve spawner).
+Grammar (`tower-ledger.mjs`) is unchanged —
 all new fields are additive.
 
 ---

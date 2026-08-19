@@ -1,0 +1,36 @@
+B2 retarget wrappers complete (deposit dep-9671f726d5d6).
+
+Modified: /Users/jrg/bin/spine-spawn, /Users/jrg/bin/herdr
+
+## spine-spawn (150 bytes, mode 755)
+
+```
+#!/usr/bin/env bash
+# Compatibility forwarder — live door is ~/muster/bin/muster-spawn.
+set -euo pipefail
+exec "$HOME/muster/bin/muster-spawn" "$@"
+```
+
+SHA256: f4c63b3b9cd2a26cdbf4304c482366f51c96690e3fc4a1771ea5d6c64825fd99
+
+## herdr (1809 bytes, mode 755)
+
+SPINE_SPAWN assignment:
+```
+SPINE_SPAWN="${SPINE_SPAWN:-$HOME/muster/bin/muster-spawn}"
+```
+
+seat_desk:
+```
+  "$SPINE_SPAWN" desk --kind "$kind" --profile "$profile" --pane "$pane" >/dev/null
+```
+
+SHA256: c4c047a5dd33901a93b69856356a35c78088c0221bcf834415d97e2d362eabe1
+
+## Path audit
+
+rg on both wrappers for ~/tup, /Users/jrg/tup, herdr-spine, tup/socket, tup/bin/tup, field.py: zero hits.
+
+## Deviations
+
+None. Did not invoke wrappers as smoke test (sibling owns muster-spawn binary per brief).

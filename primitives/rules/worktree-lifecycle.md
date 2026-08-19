@@ -4,9 +4,9 @@ A git worktree exists to give a concurrent agent physical isolation from peers w
 
 ## 1. Birth condition: concurrency test
 
-A worktree is born because two or more agents are running simultaneously against the same repo. The spawner applies no concurrency test today (`~/herdr-spine/bin/spine-spawn:351-360`, function `apply_coder_isolation`: *"Force coder spawns into an isolated git worktree (filesystem wall)."*) — it fires for every spawn whose profile base is `coder` whenever the verify gate is on. The gate should test for actual sibling activity before allocating the resource; today that gate always fires.
+A worktree is born because two or more agents are running simultaneously against the same repo. The spawner applies no concurrency test today (`~/muster/bin/muster-spawn`, function `apply_coder_isolation`: *"Force coder spawns into an isolated git worktree (filesystem wall)."*) — it fires for every spawn whose profile base is `coder` whenever the verify gate is on. The gate should test for actual sibling activity before allocating the resource; today that gate always fires.
 
-Worktrees live at `~/.spine/worktrees/<name>` by convention (`~/herdr-spine/bin/spine-spawn:107`).
+Worktrees live at `~/.spine/worktrees/<name>` by convention (`~/muster/bin/muster-spawn`; forwarder `~/bin/spine-spawn` OK).
 
 ## 2. Death condition: teardown in the reap beat
 
@@ -87,21 +87,21 @@ Reference: `~/agent-core/primitives/skills/brief/SKILL.md:192-196`.
 
 **Status: DOOR.** Teardown on the cursor path, sparse-at-spawn via `spine-spawn`, and spine-side reap are each mechanically enforced. The DOCTRINE gap recorded here on 2026-08-16 is closed; see §7.1.
 
-**Cursor path — DOOR.** `spine-spawn reap <path>` (`~/herdr-spine/bin/spine-spawn`, subcommand at :1450) is the sanctioned teardown door for cursor worktrees under `~/.cursor/worktrees`, invoked by `~/herdr-spine/bin/handlers/18-worktree-reconcile` when no live pane occupies the path. Preserve-or-keep — parks detached HEADs on a branch, commits dirty work, re-checks reachability from a ref, removes only if safe; when a pre-commit hook refuses it, reap keeps the directory, skips `branch -D`, names the path, and returns non-zero. (Historical: retired `cursor-finish` / `cursor-spine` carried equivalent EXIT traps.)
+**Cursor path — DOOR.** `muster-spawn reap <path>` (`~/muster/bin/muster-spawn`; forwarder `~/bin/spine-spawn` OK) is the sanctioned teardown door for cursor worktrees under `~/.cursor/worktrees`, invoked by the worktree reconciler when no live pane occupies the path. Preserve-or-keep — parks detached HEADs on a branch, commits dirty work, re-checks reachability from a ref, removes only if safe; when a pre-commit hook refuses it, reap keeps the directory, skips `branch -D`, names the path, and returns non-zero. (Historical: retired `cursor-finish` / `cursor-spine` carried equivalent EXIT traps.)
 
-**Sparse-at-spawn — DOOR, via `spine-spawn`.** `spine-spawn` narrows every worktree — pi, claude, and cursor (`--kind cursor`) — via explicit `--sparse` or by parsing the brief's `Touch ONLY` partition. Absent a partition, it degrades to a full checkout plus a WARN naming the cost — never a silent narrowing.
+**Sparse-at-spawn — DOOR, via `muster-spawn`.** `muster-spawn` narrows every worktree — pi, claude, and cursor (`--kind cursor`) — via explicit `--sparse` or by parsing the brief's `Touch ONLY` partition. Absent a partition, it degrades to a full checkout plus a WARN naming the cost — never a silent narrowing.
 
-**Sparse mode is non-cone.** Cone mode always materializes every top-level file, so a "narrowed" worktree still carries the repo root — not what "only the declared paths" means. Reproduced 2026-08-16: cone narrowed to `primitives/hooks` still checked out `README.md`; non-cone checked out exactly the partition. `spine-spawn` uses `sparse-checkout set --no-cone` (historical: retired `cursor-spine` used cone until 2026-08-16).
+**Sparse mode is non-cone.** Cone mode always materializes every top-level file, so a "narrowed" worktree still carries the repo root — not what "only the declared paths" means. Reproduced 2026-08-16: cone narrowed to `primitives/hooks` still checked out `README.md`; non-cone checked out exactly the partition. `muster-spawn` uses `sparse-checkout set --no-cone` (historical: retired `cursor-spine` used cone until 2026-08-16).
 
-### 7.1 Spine-side reap — DOOR, via reconciliation (closed 2026-08-16)
+### 7.1 Worktree reconciler — DOOR, via reconciliation (closed 2026-08-16)
 
-`spine-spawn reap <path>` is the sanctioned teardown door: preserve-or-keep, non-zero while a directory still stands. Until 2026-08-16 **nothing invoked it**, which is how 85 orphans / 1.06 GB accumulated.
+`muster-spawn reap <path>` is the sanctioned teardown door: preserve-or-keep, non-zero while a directory still stands. Until 2026-08-16 **nothing invoked it**, which is how 85 orphans / 1.06 GB accumulated.
 
-It is now invoked by `~/herdr-spine/bin/handlers/18-worktree-reconcile`, auto-discovered by the dispatcher (basename sort; no manifest edit needed).
+It is now invoked by the muster worktree reconciler (auto-discovered; no manifest edit needed).
 
-**Why a reconciler and not an event handler — the load-bearing part.** herdr emits exactly one event, `pane.agent_status_changed`. There is no pane-closed event, so there is no moment to hang teardown on. And `done` is **not terminal** — panes go `done -> working` routinely — so reaping on `done` would delete a worktree out from under a live agent mid-unit. (Historical: retired `cursor-finish` owned a unit's whole lifetime via an EXIT trap; `spine-spawn` exits while the pane it spawned lives on, so live teardown uses reconciliation, not spawn-time traps.)
+**Why a reconciler and not an event handler — the load-bearing part.** herdr emits exactly one event, `pane.agent_status_changed`. There is no pane-closed event, so there is no moment to hang teardown on. And `done` is **not terminal** — panes go `done -> working` routinely — so reaping on `done` would delete a worktree out from under a live agent mid-unit. (Historical: retired `cursor-finish` owned a unit's whole lifetime via an EXIT trap; `muster-spawn` exits while the pane it spawned lives on, so live teardown uses reconciliation, not spawn-time traps.)
 
-The resolution is tup's own rule (`~/tup/contracts/thesis.md`): *"Events are hints and drop silently; a snapshot is truth. The wiring reconciles rather than trusts."* The event is only a tick. Truth is the snapshot: worktrees on disk compared against panes that exist. A worktree no live pane sits in is garbage, whatever sequence of events did or did not fire.
+The resolution is muster's own rule (`muster's contracts`): *"Events are hints and drop silently; a snapshot is truth. The wiring reconciles rather than trusts."* The event is only a tick. Truth is the snapshot: worktrees on disk compared against panes that exist. A worktree no live pane sits in is garbage, whatever sequence of events did or did not fire.
 
 Safety properties, each verified live 2026-08-16:
 - Only paths under `~/.spine/worktrees` and `~/.cursor/worktrees` are considered; a main checkout is structurally out of scope, not merely filtered.
@@ -109,12 +109,12 @@ Safety properties, each verified live 2026-08-16:
 - `GRACE_SECONDS` (900) protects a just-created worktree whose pane has not yet registered a cwd — the spawn race.
 - An empty pane list aborts the sweep. No snapshot means no truth, and reaping against an empty list would orphan every live worktree at once.
 - Teardown goes through the door, which preserves first. Proven end to end: an aged orphan holding uncommitted work was reaped and the work survived as a commit on its own branch.
-- A refused reap keeps the directory and posts to `herdr-spine/worktree-reconcile` rather than retrying silently.
+- A refused reap keeps the directory and posts to the muster worktree-reconcile topic rather than retrying silently.
 
 **Where it resolves, and why not yet (re-stated 2026-08-16).** This residual is unchanged by the harness-homogeneity work of 2026-08-16, and it is deliberately NOT upgraded here. That unit taught `spine-spawn` to route cursor (`--kind cursor` is now a first-class, live-proven path) and it touched nothing in `~/cursor-shim/`, so the tier that owns the reap is exactly who it was this morning. Stated per path, as of today:
 
-- **cursor path — DOOR since 2026-08-18**, via `18-worktree-reconcile` (§7.1). (Historical: retired `cursor-finish` EXIT trap.)
-- **pi and claude paths — DOOR since 2026-08-16**, via `18-worktree-reconcile` (§7.1). Previously DOCTRINE.
+- **cursor path — DOOR since 2026-08-18**, via the worktree reconciler (§7.1). (Historical: retired `cursor-finish` EXIT trap.)
+- **pi and claude paths — DOOR since 2026-08-16**, via the worktree reconciler (§7.1). Previously DOCTRINE.
 
 **Correction, same day — the premise was wrong, not the caution.** An earlier revision said this resolved only at `PLAN.md` §3 Phase 5, once `cursor-finish` was repointed at the shared reap, and warned against upgrading the label on the strength of unrun work. The caution was right and is retained as law. Its premise was not: it assumed the reap needed an *owner* — a tier remembering to call it at the right moment — and therefore had to wait for one. Reconciliation needs neither owner nor moment; it compares two snapshots and acts on the difference. Phase 5 is still worth doing to collapse two teardown bodies into one, but it is no longer what closes this leak. The correction stands beside what it corrected.
 
@@ -122,4 +122,4 @@ Safety properties, each verified live 2026-08-16:
 
 ---
 
-SOURCES: git 2.50.1 (Apple Git-155) `man git-worktree` DESCRIPTION; nesting test `git worktree add --detach outer/wt-inner` reproduced 2026-08-16; sparse checkout test and 24 MB / 288 KB measurements reproduced 2026-08-16 from agent-core commit 60181fe; `wt-reclaim-reference.sh` (teardown reference); `spine-spawn:351-360` function `apply_coder_isolation`; `brief/SKILL.md:192-196` hook-path hazard; `control-flow.md` §Reap-as-law for reaping obligation; `ENFORCEMENT.md` doctrine law structure; `~/cursor-shim/cursor-finish` retired 2026-08-18 (historical EXIT-trap door, stubbed); `~/herdr-spine/bin/spine-spawn` `def cmd_reap(` at line 1274, registered subcommand at line 1450, help line 62, verified by grep 2026-08-16; enforcer status posted to board topic `agent-core/worktree-lifecycle` at 2026-08-16T17:28Z by `ORCH worktree-doors`, re-verified independently by the coordinator and by AGNT ledger-refresh on 2026-08-16.
+SOURCES: git 2.50.1 (Apple Git-155) `man git-worktree` DESCRIPTION; nesting test `git worktree add --detach outer/wt-inner` reproduced 2026-08-16; sparse checkout test and 24 MB / 288 KB measurements reproduced 2026-08-16 from agent-core commit 60181fe; `wt-reclaim-reference.sh` (teardown reference); `muster-spawn` function `apply_coder_isolation`; `brief/SKILL.md:192-196` hook-path hazard; `control-flow.md` §Reap-as-law for reaping obligation; `ENFORCEMENT.md` doctrine law structure; `~/cursor-shim/cursor-finish` retired 2026-08-18 (historical EXIT-trap door, stubbed); `~/muster/bin/muster-spawn` `cmd_reap` subcommand verified 2026-08-16; enforcer status posted to board topic `agent-core/worktree-lifecycle` at 2026-08-16T17:28Z by `ORCH worktree-doors`, re-verified independently by the coordinator and by AGNT ledger-refresh on 2026-08-16.

@@ -46,11 +46,11 @@ that did not happen. Coordination is a full-time craft. Do it full-time.
    counts, paths, verdicts, deviations with reasons. Context is the scarcest
    resource in both directions; prose is for the site diary, not the report.
 9. **The audience never sees the wings.** Status is not mail. Progress goes
-   to the Tower board at meaningful checkpoints with specific numbers, never
+   via muster-deposit at meaningful checkpoints with specific numbers, never
    heartbeats. Your questions climb to CORD with an nq budget of 3; only a
    genuinely operator-gated decision goes higher, and it rings the doorbell.
 10. **Strike the set.** Done = gone: verify a worker's `.done`, collect its
-    report, reap its pane. Durable state goes to disk and the board, never
+    report, reap its pane. Durable state goes to disk and the ledger, never
     scrollback. Your own `.done` is your last action, after the report to
     CORD lands.
 
@@ -58,7 +58,7 @@ that did not happen. Coordination is a full-time craft. Do it full-time.
 
 Stigmergic coordination is MANDATORY for ranks 1–4 (Coordinator → Orchestrator →
 Agent/Subagent). Those tiers coordinate **through the environment**, never by
-talking directly to each other. Full law: `~/.tower/COMMS-ARCH.md` plane 5
+talking directly to each other. Full law: `primitives/rules/comms-arch.md` plane 5
 (STIGMERGIC FIELD).
 
 - **Deposit, never deliver.** A pheromone has **no addressee**. An agent changes
@@ -66,16 +66,17 @@ talking directly to each other. Full law: `~/.tower/COMMS-ARCH.md` plane 5
 - **The pull loop.** Emit `work-available` (with mandatory evidence); **read the
   field before ever going idle**; claim with `work-claimed` `ref`-ing the exact
   id; `work-done` `ref`-ing the claim; `need-help` instead of silence.
-  **Heartbeat claims** — an unheartbeated `work-claimed` evaporates so the work
-  returns to the field, which is how a dead agent is handled **with no
-  supervisor**. Failure recovery is emergent from decay.
+  **Failure recovery is UNKNOWN** — the bus has no TTL, no decay, and no
+  heartbeat; an agent that dies mid-claim leaves that claim standing, and
+  nothing returns the work to the field. Do not invent a mechanism here.
 - **Two acceptable stopping states, and only two:** every done-condition met, or
   a posted blocked/`need-help` naming what is needed and who owns it, *after*
   proceeding with everything not dependent on it. "Reported and awaited
   instruction" is not a stopping state.
 
-Verbs: MCP `pheromone_emit` / `pheromone_field`, or `bun ~/.tower/cli.mjs emit …`
-and `… field`.
+Verbs: `~/muster/bin/muster-deposit deposit --from <role> --to <parent>
+--kind report|done|need-help|question --body "<evidence>"`; read inbox:
+`~/muster/bin/muster-deposit pending --to <role>`. Full contract: muster skill.
 
 ## Service failures (the negative space)
 
@@ -93,7 +94,7 @@ and `… field`.
 
 - **Seat:** rank 2 — CORD → **you** → `AGNT [task]` / `SAGT [todo]`. You live
   in your unit's workspace: tab 1 CORD, your ORCH tab, a workers tab (grid,
-  `--no-focus`) — herdr-spine 7778575.
+  `--no-focus`) — herdr skill layout.
 - **Spawn path:** fleets are harness-homogeneous — your AGNTs/SAGTs inherit the
   harness you were spawned in. Spawn verbs and flags: see
   `~/agent-core/primitives/directives/<harness>.md`. Briefs name profiles only;
@@ -108,13 +109,13 @@ and `… field`.
 - **Briefs:** hard-gated four sections — Pre-Verified Facts · Tower (or
   `TOWER-WAIVED: <reason>`) · Report back with · done-when per task. Sibling
   briefs share a byte-identical prefix; per-agent specifics at the tail.
-- **Comms:** fleet mail on the board under `<project-slug>/<topic>`; only
+- **Comms:** fleet mail via `~/muster/bin/muster-deposit`; only
   `to:"operator"` reaches the human; operator-facing deliverables ring the
   doorbell (`herdr notification show … --sound request`) in the same breath.
-- **Collection:** board + `.done` + status plane — never re-prompt idle
+- **Collection:** muster pending + `.done` + status plane — never re-prompt idle
   panes. Workers post CLAIM first, findings during, `.done` last.
 - **Wake (fleet pane):** do NOT speak a wake greeting — execute your brief.
-  Post fleet mail to the Tower board; idle after DONE is correct (status is
+  Post fleet mail via muster-deposit; idle after DONE is correct (status is
   not mail).
 
 ## The house law (read on demand — the files are canonical, this list is not)
@@ -122,18 +123,18 @@ and `… field`.
 | Law | File |
 |---|---|
 | Hierarchy, tier duties, naming, reaping, CTRL UX, Made Well mapping | `~/agent-core/primitives/rules/control-flow.md` |
-| Comms planes + addressing (Amendment A1, STIGMERGIC FIELD, in flight — trust the file) | `~/.tower/COMMS-ARCH.md` |
-| Responsible party, nQ escalation budget, ruling rubric | `~/.tower/RESPONSIBLE-PARTY-AND-NQ.md` |
+| Comms planes + addressing (Amendment A1, STIGMERGIC FIELD, in flight — trust the file) | `primitives/rules/comms-arch.md` |
+| Responsible party, nQ escalation budget, ruling rubric | `primitives/rules/responsible-party-and-nq.md` |
 | Tower mechanics, verbatim guarantee, brief gate, liveness | `~/agent-core/primitives/rules/tower-orchestration.md` |
 | Brief structure, fact verification, model tiering, partitions | `~/agent-core/primitives/skills/brief/SKILL.md` |
 | herdr operation (spawn / observe / notify) | `~/agent-core/primitives/skills/herdr/SKILL.md` |
+| Durable comms, ledger, spawn door | `~/agent-core/primitives/skills/muster/SKILL.md` |
 | Machine-wide context, epistemics, agent-core layout | `~/agent-core/primitives/AGENTS.md` |
-| Cursor-shim fleet mechanics (Verify beat, arbiter, nQ≤3) | `~/cursor-shim/rules/cursor-fleet.md` |
+| Fleet spawn / Verify beat (nQ≤3) | `~/muster/docs/agent-spawn-sop.md`; `~/muster/bin/muster-spawn` |
 
 SOURCES: control-flow.md, COMMS-ARCH.md, RESPONSIBLE-PARTY-AND-NQ.md,
-tower-orchestration.md, brief/SKILL.md (read 2026-08-12); herdr-spine
-63e1010 + 7778575 verified 2026-08-12; fleet digest 2026-08-12
-(operator-relayed); aboyeur/expediter: chefs.studio, en.wikipedia.org/wiki/
-Kitchen_brigade; stage-manager cueing (warning/standby/go, prompt book):
-theatrecrafts.com, en.wikipedia.org/wiki/Cue_(theatrical) (fetched
-2026-08-12).
+tower-orchestration.md, brief/SKILL.md (read 2026-08-12); fleet layout verified
+2026-08-12; fleet digest 2026-08-12 (operator-relayed); aboyeur/expediter:
+chefs.studio, en.wikipedia.org/wiki/Kitchen_brigade; stage-manager cueing
+(warning/standby/go, prompt book): theatrecrafts.com,
+en.wikipedia.org/wiki/Cue_(theatrical) (fetched 2026-08-12).

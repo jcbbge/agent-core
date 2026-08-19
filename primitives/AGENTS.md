@@ -19,7 +19,7 @@ here contaminates control arms.
 | Tool | Status | Access |
 |---|---|---|
 | Herdr | active — live multiplexer (panes, detection, CLI + socket) | `~/agent-core/primitives/skills/herdr/SKILL.md` — fleet agents invoke when operating panes. The operator does not. |
-| Tup | active — durable deck; `socket/` is the seam to a runtime | `~/agent-core/primitives/skills/tup/SKILL.md` — concierge/CORD invoke for findings, spawn-door law, supervisor, mirror, durable comms. Wired runtime today = herdr. |
+| Muster | active — durable Lisp runtime; herdr is the pane seam | `~/.claude/skills/muster/SKILL.md` — concierge/CORD invoke for findings, spawn-door law, supervisor, mirror, durable comms. Wired runtime today = herdr. |
 | Coraline | active | CLI `coraline` — symbol graph, callers, impact; any repo after `init`+`index`; 33 languages; no MCP |
 | colgrep | active | CLI `colgrep` — semantic grep of the working tree |
 | pickbrain | active | CLI `pickbrain` — semantic search of past agent sessions, not source |
@@ -54,18 +54,18 @@ and transcript-dir greps are denied and pointed at the utensil. Bypass:
 | Did agents actually use the pantry | `vein report --last N` |
 | Did wake-memory change behavior | `assay` |
 
-## Comms — durable fleet mail (tup skill)
+## Comms — durable fleet mail (muster skill)
 
 Deliverables, questions, and findings move between the user, the coordinator,
-and every worker through the **tup skill**
-(`~/agent-core/primitives/skills/tup/SKILL.md`) — deposit, pending, collect,
+and every worker through the **muster skill**
+(`~/.claude/skills/muster/SKILL.md`) — deposit, pending, collect,
 status. Pane observation uses the **herdr skill**. Comms law:
 `~/agent-core/primitives/rules/comms-arch.md` and
 `~/agent-core/primitives/rules/control-flow.md` §Communications.
 
-- **Fleet mail:** `tup deposit --from <role> --to <parent> --kind
+- **Fleet mail:** `~/muster/bin/muster-deposit --from <role> --to <parent> --kind
   report|done|need-help|question --body "<...>"`. Read inbox:
-  `tup pending --to <role>`. Full verbs: tup skill.
+  `read the inbox via the runtime`. Full verbs: muster skill.
 - **Verbatim guarantee:** only operator-addressed mail blocks turn-end — see
   comms-arch.md plane routing.
 - **Doorbell (hard rule):** anything the USER must see gets a desktop
@@ -163,14 +163,15 @@ is the desk default until you start with a different one. After that you
 only talk to the concierge.
 
 Workers run as herdr panes (visible, surviving). Spawn-door law (stamp
-identity, deliver brief, verify the submit landed) lives in tup `socket/`;
-execution on this install is herdr + `spine-spawn`. Registration names
+identity, deliver brief, verify the submit landed) lives in muster;
+execution on this install is herdr + `muster-spawn` (forwarder
+`~/bin/spine-spawn` OK). Registration names
 lowercase-kebab, human name + `$task` stamped at birth, reaped when done
 (done = gone). Spawner pre-verifies every command, path, and endpoint;
 spawn prompts carry Pre-Verified Facts / Tasks with done-when / Report-back.
-Comms law: invoke the **tup skill** and
+Comms law: invoke the **muster skill** and
 `~/agent-core/primitives/rules/comms-arch.md` — one message, one audience,
-once, in full; status is not mail; fleet mail via `tup deposit` up the
+once, in full; status is not mail; fleet mail via `~/muster/bin/muster-deposit` up the
 hierarchy; only operator-addressed mail reaches the operator plane.
 
 ## Work tracking & commits
@@ -208,7 +209,7 @@ never `git add -A`.
 ~~opencode harness (2026-08-11; dropped from agent-core registry,
 `~/.config/opencode/` targets dead)~~ **CORRECTION 2026-08-15 (operator):
 retirement STALE — opencode is live again as the concierge's spawn seat for
-cursor fleets (profile-model rulings). Evidence: tup finding-J. The
+cursor fleets (profile-model rulings). The
 2026-08-11 entry stands struck-through beside this correction per kernel
 law; do not re-retire without an operator ruling.** · bb agentic IDE (2026-08-11;
 uninstalled — app, CLIs, `~/.bb` data all removed) ·
@@ -249,13 +250,13 @@ Harness deltas live in `primitives/directives/<harness>.md`; deployed entrypoint
   harness's spawn path — see deltas. Briefs on disk; CLAIM-first / board
   findings / `.done`-last. CORD gates Land and `origin/main`; workers do not
   commit unless the brief orders it.
-- **Comms:** invoke the **tup skill**; comms law in
+- **Comms:** invoke the **muster skill**; comms law in
   `~/agent-core/primitives/rules/comms-arch.md`. Status flip is NOT done.
   `report` is progress; `done` is Land evidence — `report` is not `done`.
-  Fleet mail = `tup deposit` up the hierarchy (tup field only). Bellman wakes
+  Fleet mail = `~/muster/bin/muster-deposit` up the hierarchy (muster durable log only). The runtime wakes
   the parent on a `done` deposit. Operator mail only when addressed to the
   operator (`nQ` to operator = 0 for fleet workers). Collect via
-  `tup pending` + `.done` — **never** re-prompt idle panes for status.
+  the runtime folding the durable ledger — **never** re-prompt idle panes for status.
 - **Stopping states (two only):** every done-when met with evidence, or
   `need-help` naming owner after finishing independent work. Empty inbox is not
   a stop. "I did not edit product" is not a stop. Dead claimant recovery is

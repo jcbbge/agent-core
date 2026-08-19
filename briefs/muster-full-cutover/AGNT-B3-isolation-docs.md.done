@@ -1,0 +1,61 @@
+# AGNT-B3-isolation-docs — DONE
+
+Deposit: dep-9671f726d5d6 (agnt-spawn-iso → orch-spawn-door, kind done)
+
+## Isolation env change summary
+
+### Lisp
+
+**field/field.lisp**
+- `:15-20` — `env-or`, `env-muster-tup` helpers
+- `:22-24` — `field-dir` reads `MUSTER_FIELD_DIR` then `TUP_FIELD_DIR`
+- `:40-44` — `gen-id` reads `MUSTER_*` then `TUP_*` env pair
+- `:46-52` — `utc-ts` reads `MUSTER_FIXED_TS` then `TUP_FIXED_TS`
+- `:124`, `:162` — deposit/collect use `MUSTER_FIXED_DEP_ID`/`TUP_FIXED_DEP_ID`, `MUSTER_FIXED_COL_ID`/`TUP_FIXED_COL_ID`
+
+**durable/cli.lisp**
+- `:18-20` — `env-muster-tup` helper
+- `:28-30` — `store-dir` reads `MUSTER_STORE_DIR` then `TUP_STORE_DIR`
+- `:33-35` — `events-path` reads `MUSTER_EVENTS_PATH` then `TUP_EVENTS_PATH`
+- `:37-42` — `utc-ts` reads `MUSTER_FIXED_TS` then `TUP_FIXED_TS`
+
+### Docs
+
+- **AGENTS.md** `:48-52` isolation (MUSTER_* primary, TUP_* compat); `:61-68` spawn (`muster-spawn`, spine-spawn forwarder, no brief hardcoding of `--kind`/model)
+- **docs/agent-spawn-sop.md** — MUSTER_* workspace env; muster-spawn; TUP_* compat note
+- **docs/DRIVING.md** — sections 2, 4, 4.1, 5, 7 updated to MUSTER_* primary; retired spawn paths not taught as live
+
+## rg TUP_FIELD_DIR on three doc files
+
+```
+AGENTS.md:49:- MUSTER_FIELD_DIR   — the field (deposits); TUP_FIELD_DIR accepted as compat fallback
+docs/agent-spawn-sop.md:14:(TUP_FIELD_DIR, TUP_STORE_DIR, TUP_EVENTS_PATH remain accepted as compat fallback.)
+docs/DRIVING.md: (no TUP_FIELD_DIR line — TUP_* only in compat-fallback wording)
+```
+
+## ./bin/run-tests.sh
+
+```
+GREEN PASS 53 / FAIL 0
+EXIT=0
+```
+
+## test-muster-isolation.lisp standalone
+
+```
+GREEN PASS 8 / FAIL 0
+EXIT=0
+```
+
+## Files created or modified
+
+- Modified: `/Users/jrg/muster/field/field.lisp`
+- Modified: `/Users/jrg/muster/durable/cli.lisp`
+- Modified: `/Users/jrg/muster/AGENTS.md`
+- Modified: `/Users/jrg/muster/docs/agent-spawn-sop.md`
+- Modified: `/Users/jrg/muster/docs/DRIVING.md`
+- Created: `/Users/jrg/muster/tests/test-muster-isolation.lisp`
+
+## Deviations
+
+None.

@@ -1,6 +1,6 @@
 ---
 name: brief
-description: Generate a spawn-ready agent brief from a task description. Enforces the delegation protocol (pre-verified facts, exact done conditions) plus every codified orchestration lesson - parallel-work notices, file partitions, floor baselines, no-mock testing, CI-exact verification, Tower etiquette. Use before fanning work out to subagents; pairs with the scout agent for fact verification.
+description: Generate a spawn-ready agent brief from a task description. Enforces the delegation protocol (pre-verified facts, exact done conditions) plus every codified orchestration lesson - parallel-work notices, file partitions, floor baselines, no-mock testing, CI-exact verification, fleet comms via the muster skill. Use before fanning work out to subagents; pairs with the scout agent for fact verification.
 argument-hint: "<task description, or 'milestone <id>' for audit-plan tasks>"
 ---
 
@@ -40,95 +40,76 @@ the brief.
 ## Parallel Work Notice
 <who else is in flight, which files they own, "ignore uncommitted changes to
 X/Y/Z — do not investigate, revert, or fix them. Concern yourself only with
-your task."> <If fleet coordination matters: "post claims/findings to the
-Tower board (mcp__tower__board_post, topic '<project-slug>/<topic>' —
-project isolation, COMMS-ARCH.md §Project isolation); read it before
-claiming files (mcp__tower__board_read).">
+your task."> <If fleet coordination matters: invoke the **muster skill** — post
+reports to parent with `~/muster/bin/muster-deposit deposit --from <role> --to
+<parent> --kind report --body "<...>"`; read your inbox with `~/muster/bin/muster-deposit
+pending --to <role>` before claiming work.>
 
-## Tower (mid-run communication)
-- Deliverables/results the user must see verbatim: mcp__tower__send_to_user
-  (kind=deliverable, from=<your role>). Urgent/load-bearing: kind=alert.
-- Progress with specific numbers at meaningful checkpoints: kind=progress.
-- A decision only the user can make: mcp__tower__ask_user, then poll
-  mcp__tower__check_inbox while continuing other work.
-- Harnesses without the tower MCP (e.g. pi): post via the Tower CLI —
-  `bun ~/.tower/cli.mjs post <claim|finding|note> <project>/<topic> "<body>" --from "<role>"`.
-  The CLI records `cwd` from your real repo cwd (never scratch/temp), requires
-  non-empty `from` for authored types, and defaults `from` to `cli:$USER` when
-  omitted. Do not hand-append JSON to `board.jsonl`.
-- On a Herdr host (self-report): call `/Users/jrg/herdr-spine/bin/spine-report
-  task "<what I'm doing>"` at the start of each unit of work and
-  `spine-report verdict "<result>"` when done, so the fleet sidebar shows
-  purpose without attaching to the pane (see herdr-spine/docs/spine-tokens.md).
-- On a Herdr host with file/resource ownership at stake (wave-2 K4): claim
-  owned files/resources with `/Users/jrg/herdr-spine/bin/spine-claim claim
-  "<resource>" --ttl 30` as the first action, refresh with `spine-claim
-  heartbeat "<resource>" --ttl 30` at roughly ttl/3 (about every 10s for the
-  30s default) for the life of the task, and `spine-claim release
-  "<resource>"` when done — this is advisory coordination among cooperating
-  workers, not a lock (see herdr-spine/docs/pheromones.md for the full
-  contest-semantics and heartbeat-cadence contract). `spine-report`
-  communicates *what* an agent is doing to a human glancing at the sidebar;
-  `spine-claim` communicates *which resources* are owned to peer agents and
-  the orchestrator — use both together.
-- **MANDATORY — brief the STIGMERGIC FIELD, or the agent will park.** This
-  system is stigmergic by design (`~/.tower/COMMS-ARCH.md` plane 5, and plane
-  1: *"Pull-based: anyone who cares reads it"*). A brief that only says "post
-  findings to board topic X" teaches push-and-wait, and an agent taught that
-  **stops the moment it has reported** — waiting for a scheduler that does not
-  exist. Measured 2026-08-13: 19 pheromone rows against 6,400 board rows, and
-  a whole fleet of twelve parked simultaneously because every brief omitted
-  this. `spine-claim` covers *resource ownership*; this is different — it is
-  how *work itself* moves.
+## Fleet comms (invoke the muster skill)
+
+TOWER-WAIVED: retired bus absorbed by muster-deposit; durable comms go through the
+**muster skill** only — do not call the retired bus (CLI, MCP, or its home dir).
+
+Mid-run communication names the **muster skill** and **herdr skill** by skill
+name — not hardcoded retired-bus paths or verbs. Do not paste either
+encyclopedia into the brief.
+
+- **Addressed mail (parent/child):** `~/muster/bin/muster-deposit deposit --from
+  <role> --to <parent> --kind done|need-help|report|question --body "<...>"` —
+  prints `dep-<id>`. Read inbox: `~/muster/bin/muster-deposit pending --to
+  <role>`. Acknowledge: `~/muster/bin/muster-deposit collect <dep-id>`.
+  Kinds and refusals: muster skill.
+- **Operator-visible outcomes:** route through the coordinator (concierge
+  plane); workers deposit `report`/`need-help`/`done` to parent — not to the
+  operator directly unless the brief explicitly names an operator summons.
+- **On a Herdr host (self-report):** invoke the **herdr skill** —
+  `herdr pane report-metadata <id> --token task="<what I'm doing>"` at the start
+  of each unit of work and `--token name="<result>"` when done, so the fleet
+  sidebar shows purpose without attaching to the pane.
+- **Resource ownership:** disjoint file partitions stated in every brief —
+  do not teach `spine-claim`; there is no muster-claim binary.
+- **MANDATORY — brief the stigmergic pull loop for ranks 1–4**, or the agent
+  will park. This system is stigmergic by design (muster skill, comms-arch.md
+  plane 5). A brief that only says "deposit a report to parent" teaches
+  push-and-wait, and an agent taught that **stops the moment it has reported**
+  — waiting for a scheduler that does not exist. Measured 2026-08-13: whole
+  fleets parked simultaneously because every brief omitted this.
   **Scope (ranks 1–4 only).** Stigmergic coordination is MANDATORY for
   Coordinator → Orchestrator → Agent/Subagent (ranks 1–4). Those tiers
   coordinate **through the environment**, never by talking directly to each
   other. The **Concierge (rank 0) is the explicit exception** — it may
-  address panes directly to facilitate the movable parts; that is plane 4
-  (OPERATOR DIRECTIVES), not a stigmergy violation. A directive delivered
-  into a pane must also be **recorded on the board** so the substrate carries
-  it. See `~/.tower/COMMS-ARCH.md` plane 5 and
-  `~/.tower/RESPONSIBLE-PARTY-AND-NQ.md`.
+  address panes directly to facilitate the movable parts; that is operator
+  directives, not a stigmergy violation. A directive delivered into a pane must
+  also leave a trace on the field (muster-deposit).
   **Never teach push-and-wait for ranks 1–4.** Do not instruct workers to
-  "post findings and wait," "route questions to the concierge," or treat
-  board posts as a stopping state. Fleet mail (board CLAIMs/findings) is
-  plane 2; the pull loop (plane 5) is how work moves. Brief both when needed,
-  but the pull loop is the standing behavior — not "report and await
-  instruction."
-  Every brief for ranks 1–4 must carry the pull loop:
-  - **Emit** work others could take: `work-available` with topic, payload ref,
-    and **mandatory evidence** (an emit without evidence is not an emit).
-  - **Read the field before ever going idle.** Open work you can take, you
-    claim (`work-claimed`, `ref`-ing the exact pheromone id) and do.
-  - **`work-done`** `ref`-ing what you claimed; **`need-help`** instead of
-    going quiet.
-  - **`need-help` carries nQ semantics** (`~/.tower/RESPONSIBLE-PARTY-AND-NQ.md`):
-    include `nq` (remaining escalation budget, default 3 minus escalation
-    count); express the target as a **route derivation hint resolving one
-    link up the lineage** — never a hard address; `ref` the ledger question id
-    so the field and inbox planes stay one truth. One question → exactly one
-    surface. No storm.
-  - **nQ=0 before deliverable.** An actor must not emit `work-done` while it
-    holds unresolved questions — *"nQ = the number of unresolved questions a
-    star holds. A star must reach nQ=0 before emitting its deliverable."*
-    (`orbit.zig:9`). Post `need-help` (or close the question via the ledger)
-    first.
-  - **Heartbeat your claims** — an unheartbeated `work-claimed` evaporates by
-    design so the work returns to the field. That is the mechanism that
-    protects the fleet from a dead agent, and it only works if agents actually
-    heartbeat. **Claim TTL is 30s** — heartbeat at roughly ttl/3 (~every 10–20s)
-    or the claim evaporates mid-task (2026-08-13: CORD work-available
-    evaporated mid-dispatch without reliable heartbeat).
-  - TTLs per D5: `work-available` 15–60 min, `work-claimed` 30s + heartbeat,
-    `work-done` 24h, `need-help` nQ-bounded; read-time evaporation over an
-    append-only log. Dedupe by id, ack by id, act at most once.
-  - Verbs: MCP `pheromone_emit` / `pheromone_field`, or
-    `bun ~/.tower/cli.mjs emit <scent> <topic> <payload_ref> [--ref id]
-    [--to-role r] [--evidence path] [--ttl N]` and `… field`.
+  "post findings and wait," "route questions to the concierge," or treat a
+  deposit as a stopping state. Addressed deposits are parent/child mail; the
+  pull loop is how work moves. Brief both when needed, but the pull loop is
+  the standing behavior — not "report and await instruction."
+  Every brief for ranks 1–4 must carry the pull loop on muster-deposit verbs
+  (invoke muster skill — do not invent bus verbs):
+  - **Deposit** work others could take: `~/muster/bin/muster-deposit deposit
+    --from <role> --to <parent> --kind report --body "<what, evidence
+    mandatory>"` — an emit without evidence is not an emit.
+  - **Read the field before ever going idle:** `~/muster/bin/muster-deposit
+    pending --to <role>`.
+  - **`done` / `need-help` deposits**, `--ref` what you claimed; **`need-help`**
+    instead of going quiet.
+  - **`need-help` carries nQ semantics** (muster skill / responsible-party law):
+    include remaining escalation budget; `--ref` the question id; one question
+    → exactly one surface. No storm.
+  - **nQ=0 before deliverable.** An actor must not emit `done` while it holds
+    unresolved questions. Post `need-help` (or close the question) first.
+  - **Failure recovery for a dead claimant is UNKNOWN** — the durable log has
+    no TTL/decay/heartbeat primitive. Do not brief cadences that do not exist.
+    Do not claim abandoned work silently returns to the field. Post
+    `need-help` naming the gap.
+  - Verbs: `~/muster/bin/muster-deposit deposit`, `pending`, `collect` — full
+    law in the muster skill.
   - State the two acceptable stopping conditions explicitly: **every
-    done-condition met**, or **a posted BLOCKED/`need-help` naming what is
-    needed and who owns it, after proceeding with everything that does not
-    depend on it.** "Reported and awaited instruction" is not a stopping state.
+    done-condition met**, or **a posted `need-help` naming what is needed and
+    who owns it, after proceeding with everything that does not depend on it.**
+    "Reported and awaited instruction" is not a stopping state.
 
 ## Tasks
 1. <precise action> — done when: <exact, testable condition>
@@ -171,8 +152,8 @@ in every brief.
 
 Spawn substrate: **Herdr is the control plane on this machine** — interactive
 workers spawn as TUI panes, unattended batch workers headless. Follow the
-"Coordinated fan-out contract" in the `herdr` skill (brief on disk, disjoint
-partitions, CLAIM/DONE on the board, .done marker, coordinator gates).
+"Coordinated fan-out contract" in the **herdr skill** (brief on disk, disjoint
+partitions, muster-deposit, `.done` marker, coordinator gates).
 
 ## Step 6 — Codified lessons (hard requirements, learned the expensive way)
 
@@ -195,8 +176,9 @@ partitions, CLAIM/DONE on the board, .done marker, coordinator gates).
   briefs must say: do not run dependency install; run ring-0 gate commands
   manually before pushing.
 - **Enforcement note:** the PreToolUse hook `enforce-brief.mjs` blocks Agent
-  spawns missing Pre-Verified Facts / Tower (or TOWER-WAIVED + reason) /
-  Report / done-when sections. Waiving Tower is allowed only explicitly.
+  spawns missing Pre-Verified Facts / TOWER-WAIVED (with reason) /
+  Report / done-when sections. Include `TOWER-WAIVED:` when fleet comms go
+  through muster-deposit only.
 
 Output the finished brief in a single fenced block, ready to paste into a
 Task/Agent prompt. After it, list anything you could not verify and what you

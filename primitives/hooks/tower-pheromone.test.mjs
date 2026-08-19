@@ -68,7 +68,7 @@ const assertThrows = (label, fn) => {
 }
 
 const CWD_A = '/Users/jrg/agent-core'
-const CWD_B = '/Users/jrg/herdr-spine'
+const CWD_B = '/Users/jrg/agent-core/primitives/mcps/tower/fixtures/other-cwd'
 const TOPIC = 'constellation-zg/tower-stigmergy'
 const FROM = 'test-maker'
 const EVIDENCE = '/tmp/tower-pheromone-evidence.txt'

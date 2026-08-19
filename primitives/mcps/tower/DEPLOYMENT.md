@@ -3,10 +3,14 @@
 Author: `orch-w0-canonical-source`, 2026-08-13. Status: **ruled**, with two
 conditions delivered in this unit and one gap left open and named.
 
+**2026-08-19:** `~/herdr-spine/install.sh` is **retired — do not call**.
+Operator deletes `~/herdr-spine` after Land. Tower code deploys from
+`~/agent-core/primitives/mcps/tower/` only.
+
 This document answers one question: *how does the canonical repo become the thing
 that actually runs?* It records the mechanism, the alternatives rejected, the
-evidence for each, and — explicitly — what happens the next time
-`~/herdr-spine/install.sh` runs.
+evidence for each, and — explicitly — what happened when
+`~/herdr-spine/install.sh` ran (historical; that repo is retired).
 
 ---
 

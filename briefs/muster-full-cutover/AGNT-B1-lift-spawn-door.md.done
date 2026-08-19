@@ -1,0 +1,37 @@
+AGNT-B1 lift-spawn-door complete. Deposit: dep-9671f726d5d6
+
+Files created/modified:
+- /Users/jrg/muster/bin/muster-spawn (NEW, copied from /Users/jrg/tup/socket/spawn.py; prog changed to muster-spawn)
+- /Users/jrg/muster/tests/test-muster-spawn.sh (NEW, executable)
+
+ls -la + first 15 lines:
+-rwxr-xr-x@ 1 jrg  staff  61474 Aug 19 09:21 /Users/jrg/muster/bin/muster-spawn
+#!/usr/bin/env python3
+""" spine-spawn — one-command spawn wrapper ... (docstring unchanged)
+
+muster-spawn --help (exit 0):
+usage: muster-spawn [-h] {orch,worker,fanout,prompt,desk,verify-mark,verify-status,verify-migrate,reap} ...
+Subcommands listed: orch, worker, fanout, prompt, desk, verify-mark, verify-status, verify-migrate, reap
+
+muster-spawn desk --help (exit 0):
+usage: muster-spawn desk [-h] [--pane PANE] [--session SESSION] ... [--profile PROFILE] ...
+
+test-muster-spawn.sh run: exit 0, output "OK: muster-spawn help checks passed"
+
+Path audit (rg ~/tup|/Users/jrg/tup|tup/socket|tup/bin/tup|field.py|~/herdr-spine):
+bin/muster-spawn:59: Idempotent copy of legacy ~/herdr-spine/.verify markers into the shared
+bin/muster-spawn:265: return os.path.expanduser("~/herdr-spine")
+
+Additional herdr-spine hits (not in primary rg pattern):
+bin/muster-spawn:253: docstring herdr_spine_root — git common-dir anchor
+bin/muster-spawn:1495: verify-migrate argparse help text only
+
+Desk/orch/worker/fanout/prompt/reap safety:
+- No ~/tup, tup/socket, tup/bin, or field.py references anywhere.
+- ~/herdr-spine only in herdr_spine_root() fallback (line 265) and herdr_spine_legacy_verify_dir(), called exclusively from cmd_verify_migrate (verify-migrate subcommand). Desk/orch/worker/fanout/prompt/reap never invoke herdr_spine_root or verify-migrate paths.
+- Line 59 is docstring for verify-migrate; not executed on desk seating.
+- verify_dir() defaults to ~/agent-core/.verify (VERIFY_DIR override); desk uses cmd_desk without tup/herdr-spine opens.
+
+SHA256: d77d5b2523ffc74f716707d4dd4edd51d2331f8e1ab4da50680b82292f80991e
+
+Deviations: none. Only change from source copy is argparse prog spine-spawn -> muster-spawn at line 1438.

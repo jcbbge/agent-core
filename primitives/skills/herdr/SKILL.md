@@ -12,7 +12,7 @@ description: >
 metadata:
   author: jrg
   version: "1.4"
-  tags: herdr, multiplexer, panes, terminals, substrate, control-flow, comms-arch, tower
+  tags: herdr, multiplexer, panes, terminals, substrate, control-flow, comms-arch
   upstream: UNKNOWN — https://raw.githubusercontent.com/ogulcancelik/herdr/master/SKILL.md returns HTTP 404 (verified live this session, 2026-08-10); no working upstream source confirmed
   gateway: strudel pantry (roots ~/.pi/agent + ~/agent-core/primitives)
 ---
@@ -46,11 +46,11 @@ doc below, the doc wins.
 
 | Doc | Owns |
 |---|---|
-| `~/agent-core/primitives/rules/control-flow.md` | Hierarchy (OPERATOR>CONCIERGE>CORD>ORCH>AGNT/SAGT), naming prefixes, Made Well mapping, §Reaping, §Observability, §Two-plane CTRL |
-| `~/.tower/COMMS-ARCH.md` | Comms law: four planes, one message/one audience/once/in full, notification rubric, project isolation |
-| `~/herdr-spine/docs/spawn.md` | spine-spawn modes, the stamping mandate, the four name carriers, `$task`/`$role`, the spine-spawn naming gap |
-| `~/herdr-spine/docs/ctl-fleet.md` | The CTRL fleet pane (two-plane machine/project view), row format |
-| `~/agent-core/primitives/tools/statem/README.md` | statem (Made Well state tracker) + twr (Tower board viewer) |
+| `~/agent-core/primitives/rules/control-flow.md` | Hierarchy (OPERATOR>CONCIERGE>CORD>ORCH>AGNT/SAGT), naming prefixes, Made Well mapping, §Reaping, §Observability |
+| `~/agent-core/primitives/rules/comms-arch.md` | Comms law: planes, one message/one audience/once/in full, notification rubric |
+| `~/agent-core/primitives/skills/muster/SKILL.md` | Durable comms: `muster-deposit` verbs, spawn-door law, level-triggered coordination |
+| `~/muster/docs/agent-spawn-sop.md` | muster-spawn modes, the stamping mandate, the four name carriers, `$task`/`$role` |
+| `~/agent-core/primitives/tools/statem/README.md` | statem (Made Well state tracker) |
 | `~/source/herdr-RETROFIT-MAP.md` | Codebase map for the installed herdr 0.8.0 |
 
 ## Hierarchy and naming (control-flow.md — MANDATORY)
@@ -59,8 +59,8 @@ doc below, the doc wins.
 OPERATOR → CONCIERGE → CORD (1/project) → ORCH (1/unit of work) → AGNT (focused work)
                                                                  → SAGT (deferred/async)
 ```
-Plus two infra prefixes: `CTRL` (fleet control pane) and `TOWR` (one Tower
-viewer per project workspace) — display panes, not agents.
+Plus one infra prefix: `CTRL` (fleet control pane) — display pane, not an agent.
+The CTRL fleet pane recipe that shelled herdr-spine is **retired — do not call**.
 
 | Prefix | Role | Registration name |
 |---|---|---|
@@ -75,16 +75,16 @@ verified via `--help` this session) — registration names are always
 lowercase-kebab (`orch-herdr-qol`); prefixed display case (`AGNT ...`) lives
 in the pane label / `--display-agent`, never the registration name.
 
-## The stamping mandate (spawn.md)
+## The stamping mandate (agent-spawn-sop.md)
 
-CTRL's fleet row shows a human work name next to the role prefix and refuses
+A fleet row shows a human work name next to the role prefix and refuses
 a raw item id. Stamp the item's **title** (plain words, never `c004-i005`)
 via all four carriers at birth:
 
 1. `herdr agent start <name>` — the only carrier surviving a server restart.
 2. `herdr pane report-metadata <id> --source <src> --display-agent "AGNT wire OAuth callback"`
 3. `herdr pane rename <id> "AGNT wire OAuth callback"` — feeds `panes[].label`.
-4. `--token name="<title>"` — highest-priority override CTRL checks first.
+4. `--token name="<title>"` — highest-priority override the sidebar checks first.
 
 Also stamp `--token task="<title>"` (80-char cap, the activity line) and
 `--token role=3-AGNT` (`1-CORD|2-ORCH|3-AGNT|4-SAGT`, drives panel sort).
@@ -97,8 +97,8 @@ Done = gone. A truly-done agent (report delivered, done-conditions verified
 by its spawner) is spawned down: pane closed, process ended, empty tab
 closed. No trophy panes. The spawner reaps its own agents; the coordinator
 reaps orchestrators after their final report. Exceptions: infra panes meant
-to run forever (`CTRL`, `TOWR`, statem) and the operator's focused pane.
-Durable state lives on disk and the Tower board, never a dead pane's
+to run forever (`CTRL`, statem) and the operator's focused pane.
+Durable state lives on disk and the muster ledger, never a dead pane's
 scrollback.
 
 ## Learn the CLI, session targeting, IDs
@@ -110,8 +110,7 @@ state from responses, never a display number.
 
 Reach the intended server through ONE of: `herdr --session <name> <cmd>`, or
 `HERDR_SOCKET_PATH=<socket>` (honored by the CLI, the authoritative route
-inside plugin context — confirmed in `spine-wormhole`/`spine-watch`/
-`spine-greeting`). `HERDR_SESSION=<name>` is NOT routing authority —
+inside plugin context). `HERDR_SESSION=<name>` is NOT routing authority —
 re-verified live this session (`HERDR_SESSION=nonexistent-probe-session
 herdr workspace list` still returned the default session). Never target by
 session-name env.
@@ -124,9 +123,10 @@ again → `w1A:p14`, never `p13` again). Herdr injects `$HERDR_WORKSPACE_ID`/`$H
 into every managed pane; prefer `--current` over omitting a target (which
 can hit another client's focused pane). Herdr exposes NO pane-birth
 timestamp anywhere (verified against `session.snapshot`) — a duration comes
-from a transcript's first timestamped record or a board CLAIM, never
+from a transcript's first timestamped record or a muster deposit, never
 guessed. Discover live state with `herdr workspace list`, `tab list
---workspace <id>`, `pane list --workspace <id>`, `api snapshot` (full tree).
+--workspace <id>`, `pane list --workspace <id>`, `agent list`, `api snapshot`
+(full tree).
 
 ## Agent status
 
@@ -145,8 +145,9 @@ dialog shows no busy banner yet correctly surfaces as `blocked`.
 
 Default to a sibling pane in the current tab/cwd unless the user asked for
 different topology. Split without stealing focus, read the returned ID,
-stamp its role, launch. Prefer `~/bin/spine-spawn` when spawning fleet
-workers — it bakes topology, rename, readiness, and verified submit.
+stamp its role, launch. Prefer `~/muster/bin/muster-spawn` (or the forwarder
+`~/bin/spine-spawn`) when spawning fleet workers — it bakes topology,
+rename, readiness, and verified submit.
 
 ```bash
 herdr pane split --current --direction right --no-focus   # or: down
@@ -165,7 +166,7 @@ herdr pi                                  # the door (harness + concierge)
 herdr claude                              # same, Claude Code
 herdr cursor                              # same, cursor
 herdr prime                               # same, prime-agent
-spine-spawn worker --profile coder …      # fleet: kind from desk default
+~/muster/bin/muster-spawn worker --label NAME --pane HOST --profile coder --brief PATH
 ```
 
 `agent start` waits for interactive readiness; launch by plain executable
@@ -197,24 +198,24 @@ Two delivery traps (verified 2026-08-15):
 
 - **Cursor follow-up trap.** A prompt sent to a cursor pane mid-turn queues
   as a follow-up ("enter send now") and sits UNSENT after the turn ends —
-  the pane reads idle with the directive trapped in its input box. The
-  status-flip check above catches it; the fix is one more `send-keys Enter`.
+  the status-flip check above catches it; the fix is one more `send-keys Enter`.
   Bake the retry into every delivery path, not just the happy one.
 - **Status flips wake no one.** `done` is visible but nothing subscribes —
-  an idle parent will sit forever beside finished children. The resident
-  supervisor is tup's bellman: run `tup bellman` (CLI door; wake
-  organ v1 — evidence-gated claim, clock-drained outbox, one-link-up
-  escalation, verified submit). Do not re-implement that loop in herdr-spine.
+  an idle parent will sit forever beside finished children. Completion is a
+  muster-deposit `done` fact — invoke the **muster skill**; the parent reads
+  `~/muster/bin/muster-deposit pending --to <parent>` + `herdr api snapshot`,
+  never re-prompts idle panes for status.
 
-**Prefer the wrapper:** `~/bin/spine-spawn <orch|worker|fanout|prompt>`
-(= `python3 ~/herdr-spine/bin/spine-spawn` — **never `bun`**, bun parses the
-Python file as JS and dies). Bakes topology, rename, readiness, verified
-submit, control-flow stamps (doc: spawn.md). Modes: `orch` (task tab +
+**Prefer the wrapper:** `~/muster/bin/muster-spawn <orch|worker|fanout|prompt|desk|reap>`
+(or `~/bin/spine-spawn`, the bash forwarder — same door). Bakes topology,
+rename, readiness, verified submit, control-flow stamps (doc:
+`~/muster/docs/agent-spawn-sop.md`). Modes: `orch` (task tab +
 orchestrator), `worker` (sibling pane; registration prefixes `cord-`/`orch-`/
 `agnt-`/`sagt-` set role tokens), `fanout` (dedicated `<task>-workers` tab,
 gridded, **hard-capped at 4 briefs/call**), `prompt` (verified follow-up).
-**Comms law:** idle/done after a board DONE + `.done` is success — collect on
-Tower/CTRL, never re-prompt for status (`~/.tower/COMMS-ARCH.md`).
+**Comms law:** idle/done after a muster-deposit `done` + `.done` marker is
+success — collect via `~/muster/bin/muster-deposit pending` + `herdr api
+snapshot`, never re-prompt for status (muster skill).
 **The gap:** `fanout` still derives roles as `<task>-wN` — no prefix. Follow
 every `fanout` call with, per worker:
 
@@ -243,28 +244,14 @@ Terminal ids are re-minted, `pane read` fails until they re-materialize, and
 `agent_status` is retained metadata not detection — while agent-session ids
 (e.g. a claude session id) ARE retained, enabling manual resume. Recovery is
 rebuild, never automatic: an explicit operator action, then the coordinator
-re-spawns from durable planes (Tower board/ledger, briefs on disk, `.done`
-markers, git). `--token` pheromones evaporate on restart. The plugin-owned
-agent view does NOT currently survive via `[[startup]]` — `herdr-plugin.toml`
-carries no `[[startup]]` stanza (removed 2026-08-09) and live evidence from
-that date shows the view was never reapplied. Correction to a claim inside
-`~/herdr-spine/bin/spine-startup`'s own docstring (and `herdr-plugin.toml`'s
-comments): both assert `RawPluginManifest` "declares no `startup` field" —
-FALSE, verified this session by reading
-`~/source/herdr/src/app/api/plugins/manifest.rs` directly: line 25 declares
-`startup: Vec<RawPluginManifestStartup>` with `#[serde(default)]`, and
-`PluginManifestStartup` is imported at line 3. The schema supports it; the
-stanza is simply absent from the deployed toml, a config choice, not a
-parser limitation — so re-adding `[[startup]]` may work at 0.8.0 (untested).
-The live replacement in the meantime,
-`~/herdr-spine/bin/handlers/15-restore-view`, reapplies the view via
-`agent.view.set` on every `pane.agent_status_changed` event, so the
-first event after a restart restores it.
+re-spawns from durable planes (muster ledger, briefs on disk, `.done`
+markers, git). `--token` pheromones evaporate on restart; re-stamp with
+`herdr pane report-metadata` after recovery.
 
 ## Coordinated fan-out contract (verified 2026-07-23)
 
-Composes the `brief` skill (spec), the Tower board (comms), `.done` markers
-(gating):
+Composes the `brief` skill (spec), the muster skill (durable comms), `.done`
+markers (gating):
 
 1. **Brief on disk** per worker — mission, pre-verified facts, file
    partition, done-when, report contract — plus a shared contract (touch
@@ -278,40 +265,31 @@ Composes the `brief` skill (spec), the Tower board (comms), `.done` markers
    --label <task>-workers --no-focus`), gridded (down then right), ~4 panes
    max, close each on finish. Headless (`claude -p`/`pi -p`) is the
    exception, only with output redirected to a log file, a `.done` marker,
-   and a spawn-time CLAIM carrying the PID. Verify liveness with plain
+   and the PID recorded in the brief body. Verify liveness with plain
    `pgrep -fl <pattern>` — never report a worker running without evidence.
-4. **Comms** — see below; COMMS-ARCH.md is the law.
+4. **Comms** — see below; muster skill is the law.
 5. **Gate** — the spawner owns integration: read every `.done`, verify, commit. Workers never commit.
 
-## Observability infra — where it lives, what it shows
+## Observability — where it lives, what it shows
 
-- **`CTRL` fleet/project pane** — `bun ~/herdr-spine/bin/ctl-fleet` (machine
-  plane: every agent-bearing pane by project + a WORK section from each
-  project's `.madewell/`) or `--project <root>` (that project only). Spawn
-  with `bun ~/herdr-spine/bin/ctl-fleet --spawn [workspace_id] [--project
-  <root>]` — the only sanctioned placement: splits the `CORD` host pane in
-  tab 1 at 0.62, `--no-focus`, renamed `CTRL fleet`/`CTRL <project>`. Always
-  a SPLIT of tab 1, never an isolated tab. Display only.
-- **`TOWR [project]` pane** — one per project workspace, read-only tail of
-  that project's Tower board: `bun
-  ~/agent-core/primitives/tools/statem/twr.ts <project-root>`. Renders
-  TRANSITIONS/FINDINGS/OPEN QUESTIONS; writes nothing.
+- **Fleet snapshot** — `herdr agent list`, `herdr pane list --workspace
+  <id>`, `herdr api snapshot`. Pull-based; never poll scrollback for state.
 - **statem** — per-project Made Well tracker: `bun
   ~/agent-core/primitives/tools/statem/statem.ts <project-root>`. Derives
-  outer stage/inner phase from `.madewell/`, appends one `finding` row per
-  transition (topic `statem`), rewrites glyph-only tab titles via `herdr tab
-  rename` — no phase/agent/task words (mapping
-  `~/.tower/statem-tabs.json`). Full spawn recipe: statem README.
+  outer stage/inner phase from `.madewell/`, appends one transition finding
+  per phase change, rewrites glyph-only tab titles via `herdr tab rename`
+  — no phase/agent/task words (tab config: statem README). Full spawn
+  recipe: statem README.
 
-## Comms rules that bind every agent (COMMS-ARCH.md is the law)
+## Comms rules that bind every agent (muster skill + control-flow.md)
 
 One rule: every message has exactly one audience, reaches it exactly once,
-in full. Four planes — STATUS (pane states + board `finding` lines,
-pull-based, never mail), FLEET MAIL (agent→agent: briefs, CLAIMs, DONE
-reports, addressed hierarchically up the CORD/ORCH/AGNT chain), OPERATOR
-MAIL (only `to:"operator"` rows reach the operator — external credentials,
-destructive-action approval), OPERATOR DIRECTIVES (through the coordinator
-or directly into a pane, recorded on the board either way).
+in full. Invoke the **muster skill** for durable comms verbs; **this skill**
+for pane state. Four planes — STATUS (pane states + herdr tokens,
+pull-based, never mail), FLEET MAIL (agent→agent via `~/muster/bin/muster-deposit
+deposit` up the CORD/ORCH/AGNT chain), OPERATOR MAIL (coordinator-facing or
+operator-urgent only), OPERATOR DIRECTIVES (through the coordinator or
+directly into a pane, recorded via `muster-deposit`).
 
 Status is not mail, status is not a toast. Notify only for task completion,
 a genuine operator summons, or an alert — never AGNT/SAGT activity. Content
@@ -319,14 +297,12 @@ is contextual (role + human work name + outcome), never raw ids;
 coalesce/drop anything within 60s of the prior notification from the same
 source.
 
-Tower topics are project-namespaced (`<project-slug>/<topic>`, e.g.
-`future/c004`); bare topics (`statem`, `comms`, `fleet`) are machine-plane
-infra only. Post with `tower send --from <you> --topic <t> --kind finding
-"<body>"` — one CLI on PATH, every harness, no MCP and no file-append
-fallback to reach for. The old MCP board tool's cwd-hygiene refusal
-(rejecting scratch/temp) is not in the rebuilt bus — `primitives/tower/tower.mjs` has
-no cwd check, so this is DOCTRINE only now, not enforced: post from your
-real repo cwd by convention.
+Fleet reports and findings: `~/muster/bin/muster-deposit deposit --from
+<you> --to <parent> --kind report|done|need-help|question --body "<body>"`.
+Collect your inbox: `~/muster/bin/muster-deposit pending --to <you>`; ack a
+deposit: `~/muster/bin/muster-deposit collect <dep-id>`. Full kinds, refusal
+shapes, and stigmergic field law live in the muster skill and
+`comms-arch.md` — do not re-derive them here.
 
 ## Run an ordinary command in another pane
 
@@ -351,17 +327,14 @@ that arrive mid-reconciliation. For one-shot waits, `herdr agent wait <id>
 --until blocked --until done --timeout MS` is the bounded primitive. Reserve
 `pane read` for content once an event flags a pane — never as discovery.
 
-**Compose Herdr with Tower.** Herdr says WHICH pane changed; Tower carries
-WHAT the agent needs, verbatim (COMMS-ARCH.md, not `tower-orchestration.md`,
-is the comms law now). Brief every spawned agent to post to the board and
-route questions up the hierarchy, not to the operator — a `blocked` pane
-with no Tower message stalled silently, go read it. The bridge:
-`~/herdr-spine` maps `pane.agent_status_changed` into board lines
-(`10-notify`) and ledger questions (`40-tower-bridge`), fusing both planes
-without polling. Surface to the human with `herdr notification show "orch
-blocked" --body "needs a decision" --sound request` for genuine eyes-needed
-moments; sending a prompt to ANY pane, idle included, can silently fail to
-submit — the verify-submit step above is mandatory after every
+**Compose Herdr with Muster.** Herdr says WHICH pane changed; the muster
+ledger carries WHAT agents deposit, verbatim (control-flow.md §Communications
++ muster skill). Brief every spawned agent to `muster-deposit` reports up the
+hierarchy, not to the operator — a `blocked` pane with no deposit stalled
+silently; go read it. Surface to the human with `herdr notification show
+"orch blocked" --body "needs a decision" --sound request` for genuine
+eyes-needed moments; sending a prompt to ANY pane, idle included, can silently
+fail to submit — the verify-submit step above is mandatory after every
 prompt-carrying `pane run`.
 
 **Ground the substrate before driving it.** Run `which <tool>` before
@@ -383,11 +356,11 @@ spawned orchestrator up front, then let it run.
   label uniqueness).
 - Close panes focus-safely: record the active tab/pane first, never close
   the focused pane, restore prior focus after; on ambiguity, preserve.
-- Isolated experiments go through `~/herdr-spine/bin/spine-lab` (named
-  spine-lab-* sessions, guarded stop/delete, default-session tripwire) —
-  never improvise lifecycle commands against ad-hoc session names.
+- Isolated experiments: `herdr --session <name>` (muster-spawn `--session`
+  exists for lab testing) — never improvise lifecycle commands against ad-hoc
+  session names.
 - Never `herdr server stop` from an active session unless intending to stop
-  it and all pane processes; never kill the main process — use spine-lab.
+  it and all pane processes.
 
 ## References
 

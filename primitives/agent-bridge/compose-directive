@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # compose-directive — spawn-time stack awareness (agent bridge).
-# Optional lego: no hard deps on herdr, herdr-spine, or tup — paths are hints.
+# Optional lego: no hard deps on muster or herdr — paths are hints.
 # Usage: compose-directive <profile> [harness] [loop_phase] [from-name] [parent-name]
 set -euo pipefail
 
@@ -41,20 +41,20 @@ cat <<EOF
 
 Stack awareness (grab what you need; no hard coupling):
 - **Herdr** — multiplexer: panes, tabs, \`herdr agent …\`, fleet topology.
-- **Spawn door** — \`~/bin/spine-spawn\` (orch/worker/fanout/desk): profile prompt + model + verified submit.
-- **Tup** — durable half: \`~/tup/durable/cli.py\`, \`~/tup/field/field.py\` deposit, bellman at \`~/tup/socket/bellman.py\`.
+- **Spawn door** — \`~/muster/bin/muster-spawn\` (orch/worker/fanout/desk; \`~/bin/spine-spawn\` forwarder): profile prompt + model + verified submit.
+- **Muster** — durable comms: \`~/muster/bin/muster-deposit\`.
 - **Profiles** — \`~/agent-core/primitives/profiles/\` + \`profile-model get\`.
 - **Comms** — \`~/agent-core/primitives/rules/comms-arch.md\` plane 5 (stigmergic field).
 
 Comms contract:
 - Parent: ${PARENT_NAME:-[UNKNOWN]}
 - From: ${FROM_NAME:-[UNKNOWN]}
-- Deposit (tup field only; not the operator pane): \`python3 ~/tup/field/field.py deposit --from ${FROM_NAME:-[UNKNOWN]} --to ${PARENT_NAME:-[UNKNOWN]} --kind done --body "<evidence>"\`
+- Deposit (muster door only; not the operator pane): \`~/muster/bin/muster-deposit deposit --from ${FROM_NAME:-[UNKNOWN]} --to ${PARENT_NAME:-[UNKNOWN]} --kind done --body "<evidence>"\`
 - Two stopping states only: every done-when met with evidence, or \`need-help\` naming owner after finishing independent work.
 - Empty inbox is not a stop.
 - "I did not edit product" is not a stop.
 - \`report\` is not \`done\`.
-- Herdr sidebar: \`~/herdr-spine/bin/spine-report\`
+- Herdr sidebar: native pane tokens / \`herdr pane report-metadata\`
 - \`nQ\` to operator is \`0\`
 - Dead claimant recovery: UNKNOWN
 

@@ -7,7 +7,7 @@ TOWER-AUTO-CC CC4). Each assert maps to an acceptance criterion.
 
 | Assert name | Criterion |
 |-------------|-----------|
-| `install.sh emits no drift warning` | Re-run `~/herdr-spine/install.sh`; stderr/stdout must NOT contain `drift; NOT overwriting` |
+| `install.sh emits no drift warning` | **RETIRED** — do not run `~/herdr-spine/install.sh`; use `bun primitives/mcps/tower/drift-check.mjs` instead |
 | `install.sh reports relay_inbox reconciled` | Output contains `tower server.mjs already carries relay_inbox (identical).` OR a fresh install success line |
 
 ## SHA reconciliation (mission #3)
@@ -41,7 +41,7 @@ isn't folded into the `bun:test` file). No args, no network, no writes.
 | `manifest discovery` | Every non-excluded file under the canonical dir (i.e. all of it except `attic/`, `.gitignore`, `board.jsonl`, `ledger.jsonl`) is checked — the manifest is discovered by walking canonical, not hand-maintained, so a new file added to the canonical set is covered automatically |
 | `deployed mirrors canonical (.mjs)` | Every `.mjs` file's deployed bytes (symlink-resolved) equal canonical bytes — **FAIL** on divergence or either side missing, since these are load-bearing at runtime |
 | `deployed mirrors canonical (.md)` | Same comparison for docs — **WARN** only, since nothing at runtime reads a deployed `.md` file (this is how the check found `README.md` never got deployed at all — a real gap, reported, not fixed here) |
-| `contested files vs spine fallback` | `server.mjs`, `hooks/stop-verdict.mjs`, `hooks/ask-bridge.mjs` are additionally compared against `~/herdr-spine/cc-hooks/<basename>` — **FAIL** on divergence, since a stale fallback would deploy wrong content on a fresh machine |
+| `contested files vs spine fallback` | `server.mjs`, `hooks/stop-verdict.mjs`, `hooks/ask-bridge.mjs` are optionally compared against `TOWER_DRIFT_SPINE_DIR` (sandbox fixture only; herdr-spine retired) — **SKIP** when fixture absent, **FAIL** on divergence when present |
 | `orphan detection` | `~/agent-core/primitives/hooks/stop-verdict.mjs` (dead file from the reverted `3deb7e7` consolidation) is compared to canonical `hooks/stop-verdict.mjs` — **WARN** only, informational; nothing imports it |
 | `canonical push state` | Local `HEAD` vs `@{u}` in the canonical dir, read-only, no fetch — **WARN** if ahead, since an unpushed canonical home is a hazard if the working tree ever moves (see `E1-install-sh-clobber-proof.md`) |
 

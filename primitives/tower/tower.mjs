@@ -45,7 +45,7 @@ import { dirname, join } from "node:path";
 const HOME = process.env.TOWER_HOME || join(homedir(), ".tower");
 const DB_PATH = process.env.TOWER_DB || join(HOME, "tower.db");
 const SPINE_SPAWN = process.env.SPINE_SPAWN
-  || join(homedir(), "herdr-spine", "bin", "spine-spawn");
+  || join(homedir(), "muster", "bin", "muster-spawn");
 
 /** Open SQLite from whichever runtime we are in. Bun ships a `node:sqlite`
  *  that imports cleanly but exports nothing, so feature-detect rather than

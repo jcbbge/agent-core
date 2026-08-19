@@ -1,0 +1,28 @@
+agnt-concierge-desk-status — done 2026-08-19
+deposit: dep-9671f726d5d6 → orch-doctrine-cutover
+
+Modified files:
+- /Users/jrg/agent-core/primitives/profiles/concierge.md
+- /Users/jrg/agent-core/primitives/skills/concierge/SKILL.md
+
+Desk-card bullet (concierge.md:146-152):
+- **Desk status:** prepared, not invented. Use `~/bin/desk-status` (or
+  `herdr agent list` / `herdr workspace list` + `jq`). Never `python3 -c` for
+  herdr JSON. Never head/cat/Read compiled binaries
+  (`~/muster/bin/muster-deposit` is a Mach-O). No keep-going shell chains after
+  a probe crashes. Applies: concierge desk house-state pulls, all harnesses. Does
+  not apply: product Python doors (`muster-spawn`), reading source `.lisp` /
+  `.py` / `.md`.
+
+Skill step-2 excerpt (SKILL.md:28-32):
+2. Gather house state BEFORE greeting or asking anything: `~/muster/bin/muster-deposit
+   pending --to concierge` (or the concierge registration name), then desk
+   status via `~/bin/desk-status` (desk card: **Desk status** — do not duplicate
+   that paragraph here). Omotenashi — never ask what you can read. Never gather
+   from a retired bus.
+
+rg outputs:
+146:- **Desk status:** prepared, not invented. Use `~/bin/desk-status` (or
+30:   status via `~/bin/desk-status` (desk card: **Desk status** — do not duplicate
+
+Deviations: none

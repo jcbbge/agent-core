@@ -1,0 +1,18 @@
+AGNT-A3-skills done — 2026-08-19
+dep-9671f726d5d6 → orch-doctrine-cutover
+
+## rg verification (done-when pattern)
+/Users/jrg/.spine/worktrees/agent-core/agnt-doctrine-skills/primitives/skills/muster/SKILL.md:89:chain). One-release compat fallback only: TUP_FIELD_DIR / TUP_STORE_DIR /
+
+Excused: TUP_FIELD_DIR at muster/SKILL.md:89 — one-release compat fallback (MUSTER_* primary); does not instruct running tup paths.
+
+## Files modified
+- primitives/skills/herdr/SKILL.md
+- primitives/skills/brief/SKILL.md
+- primitives/skills/muster/SKILL.md (created in worktree from main)
+- primitives/skills/concierge/SKILL.md
+- primitives/skills/ending-session/SKILL.md
+
+## Deviations
+- Edits landed in worktree spine/agnt-doctrine-skills; muster/SKILL.md copied from main before edit.
+- spine/worktrees and spine/* branch names in ending-session left intact (worktree naming).

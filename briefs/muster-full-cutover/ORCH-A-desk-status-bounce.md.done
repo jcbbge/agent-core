@@ -1,0 +1,30 @@
+# ORCH-A bounce — concierge desk-status (2026-08-19)
+
+CORD bounce GO on prior verify. This deposit is the bake.
+
+`agent-core sync skill/concierge` exit 0. Cursor skill matches source. Did not commit.
+
+## concierge.md desk-card excerpt (lines 146-152)
+
+- **Desk status:** prepared, not invented. Use `~/bin/desk-status` (or
+  `herdr agent list` / `herdr workspace list` + `jq`). Never `python3 -c` for
+  herdr JSON. Never head/cat/Read compiled binaries
+  (`~/muster/bin/muster-deposit` is a Mach-O). No keep-going shell chains after
+  a probe crashes. Applies: concierge desk house-state pulls, all harnesses. Does
+  not apply: product Python doors (`muster-spawn`), reading source `.lisp` /
+  `.py` / `.md`.
+
+## skill door pointer (SKILL.md:28-32)
+
+2. Gather house state BEFORE greeting or asking anything: `~/muster/bin/muster-deposit
+   pending --to concierge` (or the concierge registration name), then desk
+   status via `~/bin/desk-status` (desk card: **Desk status** — do not duplicate
+   that paragraph here).
+
+## Verify (ORCH)
+
+- `rg -n desk-status` profile: hit at desk card :146
+- `rg -n desk-status` skill: pointer at :30, not a second full ruling
+- Worker `agnt-concierge-desk-status` w5R:pE reaped
+- Files: `primitives/profiles/concierge.md`, `primitives/skills/concierge/SKILL.md`, deployed cursor/pi/cc/prime copies of the skill
+- Deviations: none on the bake. Muster deposit ids still collide (`dep-9671f726d5d6`).

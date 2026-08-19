@@ -1,0 +1,44 @@
+AGNT-A4-law complete. Touch ONLY files edited in worktree spine/agnt-doctrine-skills.
+
+## rg task 1 — primitives/AGENTS.md primitives/directives/
+primitives/directives/cursor.md:34:  TUP_FIELD_DIR / TUP_STORE_DIR / TUP_EVENTS_PATH).
+EXCUSED: (a) one-release compat fallback; MUSTER_* primary in same sentence.
+
+## rg task 2 — primitives/rules/ENFORCEMENT.md
+(no hits — exit 1)
+
+## rg task 3 — spawn-door hooks herdr-spine|field.py|~/tup/
+(no hits — exit 1)
+
+## rg ENFORCEMENT muster-spawn/agent-spawn-sop
+36:| Spawn through the door ... `~/muster/bin/muster-spawn` ... `~/muster/docs/agent-spawn-sop.md`
+48:| Worktree lifecycle ... `muster-spawn reap`
+51:| Naming prefixes ... `muster-spawn` stamps
+
+## Full touch-only residual rg (every hit)
+primitives/rules/ENFORCEMENT.md:52: Retired herdr-spine `board_append` was a second writer — not this door
+EXCUSED: (c) explicit retired / do not call
+primitives/directives/cursor.md:34: TUP_FIELD_DIR / TUP_STORE_DIR / TUP_EVENTS_PATH).
+EXCUSED: (a) one-release compat fallback only
+
+## DENY_START (both files byte-identical)
+raw 'herdr agent start' is closed. Spawn through the door: ~/muster/bin/muster-spawn (orch|worker|fanout|prompt); compatibility name ~/bin/spine-spawn. Docs: ~/muster/docs/agent-spawn-sop.md. Deliberate low-level need: prefix SPAWN_DOOR=off (audited).
+
+## DENY_CLOSE (both files byte-identical)
+raw 'herdr workspace close' is closed. Close only at Done or Parked-on-disk — see control-flow.md and the herdr skill. Diagnosis is not Land. Deliberate low-level need: prefix SPAWN_DOOR=off (audited).
+
+## Files modified
+- primitives/AGENTS.md (Tup→Muster stack/comms; spawn execution muster-spawn; fleet comms muster-deposit)
+- primitives/directives/cursor.md (muster-spawn fleet; muster-deposit comms; muster WIP MUSTER_* isolation)
+- primitives/directives/pi.md (muster-spawn; muster-deposit; no herdr-spine)
+- primitives/directives/claude-code.md (muster-spawn; muster-deposit; no herdr-spine)
+- primitives/directives/prime-agent.md (field.py→muster-deposit)
+- primitives/rules/ENFORCEMENT.md (spawn/worktree/naming rows; spine-workspace/spine-ruling→DOCTRINE)
+- primitives/hooks/spawn-door.sh (deny strings + header)
+- primitives/hooks/spawn-door-pi.ts (deny strings)
+
+## Deviations
+- opencode.md / slate.md absent from worktree; no edits (brief: edit only if hits remain).
+- AGENTS.md line 110 still names spine-workspace/spine-ruling as ledger doors in prose pointer to ENFORCEMENT.md (not in rg pattern; ENFORCEMENT rows now honest DOCTRINE).
+- AGENTS.md retired section retains historical "tup finding-J" (SOURCES/history; does not instruct running tup paths).
+- No commit, no agent-core sync per brief.

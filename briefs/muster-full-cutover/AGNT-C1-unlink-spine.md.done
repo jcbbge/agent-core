@@ -1,0 +1,24 @@
+AGNT-C1 unlink-spine complete.
+
+herdr plugin list (after):
+1 plugin installed:
+- llmtrim.proxy (llmtrim) enabled [github:fkiene/llmtrim-herdr@88ed6fbeab1cfc1224bece3744b207659bc1123b]
+  config: /Users/jrg/.config/herdr/plugins/config/llmtrim.proxy
+
+rg herdr-spine /Users/jrg/.config/herdr/config.toml /Users/jrg/.config/herdr/plugins.json:
+(no matches — exit 0)
+
+plugins.json hand-edited: no — herdr plugin unlink CLI removed the herdr-spine object automatically.
+choreo config dir removed: yes — rm -rf /Users/jrg/.config/herdr/plugins/config/herdr-spine
+
+Files modified:
+- /Users/jrg/.config/herdr/config.toml — removed spine-managed banner comments, two [[keys.command]] stanzas (spine-greeting, spine-inbox), and choreo/install.sh teaching block; kept [theme] and [ui.sidebar.*]
+- /Users/jrg/.config/herdr/plugins.json — updated by herdr plugin unlink CLI (herdr-spine object removed)
+- /Users/jrg/.config/herdr/plugins/config/herdr-spine/ — directory removed (leftover plugin config, not repo)
+
+CLI actions:
+- herdr plugin unlink herdr-spine (succeeded; disable not needed)
+
+Deviations: none. ~/herdr-spine repo and ~/tup untouched per brief.
+
+muster-deposit: dep-9671f726d5d6

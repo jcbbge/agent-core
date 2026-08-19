@@ -1,0 +1,63 @@
+# CORD [muster-full-cutover] Land
+
+From: cord-muster-full-cutover. To: cursor-concierge. Kind: done.
+Did not delete ~/tup or ~/herdr-spine (operator deletes after this proof).
+ORCH-A doctrine-cutover, ORCH-B spawn-door, ORCH-C plugin-registry: GO on artifacts, not testimony.
+nQ to operator = 0.
+
+## Post-Land `herdr cursor` chain
+
+```
+herdr cursor
+  → ~/bin/herdr
+  → SPINE_SPAWN default $HOME/muster/bin/muster-spawn
+  → "$SPINE_SPAWN" desk --kind cursor --profile concierge --pane <id>
+  → ~/muster/bin/muster-spawn (Python door lifted from tup/socket/spawn.py)
+  → compose_directive_block → ~/agent-core/primitives/agent-bridge/compose-directive
+     (muster-spawn + muster-deposit; no field.py, no ~/tup, no herdr-spine, no spine-report)
+  → profile prompt + profile-model + verified submit
+```
+
+Compatibility name: `~/bin/spine-spawn` execs `$HOME/muster/bin/muster-spawn`.
+
+Proof (CORD re-ran):
+- `rg SPINE_SPAWN ~/bin/herdr` → `SPINE_SPAWN="${SPINE_SPAWN:-$HOME/muster/bin/muster-spawn}"`; desk invoke is `"$SPINE_SPAWN" desk …` (not python3 on herdr-spine).
+- `cat ~/bin/spine-spawn` → `exec "$HOME/muster/bin/muster-spawn" "$@"`.
+- `~/bin/spine-spawn desk --help` EXIT=0 (forwarder).
+- `~/muster/bin/muster-spawn --help` EXIT=0 lists orch,worker,fanout,prompt,desk,verify-*,reap.
+- `compose-directive concierge cursor '' cursor-concierge ''` EXIT=0; stdout names muster-deposit + muster-spawn; rg field.py|~/tup/|bellman|spine-report|herdr-spine → no hits.
+- `herdr plugin list` → llmtrim only; no herdr-spine.
+- `rg herdr-spine ~/.config/herdr/config.toml ~/.config/herdr/plugins.json` → no hits.
+- `agent-core status`: skill/tup absent; skill/muster ✓ all five harnesses.
+- `compose_directive_parent` cord-* → `cursor-concierge` (muster-spawn:134).
+
+## Certificate
+
+Safe for the operator to delete `~/tup` and `~/herdr-spine`. Desk seating and fleet spawn open neither tree. Remaining `~/herdr-spine` strings are verify-migrate fallback inside muster-spawn (not on the desk path) plus historical/retired docs classified in ORCH-C. Wrappers live on the machine at `~/bin/herdr` and `~/bin/spine-spawn` (not in agent-core git).
+
+## SHAs (wrappers / door)
+
+```
+e24754f415837042a15ef3cd96ac61fd29b252383183d40b7b4e03f99937d07d  /Users/jrg/muster/bin/muster-spawn
+f4c63b3b9cd2a26cdbf4304c482366f51c96690e3fc4a1771ea5d6c64825fd99  /Users/jrg/bin/spine-spawn
+c4c047a5dd33901a93b69856356a35c78088c0221bcf834415d97e2d362eabe1  /Users/jrg/bin/herdr
+```
+
+Git SHAs: recorded in the Land commits (agent-core origin push; muster has no GitHub remote — local commit only).
+
+## Files touched this unit (ORCH partitions)
+
+See ORCH-A/B/C `.done` plus `briefs/muster-full-cutover/`. Machine: `~/bin/herdr`, `~/bin/spine-spawn`, `~/.config/herdr/{config.toml,plugins.json}`, `~/.agent-core/registry`. Stale tup skill dirs deleted. Plugin config `~/.config/herdr/plugins/config/herdr-spine/` removed by unlink.
+
+## Deviations
+
+1. ORCH-B first Land missed cord-* → cursor-concierge; CORD bounced; fixed; SHA of muster-spawn changed from d77d5b25… to e24754f4….
+2. ORCH-A first Land missed operator desk-status ruling; CORD bounced; baked into concierge profile:146–152 and skill pointer.
+3. Live `muster-deposit` reuses id `dep-9671f726d5d6` (BUG-1 in muster docs/BUGREPORT.md). Evidence taken from `.done` files and CORD re-runs, not colliding deposit bodies. Did not collect-by-id.
+4. VERIFY_GATE=off on coder fanouts (muster has no HEAD; live ~/.config paths). Logged by ORCHs.
+5. Muster: no origin remote (`gh repo view jcbbge/muster` unresolved). Local commit only; agent-core pushed.
+6. Pre-existing uncommitted noise outside partitions (`briefs/house/**`, `briefs/tower-rebuild/**`, statem, researcher.md, control-flow.md, tower-orchestration.md, commands/tower.md) left unstaged.
+
+## Reap
+
+ORCH panes w5R:p3 (spawn-door), w5R:p7 (doctrine-cutover), w5R:pF (plugin-registry) closed after this marker.

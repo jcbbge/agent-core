@@ -1,0 +1,131 @@
+# ORCH-C plugin-registry — Land evidence
+
+Unit: plugin-registry-sweep. Parent: cord-muster-full-cutover. From: orch-plugin-registry.
+Did not commit. Did not delete ~/tup or ~/herdr-spine.
+Deposit: dep-9671f726d5d6 --kind done --to cord-muster-full-cutover (BUG-1 reuses this id).
+
+Workers reaped: w5R:pG agnt-unlink-spine, w5R:pH agnt-registry-muster, w5R:pJ agnt-residual-rg. Worker tabs auto-closed.
+
+## 1. herdr plugin list (ORCH re-ran)
+
+```
+1 plugin installed:
+- llmtrim.proxy (llmtrim) enabled [github:fkiene/llmtrim-herdr@88ed6fbeab1cfc1224bece3744b207659bc1123b]
+  config: /Users/jrg/.config/herdr/plugins/config/llmtrim.proxy
+```
+
+herdr --version: 0.8.0. Unlink: `herdr plugin unlink herdr-spine` (C1; disable not needed). llmtrim untouched.
+
+## 2. config.toml / plugins.json rg (ORCH re-ran)
+
+`rg herdr-spine ~/.config/herdr/config.toml ~/.config/herdr/plugins.json` — no matches.
+`[[keys.command]]` spine-greeting / spine-inbox stanzas gone.
+`~/.config/herdr/plugins/config/herdr-spine/` gone (plugin config leftover, not the repo).
+
+## 3. Registry
+
+skill/tup GONE (comment + primitive block deleted).
+skill/muster present immediately after skill/herdr:
+
+```
+# muster: replaces skill/tup (2026-08-19 muster-full-cutover).
+primitive skill/muster
+  source ~/agent-core/primitives/skills/muster/SKILL.md
+  deploy pi
+  deploy prime-agent
+  deploy claude-code
+  deploy cursor
+  deploy opencode
+end
+```
+
+## 4. agent-core status excerpt (ORCH re-ran)
+
+skill/tup: absent (no listing).
+skill/muster: all green
+
+```
+  ✓ pi           /Users/jrg/.pi/agent/skills/muster/SKILL.md
+  ✓ prime-agent  /Users/jrg/.prime/agent/skills/muster/SKILL.md
+  ✓ claude-code  /Users/jrg/.claude/skills/muster/SKILL.md
+  ✓ cursor       /Users/jrg/.cursor/skills-cursor/muster/SKILL.md
+  ✓ opencode     /Users/jrg/.config/opencode/skills/muster/SKILL.md
+```
+
+## 5. Stale tup dirs (ORCH re-ran)
+
+```
+ls /Users/jrg/.pi/agent/skills/tup → No such file or directory
+ls /Users/jrg/.config/opencode/skills/tup → No such file or directory
+```
+
+## 6. Residual rg
+
+Full classification (2183 hits, unclassified=0): `briefs/muster-full-cutover/AGNT-C3-residual-rg.md.done`
+
+Excuse class counts (C3): historical briefs 1523; this cutover briefs 294; vein corpus 274; research 28; slim fixtures 10; deployed herdr/brief SKILL retired-do-not-call 2; muster-spawn verify-migrate 4; spine-lab json 2.
+
+Live-tree remaining after C3 (ORCH re-ran, chats excluded) — all excused or historical-retired:
+
+| path | reason |
+|---|---|
+| muster-spawn :59,:253,:265,:1495 | B partition; verify-migrate only, not desk |
+| herdr/SKILL.md:63 (canonical + cursor deploy) | retired — do not call |
+| brief/SKILL.md:70 (canonical + cursor deploy) | do not teach spine-claim |
+| PORT-PROGRAM.md :7,:24,:32,:37,:49,:51 | absorbed/landed; :24 says do not run tup/herdr-spine |
+| api-surface.md :5,:36,:41,:95 | live door muster-deposit; herdr-spine named retired |
+| HANDOFF.md:160 | herdr-spine retired 2026-08-19 |
+| lisp-port-plan.md :12,:71 | field.py historical; live is field.lisp |
+| HARNESS-PARITY.md:87,155 | historical-retired wording (see deviation 3) |
+| server-drift.test.mjs:19,125-126 | skip-if-absent sentinel (see deviation 4) |
+| server-drift.qa.md:5 | historical; do not call |
+| slim/vein fixtures | historical corpus |
+| ~/.config/herdr/spine-lab/*.json | leftover lab snapshots, not teaching |
+
+## 7. Files created or modified
+
+NEW:
+- /Users/jrg/agent-core/briefs/muster-full-cutover/AGNT-C1-unlink-spine.md
+- /Users/jrg/agent-core/briefs/muster-full-cutover/AGNT-C1-unlink-spine.md.done
+- /Users/jrg/agent-core/briefs/muster-full-cutover/AGNT-C2-registry-muster.md
+- /Users/jrg/agent-core/briefs/muster-full-cutover/AGNT-C2-registry-muster.md.done
+- /Users/jrg/agent-core/briefs/muster-full-cutover/AGNT-C3-residual-rg.md
+- /Users/jrg/agent-core/briefs/muster-full-cutover/AGNT-C3-residual-rg.md.done
+
+C1:
+- /Users/jrg/.config/herdr/config.toml
+- /Users/jrg/.config/herdr/plugins.json (via `herdr plugin unlink`, not hand-edit)
+- /Users/jrg/.config/herdr/plugins/config/herdr-spine/ removed
+
+C2:
+- /Users/jrg/.agent-core/registry
+- sync created/updated: ~/.pi/agent/skills/muster/SKILL.md, ~/.prime/agent/skills/muster/SKILL.md, ~/.claude/skills/muster/SKILL.md, ~/.cursor/skills-cursor/muster/SKILL.md, ~/.config/opencode/skills/muster/SKILL.md
+- deleted: ~/.pi/agent/skills/tup/, ~/.config/opencode/skills/tup/
+
+C3 (27):
+- primitives/profiles/coder.md
+- primitives/rules/worktree-lifecycle.md
+- primitives/HARNESS-PARITY.md
+- primitives/rules/comms-arch.md
+- primitives/rules/responsible-party-and-nq.md
+- primitives/hooks/herdr-task-report.sh
+- ~/.cursor/hooks/herdr-task-report.sh
+- primitives/hooks/tower-pheromone.test.mjs
+- primitives/skills/brief/.claude-plugin/plugin.json
+- .cursor/agents/{coder,concierge,coordinator,orchestrator}.md
+- primitives/tower/tower.mjs (SPINE_SPAWN default → ~/muster/bin/muster-spawn)
+- primitives/mcps/tower/{COMMS-ARCH,DEPLOYMENT,RESPONSIBLE-PARTY-AND-NQ,drift-check.mjs,server-drift.criteria.md,server-drift.qa.md,server-drift.test.mjs}
+- ~/.config/herdr/config.toml (spine-claim comment)
+- ~/muster/docs/{api-surface.md,PORT-PROGRAM.md,HANDOFF.md,lisp-port-plan.md,topology_map.md}
+
+NOT edited: ~/tup/**, ~/herdr-spine/**, A/B Touch ONLY files (compose-directive, concierge/coordinator/orchestrator profiles, listed skills SKILL.md, directives, AGENTS.md, ENFORCEMENT, spawn-door hooks, muster-spawn, ~/bin wrappers, field.lisp, cli.lisp, agent-spawn-sop, DRIVING, muster AGENTS.md).
+
+## 8. Deviations
+
+1. VERIFY_GATE=off on coder spawns. Reason: C1/C2 write live ~/.config/herdr and ~/.agent-core paths; a coder worktree of agent-core would not contain those files.
+2. C2 and C3 native submit stalled; spawn door buffered-paste force-submit; working flip observed (submitted=true).
+3. HARNESS-PARITY.md:87 verify command names ~/muster/bin/spine-workspace (file absent). Workspace ops are `herdr workspace`. Remaining herdr-spine token on that line is historical-retired.
+4. server-drift.test.mjs still names ~/herdr-spine/install.sh as skip-if-absent sentinel (HERDR_SPINE_RETIRED = !existsSync).
+5. BUG-1: live muster-deposit reuses dep-9671f726d5d6; did not collect-by-id.
+6. Spawn-time identity orch-plugin-registry used for mail (ORCH brief text had orch-plugin-sweep).
+7. No git commit. Operator deletes ~/tup and ~/herdr-spine after Land.

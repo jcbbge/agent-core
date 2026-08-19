@@ -23,8 +23,7 @@
 #
 # MECHANISM
 # `herdr pane report-metadata <pane> --source custom:spine --token task=...`
-# — the exact call bin/spine-report makes (flags verified against its source:
-# --source/--token/--ttl-ms; there is no --key/--value).
+# — herdr-native sidebar tokens (--source/--token/--ttl-ms; no --key/--value).
 #
 # Fails silent and fast outside a Herdr pane: safe in a bare terminal, CI, or
 # a headless `claude -p` run. Never blocks a turn; never non-zero exits.
@@ -49,7 +48,7 @@ fi
 command -v herdr >/dev/null 2>&1  || exit 0
 
 SOURCE="custom:spine"
-TTL_MS=900000                     # 15 min, matches spine-report's TTL_TASK
+TTL_MS=900000                     # 15 min sidebar task token TTL
 STATE_DIR="${TMPDIR:-/tmp}/herdr-task-report"
 STATE_FILE="$STATE_DIR/${HERDR_PANE_ID}.request"
 mkdir -p "$STATE_DIR" 2>/dev/null || exit 0

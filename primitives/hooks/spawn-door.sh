@@ -2,10 +2,10 @@
 # spawn-door — PreToolUse guard (CC Bash / cursor Shell). Raw fleet-mutating
 # herdr verbs are refused and pointed at their door:
 #
-#   herdr agent start      → ~/bin/spine-spawn   (stamps role+name+task,
-#                            delivers brief, verified submit — spawn.md)
-#   herdr workspace close  → spine-workspace close --why "<reason>"
-#                            (board trace + operator-visible echo)
+#   herdr agent start      → ~/muster/bin/muster-spawn (orch|worker|fanout|prompt);
+#                            forwarder ~/bin/spine-spawn — agent-spawn-sop.md
+#   herdr workspace close  → refused; close at Done or Parked-on-disk
+#                            (control-flow.md, herdr skill)
 #
 # Law: ENFORCEMENT.md (agent-core/primitives/rules/). A tool whose only open
 # door complies by construction beats a rule that must be remembered.
@@ -37,9 +37,9 @@ STRIPPED=$(printf '%s' "$CMD" | tr '\n' ' ' | sed -e "s/'[^']*'//g" -e 's/"[^"]*
 DENY=""
 case "$STRIPPED" in
   *"herdr agent start"*)
-    DENY="raw 'herdr agent start' is closed. Spawn through the door: ~/bin/spine-spawn (orch|worker|fanout|prompt) — it stamps role/name/task, delivers the brief, and verifies submit. Docs: ~/herdr-spine/docs/spawn.md. Deliberate low-level need: prefix SPAWN_DOOR=off (audited)." ;;
+    DENY="raw 'herdr agent start' is closed. Spawn through the door: ~/muster/bin/muster-spawn (orch|worker|fanout|prompt); compatibility name ~/bin/spine-spawn. Docs: ~/muster/docs/agent-spawn-sop.md. Deliberate low-level need: prefix SPAWN_DOOR=off (audited)." ;;
   *"herdr workspace close"*)
-    DENY="raw 'herdr workspace close' is closed. Use: spine-workspace close <id> --why \"<reason>\" — it posts the board trace and the operator-visible line. Diagnosis is not Land: close only at Done or Parked-on-disk (control-flow.md). Deliberate low-level need: prefix SPAWN_DOOR=off (audited)." ;;
+    DENY="raw 'herdr workspace close' is closed. Close only at Done or Parked-on-disk — see control-flow.md and the herdr skill. Diagnosis is not Land. Deliberate low-level need: prefix SPAWN_DOOR=off (audited)." ;;
 esac
 [ -z "$DENY" ] && exit 0
 

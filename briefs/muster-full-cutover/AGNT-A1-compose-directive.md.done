@@ -1,0 +1,55 @@
+# AGNT-A1 compose-directive — DONE
+
+Deposit: dep-9671f726d5d6 (agnt-doctrine-bridge → orch-doctrine-cutover, kind done)
+
+## Task 1 — compose-directive rewrite
+
+Command:
+~/agent-core/primitives/agent-bridge/compose-directive concierge cursor '' cursor-concierge ''
+
+Exit: 0
+
+Stdout:
+## Agent bridge (spawn-time)
+
+| Field | Value |
+|---|---|
+| Role | concierge |
+| Function | Facilitate Made Well |
+| Loop domain | outer |
+| Loop phase | OA — Orient / Facilitate |
+| Harness | cursor |
+
+Stack awareness (grab what you need; no hard coupling):
+- **Herdr** — multiplexer: panes, tabs, `herdr agent …`, fleet topology.
+- **Spawn door** — `~/muster/bin/muster-spawn` (orch/worker/fanout/desk; `~/bin/spine-spawn` forwarder): profile prompt + model + verified submit.
+- **Muster** — durable comms: `~/muster/bin/muster-deposit`.
+- **Profiles** — `~/agent-core/primitives/profiles/` + `profile-model get`.
+- **Comms** — `~/agent-core/primitives/rules/comms-arch.md` plane 5 (stigmergic field).
+
+Comms contract:
+- Parent: [UNKNOWN]
+- From: cursor-concierge
+- Deposit (muster door only; not the operator pane): `~/muster/bin/muster-deposit deposit --from cursor-concierge --to [UNKNOWN] --kind done --body "<evidence>"`
+- Two stopping states only: every done-when met with evidence, or `need-help` naming owner after finishing independent work.
+- Empty inbox is not a stop.
+- "I did not edit product" is not a stop.
+- `report` is not `done`.
+- Herdr sidebar: native pane tokens / `herdr pane report-metadata`
+- `nQ` to operator is `0`
+- Dead claimant recovery: UNKNOWN
+
+This block is prepended at spawn for every pane (orch/worker/fanout/desk). Concierge gets the composed harness directive; workers get constructed prompt + this block.
+
+## rg check
+
+Command: rg -n 'field\.py|~/tup/|bellman|spine-report|herdr-spine' primitives/agent-bridge/compose-directive
+Result: zero hits (empty output)
+
+## Files modified
+
+- /Users/jrg/agent-core/primitives/agent-bridge/compose-directive (only file touched)
+
+## Deviations
+
+None.

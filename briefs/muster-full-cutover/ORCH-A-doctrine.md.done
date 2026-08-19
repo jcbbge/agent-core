@@ -1,0 +1,126 @@
+# ORCH-A doctrine-cutover — Land evidence
+
+Unit: doctrine-cutover. Parent: cord-muster-full-cutover. From: orch-doctrine-cutover.
+Did not commit. Did not delete ~/tup or ~/herdr-spine.
+
+## 1. compose-directive
+
+Command: `~/agent-core/primitives/agent-bridge/compose-directive concierge cursor '' cursor-concierge ''`
+Exit: 0
+
+Stdout:
+
+```
+## Agent bridge (spawn-time)
+
+| Field | Value |
+|---|---|
+| Role | concierge |
+| Function | Facilitate Made Well |
+| Loop domain | outer |
+| Loop phase | OA — Orient / Facilitate |
+| Harness | cursor |
+
+Stack awareness (grab what you need; no hard coupling):
+- **Herdr** — multiplexer: panes, tabs, `herdr agent …`, fleet topology.
+- **Spawn door** — `~/muster/bin/muster-spawn` (orch/worker/fanout/desk; `~/bin/spine-spawn` forwarder): profile prompt + model + verified submit.
+- **Muster** — durable comms: `~/muster/bin/muster-deposit`.
+- **Profiles** — `~/agent-core/primitives/profiles/` + `profile-model get`.
+- **Comms** — `~/agent-core/primitives/rules/comms-arch.md` plane 5 (stigmergic field).
+
+Comms contract:
+- Parent: [UNKNOWN]
+- From: cursor-concierge
+- Deposit (muster door only; not the operator pane): `~/muster/bin/muster-deposit deposit --from cursor-concierge --to [UNKNOWN] --kind done --body "<evidence>"`
+- Two stopping states only: every done-when met with evidence, or `need-help` naming owner after finishing independent work.
+- Empty inbox is not a stop.
+- "I did not edit product" is not a stop.
+- `report` is not `done`.
+- Herdr sidebar: native pane tokens / `herdr pane report-metadata`
+- `nQ` to operator is `0`
+- Dead claimant recovery: UNKNOWN
+
+This block is prepended at spawn for every pane (orch/worker/fanout/desk). Concierge gets the composed harness directive; workers get constructed prompt + this block.
+```
+
+rg `field.py|~/tup/|bellman|spine-report|herdr-spine` on compose-directive: zero hits.
+
+## 2. Touch ONLY residual rg (ORCH re-ran after integrate)
+
+Pattern: `field\.py|~/tup/|~/herdr-spine|spine-report|skill/tup|TUP_FIELD_DIR`
+
+| Path | Hits | Excuse |
+|---|---|---|
+| compose-directive | none | — |
+| profiles/{concierge,coordinator,orchestrator}.md | none | — |
+| profiles/coder.md | spine-report | ORCH-C partition; not ours |
+| skills/herdr,brief,concierge,ending-session,coordinator,orchestrator | none | — |
+| skills/muster/SKILL.md:89 | TUP_FIELD_DIR | (a) one-release compat fallback; MUSTER_* primary |
+| AGENTS.md | none | — |
+| directives/cursor.md:34 | TUP_FIELD_DIR | (a) one-release compat fallback; MUSTER_* primary |
+| directives/{pi,claude-code,prime-agent,opencode,slate}.md | none | — |
+| ENFORCEMENT.md | none on pattern; SOURCES:94 names spine-workspace/spine-ruling historically | (b) SOURCES; does not instruct running those paths |
+| hooks/spawn-door.sh, spawn-door-pi.ts | none | — |
+| primitives/skills/tup/ | absent | not restored |
+
+## 3. agent-core sync (each exit 0)
+
+- skill/brief 0
+- skill/herdr 0
+- skill/concierge 0
+- skill/ending-session 0
+- skill/coordinator 0 (already in sync; not edited)
+- skill/orchestrator 0 (already in sync; not edited)
+- directive/core 0 → `~/AGENTS.md` and other harness entrypoints
+
+hook/spawn-door and hook/spawn-door-pi are check-only (store path invoked directly).
+
+agent-core status --harness cursor: directive/core, skill/brief, skill/herdr, skill/concierge, skill/ending-session, skill/coordinator, skill/orchestrator all `✓ cursor`. skill/tup `! source missing` (ORCH-C). skill/muster not in registry (ORCH-C; canonical source updated).
+
+## 4. Deployed rg
+
+`~/AGENTS.md`: contains `muster-deposit` and `muster-spawn`. No `field.py`, no `~/tup/socket`, no `~/herdr-spine/bin/spine-spawn`.
+
+`~/.cursor/skills-cursor/{herdr,brief,concierge,ending-session}/SKILL.md`: no `field.py`, no `~/herdr-spine`, no `tup/socket`. `diff -q` vs sources: all match (also coordinator, orchestrator).
+
+## 5. Files created or modified
+
+Created (briefs):
+- briefs/muster-full-cutover/AGNT-A1-compose-directive.md
+- briefs/muster-full-cutover/AGNT-A1-compose-directive.criteria.md
+- briefs/muster-full-cutover/AGNT-A1-compose-directive.md.done
+- briefs/muster-full-cutover/AGNT-A2-profiles.md
+- briefs/muster-full-cutover/AGNT-A2-profiles.criteria.md
+- briefs/muster-full-cutover/AGNT-A2-profiles.md.done
+- briefs/muster-full-cutover/AGNT-A3-skills.md
+- briefs/muster-full-cutover/AGNT-A3-skills.criteria.md
+- briefs/muster-full-cutover/AGNT-A3-skills.md.done
+- briefs/muster-full-cutover/AGNT-A4-law.md
+- briefs/muster-full-cutover/AGNT-A4-law.criteria.md
+- briefs/muster-full-cutover/AGNT-A4-law.md.done
+
+Modified (partition):
+- primitives/agent-bridge/compose-directive
+- primitives/profiles/{concierge,coordinator,orchestrator}.md
+- primitives/skills/{herdr,brief,muster,concierge,ending-session}/SKILL.md
+- primitives/AGENTS.md
+- primitives/directives/{cursor,pi,claude-code,prime-agent}.md
+- primitives/rules/ENFORCEMENT.md
+- primitives/hooks/spawn-door.sh
+- primitives/hooks/spawn-door-pi.ts
+
+Deployed by sync:
+- ~/AGENTS.md (and other harness entrypoints via directive/core)
+- ~/.cursor/skills-cursor/{brief,herdr,concierge,ending-session}/SKILL.md
+- also pi/prime/claude-code/opencode copies of those skills
+
+Not touched: registry, ~/bin/*, ~/muster/**, coder.md, skills/tup (left deleted), coordinator/orchestrator SKILL.md.
+
+## 6. Deviations
+
+- First A4 pane (`agnt-doctrine-law`) deposited done for the 2026-08-14 stigmergy unit (poisoned worktree branch). REJECTED. Reaped. Respawned as `agnt-doctrine-residuals`.
+- Residuals agent wrote into `agnt-doctrine-skills` worktree (split inherited cwd). ORCH verified those artifacts and copied spawn-door + directives into main. ENFORCEMENT spawn rows applied surgically so house-cutover honesty rows (operator relay / doorbell DOCTRINE, 40-44) were not reverted. AGENTS.md spawn line patched to muster-spawn.
+- Coder worktrees: A2/A3 product files copied from worktrees into `~/agent-core` after ORCH re-ran rg. A1 wrote compose-directive on the main path.
+- Worker `done` deposits collided on `dep-9671f726d5d6` (muster). Evidence taken from `.done` files plus ORCH re-run of done-when commands, not from the colliding deposit bodies.
+- ORCH did not cook new doctrine; integration was copy/patch of verified worker text.
+- nQ to operator = 0.

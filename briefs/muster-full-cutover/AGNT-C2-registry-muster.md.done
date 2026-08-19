@@ -1,0 +1,60 @@
+AGNT-C2 registry-muster complete.
+Deposit: dep-9671f726d5d6 → orch-plugin-registry (kind done)
+
+## Registry diff
+Removed primitive skill/tup block (lines 490-499) and comment.
+Added after skill/herdr end:
+
+# muster: replaces skill/tup (2026-08-19 muster-full-cutover).
+primitive skill/muster
+  source ~/agent-core/primitives/skills/muster/SKILL.md
+  deploy pi
+  deploy prime-agent
+  deploy claude-code
+  deploy cursor
+  deploy opencode
+end
+
+Verification: `rg -n '^primitive skill/tup' /Users/jrg/.agent-core/registry` → no hits (exit 1).
+
+## agent-core sync skill/muster (exit 0)
+```
+✓ skill/muster [pi] synced → /Users/jrg/.pi/agent/skills/muster/SKILL.md
+✓ skill/muster [prime-agent] synced → /Users/jrg/.prime/agent/skills/muster/SKILL.md
+✓ skill/muster [claude-code] synced → /Users/jrg/.claude/skills/muster/SKILL.md
+✓ skill/muster [cursor] synced → /Users/jrg/.cursor/skills-cursor/muster/SKILL.md
+✓ skill/muster [opencode] synced → /Users/jrg/.config/opencode/skills/muster/SKILL.md
+```
+
+## agent-core status excerpt
+skill/tup: absent (no listing).
+skill/muster:
+```
+  ✓ pi           /Users/jrg/.pi/agent/skills/muster/SKILL.md
+  ✓ prime-agent  /Users/jrg/.prime/agent/skills/muster/SKILL.md
+  ✓ claude-code  /Users/jrg/.claude/skills/muster/SKILL.md
+  ✓ cursor       /Users/jrg/.cursor/skills-cursor/muster/SKILL.md
+  ✓ opencode     /Users/jrg/.config/opencode/skills/muster/SKILL.md
+```
+(not source missing; all green)
+
+## Stale tup dirs removed
+```
+ls /Users/jrg/.pi/agent/skills/tup → No such file or directory
+ls /Users/jrg/.config/opencode/skills/tup → No such file or directory
+```
+
+## Files created or modified
+Modified: `/Users/jrg/.agent-core/registry`
+Created by sync:
+- `/Users/jrg/.pi/agent/skills/muster/SKILL.md`
+- `/Users/jrg/.prime/agent/skills/muster/SKILL.md`
+- `/Users/jrg/.claude/skills/muster/SKILL.md`
+- `/Users/jrg/.cursor/skills-cursor/muster/SKILL.md`
+- `/Users/jrg/.config/opencode/skills/muster/SKILL.md`
+Deleted:
+- `/Users/jrg/.pi/agent/skills/tup/` (directory)
+- `/Users/jrg/.config/opencode/skills/tup/` (directory)
+
+## Deviations
+None.

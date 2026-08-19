@@ -15,8 +15,9 @@ import { tmpdir } from 'node:os'
 
 const TOWER_DIR = import.meta.dir
 const LIVE_SERVER = join(TOWER_DIR, 'server.mjs')
-const CANONICAL_SERVER = join(process.env.HOME, 'herdr-spine/cc-hooks/server.mjs')
+const CANONICAL_SERVER = join(process.env.HOME, 'agent-core/primitives/mcps/tower/server.mjs')
 const INSTALL_SH = join(process.env.HOME, 'herdr-spine/install.sh')
+const HERDR_SPINE_RETIRED = !existsSync(INSTALL_SH)
 // Pre-edit backup, atticized 2026-08-12 by agnt-w0-attic — the artifact still
 // exists, it just no longer sits beside the file it backs up.
 const BACKUP_PATH = join(TOWER_DIR, 'attic', 'server.mjs.bak-20260812')
@@ -93,7 +94,7 @@ async function withMcp(cwd, fn, env = {}) {
 const callText = (result) => String(result?.content?.[0]?.text ?? result?.content ?? '')
 
 describe('install.sh drift guard (AC: drift resolved)', () => {
-  test('install.sh emits no drift warning', async () => {
+  test.skipIf(HERDR_SPINE_RETIRED)('install.sh emits no drift warning', async () => {
     const proc = Bun.spawn(['bash', INSTALL_SH], {
       stdout: 'pipe',
       stderr: 'pipe',
@@ -109,7 +110,7 @@ describe('install.sh drift guard (AC: drift resolved)', () => {
     expect(combined).not.toMatch(/matches neither canonical nor pre-fold base/)
   }, 120_000)
 
-  test('install.sh reports relay_inbox reconciled', async () => {
+  test.skipIf(HERDR_SPINE_RETIRED)('install.sh reports relay_inbox reconciled', async () => {
     const proc = Bun.spawn(['bash', INSTALL_SH], {
       stdout: 'pipe',
       stderr: 'pipe',
@@ -121,11 +122,8 @@ describe('install.sh drift guard (AC: drift resolved)', () => {
     ])
     const combined = `${stdout}\n${stderr}`
     expect(code).toBe(0)
-    // Three outcomes now count as reconciled. The third was added 2026-08-13 with
-    // herdr-spine b42132e: once ~/.tower/server.mjs is a symlink into the canonical
-    // home, install_tower_auto() must leave it ALONE — `cp` follows a symlink and
-    // rewrites its target, so writing here would silently edit the git-tracked file.
-    // Skipping is the correct reconciled state, not a failure to reconcile.
+    // Historical: herdr-spine b42132e install_tower_auto() skipped symlinked deploy
+    // targets. herdr-spine is retired 2026-08-19 — drift-check.mjs is the live guard.
     const reconciled =
       combined.includes('tower server.mjs already carries relay_inbox (identical).') ||
       combined.includes('Installed tower server.mjs with relay_inbox') ||

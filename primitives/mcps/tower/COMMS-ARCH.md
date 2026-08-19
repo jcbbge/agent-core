@@ -107,12 +107,9 @@ to each other. Rank 0 (Concierge) is the explicit exception (see below).
   pull loop *is* the scheduler. Do not bolt supervisor/heartbeat daemons onto
   a stigmergic system to fix a documentation bug.
 - **Two complementary mechanisms — brief BOTH:**
-  - **`spine-claim`** (herdr tokens) covers *resource ownership*. From
-    `herdr-spine/docs/pheromones.md` §Contest semantics — read HONESTLY:
-    advisory, not a lock: "**Not a mutex.**" "Good enough for cooperative
-    fleets … races are rare and, worst case, self-resolve at the next
-    heartbeat/contest cycle." Advisory, last-writer-wins — wins on liveness,
-    vanishes when expired, no audit.
+  - **herdr pane metadata tokens** (`herdr pane report-metadata`; sidebar
+    `$claim` / `$task`) cover *resource ownership*. Advisory, not a lock:
+    last-writer-wins — wins on liveness, vanishes when expired, no audit.
   - **Tower field** covers *work distribution*: durable, auditable,
     append-only, read-time evaporation. Tokens have liveness without
     durability; the field has durability without liveness.

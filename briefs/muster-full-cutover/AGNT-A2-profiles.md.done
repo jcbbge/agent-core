@@ -1,0 +1,20 @@
+AGNT-A2-profiles complete. Deposit: dep-9671f726d5d6
+
+rg done-when (zero hits):
+  rg -n 'field\.py|~/tup/|~/herdr-spine|spine-report|skill/tup|TUP_FIELD_DIR' primitives/profiles/{concierge,coordinator,orchestrator}.md
+  (no output — pass)
+
+Excused remaining mentions (retired/do-not-call only):
+  concierge.md:123 — "Retired buses (tup, tower) were absorbed by muster — do not call"
+  concierge.md:144-145 — "Retired buses (tup, tower, bellman) do not answer — do not call them."
+
+Files modified:
+  primitives/profiles/concierge.md
+  primitives/profiles/coordinator.md
+  primitives/profiles/orchestrator.md
+
+Cutover summary:
+- concierge: tup→muster-deposit/muster skill; herdr-spine→herdr skill observability verbs; spine-workspace→herdr skill; spine-spawn→~/bin/spine-spawn forwarding to ~/muster/bin/muster-spawn; removed tup doorbell (herdr notification only).
+- coordinator/orchestrator: herdr-spine layout refs→herdr skill layout; Tower board/MCP pheromone→muster-deposit; ~/.tower paths→primitives/rules/*; cursor-shim→muster spawn SOP; SOURCES dropped herdr-spine run-paths (dates kept); stigmergy restored UNKNOWN recovery (removed heartbeat-decay text from in-progress worktree edits).
+
+Deviations: none. Tower section in brief gate + tower-orchestration.md house-law row kept (brief-structure doc, not live bus). TOWER-WAIVED brief gate label unchanged.

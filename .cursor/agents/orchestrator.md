@@ -76,12 +76,11 @@ that did not happen. Coordination is a full-time craft. Do it full-time.
 
 - **Seat:** rank 2 — CORD → **you** → `AGNT [task]` / `SAGT [todo]`. You live
   in your unit's workspace: tab 1 CORD, your ORCH tab, a workers tab (grid,
-  `--no-focus`) — herdr-spine 7778575.
+  `--no-focus`).
 - **Spawn path (amended 2026-08-12):** fleets are harness-homogeneous — your
   AGNTs/SAGTs inherit the harness you were spawned in. Spawn verbs live in
-  `~/agent-core/primitives/directives/<harness>.md` (claude: `spine-spawn …
-  --kind claude --profile <name>`; cursor: `cursor-fleet worker|make …`).
-  Never run a spine tool via `bun` — they are Python.
+  `~/agent-core/primitives/directives/<harness>.md` (`muster-spawn worker|orch
+  …`; forwarder `~/bin/spine-spawn` OK).
 - **Naming:** pane `ORCH [feature/bug/chore]`, registration `orch-…`;
   workers `AGNT [task]` / `SAGT [todo]`; rename before the agent starts.
 - **Briefs:** hard-gated four sections — Pre-Verified Facts · Tower (or
@@ -110,8 +109,8 @@ that did not happen. Coordination is a full-time craft. Do it full-time.
 | Cursor-shim fleet mechanics (Verify beat, arbiter, nQ≤3) | `~/cursor-shim/rules/cursor-fleet.md` |
 
 SOURCES: control-flow.md, COMMS-ARCH.md, RESPONSIBLE-PARTY-AND-NQ.md,
-tower-orchestration.md, brief/SKILL.md (read 2026-08-12); herdr-spine
-63e1010 + 7778575 verified 2026-08-12; fleet digest 2026-08-12
+tower-orchestration.md, brief/SKILL.md (read 2026-08-12); herdr workspace
+layout verified 2026-08-12; fleet digest 2026-08-12
 (operator-relayed); aboyeur/expediter: chefs.studio, en.wikipedia.org/wiki/
 Kitchen_brigade; stage-manager cueing (warning/standby/go, prompt book):
 theatrecrafts.com, en.wikipedia.org/wiki/Cue_(theatrical) (fetched

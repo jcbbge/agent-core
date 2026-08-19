@@ -4,7 +4,8 @@
 // Walks the canonical Tower code home and, for every file there, compares
 // its bytes against the deployed path that is supposed to mirror it. Three
 // files (server.mjs, hooks/stop-verdict.mjs, hooks/ask-bridge.mjs) are also
-// compared against herdr-spine/cc-hooks/, install.sh's fallback source —
+// compared against TOWER_DRIFT_SPINE_DIR (sandbox fixture only; herdr-spine
+// retired — operator deletes that repo after Land) —
 // those are the only files a second deploy mechanism still competes over
 // (see server-drift.criteria.md and E1-install-sh-clobber-proof.md).
 //
@@ -29,7 +30,7 @@ const CANONICAL_DIR =
   process.env.TOWER_DRIFT_CANONICAL_DIR || join(HOME, 'agent-core/primitives/mcps/tower')
 const DEPLOYED_DIR = process.env.TOWER_DRIFT_DEPLOYED_DIR || join(HOME, '.tower')
 const SPINE_SOURCE_DIR =
-  process.env.TOWER_DRIFT_SPINE_DIR || join(HOME, 'herdr-spine/cc-hooks')
+  process.env.TOWER_DRIFT_SPINE_DIR || join(HOME, 'agent-core/primitives/mcps/tower/fixtures/spine-fallback')
 const ORPHAN_FILE =
   process.env.TOWER_DRIFT_ORPHAN_FILE ||
   join(HOME, 'agent-core/primitives/hooks/stop-verdict.mjs')
@@ -188,11 +189,19 @@ function main() {
     results.push({ rel, ...compare(rel, deployedPath, canonicalPath, severity) })
 
     if (CONTESTED.has(rel)) {
-      const spinePath = join(SPINE_SOURCE_DIR, CONTESTED.get(rel))
-      results.push({
-        rel: `${rel} (vs spine fallback)`,
-        ...compare(`${rel} vs spine`, spinePath, canonicalPath, severity),
-      })
+      if (!existsSync(SPINE_SOURCE_DIR)) {
+        results.push({
+          rel: `${rel} (vs spine fallback)`,
+          status: 'SKIP',
+          detail: `${rel}: spine fallback dir absent (${SPINE_SOURCE_DIR}) — herdr-spine retired; set TOWER_DRIFT_SPINE_DIR for sandbox`,
+        })
+      } else {
+        const spinePath = join(SPINE_SOURCE_DIR, CONTESTED.get(rel))
+        results.push({
+          rel: `${rel} (vs spine fallback)`,
+          ...compare(`${rel} vs spine`, spinePath, canonicalPath, severity),
+        })
+      }
     }
   }
 
