@@ -53,7 +53,55 @@ hand-maintained and drifts; `agent-core status` is the authority.
 | **credential-guard** | `primitives/hooks` | — | git-level, per repo | Secrets rule | — | — | — | `hook/credential-guard` |
 | **session boundary** | `primitives/hooks`, tower hooks | — | `wake` legs 1–4; `session_end`+`pre_compact` legs 5–6 | Session-lifecycle law | — | — | — | `hook/session-boundary-{cursor,pi,prime}`, `hook/session-capture-cursor`, `hook/tower-session-start` |
 | **superset** | `$SUPERSET_HOME_DIR` | — | `wake`, `prompt_submit`, `post_tool`, `stop`, `session_end` | — | — | — | — | ✗ GAP — env-var indirection the registry grammar cannot resolve |
+| **ripgrep** | `/opt/homebrew/bin` | `rg` | — | utensil table | — | — | — | ✗ GAP — the exact-match layer of the search family |
+| **component-verify** | `primitives/tools/component-verify` | `component-verify` | — | VERIFY law, registry header | — | — | — | ✗ GAP — no `tool/` or `skill/` row |
+| **fleet-task** | `primitives/tools/fleet-task` | `fleet-task` | — | — | — | — | — | ✗ GAP — no row |
+| **boot-card** | `primitives/tools/boot-card` | — not on PATH | — | — | — | — | — | ✗ GAP — no row, no installed binary |
+| **statem** | `primitives/tools/statem` | — not on PATH | — | — | — | — | — | ✗ GAP — no row; uncommitted edits in the store |
 | **local LLM** | `127.0.0.1:10240` | — | — | System-services table | — | — | `com.localllm.server` | ✗ GAP — circadian's sleep/REM drafting depends on it |
+
+---
+
+## Lineage — where the rewritten tools went
+
+Reconstructed 2026-08-20 from the store, because the rewrites were done without
+a lineage record and the names were subsequently lost. Sources, all in-repo:
+`primitives/tools/_deprecated/super-search/SKILL.md`,
+`primitives/tools/README.md`, `research/rtk-minimal-clone.md`, and the "Global
+Hooks" comment in `~/.agent-core/registry`.
+
+**`rtk` → `slim`.** rtk was an output compactor, not a search tool. It and its
+hooks were removed 2026-08-11 and replaced by **slim** — the six-verb Zig
+compactor (`ls`, `ps`, `wc`, `df`, `git status`, `git log`) at
+`primitives/tools/slim/`, binary `~/.local/bin/slim`. slim is the fully-wired
+reference component: `tool/slim` (binary) + `skill/slim` + `hook/slim-guard` +
+`hook/slim-guard-wiring` + `hook/slim-rewrite-{pi,prime}`. **Copy its row set
+when registering anything new.**
+
+**`super_search` → five named utensils.** super_search (originally the pi
+`smart_search` extension) was a 5-layer auto-routing search router. It was
+retired 2026-08-16 because its classifier only ever woke one layer for two repo
+names — so the layers were unbundled and are now called by name. There is
+deliberately **no replacement router**; do not build a second one.
+
+| Former layer | Now called | Scope | Registered? |
+|---|---|---|---|
+| project semantic/hybrid | `colgrep` | current working tree, by meaning | `skill/colgrep`; binary ✗ GAP |
+| cross-repo symbol graph | `coraline` | any indexed repo — symbols, callers, impact | `skill/coraline`; binary ✗ GAP |
+| session recall | `pickbrain` | past agent transcripts, not source | `skill/pickbrain`; binary ✗ GAP |
+| exact regex + fallback | `rg` | literal/regex | ✗ GAP entirely |
+| huge-file structural | `bigfile` | 3k+ line PHP/JS/TS/TSX, via MCP | `skill/navigating-big-files`; MCP + `tool/` ✗ GAP |
+
+Two layers of the original router are gone rather than renamed: **KotaDB**
+(retired 2026-08-06, `:7001` dead, removed from the router 2026-08-14) and the
+router itself. `composto` (file → structural IR) is adjacent to this family and
+also has a skill with no binary row.
+
+**The lesson.** Four of the five search utensils this machine depends on have a
+skill telling an agent to run a binary that no row verifies exists. That is the
+same failure shape as circadian's, one level down: the documentation is live and
+the verification is absent. A rewrite is not finished until the new name owns
+the old name's rows.
 
 ---
 
@@ -67,11 +115,15 @@ Listed most consequential first. None is fixed yet — they are the backlog.
    `skill/muster`. No binary row, no wiring row. If `muster-spawn` went missing
    the audit would stay green. It is also not on PATH as `muster`, so every
    caller hardcodes `~/muster/bin/…`.
-2. **Five tool binaries have skills but no `tool/` row** — coraline, colgrep,
-   pickbrain, composto, and agent-core's own binary. `tool/` exists for slim,
-   latch, vein, and assay and checks "executable, no older than `src/`". A
-   skill that documents a dead binary is worse than no skill: the agent reaches
-   for it confidently and fails.
+2. **`tool/` covers 4 binaries out of 13.** Rows exist only for slim, latch,
+   vein, and assay — the verb checks "executable, no older than `src/`".
+   Unrowed and **installed**: coraline, colgrep, pickbrain, composto, rg,
+   component-verify, fleet-task, and agent-core's own binary. Unrowed and **not
+   installed at all**: boot-card, statem — both have source trees under
+   `primitives/tools/` and no binary on PATH, so it is currently impossible to
+   tell "never built" from "silently broken". A skill that documents a dead
+   binary is worse than no skill: the agent reaches for it confidently and
+   fails. Fixing this is cheap — 9 rows, copied from `tool/slim`.
 3. **circadian has no skill.** Six hooks, six bins, three services, a directive
    paragraph — and no skill telling an agent how to inspect or repair it. The
    entry point today is `circadian-doctor`, which nothing advertises. This is
@@ -96,3 +148,14 @@ MCP, a service. `/agentcore doctor` cross-checks it against live configs and
 `agent-core status`, and reports components whose surfaces are unrowed. When a
 gap is closed, delete the gap entry rather than marking it done; the registry is
 the record that it is closed.
+
+**Lineage law (2026-08-20).** A rename, rewrite, unbundling, or retirement lands
+with an entry in the Lineage section above — old name, new name(s), date, reason.
+This law exists because `rtk → slim` and the `super_search` unbundling both
+happened without one and the names were genuinely lost: the operator could no
+longer say what the rewritten tools were called or whether they were registered,
+and reconstructing it took a store-wide search. The store remembers what an
+operator will not. Two corollaries: **the new name inherits the old name's rows**
+— a rewrite is not done until its `tool/`, `skill/`, and wiring rows exist under
+the new name; and **`_deprecated/` is a lineage record, not an attic** — never
+delete a retired implementation before writing its lineage entry.
