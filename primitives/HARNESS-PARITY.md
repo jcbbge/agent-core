@@ -10,6 +10,15 @@ Registering a new harness = fill every row of this table for it. A blank cell
 is a NO, and NO means: name what it needs (copy, shim, port, or adapter) and
 build it before calling the harness registered.
 
+**This file is STATE; `HARNESS-SHAPE.md` is SHAPE.** Onboarding a harness that
+is not yet a column here starts there, not here: it carries the capability
+contract, the fourteen-question API-surface interview, and the definition of
+done. agent-core ships no per-harness adapter — it holds the shape and an agent
+maps the harness onto it. The operator door for all of it is the `agentcore`
+skill: `/agentcore doctor` (audit + fix), `/agentcore boot <harness>` (install
+into a registered harness), `/agentcore onboard <harness>` (map a new one),
+`/agentcore parity` (reconcile this file with the binary).
+
 ## The audit command
 
 ```bash
@@ -17,13 +26,36 @@ build it before calling the harness registered.
 ~/agent-core/cli/zig-out/bin/agent-core status --harness machine   # tool binaries, git hooks
 ```
 
-**Current: 340 ok / 0 stale / 0 missing** (2026-08-16, after utensil-guard
+**Current: 360 ok / 0 stale / 0 missing** (2026-08-20 — circadian bindings
+registered, cursor file surface synced, cursor boundary + capture bound, pi
+`session-boundary.ts` + `circadian-mind.ts` shims restored, CC Tower
+`session-start.mjs` bound, `rule/worktree-teardown-spine` retargeted to
+`~/muster/bin/muster-spawn`, `skill/agentcore` registered to all six harnesses.)
+
+~~**Current: 340 ok / 0 stale / 0 missing** (2026-08-16, after utensil-guard
 HOOK: `utensil-guard.mjs` bound on CC PreToolUse `Read|Grep`+`Bash` and cursor
 preToolUse `Read|Grep|Shell`; pi/prime extension shims; directive/core
-recomposed. Super-search remains retired.)
+recomposed. Super-search remains retired.)~~ **CORRECTION 2026-08-20: the 340
+claim was already false when written and stayed false for four days.** Live
+status on 2026-08-20 read **274 ok / 8 stale / 62 missing** — 61 cursor
+primitives had never been deployed, and circadian's `wake.ts` was unbound in
+claude-code, absent from pi, and unreachable in cursor. See "On the number 340"
+below.
 
 The 2026-08-14 stale-binary paragraph is struck: live `agent-core status`
 this session reports 0 stale. Re-run the binary before citing a count.
+
+**On the number 340.** The 214 lesson (below) was that the registry knew
+nothing of the estate. The 340 lesson is the same failure one layer up: a count
+hand-copied into prose decays the moment anything drifts, and it decayed
+silently because nothing compares this file to the binary. Two rules follow.
+**One:** never cite a count from this file — run
+`~/agent-core/cli/zig-out/bin/agent-core status` and cite that. This paragraph
+is provenance, not an authority. **Two:** the count is a floor, not a ceiling —
+it can only report on rows that exist, so a rising number never proves coverage.
+`/agentcore doctor` reconciles the two and hunts for capabilities that are live
+in a config but absent from the registry; that diff, not the count, is the
+honest health metric.
 
 **On the number 214.** Until 2026-08-14 this file claimed "214 ok / 0 stale /
 0 missing", and that was true of the *registered subset* while being false of
@@ -76,7 +108,7 @@ harness config naming it on an event. An unwired gate reports ✗, not ✓.
 | **Tower write (mail/board)** | `tower` CLI on PATH — parity by construction, no MCP registration | ← | ← | `command -v tower && tower stat` |
 | **Tower capture (flight, legs 5-6)** | `tower-lifecycle.ts` | PreCompact + SessionEnd (`flight-recorder`) | `hooks.json` sessionEnd + preCompact → `session-capture-cursor.mjs` | `agent-core status` → hook/tower-flight-recorder, hook/session-capture-cursor |
 | **Session boundary legs 2-3 (handoff + flight ptr)** | `session-boundary-pi.ts` ext shim | `session-start.mjs` | `session-boundary-cursor.sh` legs 2-3 | `agent-core status` → hook/session-boundary-{pi,cursor} |
-| **Circadian (memory at wake, leg 4)** | `circadian-mind.ts` ext shim → `~/circadian` | SessionStart hook `wake.ts` | `session-boundary-cursor.sh` leg 4 (calls `wake.ts`) | boundary script output contains `[Circadian] WAKE` (NOT registered — see boundaries) |
+| **Circadian (memory at wake, leg 4)** | `circadian-mind.ts` ext shim → `~/circadian` | SessionStart hook `wake.ts` | `session-boundary-cursor.sh` leg 4 (calls `wake.ts`) | **REGISTERED 2026-08-20** — `agent-core status` → `hook/circadian-{wake,sleep,graze,status}` + `hook/circadian-mind-{pi,prime}`. Was "NOT registered", which is precisely how it broke: unrowed for days while unbound in 3 of 5 harnesses. See the law at the top of `HARNESS-SHAPE.md` |
 | **$task report** | `herdr-task-report.ts` (orphan canonical, pi-local) | `~/.claude/hooks/herdr-task-report.sh`, 4 bindings (managed) | **none** — parity gap | `agent-core status` → hook/herdr-task-report |
 | **herdr** (multiplexer ops) | herdr CLI + skill — harness-agnostic (shell/socket) | ← (+ deployed skill) | ← (+ deployed skill) | `agent-core status` → skill/herdr (also `deploy prime-agent`) |
 | **muster** (durable deck / deposit door) | deployed skill | ← | ← | `agent-core status` → skill/muster (pi + claude-code + cursor + prime-agent) |
