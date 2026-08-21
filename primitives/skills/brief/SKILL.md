@@ -31,6 +31,24 @@ the brief.
 ```
 <one-paragraph mission statement: repo, stack, what this task is. "Do NOT use emojis anywhere.">
 
+## Purpose and intent
+<Two or three sentences, plain language, no machinery: what this unit is FOR
+and why it exists. An agent that cannot say this cannot open a session with the
+operator. REQUIRED whenever the brief seats an operator-facing session.>
+
+## Vocabulary (REQUIRED when the brief carries domain terms)
+<Every domain term the agent will use, defined, with provenance and confidence.
+One row per term: the term | what it means | who said it and where | whether it
+is defined anywhere or is an open unknown.>
+
+| Term | Meaning | Provenance | Status |
+|---|---|---|---|
+| <"against the wood wall"> | <a stack destination inside a building> | <Maggie, transcript 0819> | <UNDEFINED — no bin granularity exists> |
+
+<A term lifted from a transcript is NOT shared vocabulary just because it sits
+in quotation marks. If the brief cannot define it, mark it UNDEFINED here — that
+is the honest state and it belongs in the brief, not discovered mid-session.>
+
 ## Pre-Verified Facts (lead verified all of these personally)
 - <file X exists at /absolute/path; cited code confirmed at :NN>
 - <command Y: `exact command` run from /dir — exits 0, output: ...>
@@ -127,6 +145,32 @@ encyclopedia into the brief.
 test tails, deviations with reasons>
 ```
 
+## Step 3b — Ground before machinery (operator-facing briefs)
+
+**Operator correction, 2026-08-21 — he had to request this repeatedly across
+several seats.** A brief that seats an interactive session with the operator MUST
+carry `## Purpose and intent` and `## Vocabulary`, and MUST instruct the agent to
+open with them, in this order: purpose and intent → vocabulary with provenance →
+only then forks and options.
+
+The failure being prevented: a technically flawless options table built on
+vocabulary the operator never agreed to. He then spends his turn asking what the
+words mean instead of deciding. Machinery-first reads as fluency and functions as
+an interruption tax.
+
+**The test:** if answering your decision request requires the operator to first
+ask "what does that mean?", it is not a decision request — it is an unfinished
+one.
+
+Corollary for unknowns: an undefined term is a first-class `[UNKNOWN]`, named as
+such. Never carry an undefined term inside a fork as though it were understood,
+and never manufacture a definition to make a gate.
+
+APPLIES: briefs seating operator-facing or concierge-facing sessions —
+clay-blocking, discovery, design, anything conversational.
+DOES NOT APPLY: worker/coder/implementer briefs whose only audience is another
+agent already fluent in the machinery. Re-grounding there is noise.
+
 ## Step 4 — Profile choice (never provider/model/`--kind` in briefs)
 
 Briefs name **profiles/roles only** (`coordinator`, `orchestrator`, `coder`,
@@ -183,3 +227,33 @@ partitions, muster-deposit, `.done` marker, coordinator gates).
 Output the finished brief in a single fenced block, ready to paste into a
 Task/Agent prompt. After it, list anything you could not verify and what you
 recommend (scout run, user question) before spawning.
+
+## Worked example — the 2026-08-21 incident this rule came from
+
+A coordinator seat holding STG-676 (the "In-a-Night Sheet") presented the
+operator a bounded three-sided shape and a two-option promote-or-hold fork. The
+analysis was correct and the seat was honest about its unknowns. The operator's
+reply was:
+
+> "sorry, i need more contextual information to make an informed decision. i
+> dont know what 'against the wood wall' means, i dont know what 'tour_ready'
+> means? what is the purpose and intent of your assignment?"
+
+Three separate failures in one reply, all upstream in the brief:
+
+1. **Purpose and intent were never stated.** The seat knew why it existed; the
+   operator was never told.
+2. **`tour_ready` was carried as a machine-shaped identifier** for a concept
+   with no definition anywhere. Formatting it as a field name implied a
+   definition existed.
+3. **"Against the wood wall" was quoted as though self-evident.** It is a stack
+   destination inside a building, from Maggie's transcript, and no bin
+   granularity exists to express it.
+
+The seat's own diagnosis afterward was exactly right and worth keeping:
+*"Fair — I've been talking machinery without laying the ground."*
+
+The operator's framing of the fix, which is why this lives in the skill and not
+in a one-off relay: *"it's not so much an issue with agents spawned but future
+agents is my bigger concern."* A relay fixes one session. A brief-template
+requirement fixes the class.

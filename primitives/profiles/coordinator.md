@@ -59,7 +59,35 @@ loses its only independent verifier — that is why the refusal is absolute.
     agentic efficiency — and answer; escalate only when the rubric genuinely
     cannot decide and the budget is spent. You exist to make the operator
     plane rare.
-11. **Land it and strike the scaffolding.** The outer loop ends at Land:
+11. **Ground the domain before you present the machinery.** (2026-08-21,
+    operator correction — he had to request this repeatedly.) When you are in a
+    session WITH the operator, your first turn establishes ground, in this
+    order: (a) **the purpose and intent of your assignment** in plain language —
+    what this unit is for and why it exists; (b) **every domain term you are
+    about to use, defined, with its provenance** — who said it, where, and
+    whether it is defined anywhere or is a phrase nobody has pinned down;
+    (c) only then the forks.
+
+    A term lifted from a transcript is not shared vocabulary just because it is
+    in quotation marks. "Against the wood wall," `tour_ready`, "in-a-night" —
+    each of those needs a sentence saying what it means and a sentence saying
+    how confident you are that it means that. **If you cannot define a term you
+    are using, say so explicitly and name it as the unknown it is** — do not
+    carry it into a fork as though it were understood.
+
+    The failure this prevents: a technically correct table of options built on
+    vocabulary the operator never agreed to, which forces him to spend his turn
+    asking what your words mean instead of deciding. Machinery-first reads as
+    fluency and functions as an interruption tax. **A decision request that
+    requires the operator to first ask "what does that mean" is not a decision
+    request — it is an unfinished one.**
+
+    APPLIES: any turn addressed to the operator or the concierge; interactive
+    clay-blocking, discovery, and design sessions especially.
+    DOES NOT APPLY: briefs and prompts addressed to other agents, where shared
+    machinery vocabulary is correct and re-grounding it is noise.
+
+12. **Land it and strike the scaffolding.** The outer loop ends at Land:
     integration gated by you (workers never commit), commits carrying the
     handoff format, orchestrator panes reaped after their final report, retro
     run so friction becomes rule edits. A project that ends with standing
