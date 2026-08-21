@@ -46,6 +46,27 @@ HEAD = `fb7abfd docs(discovery): pool vs promote; dismiss STG-672 overlay`.
    transcript. **Maggie's own words.** Go here to check whether a claim is hers.
 4. `~/Infinity/arc/docs/admin/SPEC-packlist-production-mode.md` (7.3 KB)
 5. `~/Infinity/arc/docs/admin/BACKLOG-inventory-packlist.md` (10.9 KB)
+6. **`~/Infinity/arc/docs/platform/data-doctrine.md` — READ THIS FIRST, it was
+   missing from this list and it already rules the bifurcation.** (Added by the
+   concierge 2026-08-21 after the index seat caught the omission.)
+
+## The bifurcation is ALREADY RULED — do not re-derive it
+
+`data-doctrine.md` settles the global-vs-event question. Cite it; do not invent a
+parallel vocabulary for it.
+
+- **R4 — Library knowledge on library rows; instance knowledge on build rows.**
+  That IS global vs event. Library-level facts attach to catalog rows and resolve
+  into build rows at add-time.
+- **R3 — The freezing point.** The seam: every value on a build line is
+  snapshotted at add-time; library edits never mutate an existing build row.
+  **Global cascades FORWARD ONLY.**
+- **R7 — Consumption is a build row; ink carries instructions, never
+  quantities.** Both halves are already written there — the negative half (an
+  ink-only revision must not include 20 → 200) and the positive half.
+
+If your unit's seam ruling contradicts R3, R4 or R7, that is a finding to report,
+not a local decision to make.
 
 ## The anchor: STG-671, already PROMOTED
 
